@@ -212,7 +212,7 @@ export function SearchBar({ hideSubmitButtonOnDesktop = false }: SearchBarProps)
       {showSuggestions ? (
         <div
           id={listboxId}
-          className="absolute inset-x-0 top-full z-50 mt-2 max-h-[600px] overflow-y-auto overflow-x-hidden rounded-xl border border-border bg-card p-4 shadow-lg -mx-3 sm:mx-0 sm:left-1/2 sm:right-auto sm:w-[min(calc(100vw-2rem),56rem)] sm:-translate-x-1/2 xl:w-[min(calc(100vw-3rem),72rem)]"
+          className="absolute left-0 right-0 top-full z-50 mt-2 max-h-[600px] overflow-y-auto overflow-x-hidden rounded-xl border border-border bg-card p-4 shadow-lg mx-0 sm:left-1/2 sm:right-auto sm:w-[min(calc(100vw-2rem),56rem)] sm:-translate-x-1/2 xl:w-[min(calc(100vw-3rem),72rem)]"
           role="listbox"
           aria-label="Search suggestions"
         >

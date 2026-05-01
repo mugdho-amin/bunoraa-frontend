@@ -284,7 +284,7 @@ export default async function Home() {
       <section>
         <div className={`${sectionWrapperClass} pb-6`}>
           {heroBanners.length ? (
-            <HeroBannerSlider banners={heroBanners} className="mx-auto" autoAdvance={false} />
+            <HeroBannerSlider banners={heroBanners} className="mx-auto" autoAdvance={true} intervalMs={5000} />
           ) : (
             <div className="aspect-[16/7] w-full bg-muted" />
           )}
