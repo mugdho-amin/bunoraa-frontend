@@ -9,7 +9,7 @@ import { MobileHeaderVisibility } from "@/components/layout/MobileHeaderVisibili
 import { asArray } from "@/lib/array";
 import { buildCategoryPath } from "@/lib/categoryPaths";
 import { hasPublishedBundles } from "@/lib/bundles";
-import { getSiteSettings } from "@/lib/siteSettings";
+import { getSiteSettings } from "@/lib/siteSettings.server";
 
 type Category = { id: string; name: string; slug: string };
 

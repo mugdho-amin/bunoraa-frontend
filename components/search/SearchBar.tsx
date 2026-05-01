@@ -2,6 +2,7 @@
 
 import * as React from "react";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 import { ArrowUpRight } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { apiFetch } from "@/lib/api";
@@ -57,6 +58,11 @@ function getProductPrice(product: ProductListItem) {
   return product.current_price || product.sale_price || product.price || "";
 }
 
+function replaceQuotes(str: string) {
+  // Replace straight double quotes with curly double quotes, and single quotes with curly single quotes
+  return str.replace(/["']/g, (m) => m === '"' ? '\u201C' : '\u2018');
+}
+
 export function SearchBar({ hideSubmitButtonOnDesktop = false }: SearchBarProps) {
   const router = useRouter();
   const [query, setQuery] = React.useState("");
@@ -65,7 +71,7 @@ export function SearchBar({ hideSubmitButtonOnDesktop = false }: SearchBarProps)
   const containerRef = React.useRef<HTMLDivElement | null>(null);
   const inputId = React.useId();
   const listboxId = React.useId();
-  const debounced = useDebouncedValue(query, 350);
+  const debounced = useDebouncedValue(query, 300);
 
   const suggestions = useQuery({
     queryKey: ["search", "suggestions", debounced],
@@ -75,18 +81,20 @@ export function SearchBar({ hideSubmitButtonOnDesktop = false }: SearchBarProps)
       });
       return response.data;
     },
-    enabled: debounced.trim().length >= 2,
+    enabled: !!debounced && debounced.trim().length >= 2,
   });
 
   const productSuggestions = suggestions.data?.products ?? [];
   const categorySuggestions = suggestions.data?.categories ?? [];
+  // Product options always open in a new tab for user convenience and to avoid losing search context.
   const productOptions: SuggestionOption[] = productSuggestions.slice(0, 6).map((item) => ({
     id: `product-${item.id}`,
     label: item.name,
     href: buildProductPath(item),
     kind: "product",
-    newTab: true,
+    newTab: true, // Always true for products
   }));
+  // Category options open in the same tab for seamless navigation within the site.
   const categoryOptions: SuggestionOption[] = categorySuggestions
     .slice(0, 5)
     .map((item) => ({
@@ -94,7 +102,7 @@ export function SearchBar({ hideSubmitButtonOnDesktop = false }: SearchBarProps)
       label: item.name,
       href: buildCategoryPath(item.slug),
       kind: "category",
-      newTab: false,
+      newTab: false, // Always false for categories
     }));
   const options = [...productOptions, ...categoryOptions];
 
@@ -212,7 +220,7 @@ export function SearchBar({ hideSubmitButtonOnDesktop = false }: SearchBarProps)
       {showSuggestions ? (
         <div
           id={listboxId}
-          className="absolute left-0 right-0 top-full z-50 mt-2 max-h-[600px] overflow-y-auto overflow-x-hidden rounded-xl border border-border bg-card p-4 shadow-lg mx-0 sm:left-1/2 sm:right-auto sm:w-[min(calc(100vw-2rem),56rem)] sm:-translate-x-1/2 xl:w-[min(calc(100vw-3rem),72rem)]"
+          className="absolute inset-x-0 top-full z-50 mt-2 w-auto sm:w-128 max-w-128 rounded-xl border border-border bg-card p-4"
           role="listbox"
           aria-label="Search suggestions"
         >
@@ -231,7 +239,7 @@ export function SearchBar({ hideSubmitButtonOnDesktop = false }: SearchBarProps)
             <div>
               <p className="text-xs uppercase tracking-[0.2em] text-foreground/60">Products</p>
               <ul className="mt-2 space-y-2">
-                {productSuggestions.slice(0, 6).map((item, index) => {
+                {productSuggestions.slice(0, 6).map((item: ProductListItem, index: number) => {
                   const image = getProductImage(item);
                   const hasRating = item.average_rating && item.average_rating > 0;
                   return (
@@ -249,11 +257,15 @@ export function SearchBar({ hideSubmitButtonOnDesktop = false }: SearchBarProps)
                         onClick={() => handleSelection(buildProductPath(item), true)}
                         onMouseEnter={() => setActiveIndex(index)}
                       >
-                        <div className="h-14 w-14 shrink-0 overflow-hidden rounded-md bg-muted">
+                        <div className="h-12 w-12 flex-shrink-0 overflow-hidden rounded-md bg-muted">
                           {image ? (
-                            <img
-                              {...getLazyImageProps(image, item.name)}
+                            <Image
+                              src={image}
+                              alt={item.name}
+                              width={48}
+                              height={48}
                               className="h-full w-full object-cover"
+                              loading="lazy"
                             />
                           ) : null}
                         </div>
@@ -321,20 +333,21 @@ export function SearchBar({ hideSubmitButtonOnDesktop = false }: SearchBarProps)
           ) : null}
 
           {!suggestions.isFetching && !hasSuggestions ? (
-            <p className="text-sm text-foreground/60">
-              No direct matches. Press Enter to search all results.
-            </p>
+            <>
+              <p className="text-sm text-foreground/60">
+                No direct matches. Press Enter to search all results.
+              </p>
+              <div className="mt-3 border-t border-border pt-3">
+                <button
+                  type="button"
+                  className="w-full rounded-lg px-3 py-2 text-left text-sm font-medium text-primary transition hover:bg-primary/10"
+                  onClick={handleSearchResults}
+                >
+                  View all results for &quot;{replaceQuotes(trimmedQuery)}&quot;
+                </button>
+              </div>
+            </>
           ) : null}
-
-          <div className="mt-3 border-t border-border pt-3">
-            <button
-              type="button"
-              className="w-full rounded-lg px-3 py-2 text-left text-sm font-medium text-primary transition hover:bg-primary/10"
-              onClick={handleSearchResults}
-            >
-              View all results for "{trimmedQuery}"
-            </button>
-          </div>
         </div>
       ) : null}
     </div>

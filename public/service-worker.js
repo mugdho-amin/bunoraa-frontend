@@ -7,7 +7,6 @@
 
 const CACHE_VERSION = 'v1';
 const STATIC_CACHE = `bunoraa-static-${CACHE_VERSION}`;
-const IMAGE_CACHE = `bunoraa-images-${CACHE_VERSION}`;
 const API_CACHE = `bunoraa-api-${CACHE_VERSION}`;
 const PAGES_CACHE = `bunoraa-pages-${CACHE_VERSION}`;
 
@@ -33,11 +32,6 @@ const CACHE_STRATEGIES = {
   static: {
     maxAge: 24 * 60 * 60 * 1000, // 24 hours
     maxEntries: 200,
-  },
-  // Stale while revalidate for images
-  images: {
-    maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
-    maxEntries: 500,
   },
   // Cache first for pages with short TTL
   pages: {
@@ -108,16 +102,24 @@ self.addEventListener('fetch', (event) => {
     return;
   }
   
-  // Skip extensions and chrome URLs
+  // Skip unsupported protocols
   if (url.protocol !== 'http:' && url.protocol !== 'https:') {
+    return;
+  }
+
+  // Skip cross-origin requests to avoid opaque response blocking for remote media
+  if (url.origin !== self.location.origin) {
+    return;
+  }
+  
+  // Skip media requests entirely to avoid CORS and opaque response issues
+  if (url.pathname.startsWith('/media/') || isImageRequest(request)) {
     return;
   }
   
   // Route to appropriate cache strategy
   if (isAssetRequest(request)) {
     event.respondWith(assetStrategy(request));
-  } else if (isImageRequest(request)) {
-    event.respondWith(imageStrategy(request));
   } else if (isAPIRequest(request)) {
     event.respondWith(apiStrategy(request));
   } else if (isPageRequest(request)) {
@@ -165,40 +167,10 @@ async function assetStrategy(request) {
       cache.put(request, response.clone());
     }
     return response;
-  } catch (error) {
-    console.error('[SW] Asset fetch failed:', error);
+  } catch {
+    console.error('[SW] Asset fetch failed');
     return cached || new Response('Asset unavailable', { status: 503 });
   }
-}
-
-// Strategy: Stale while revalidate for images
-async function imageStrategy(request) {
-  const cache = await caches.open(IMAGE_CACHE);
-  const cached = await cache.match(request);
-  
-  // Always try to fetch fresh in background
-  const networkPromise = fetch(request)
-    .then((response) => {
-      if (response.ok) {
-        cache.put(request, response.clone());
-      }
-      return response;
-    })
-    .catch(() => cached); // Fallback to cache on network error
-  
-  // Return cached immediately if available, then update
-  if (cached) {
-    // Check cache age
-    const cacheDate = cached.headers.get('date');
-    const cacheAge = cacheDate ? Date.now() - new Date(cacheDate).getTime() : Infinity;
-    
-    if (cacheAge < CACHE_STRATEGIES.images.maxAge) {
-      fetchAndCache(request, cache); // Refresh in background
-      return cached;
-    }
-  }
-  
-  return networkPromise;
 }
 
 // Strategy: Network first for API calls
@@ -220,7 +192,7 @@ async function apiStrategy(request) {
     }
     
     throw new Error('Network response not ok');
-  } catch (error) {
+  } catch {
     // Network failed, try cache
     const cached = await cache.match(request);
     
@@ -257,7 +229,7 @@ async function pageStrategy(request) {
     }
     
     throw new Error('Network response not ok');
-  } catch (error) {
+  } catch {
     const cached = await cache.match(request);
     
     if (cached) {

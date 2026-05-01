@@ -13,7 +13,7 @@ import { FooterPreferencesDialog } from "@/components/layout/FooterPreferencesDi
 import { asArray } from "@/lib/array";
 import { buildCategoryPath } from "@/lib/categoryPaths";
 import { hasPublishedBundles } from "@/lib/bundles";
-import { getSiteSettings } from "@/lib/siteSettings";
+import { getSiteSettings } from "@/lib/siteSettings.server";
 
 const FOOTER_CATEGORY_LIMIT = 5;
 

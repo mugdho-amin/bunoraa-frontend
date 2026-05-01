@@ -230,6 +230,46 @@ export function HeroBannerSlider({
             </div>
           );
 
+          const normalizeLinkUrl = (value?: string | null) => {
+            if (!value) return undefined;
+            const trimmed = value.trim();
+            if (!trimmed) return undefined;
+            try {
+              const parsed = new URL(trimmed, "http://example.com");
+              const isAbsolute = /^https?:\/\//i.test(trimmed);
+              if (!isAbsolute || !parsed.pathname.startsWith("/")) {
+                return trimmed;
+              }
+
+              const currentHost = typeof window !== "undefined" ? window.location.hostname : "";
+              const backendHost = (() => {
+                try {
+                  const apiUrl = process.env.NEXT_PUBLIC_API_BASE_URL?.trim();
+                  if (apiUrl) {
+                    return new URL(apiUrl).hostname;
+                  }
+                } catch {
+                  // ignore invalid env URL
+                }
+                return "";
+              })();
+
+              const isInternalUrl =
+                parsed.hostname === currentHost ||
+                (backendHost && parsed.hostname === backendHost) ||
+                /bunoraa/i.test(parsed.hostname);
+
+              if (isInternalUrl) {
+                return `${parsed.pathname}${parsed.search}${parsed.hash}`;
+              }
+            } catch {
+              // ignore invalid URL, fallback to raw value
+            }
+            return trimmed;
+          };
+
+          const normalizedLinkUrl = normalizeLinkUrl(banner.link_url);
+
           return (
             <div
               key={banner.id}
@@ -238,9 +278,9 @@ export function HeroBannerSlider({
                 isActive ? "opacity-100" : "opacity-0 pointer-events-none"
               )}
             >
-              {banner.link_url ? (
+              {normalizedLinkUrl ? (
                 <a
-                  href={banner.link_url}
+                  href={normalizedLinkUrl}
                   className="block h-full w-full transition hover:opacity-95"
                 >
                   {content}

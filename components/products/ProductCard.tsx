@@ -64,7 +64,7 @@ function MinimalProductCard({
             variant="ghost"
             size="lg"
             color="fixed-black"
-            className="absolute right-0 top-0 z-40 opacity-100 scale-75 transition sm:scale-100 sm:right-2 sm:top-2"
+            className="absolute right-0 top-0 z-20 opacity-100 scale-75 transition sm:scale-100 sm:right-2 sm:top-2"
           />
         ) : null}
         {canQuickView ? (
@@ -186,7 +186,7 @@ function InteractiveProductCard({
           variant="ghost"
           size="lg"
           color="fixed-black"
-          className="absolute right-0 top-0 z-40 opacity-100 scale-75 transition sm:scale-100 sm:right-2 sm:top-2 sm:pointer-events-none sm:opacity-0 sm:group-hover:pointer-events-auto sm:group-hover:opacity-100"
+          className="absolute right-0 top-0 z-20 opacity-100 scale-75 transition sm:scale-100 sm:right-2 sm:top-2 sm:pointer-events-none sm:opacity-0 sm:group-hover:pointer-events-auto sm:group-hover:opacity-100"
         />
         {image ? (
           <Image

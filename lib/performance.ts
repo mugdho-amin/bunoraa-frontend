@@ -134,7 +134,8 @@ function reportMetric(name: string, metric: Metric) {
 
   // Use sendBeacon if available for reliable delivery
   if (navigator.sendBeacon) {
-    navigator.sendBeacon(CONFIG.reportEndpoint, JSON.stringify(payload));
+    const blob = new Blob([JSON.stringify(payload)], { type: 'application/json' });
+    navigator.sendBeacon(CONFIG.reportEndpoint, blob);
   } else {
     // Fallback to fetch with timeout
     const controller = new AbortController();
@@ -171,7 +172,8 @@ function trackError(error: PerformanceError) {
 
   // Send to analytics
   if (navigator.sendBeacon) {
-    navigator.sendBeacon("/api/analytics/error", JSON.stringify(error));
+    const blob = new Blob([JSON.stringify(error)], { type: 'application/json' });
+    navigator.sendBeacon("/api/analytics/error", blob);
   }
 }
 

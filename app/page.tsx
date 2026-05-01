@@ -3,6 +3,7 @@ import dynamicImport from "next/dynamic";
 import Link from "next/link";
 import Image from "next/image";
 import { apiFetch } from "@/lib/api";
+import { getServerLocaleHeaders } from "@/lib/serverLocale";
 import type {
   Collection,
   ProductListItem,
@@ -12,7 +13,7 @@ import { JsonLd } from "@/components/seo/JsonLd";
 import { absoluteUrl, buildItemList, buildPageMetadata, cleanObject } from "@/lib/seo";
 import { buildCategoryPath } from "@/lib/categoryPaths";
 import { buildProductPath } from "@/lib/productPaths";
-import { getSiteSettings } from "@/lib/siteSettings";
+import { getSiteSettings } from "@/lib/siteSettings.server";
 
 export const dynamic = "force-dynamic";
 
@@ -102,7 +103,7 @@ const getImage = (product: ProductListItem | null | undefined) => {
 async function getHomepageData() {
   try {
     const response = await apiFetch<HomepageData>("/catalog/homepage/", {
-      
+      headers: await getServerLocaleHeaders(),
     });
     const payload =
       response.data && typeof response.data === "object" && !Array.isArray(response.data)
@@ -131,7 +132,8 @@ async function getHomepageData() {
 async function getBanners(position?: string) {
   try {
     const response = await apiFetch<Banner[]>("/promotions/banners/", {
-      params: position ? { position } : undefined
+      params: position ? { position } : undefined,
+      headers: await getServerLocaleHeaders(),
     });
     return asArray<Banner>(response.data);
   } catch (error) {
@@ -150,7 +152,8 @@ async function getCategoryProducts(slug: string) {
         page_size: 8,
         include_descendants: true,
         primary_only: true,
-      }
+      },
+      headers: await getServerLocaleHeaders(),
     });
     const payload = response.data as ProductListItem[] | { results?: ProductListItem[] };
     if (Array.isArray(payload)) return payload;
