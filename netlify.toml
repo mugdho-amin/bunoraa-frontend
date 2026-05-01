@@ -1,0 +1,42 @@
+# Netlify configuration for Bunoraa frontend
+
+[build]
+  base = "frontend"
+  command = "npm run build"
+  publish = ".next"
+
+[build.environment]
+  SECRETS_SCAN_OMIT_KEYS = "NEXT_PUBLIC_CLOUDFLARE_BEACON_TOKEN,NEXT_PUBLIC_CLOUDFLARE_BEACON_ENABLED,NEXT_PUBLIC_VAPID_PUBLIC_KEY,NEXT_PUBLIC_SITE_URL,NEXT_PUBLIC_API_BASE_URL,NEXT_INTERNAL_API_BASE_URL,NEXT_PUBLIC_API_USE_PROXY,NEXT_PUBLIC_MEDIA_BASE_URL,NEXT_PUBLIC_WS_BASE_URL,VITE_API_URL"
+  SECRETS_SCAN_OMIT_PATHS = ".env*,.netlify"
+
+[[plugins]]
+  package = "@netlify/plugin-nextjs"
+
+[[redirects]]
+  from = "/*"
+  to = "/404"
+  status = 404
+
+[[headers]]
+  for = "/_next/static/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+# Headers for security and optimization
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Content-Type-Options = "nosniff"
+    X-Frame-Options = "SAMEORIGIN"
+    X-XSS-Protection = "1; mode=block"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+
+[[headers]]
+  for = "/_next/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+  for = "/static/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
