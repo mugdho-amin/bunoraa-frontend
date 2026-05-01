@@ -6,7 +6,6 @@ import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
 import { buildPageMetadata } from "@/lib/seo";
 
-export const revalidate = 600;
 export const metadata: Metadata = buildPageMetadata({
   title: "Subscription Plans",
   description: "Explore Bunoraa subscription plans and recurring delivery options.",
@@ -15,7 +14,7 @@ export const metadata: Metadata = buildPageMetadata({
 
 async function getPlans() {
   const response = await apiFetch<SubscriptionPlan[]>("/subscriptions/plans/", {
-    next: { revalidate },
+    
   });
   return response.data;
 }

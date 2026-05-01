@@ -15,13 +15,10 @@ import {
 } from "@/app/categories/[...slug]/categoryPageShared";
 import { categoryPathExists } from "@/lib/routeLookup";
 
-export const revalidate = 900;
-
 async function getProduct(slug: string) {
   try {
     const response = await apiFetch<ProductDetail>(`/catalog/products/${slug}/`, {
       headers: await getServerLocaleHeaders(),
-      next: { revalidate },
       suppressError: true,
       suppressErrorStatus: [404],
     });
@@ -37,7 +34,7 @@ async function getProduct(slug: string) {
 async function getRelated(slug: string) {
   const response = await apiFetch<ProductListItem[]>(
     `/catalog/products/${slug}/related/`,
-    { params: { limit: 8 }, headers: await getServerLocaleHeaders(), next: { revalidate } }
+    { params: { limit: 8 }, headers: await getServerLocaleHeaders()}
   );
   return response.data;
 }

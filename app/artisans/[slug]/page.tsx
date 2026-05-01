@@ -10,12 +10,10 @@ import { absoluteUrl, buildBreadcrumbList, buildItemList, buildPageMetadata, cle
 import { buildProductPath } from "@/lib/productPaths";
 import { getLazyImageProps } from "@/lib/lazyImage";
 
-export const revalidate = 600;
-
 async function tryGetArtisan(slug: string) {
   try {
     const response = await apiFetch<Artisan>(`/artisans/${slug}/`, {
-      next: { revalidate },
+      
     });
     return response.data;
   } catch {
@@ -26,8 +24,7 @@ async function tryGetArtisan(slug: string) {
 async function tryGetArtisanProducts(slug: string) {
   try {
     const response = await apiFetch<ProductListItem[]>("/catalog/products/", {
-      params: { artisan: slug },
-      next: { revalidate },
+      params: { artisan: slug }
     });
     return response.data;
   } catch {

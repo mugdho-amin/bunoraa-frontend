@@ -10,7 +10,6 @@ import { buildItemList, buildPageMetadata } from "@/lib/seo";
 import { asArray } from "@/lib/array";
 import { getLazyImageProps } from "@/lib/lazyImage";
 
-export const revalidate = 600;
 export const metadata: Metadata = buildPageMetadata({
   title: "Artisans",
   description: "Meet Bunoraa artisans and explore products from each maker.",
@@ -22,7 +21,7 @@ async function getArtisans() {
     const response = await apiFetch<Artisan[] | { results?: Artisan[]; count?: number }>(
       "/artisans/",
       {
-        next: { revalidate },
+        
       }
     );
     return asArray<Artisan>(response.data);

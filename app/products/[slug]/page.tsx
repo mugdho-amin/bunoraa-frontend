@@ -9,13 +9,10 @@ import { buildBreadcrumbList, buildPageMetadata, buildProductSchema } from "@/li
 import { buildCategoryPath } from "@/lib/categoryPaths";
 import { buildProductCategoryTrail, buildProductPath, getProductCategoryPath } from "@/lib/productPaths";
 
-export const revalidate = 900;
-
 async function getProduct(slug: string) {
   try {
     const response = await apiFetch<ProductDetail>(`/catalog/products/${slug}/`, {
-      headers: await getServerLocaleHeaders(),
-      next: { revalidate },
+      headers: await getServerLocaleHeaders()
     });
     return response.data;
   } catch (error) {

@@ -3,15 +3,12 @@ import { apiFetch } from "@/lib/api";
 import type { Bundle } from "@/lib/types";
 import { asArray } from "@/lib/array";
 
-const BUNDLE_REVALIDATE_SECONDS = 600;
-
 export const hasPublishedBundles = cache(async (): Promise<boolean> => {
   try {
     const response = await apiFetch<Bundle[] | { results?: Bundle[]; count?: number }>(
       "/catalog/bundles/",
       {
-        params: { page_size: 1 },
-        next: { revalidate: BUNDLE_REVALIDATE_SECONDS },
+        params: { page_size: 1 }
       }
     );
     const metaCount = response.meta?.pagination?.count;

@@ -6,8 +6,6 @@ import { getLazyImageProps } from "@/lib/lazyImage";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
-export const revalidate = 300;
-
 type SharedWishlistResponse = {
   wishlist: { items: WishlistItem[] };
 };
@@ -16,7 +14,7 @@ async function getSharedWishlist(token: string) {
   try {
     const response = await apiFetch<SharedWishlistResponse>(
       `/commerce/wishlist/shared/${token}/`,
-      { next: { revalidate } }
+      { }
     );
     return response.data.wishlist.items || [];
   } catch (error) {

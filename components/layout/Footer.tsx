@@ -20,7 +20,7 @@ const FOOTER_CATEGORY_LIMIT = 5;
 async function getFooterPages() {
   try {
     const response = await apiFetch<MenuPage[]>("/pages/footer/", {
-      next: { revalidate: 600 },
+      
     });
     return asArray<MenuPage>(response.data);
   } catch {
@@ -31,7 +31,7 @@ async function getFooterPages() {
 async function getPublishedPages() {
   try {
     const response = await apiFetch<MenuPage[]>("/pages/", {
-      next: { revalidate: 600 },
+      
     });
     return asArray<MenuPage>(response.data);
   } catch {
@@ -42,7 +42,7 @@ async function getPublishedPages() {
 async function getContactSettings() {
   try {
     const response = await apiFetch<ContactSettings>("/contacts/settings/", {
-      next: { revalidate: 600 },
+      
     });
     return response.data;
   } catch {
@@ -54,8 +54,7 @@ async function getTopCategories() {
   try {
     const response = await apiFetch<Category[]>("/catalog/categories/", {
       // Request one extra so we can decide whether to show "Browse all categories".
-      params: { page_size: FOOTER_CATEGORY_LIMIT + 1, has_products: true },
-      next: { revalidate: 600 },
+      params: { page_size: FOOTER_CATEGORY_LIMIT + 1, has_products: true }
     });
     return asArray<Category>(response.data);
   } catch {

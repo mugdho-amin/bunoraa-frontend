@@ -10,7 +10,6 @@ import { buildItemList, buildPageMetadata } from "@/lib/seo";
 import { asArray } from "@/lib/array";
 import { getLazyImageProps } from "@/lib/lazyImage";
 
-export const revalidate = 600;
 export const metadata: Metadata = buildPageMetadata({
   title: "Bundles",
   description: "Shop ready-made Bunoraa bundles with complementary products.",
@@ -22,7 +21,7 @@ async function getBundles() {
     const response = await apiFetch<Bundle[] | { results?: Bundle[]; count?: number }>(
       "/catalog/bundles/",
       {
-        next: { revalidate },
+        
       }
     );
     return asArray<Bundle>(response.data);

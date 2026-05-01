@@ -18,6 +18,8 @@ const metadataBase = new URL(
     : `https://${SITE_URL}`
 );
 
+export const dynamic = "force-dynamic";
+
 export const metadata: Metadata = {
   metadataBase,
   title: {

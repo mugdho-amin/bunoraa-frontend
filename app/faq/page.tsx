@@ -4,7 +4,6 @@ import { Card } from "@/components/ui/Card";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { buildPageMetadata, cleanObject } from "@/lib/seo";
 
-export const revalidate = 300;
 export const metadata: Metadata = buildPageMetadata({
   title: "Frequently Asked Questions",
   description: "Get quick answers about Bunoraa orders, products, shipping, and support.",
@@ -20,7 +19,7 @@ type Faq = {
 
 async function getFaqs() {
   const response = await apiFetch<Faq[]>("/pages/faqs/", {
-    next: { revalidate },
+    
   });
   return response.data;
 }

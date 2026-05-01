@@ -18,8 +18,6 @@ import { buildCollectionPage, buildItemList, buildPageMetadata } from "@/lib/seo
 import { buildCategoryPath } from "@/lib/categoryPaths";
 import { buildProductPath } from "@/lib/productPaths";
 
-export const CATEGORY_PAGE_REVALIDATE = 300;
-
 type Category = {
   id: string;
   name: string;
@@ -59,8 +57,7 @@ function parsePageNumber(searchParams: CategorySearchParams): number {
 async function getCategory(slug: string) {
   try {
     const response = await apiFetch<Category>(`/catalog/categories/${slug}/`, {
-      headers: await getServerLocaleHeaders(),
-      next: { revalidate: CATEGORY_PAGE_REVALIDATE },
+      headers: await getServerLocaleHeaders()
     });
     return response.data;
   } catch (error) {
@@ -107,8 +104,7 @@ async function getCategoryProducts(slug: string, searchParams: CategorySearchPar
     `/catalog/categories/${slug}/products/`,
     {
       params,
-      headers: await getServerLocaleHeaders(),
-      next: { revalidate: CATEGORY_PAGE_REVALIDATE },
+      headers: await getServerLocaleHeaders()
     }
   );
   return response;
@@ -130,7 +126,7 @@ async function getFilters(slug: string, searchParams: CategorySearchParams) {
 async function getCategoryFacets(slug: string) {
   const response = await apiFetch<CategoryFacet[]>(
     `/catalog/categories/${slug}/facets/`,
-    { headers: await getServerLocaleHeaders(), next: { revalidate: CATEGORY_PAGE_REVALIDATE } }
+    { headers: await getServerLocaleHeaders() }
   );
   return response.data;
 }

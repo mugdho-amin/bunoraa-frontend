@@ -7,8 +7,8 @@ type ApiFetchOptions = {
   body?: unknown;
   headers?: HeadersInit;
   params?: Record<string, string | number | boolean | Array<string | number | boolean> | undefined>;
-  next?: { revalidate?: number };
   cache?: RequestCache;
+  next?: { revalidate?: number };
   signal?: AbortSignal;
   retryOnCsrf?: boolean;
   retryOnAuth?: boolean;
@@ -22,10 +22,7 @@ const PUBLIC_API_BASE_URL = (process.env.NEXT_PUBLIC_API_BASE_URL || "").replace
 const INTERNAL_API_BASE_URL = (process.env.NEXT_INTERNAL_API_BASE_URL || "").replace(/\/$/, "");
 const FALLBACK_SITE_URL =
   (process.env.NEXT_PUBLIC_SITE_URL || "").replace(/\/$/, "") || "http://localhost:3000";
-const DISABLE_BUILD_PRERENDER =
-  process.env.NEXT_DISABLE_BUILD_PRERENDER === "true" ||
-  process.env.NEXT_DISABLE_BUILD_PRERENDER === "1";
-const IS_BUILD_TIME = process.env.NEXT_PHASE === "phase-production-build";
+
 let refreshPromise: Promise<string | null> | null = null;
 
 function ensureTrailingSlash(path: string) {
@@ -333,9 +330,6 @@ export async function apiFetch<T>(path: string, options: ApiFetchOptions = {}): 
   const localeHeaders = getLocaleHeaders();
   const isFormData =
     typeof FormData !== "undefined" && body instanceof FormData;
-  const forceNoStore = DISABLE_BUILD_PRERENDER && IS_BUILD_TIME && typeof window === "undefined";
-  const effectiveCache = forceNoStore ? "no-store" : cache;
-  const effectiveNext = forceNoStore ? undefined : next;
 
   const init: RequestInit & { next?: { revalidate?: number } } = {
     method,
@@ -354,12 +348,12 @@ export async function apiFetch<T>(path: string, options: ApiFetchOptions = {}): 
           ? body
           : JSON.stringify(body)
         : undefined,
-    cache: effectiveCache,
+    cache,
     signal,
   };
 
-  if (effectiveNext) {
-    init.next = effectiveNext;
+  if (next) {
+    init.next = next;
   }
 
   const response = await fetch(url, init);

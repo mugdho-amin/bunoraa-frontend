@@ -14,13 +14,10 @@ const ProductGrid = dynamic(
   () => import("@/components/products/ProductGrid").then((mod) => mod.ProductGrid)
 );
 
-export const revalidate = 600;
-
 async function getBundle(slug: string) {
   try {
     const response = await apiFetch<Bundle>(`/catalog/bundles/${slug}/`, {
-      headers: await getServerLocaleHeaders(),
-      next: { revalidate },
+      headers: await getServerLocaleHeaders()
     });
     return response.data;
   } catch (error) {
@@ -34,7 +31,7 @@ async function getBundle(slug: string) {
 async function getBundleProducts(slug: string) {
   const response = await apiFetch<ProductListItem[]>(
     `/catalog/bundles/${slug}/`,
-    { headers: await getServerLocaleHeaders(), next: { revalidate } }
+    { headers: await getServerLocaleHeaders()}
   );
   const data = response.data as unknown as { items?: ProductListItem[] };
   return data.items || [];

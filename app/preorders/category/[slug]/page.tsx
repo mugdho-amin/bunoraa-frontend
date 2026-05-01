@@ -9,12 +9,10 @@ import { formatMoney } from "@/lib/checkout";
 import { notFound } from "next/navigation";
 import { buildPageMetadata } from "@/lib/seo";
 
-export const revalidate = 600;
-
 async function getCategory(slug: string) {
   try {
     const response = await apiFetch<PreorderCategory>(`/preorders/categories/${slug}/`, {
-      next: { revalidate },
+      
     });
     return response.data;
   } catch (error) {

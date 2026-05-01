@@ -16,7 +16,6 @@ import { asArray } from "@/lib/array";
 import { buildCategoryPath } from "@/lib/categoryPaths";
 
 export const dynamic = "force-dynamic";
-export const revalidate = 900;
 
 type CategoryPreview = {
   id: string;
@@ -90,7 +89,7 @@ const resolveCount = (payload: unknown, metaCount?: number) => {
 const getAboutPage = cache(async (): Promise<PageDetail | null> => {
   try {
     const response = await apiFetch<PageDetail>("/pages/about/", {
-      next: { revalidate },
+      
     });
     return response.data;
   } catch (error) {
@@ -104,7 +103,7 @@ const getAboutPage = cache(async (): Promise<PageDetail | null> => {
 const getSiteSettings = cache(async (): Promise<SiteSettings | null> => {
   try {
     const response = await apiFetch<SiteSettings>("/pages/settings/", {
-      next: { revalidate },
+      
     });
     return response.data;
   } catch {
@@ -115,7 +114,7 @@ const getSiteSettings = cache(async (): Promise<SiteSettings | null> => {
 const getContactSettings = cache(async (): Promise<ContactSettings | null> => {
   try {
     const response = await apiFetch<ContactSettings>("/contacts/settings/", {
-      next: { revalidate },
+      
     });
     return response.data;
   } catch {
@@ -126,8 +125,7 @@ const getContactSettings = cache(async (): Promise<ContactSettings | null> => {
 const getCategorySnapshot = cache(async () => {
   try {
     const response = await apiFetch<ListPayload<CategoryPreview>>("/catalog/categories/", {
-      params: { has_products: true, page_size: 6 },
-      next: { revalidate },
+      params: { has_products: true, page_size: 6 }
     });
     const items = asArray<CategoryPreview>(response.data).slice(0, 6);
     return {
@@ -142,8 +140,7 @@ const getCategorySnapshot = cache(async () => {
 const getCollectionSnapshot = cache(async () => {
   try {
     const response = await apiFetch<ListPayload<Collection>>("/catalog/collections/", {
-      params: { page_size: 3 },
-      next: { revalidate },
+      params: { page_size: 3 }
     });
     const items = asArray<Collection>(response.data).slice(0, 3);
     return {
@@ -158,8 +155,7 @@ const getCollectionSnapshot = cache(async () => {
 async function getEndpointCount(path: string, params?: QueryParams) {
   try {
     const response = await apiFetch<ListPayload<unknown>>(path, {
-      params: { page_size: 1, ...params },
-      next: { revalidate },
+      params: { page_size: 1, ...params }
     });
     return resolveCount(response.data, response.meta?.pagination?.count);
   } catch {

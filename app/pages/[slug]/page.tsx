@@ -5,12 +5,10 @@ import { notFound } from "next/navigation";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { absoluteUrl, buildBreadcrumbList, buildPageMetadata, cleanObject } from "@/lib/seo";
 
-export const revalidate = 300;
-
 async function getPage(slug: string) {
   try {
     const response = await apiFetch<PageDetail>(`/pages/${slug}/`, {
-      next: { revalidate },
+      
     });
     return response.data;
   } catch (error) {

@@ -33,8 +33,6 @@ const RecentlyViewedSection = dynamic(
   () => import("@/components/products/RecentlyViewedSection").then((mod) => mod.RecentlyViewedSection)
 );
 
-export const revalidate = 60;
-
 type SearchParams = Record<string, string | string[] | undefined>;
 
 type SearchResponse = {
@@ -46,8 +44,7 @@ type SearchResponse = {
 async function getSearchMeta(query: string) {
   const response = await apiFetch<SearchResponse>("/catalog/search/", {
     params: { q: query },
-    headers: await getServerLocaleHeaders(),
-    next: { revalidate },
+    headers: await getServerLocaleHeaders()
   });
   return response.data;
 }
@@ -91,8 +88,7 @@ async function getProducts(searchParams: SearchParams) {
 
   return apiFetch<ProductListItem[]>("/catalog/products/", {
     params,
-    headers: await getServerLocaleHeaders(),
-    next: { revalidate },
+    headers: await getServerLocaleHeaders()
   });
 }
 
@@ -108,7 +104,7 @@ async function getFilters(query: string) {
 async function getCategoryFacets(slug: string) {
   const response = await apiFetch<CategoryFacet[]>(
     `/catalog/categories/${slug}/facets/`,
-    { headers: await getServerLocaleHeaders(), next: { revalidate } }
+    { headers: await getServerLocaleHeaders()}
   );
   return response.data;
 }

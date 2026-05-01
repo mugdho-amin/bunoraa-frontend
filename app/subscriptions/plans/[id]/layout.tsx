@@ -3,12 +3,10 @@ import { apiFetch } from "@/lib/api";
 import type { SubscriptionPlan } from "@/lib/types";
 import { buildPageMetadata } from "@/lib/seo";
 
-export const revalidate = 600;
-
 async function tryGetPlan(id: string) {
   try {
     const response = await apiFetch<SubscriptionPlan>(`/subscriptions/plans/${id}/`, {
-      next: { revalidate },
+      
     });
     return response.data;
   } catch {

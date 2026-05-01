@@ -5,7 +5,8 @@ import { Card } from "@/components/ui/Card";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { buildItemList, buildPageMetadata } from "@/lib/seo";
 
-export const revalidate = 300;
+export const dynamic = "force-dynamic";
+
 export const metadata: Metadata = buildPageMetadata({
   title: "Guides and Pages",
   description: "Read Bunoraa guides, policies, and informational pages.",
@@ -21,7 +22,7 @@ type PageSummary = {
 
 async function getPages() {
   const response = await apiFetch<PageSummary[]>("/pages/", {
-    next: { revalidate },
+    
   });
   return response.data;
 }

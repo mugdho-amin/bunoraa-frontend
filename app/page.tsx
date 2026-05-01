@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import dynamic from "next/dynamic";
+import dynamicImport from "next/dynamic";
 import Link from "next/link";
 import Image from "next/image";
 import { apiFetch } from "@/lib/api";
@@ -14,21 +14,22 @@ import { buildCategoryPath } from "@/lib/categoryPaths";
 import { buildProductPath } from "@/lib/productPaths";
 import { getSiteSettings } from "@/lib/siteSettings";
 
-const ProductGrid = dynamic(
+export const dynamic = "force-dynamic";
+
+const ProductGrid = dynamicImport(
   () => import("@/components/products/ProductGrid").then((mod) => mod.ProductGrid)
 );
-const RecentlyViewedSection = dynamic(
+const RecentlyViewedSection = dynamicImport(
   () => import("@/components/products/RecentlyViewedSection").then((mod) => mod.RecentlyViewedSection)
 );
-const HomeProductTabs = dynamic(
+const HomeProductTabs = dynamicImport(
   () => import("@/components/products/HomeProductTabs").then((mod) => mod.HomeProductTabs)
 );
-const HeroBannerSlider = dynamic(
+const HeroBannerSlider = dynamicImport(
   () => import("@/components/promotions/HeroBannerSlider").then((mod) => mod.HeroBannerSlider)
 );
 import type { HeroBanner } from "@/components/promotions/HeroBannerSlider";
 
-export const revalidate = 300;
 export const metadata: Metadata = buildPageMetadata({
   title: "Curated Products and Artisan Collections",
   description:
@@ -98,11 +99,10 @@ const getImage = (product: ProductListItem | null | undefined) => {
   return primary.image || null;
 };
 
-
 async function getHomepageData() {
   try {
     const response = await apiFetch<HomepageData>("/catalog/homepage/", {
-      next: { revalidate },
+      
     });
     const payload =
       response.data && typeof response.data === "object" && !Array.isArray(response.data)
@@ -131,8 +131,7 @@ async function getHomepageData() {
 async function getBanners(position?: string) {
   try {
     const response = await apiFetch<Banner[]>("/promotions/banners/", {
-      params: position ? { position } : undefined,
-      next: { revalidate },
+      params: position ? { position } : undefined
     });
     return asArray<Banner>(response.data);
   } catch (error) {
@@ -151,8 +150,7 @@ async function getCategoryProducts(slug: string) {
         page_size: 8,
         include_descendants: true,
         primary_only: true,
-      },
-      next: { revalidate },
+      }
     });
     const payload = response.data as ProductListItem[] | { results?: ProductListItem[] };
     if (Array.isArray(payload)) return payload;

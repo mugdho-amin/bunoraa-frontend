@@ -6,8 +6,6 @@ import {
   type CategorySearchParams,
 } from "./categoryPageShared";
 
-export const revalidate = 300;
-
 export async function generateMetadata({
   params,
   searchParams,

@@ -28,8 +28,6 @@ const RecentlyViewedSection = dynamic(
   () => import("@/components/products/RecentlyViewedSection").then((mod) => mod.RecentlyViewedSection)
 );
 
-export const revalidate = 300;
-
 type SearchParams = Record<string, string | string[] | undefined>;
 
 function firstValue(value: string | string[] | undefined): string | undefined {
@@ -104,8 +102,7 @@ async function getProducts(searchParams: SearchParams) {
 
   return apiFetch<ProductListItem[]>("/catalog/products/", {
     params,
-    headers: await getServerLocaleHeaders(),
-    next: { revalidate },
+    headers: await getServerLocaleHeaders()
   });
 }
 

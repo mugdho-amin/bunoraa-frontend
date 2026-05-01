@@ -10,7 +10,6 @@ import { buildItemList, buildPageMetadata } from "@/lib/seo";
 import { asArray } from "@/lib/array";
 import { getLazyImageProps } from "@/lib/lazyImage";
 
-export const revalidate = 600;
 export const metadata: Metadata = buildPageMetadata({
   title: "Curated Collections",
   description: "Discover curated Bunoraa collections built around themes and use cases.",
@@ -22,7 +21,7 @@ async function getCollections() {
     const response = await apiFetch<Collection[] | { results?: Collection[]; count?: number }>(
       "/catalog/collections/",
       {
-        next: { revalidate },
+        
       }
     );
     return asArray<Collection>(response.data);

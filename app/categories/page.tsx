@@ -7,7 +7,6 @@ import { getLazyImageProps } from "@/lib/lazyImage";
 import { buildCollectionPage, buildItemList, buildPageMetadata } from "@/lib/seo";
 import { buildCategoryPath } from "@/lib/categoryPaths";
 
-export const revalidate = 300;
 export const metadata: Metadata = buildPageMetadata({
   title: "Product Categories",
   description: "Explore Bunoraa categories to find products by type and style.",
@@ -26,8 +25,7 @@ type Category = {
 
 async function getCategories() {
   const response = await apiFetch<Category[]>("/catalog/categories/", {
-    params: { parent_id: "null" },
-    next: { revalidate },
+    params: { parent_id: "null" }
   });
   return response.data;
 }

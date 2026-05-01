@@ -9,8 +9,6 @@ import {
   type ProductCardVariantName,
 } from "@/components/products/ProductCardVariants";
 
-export const revalidate = 300;
-
 export const metadata: Metadata = buildNoIndexMetadata({
   title: "Product Card Variants",
   description: "Internal preview page for product card variants.",
@@ -22,8 +20,7 @@ async function getProducts() {
     "/catalog/products/",
     {
       params: { page_size: 24, ordering: "-created_at" },
-      headers: await getServerLocaleHeaders(),
-      next: { revalidate },
+      headers: await getServerLocaleHeaders()
     }
   );
   const payload = response.data;

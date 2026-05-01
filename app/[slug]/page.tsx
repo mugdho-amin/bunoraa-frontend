@@ -11,12 +11,10 @@ import {
 } from "@/app/categories/[...slug]/categoryPageShared";
 import { categoryPathExists, publishedPageSlugExists } from "@/lib/routeLookup";
 
-export const revalidate = 300;
-
 async function getPage(slug: string) {
   try {
     const response = await apiFetch<PageDetail>(`/pages/${slug}/`, {
-      next: { revalidate },
+      
       suppressError: true,
       suppressErrorStatus: [404],
     });
