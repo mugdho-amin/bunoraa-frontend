@@ -424,10 +424,10 @@ export function FilterPanel({
       ) : null}
       <Section title="Price range">
         <div className="space-y-3">
-          <div className="relative h-5">
-            <div className="pointer-events-none absolute inset-x-0 top-1/2 h-2.5 -translate-y-1/2 rounded-full bg-muted" />
+          <div className="relative h-6 pt-1">
+            <div className="pointer-events-none absolute inset-x-0 top-2 h-2 rounded-full bg-muted" />
             <div
-              className="pointer-events-none absolute inset-x-0 top-1/2 h-2.5 -translate-y-1/2 rounded-full bg-primary/30"
+              className="pointer-events-none absolute top-2 h-2 rounded-full bg-primary transition-all"
               style={{ left: `${minPercent}%`, right: `${100 - maxPercent}%` }}
             />
             <input
@@ -437,17 +437,21 @@ export function FilterPanel({
               step={1}
               value={minPercentValue}
               disabled={rangeDisabled}
-              onPointerDown={() => setActiveHandle("min")}
-              onPointerUp={() => setActiveHandle(null)}
+              onMouseDown={() => setActiveHandle("min")}
+              onTouchStart={() => setActiveHandle("min")}
               onChange={(event) => {
                 const nextPercent = clampPercent(Number(event.target.value));
                 setMinPercentValue(Math.min(nextPercent, maxPercentValue));
               }}
               onMouseUp={applyPrice}
               onTouchEnd={applyPrice}
+              onMouseLeave={applyPrice}
+              onBlur={applyPrice}
               aria-label="Minimum price"
-              style={{ zIndex: activeHandle === "min" || minOnTop ? 30 : 10 }}
-              className="range-slider range-slider-min absolute inset-0 h-5 w-full cursor-pointer bg-transparent"
+              className="range-slider range-slider-min absolute inset-0 h-6 w-full cursor-pointer appearance-none bg-transparent"
+              style={{ 
+                zIndex: activeHandle === "min" ? 40 : minOnTop ? 30 : 10
+              }}
             />
             <input
               type="range"
@@ -456,18 +460,27 @@ export function FilterPanel({
               step={1}
               value={maxPercentValue}
               disabled={rangeDisabled}
-              onPointerDown={() => setActiveHandle("max")}
-              onPointerUp={() => setActiveHandle(null)}
+              onMouseDown={() => setActiveHandle("max")}
+              onTouchStart={() => setActiveHandle("max")}
               onChange={(event) => {
                 const nextPercent = clampPercent(Number(event.target.value));
                 setMaxPercentValue(Math.max(nextPercent, minPercentValue));
               }}
               onMouseUp={applyPrice}
               onTouchEnd={applyPrice}
+              onMouseLeave={applyPrice}
+              onBlur={applyPrice}
               aria-label="Maximum price"
-              style={{ zIndex: activeHandle === "max" ? 30 : 20 }}
-              className="range-slider range-slider-max absolute inset-0 h-5 w-full cursor-pointer bg-transparent"
+              className="range-slider range-slider-max absolute inset-0 h-6 w-full cursor-pointer appearance-none bg-transparent"
+              style={{ 
+                zIndex: activeHandle === "max" ? 40 : 20
+              }}
             />
+          </div>
+          <div className="mt-4 flex items-center justify-between gap-2 text-xs text-foreground/60">
+            <span>{formatMoney(valueFromPercent(minPercentValue), currencyCode)}</span>
+            <span>—</span>
+            <span>{formatMoney(valueFromPercent(maxPercentValue), currencyCode)}</span>
           </div>
           <div className="flex items-center justify-between text-xs text-foreground/60">
             <span>Min {formatMoney(minRange, currencyCode)}</span>

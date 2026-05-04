@@ -1,11 +1,12 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { useWishlist } from "@/components/wishlist/useWishlist";
 import { useAuthContext } from "@/components/providers/AuthProvider";
-import { getLazyImageProps } from "@/lib/lazyImage";
+import type { WishlistItem } from "@/lib/types";
 
 export default function WishlistPage() {
   const { wishlistQuery, removeItem, moveToCart } = useWishlist();
@@ -39,13 +40,18 @@ export default function WishlistPage() {
         ) : (
           <div className="grid gap-6 md:grid-cols-2">
             {wishlistQuery.data?.data?.length ? (
-              wishlistQuery.data.data.map((item) => (
+              wishlistQuery.data.data.map((item: WishlistItem) => (
                 <Card key={item.id} variant="bordered" className="flex gap-4">
-                  <div className="h-24 w-24 overflow-hidden rounded-xl bg-muted">
+                  <div className="relative h-24 w-24 overflow-hidden rounded-xl bg-muted flex-shrink-0">
                     {item.product_image ? (
-                      <img
-                        {...getLazyImageProps(item.product_image, item.product_name)}
-                        className="h-full w-full object-cover"
+                      <Image
+                        src={item.product_image}
+                        alt={item.product_name}
+                        fill
+                        className="object-cover"
+                        sizes="96px"
+                        loading="lazy"
+                        decoding="async"
                       />
                     ) : null}
                   </div>

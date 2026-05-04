@@ -2,6 +2,7 @@
 
 import * as React from "react";
 import Link from "next/link";
+import Image from "next/image";
 import dynamic from "next/dynamic";
 import { usePathname } from "next/navigation";
 import {
@@ -216,11 +217,14 @@ export function HeaderClient() {
         >
           {mounted && hasToken ? (
             hasProfileAvatar ? (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img
+              <Image
                 src={profileQuery.data?.avatar || ""}
                 alt={profileQuery.data?.first_name || "Profile"}
+                width={28}
+                height={28}
                 className="h-full w-full object-cover"
+                loading="lazy"
+                decoding="async"
               />
             ) : (
               <span className="relative flex h-7 w-7 items-center justify-center overflow-hidden rounded-full bg-muted text-[10px] font-semibold uppercase text-foreground/70">
@@ -252,11 +256,14 @@ export function HeaderClient() {
               <div className="flex items-center gap-3 rounded-t-2xl bg-muted/40 px-4 py-3.5">
                 <div className="flex h-11 w-11 shrink-0 items-center justify-center overflow-hidden rounded-full bg-primary/15 text-sm font-bold text-primary ring-2 ring-primary/20">
                   {hasProfileAvatar ? (
-                    // eslint-disable-next-line @next/next/no-img-element
-                    <img
+                    <Image
                       src={profileQuery.data?.avatar || ""}
                       alt=""
+                      width={44}
+                      height={44}
                       className="h-full w-full object-cover"
+                      loading="lazy"
+                      decoding="async"
                     />
                   ) : (
                     <span className="uppercase">

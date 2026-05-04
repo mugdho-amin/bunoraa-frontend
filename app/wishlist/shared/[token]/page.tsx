@@ -1,8 +1,8 @@
 import { apiFetch, ApiError } from "@/lib/api";
 import type { WishlistItem } from "@/lib/types";
+import Image from "next/image";
 import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
-import { getLazyImageProps } from "@/lib/lazyImage";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
@@ -49,12 +49,16 @@ export default async function SharedWishlistPage({
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {items.map((item) => (
             <Card key={item.id} variant="bordered" className="flex flex-col gap-4">
-              <div className="aspect-[4/5] overflow-hidden rounded-xl bg-muted">
+              <div className="aspect-[4/5] overflow-hidden rounded-xl bg-muted relative">
                 {item.product_image ? (
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img
-                    {...getLazyImageProps(item.product_image, item.product_name)}
-                    className="h-full w-full object-cover"
+                  <Image
+                    src={item.product_image}
+                    alt={item.product_name}
+                    fill
+                    sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                    className="object-cover"
+                    loading="lazy"
+                    decoding="async"
                   />
                 ) : null}
               </div>

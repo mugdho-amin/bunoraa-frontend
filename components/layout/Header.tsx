@@ -4,7 +4,7 @@ import type { MenuPage } from "@/lib/types";
 import { HeaderClient } from "@/components/layout/HeaderClient";
 import { HeaderBrand } from "@/components/layout/HeaderBrand";
 import { SearchBar } from "@/components/search/SearchBar";
-import { MobileNav } from "@/components/layout/MobileNav";
+import { MobileNavWrapper } from "@/components/layout/MobileNavWrapper";
 import { MobileHeaderVisibility } from "@/components/layout/MobileHeaderVisibility";
 import { asArray } from "@/lib/array";
 import { buildCategoryPath } from "@/lib/categoryPaths";
@@ -58,7 +58,7 @@ export async function Header() {
       <header className="border-b border-border/80 bg-background/95 backdrop-blur-md supports-[backdrop-filter]:bg-background/88">
         <div className="mx-auto flex w-full max-w-7xl items-center justify-between gap-4 px-3 py-4 sm:px-5">
           <div className="flex min-w-0 items-center gap-6">
-            <MobileNav
+            <MobileNavWrapper
               categories={categories}
               menuPages={menuPages}
               hasBundles={hasBundles}

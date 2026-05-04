@@ -2,6 +2,7 @@
 
 import * as React from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { formatMoney } from "@/lib/money";
 import { apiFetch, ApiError } from "@/lib/api";
 import { getRecentlyViewed, setRecentlyViewed } from "@/lib/recentlyViewed";
@@ -99,7 +100,8 @@ export function RecentlyViewedSection({
     <div className="space-y-4">
       <div className="grid grid-flow-col auto-cols-[78%] gap-3 overflow-x-auto pb-1 snap-x snap-mandatory sm:grid-flow-row sm:auto-cols-auto sm:grid-cols-2 sm:overflow-visible sm:pb-0 lg:grid-cols-4">
         {visibleItems.map((item) => {
-          const aspectRatio = (item as any).aspect_ratio || (item as any).category?.aspect_ratio || "4/5";
+          const itemWithOptionalProps = item as typeof item & { aspect_ratio?: string | null; category?: { aspect_ratio?: string | null } };
+          const aspectRatio = itemWithOptionalProps.aspect_ratio || itemWithOptionalProps.category?.aspect_ratio || "4/5";
           let aspectRatioValue = 4 / 5; // default
           try {
             const [width, height] = aspectRatio.split('/').map(Number);
@@ -129,13 +131,14 @@ export function RecentlyViewedSection({
                   aria-label={`View ${item.name}`}
                 />
                 {item.primary_image ? (
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img
+                  <Image
                     src={item.primary_image}
                     alt={item.name}
+                    fill
+                    className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-[1.02]"
+                    sizes="(max-width: 640px) 50vw, 33vw"
                     loading="lazy"
                     decoding="async"
-                    className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-[1.02]"
                   />
                 ) : null}
               </div>

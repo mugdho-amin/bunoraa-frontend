@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { ChevronDown, ChevronRight, CircleMinus, Mail, MapPinHouse, PhoneCall } from "lucide-react";
 import { apiFetch } from "@/lib/api";
 import type {
@@ -158,7 +159,7 @@ const dedupeSocialLinks = (items: FooterSocialLink[]) => {
 function SocialIcon({ platform, iconUrl }: { platform: string; iconUrl?: string | null }) {
   const iconClass = "h-4 w-4 object-contain";
   if (iconUrl) {
-    return <img src={iconUrl} alt={`${platform} icon`} className={iconClass} />;
+    return <Image src={iconUrl} alt={`${platform} icon`} width={16} height={16} className={iconClass} loading="lazy" decoding="async" />;
   }
   switch (normalizeSocialPlatform(platform)) {
     case "facebook":

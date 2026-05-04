@@ -2,6 +2,7 @@
 
 import * as React from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { useQuery } from "@tanstack/react-query";
 import { apiFetch, ApiError } from "@/lib/api";
 import type { CartItem, ProductListItem } from "@/lib/types";
@@ -283,11 +284,16 @@ function CartItemRow({
       className="flex flex-col gap-4 p-3 sm:flex-row sm:items-center sm:justify-between sm:p-4"
     >
       <div className="flex items-start gap-3 sm:items-center sm:gap-4">
-        <div className="h-24 w-24 shrink-0 overflow-hidden rounded-xl bg-muted sm:h-28 sm:w-28">
+        <div className="relative h-24 w-24 shrink-0 overflow-hidden rounded-xl bg-muted sm:h-28 sm:w-28">
           {item.product_image ? (
-            <img
-              {...getLazyImageProps(item.product_image, item.product_name)}
-              className="h-full w-full object-cover"
+            <Image
+              src={item.product_image}
+              alt={item.product_name}
+              fill
+              className="object-cover"
+              sizes="(max-width: 640px) 96px, 112px"
+              loading="lazy"
+              decoding="async"
             />
           ) : null}
         </div>
@@ -1154,11 +1160,16 @@ export function CartPage() {
             <div className="mt-6 grid grid-flow-col auto-cols-[78%] gap-4 overflow-x-auto pb-2 snap-x snap-mandatory sm:grid-flow-row sm:auto-cols-auto sm:grid-cols-2 sm:overflow-visible sm:pb-0 lg:grid-cols-4">
               {relatedQuery.data.map((product) => (
                 <Card key={product.id} variant="bordered" className="snap-start flex flex-col gap-3">
-                  <div className="aspect-[4/5] overflow-hidden rounded-xl bg-muted">
+                  <div className="relative aspect-[4/5] overflow-hidden rounded-xl bg-muted">
                     {getProductImage(product) ? (
-                      <img
-                        {...getLazyImageProps(getProductImage(product) || "", product.name)}
-                        className="h-full w-full object-cover"
+                      <Image
+                        src={getProductImage(product) || ""}
+                        alt={product.name}
+                        fill
+                        className="object-cover"
+                        sizes="(max-width: 640px) 65vw, (max-width: 1024px) 50vw, 25vw"
+                        loading="lazy"
+                        decoding="async"
                       />
                     ) : null}
                   </div>

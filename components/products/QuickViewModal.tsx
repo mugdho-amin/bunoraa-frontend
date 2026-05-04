@@ -10,6 +10,7 @@ import { Card } from "@/components/ui/Card";
 import { cn } from "@/lib/utils";
 import { AddToCartButton } from "@/components/cart/AddToCartButton";
 import Link from "next/link";
+import Image from "next/image";
 import { RatingStars } from "@/components/products/RatingStars";
 import { ProductBadges } from "@/components/products/ProductBadges";
 import { ProductPrice } from "@/components/products/ProductPrice";

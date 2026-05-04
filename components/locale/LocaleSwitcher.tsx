@@ -32,23 +32,47 @@ type TimezoneOption = {
 };
 
 async function fetchLanguages() {
-  const response = await apiFetch<LanguageOption[]>("/i18n/languages/");
-  return response.data;
+  const response = await apiFetch<LanguageOption[] | { data?: LanguageOption[] }>(
+    "/i18n/languages/"
+  );
+  if (Array.isArray(response.data)) return response.data;
+  if (response.data && typeof response.data === "object" && "data" in response.data) {
+    return (response.data as { data?: LanguageOption[] }).data || [];
+  }
+  return [];
 }
 
 async function fetchCurrencies() {
-  const response = await apiFetch<CurrencyOption[]>("/i18n/currencies/");
-  return response.data;
+  const response = await apiFetch<CurrencyOption[] | { data?: CurrencyOption[] }>(
+    "/i18n/currencies/"
+  );
+  if (Array.isArray(response.data)) return response.data;
+  if (response.data && typeof response.data === "object" && "data" in response.data) {
+    return (response.data as { data?: CurrencyOption[] }).data || [];
+  }
+  return [];
 }
 
 async function fetchCountries() {
-  const response = await apiFetch<CountryOption[]>("/i18n/countries/");
-  return response.data;
+  const response = await apiFetch<CountryOption[] | { data?: CountryOption[] }>(
+    "/i18n/countries/"
+  );
+  if (Array.isArray(response.data)) return response.data;
+  if (response.data && typeof response.data === "object" && "data" in response.data) {
+    return (response.data as { data?: CountryOption[] }).data || [];
+  }
+  return [];
 }
 
 async function fetchTimezones() {
-  const response = await apiFetch<TimezoneOption[]>("/i18n/timezones/common/");
-  return response.data;
+  const response = await apiFetch<TimezoneOption[] | { data?: TimezoneOption[] }>(
+    "/i18n/timezones/common/"
+  );
+  if (Array.isArray(response.data)) return response.data;
+  if (response.data && typeof response.data === "object" && "data" in response.data) {
+    return (response.data as { data?: TimezoneOption[] }).data || [];
+  }
+  return [];
 }
 
 export function LocaleSwitcher({

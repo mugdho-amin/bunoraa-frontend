@@ -104,7 +104,8 @@ async function getCategoryProducts(slug: string, searchParams: CategorySearchPar
     `/catalog/categories/${slug}/products/`,
     {
       params,
-      headers: await getServerLocaleHeaders()
+      headers: await getServerLocaleHeaders(),
+      cache: "no-store"
     }
   );
   return response;
@@ -318,7 +319,7 @@ export async function renderCategoryPageForPath(
                 </span>
                 {pagination?.previous ? (
                   <Button asChild variant="ghost" size="sm" className="order-2 w-full sm:order-none sm:w-auto">
-                    <Link href={pageLink(page - 1)}>Previous</Link>
+                    <Link href={pageLink(page - 1)} prefetch>Previous</Link>
                   </Button>
                 ) : (
                   <span className="order-2 rounded-xl px-4 py-2 text-center text-sm text-foreground/40 sm:order-none">
@@ -327,7 +328,7 @@ export async function renderCategoryPageForPath(
                 )}
                 {pagination?.next ? (
                   <Button asChild variant="ghost" size="sm" className="order-3 w-full sm:order-none sm:w-auto">
-                    <Link href={pageLink(page + 1)}>Next</Link>
+                    <Link href={pageLink(page + 1)} prefetch>Next</Link>
                   </Button>
                 ) : (
                   <span className="order-3 rounded-xl px-4 py-2 text-center text-sm text-foreground/40 sm:order-none">

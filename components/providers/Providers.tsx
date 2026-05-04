@@ -8,6 +8,7 @@ import { AuthProvider } from "@/components/providers/AuthProvider";
 import { LocaleProvider } from "@/components/providers/LocaleProvider";
 import { WebSocketProvider } from "@/components/providers/WebSocketProvider";
 import { AccessibilityProvider } from "@/components/providers/AccessibilityProvider";
+import { SiteSettingsProvider } from "@/components/providers/SiteSettingsProvider";
 import { ToastProvider } from "@/components/ui/ToastProvider";
 import { LanguageSynchronizer } from "@/components/providers/LanguageSynchronizer";
 import { initPerformanceMonitoring } from "@/lib/performance";
@@ -61,23 +62,25 @@ function ServiceWorkerRegistration() {
 
 export function Providers({ children }: { children: React.ReactNode }) {
   return (
-    <ThemeProvider>
-      <ToastProvider>
-        <QueryProvider>
-          <AuthProvider>
-            <AccessibilityProvider>
-              <LocaleProvider>
-                <LanguageSynchronizer />
-                <WebSocketProvider>
-                  <PerformanceMonitoring />
-                  <ServiceWorkerRegistration />
-                  {children}
-                </WebSocketProvider>
-              </LocaleProvider>
-            </AccessibilityProvider>
-          </AuthProvider>
-        </QueryProvider>
-      </ToastProvider>
-    </ThemeProvider>
+    <SiteSettingsProvider>
+      <ThemeProvider>
+        <ToastProvider>
+          <QueryProvider>
+            <AuthProvider>
+              <AccessibilityProvider>
+                <LocaleProvider>
+                  <LanguageSynchronizer />
+                  <WebSocketProvider>
+                    <PerformanceMonitoring />
+                    <ServiceWorkerRegistration />
+                    {children}
+                  </WebSocketProvider>
+                </LocaleProvider>
+              </AccessibilityProvider>
+            </AuthProvider>
+          </QueryProvider>
+        </ToastProvider>
+      </ThemeProvider>
+    </SiteSettingsProvider>
   );
 }

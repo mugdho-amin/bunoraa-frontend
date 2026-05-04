@@ -2,6 +2,7 @@
 
 import * as React from "react";
 import Link from "next/link";
+import Image from "next/image";
 
 const SCROLL_SWAP_OFFSET = 24;
 const DESKTOP_BREAKPOINT_QUERY = "(min-width: 1024px)";
@@ -80,12 +81,15 @@ export function HeaderBrand({
       className="inline-flex h-10 items-center text-xl font-bold sm:text-2xl lg:text-3xl"
     >
       {showFavicon ? (
-        // eslint-disable-next-line @next/next/no-img-element
-        <img
+        <Image
           src={faviconUrl}
           alt={brandName}
+          width={36}
+          height={36}
           className="h-8 w-8 rounded-sm object-contain lg:h-9 lg:w-9"
           onError={handleFaviconError}
+          loading="lazy"
+          decoding="async"
         />
       ) : (
         <span>{brandName}</span>

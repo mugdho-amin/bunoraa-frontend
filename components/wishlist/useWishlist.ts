@@ -2,13 +2,47 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { apiFetch, ApiError } from "@/lib/api";
 import type { WishlistItem } from "@/lib/types";
 
+type WishlistResponse = {
+  data?: WishlistItem[];
+  results?: WishlistItem[];
+  items?: WishlistItem[];
+  meta?: {
+    pagination?: {
+      count?: number;
+      [key: string]: unknown;
+    };
+    [key: string]: unknown;
+  };
+};
+
 const wishlistKey = ["wishlist"] as const;
 
 async function fetchWishlist() {
-  const response = await apiFetch<WishlistItem[]>("/commerce/wishlist/", {
-    allowGuest: true,
-  });
-  return response;
+  const response = await apiFetch<WishlistItem[] | WishlistResponse>(
+    "/commerce/wishlist/",
+    {
+      allowGuest: true,
+    }
+  );
+  
+  // Normalize response to always have data and meta structure
+  if (Array.isArray(response.data)) {
+    return {
+      data: response.data,
+      meta: { pagination: { count: response.data.length } },
+    };
+  } else if (response.data && typeof response.data === "object") {
+    const data = response.data as WishlistResponse;
+    return {
+      data: data.data || data.results || data.items || [],
+      meta: data.meta || { pagination: { count: (data.data || data.results || data.items || []).length } },
+    };
+  }
+
+  return {
+    data: [],
+    meta: { pagination: { count: 0 } },
+  };
 }
 
 export function useWishlist(options?: { enabled?: boolean }) {

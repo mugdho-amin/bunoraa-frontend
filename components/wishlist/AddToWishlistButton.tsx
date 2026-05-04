@@ -5,6 +5,8 @@ import { Button, type ButtonProps } from "@/components/ui/Button";
 import { useToast } from "@/components/ui/ToastProvider";
 import { Heart } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { asArray } from "@/lib/array";
+import type { WishlistItem } from "@/lib/types";
 
 type AddToWishlistButtonProps = {
   productId: string;
@@ -26,7 +28,7 @@ export function AddToWishlistButton({
   const { wishlistQuery, addItem, removeItem } = useWishlist();
   const { push } = useToast();
 
-  const wishlistItems = wishlistQuery.data?.data ?? [];
+  const wishlistItems = asArray<WishlistItem>(wishlistQuery.data?.data);
   const existingItem = wishlistItems.find((item) => item.product_id === productId);
   const isInWishlist = Boolean(existingItem);
   const isBusy = addItem.isPending || removeItem.isPending;

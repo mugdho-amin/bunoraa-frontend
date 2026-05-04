@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import Image from "next/image";
 import { notFound } from "next/navigation";
 import { apiFetch, ApiError } from "@/lib/api";
 import type { Collection } from "@/lib/types";
@@ -8,7 +9,6 @@ import { Button } from "@/components/ui/Button";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { buildItemList, buildPageMetadata } from "@/lib/seo";
 import { asArray } from "@/lib/array";
-import { getLazyImageProps } from "@/lib/lazyImage";
 
 export const metadata: Metadata = buildPageMetadata({
   title: "Curated Collections",
@@ -58,12 +58,16 @@ export default async function CollectionsPage() {
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
         {collections.map((collection) => (
           <Card key={collection.id} variant="bordered" className="flex flex-col gap-4">
-            <div className="aspect-[4/3] overflow-hidden rounded-xl bg-muted">
+            <div className="relative aspect-[4/3] overflow-hidden rounded-xl bg-muted">
               {collection.image ? (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img
-                  {...getLazyImageProps(collection.image, collection.name)}
-                  className="h-full w-full object-cover"
+                <Image
+                  src={collection.image}
+                  alt={collection.name}
+                  fill
+                  className="object-cover"
+                  sizes="(max-width: 768px) 100vw, 33vw"
+                  loading="lazy"
+                  decoding="async"
                 />
               ) : null}
             </div>

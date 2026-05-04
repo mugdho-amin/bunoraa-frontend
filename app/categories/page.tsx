@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import Image from "next/image";
 import { apiFetch } from "@/lib/api";
 import { Card } from "@/components/ui/Card";
 import { JsonLd } from "@/components/seo/JsonLd";
@@ -62,12 +63,16 @@ export default async function CategoriesPage() {
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {categories.map((category) => (
             <Card key={category.id} variant="bordered" className="flex flex-col gap-4">
-              <div className="aspect-[4/3] overflow-hidden rounded-xl bg-muted">
+              <div className="relative aspect-[4/3] overflow-hidden rounded-xl bg-muted">
                 {category.image ? (
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img
-                    {...getLazyImageProps(category.image, category.name)}
-                    className="h-full w-full object-cover"
+                  <Image
+                    src={category.image}
+                    alt={category.name}
+                    fill
+                    className="object-cover"
+                    sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                    loading="lazy"
+                    decoding="async"
                   />
                 ) : null}
               </div>

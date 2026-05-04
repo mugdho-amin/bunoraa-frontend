@@ -10,7 +10,7 @@ const CONFIG = {
   // Only report in production unless debug mode is enabled
   debug: process.env.NODE_ENV === "development",
   // Report URL - can be configured to send to backend or analytics
-  reportEndpoint: "/api/analytics/performance",
+  reportEndpoint: "/api/v1/analytics/performance/",
   // Sampling rate (1.0 = 100%)
   sampleRate: 0.1,
   // Metrics threshold for warnings (in ms)
@@ -173,7 +173,7 @@ function trackError(error: PerformanceError) {
   // Send to analytics
   if (navigator.sendBeacon) {
     const blob = new Blob([JSON.stringify(error)], { type: 'application/json' });
-    navigator.sendBeacon("/api/analytics/error", blob);
+    navigator.sendBeacon("/api/v1/analytics/error/", blob);
   }
 }
 
