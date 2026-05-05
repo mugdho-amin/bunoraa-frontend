@@ -3,6 +3,7 @@
 import * as React from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
+import { ChevronDown } from "lucide-react";
 import type { ProductFilterResponse } from "@/lib/types";
 import { apiFetch } from "@/lib/api";
 import { Button } from "@/components/ui/Button";
@@ -36,10 +37,18 @@ export type CategoryFilterItem = {
 };
 
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
+  const [isOpen, setIsOpen] = React.useState(true);
   return (
     <section className="space-y-3 rounded-xl border border-border/70 bg-card/40 p-3 sm:p-4">
-      <h3 className="text-sm font-semibold sm:text-base">{title}</h3>
-      <div className="space-y-2">{children}</div>
+      <button 
+        type="button"
+        onClick={() => setIsOpen(!isOpen)}
+        className="flex w-full items-center justify-between font-semibold"
+      >
+        <span className="text-sm sm:text-base">{title}</span>
+        <ChevronDown className={cn("h-4 w-4 transition-transform", !isOpen && "-rotate-90")} />
+      </button>
+      {isOpen && <div className="space-y-2">{children}</div>}
     </section>
   );
 }
@@ -105,73 +114,57 @@ export function FilterPanel({
   const current = parseFilters(searchParams);
   const appliedFilters = getAppliedFilters(current);
   const hasAppliedFilters = appliedFilters.length > 0;
-  const minRange = Math.max(0, parseNumber(activeFilters?.price_range?.min, 0));
-  const maxRange = Math.max(
-    minRange,
-    parseNumber(activeFilters?.price_range?.max, minRange)
-  );
-  const sliderMax = maxRange <= minRange ? minRange + 1 : maxRange;
+  const minRange = parseNumber(activeFilters?.price_range?.min, 0);
+  const maxRange = parseNumber(activeFilters?.price_range?.max, minRange + 100);
+  const sliderMax = Math.max(maxRange, minRange + 1);
   const currencyCode = activeFilters?.price_range?.currency || "USD";
-  const rangeSpan = Math.max(0, maxRange - minRange);
+  const rangeSpan = Math.max(1, sliderMax - minRange);
   const clampValue = (value: number, min: number, max: number) =>
     Math.min(Math.max(value, min), max);
   const clampPercent = (value: number) => Math.min(100, Math.max(0, value));
   const percentFromValue = React.useCallback(
     (value: number) => {
-      if (rangeSpan <= 0) return 0;
       return ((value - minRange) / rangeSpan) * 100;
     },
     [minRange, rangeSpan]
   );
   const valueFromPercent = (percent: number) => {
-    if (rangeSpan <= 0) return minRange;
     return minRange + (rangeSpan * percent) / 100;
   };
   const [minPercentValue, setMinPercentValue] = React.useState(0);
   const [maxPercentValue, setMaxPercentValue] = React.useState(100);
 
   React.useEffect(() => {
-    if (rangeSpan <= 0) {
-      setMinPercentValue(0);
-      setMaxPercentValue(100);
-      return;
-    }
-    const nextMin = clampValue(parseNumber(current.priceMin, minRange), minRange, maxRange);
-    const nextMax = clampValue(parseNumber(current.priceMax, maxRange), minRange, maxRange);
+    const nextMin = clampValue(parseNumber(current.priceMin, minRange), minRange, sliderMax);
+    const nextMax = clampValue(parseNumber(current.priceMax, sliderMax), minRange, sliderMax);
     const safeMin = Math.min(nextMin, nextMax);
     const safeMax = Math.max(nextMin, nextMax);
     setMinPercentValue(clampPercent(Math.round(percentFromValue(safeMin))));
     setMaxPercentValue(clampPercent(Math.round(percentFromValue(safeMax))));
-  }, [current.priceMin, current.priceMax, minRange, maxRange, rangeSpan, percentFromValue]);
+  }, [current.priceMin, current.priceMax, minRange, sliderMax, rangeSpan, percentFromValue]);
 
   const applyPrice = () => {
-    const safeMin =
-      rangeSpan <= 0
-        ? minRange
-        : clampValue(
-            Number(
-              valueFromPercent(Math.min(minPercentValue, maxPercentValue)).toFixed(2)
-            ),
-            minRange,
-            sliderMax
-          );
-    const safeMax =
-      rangeSpan <= 0
-        ? maxRange
-        : clampValue(
-            Number(
-              valueFromPercent(Math.max(minPercentValue, maxPercentValue)).toFixed(2)
-            ),
-            minRange,
-            sliderMax
-          );
+    const safeMin = clampValue(
+      Number(
+        valueFromPercent(Math.min(minPercentValue, maxPercentValue)).toFixed(2)
+      ),
+      minRange,
+      sliderMax
+    );
+    const safeMax = clampValue(
+      Number(
+        valueFromPercent(Math.max(minPercentValue, maxPercentValue)).toFixed(2)
+      ),
+      minRange,
+      sliderMax
+    );
     let params = updateParamValue(searchParams, "price_min", String(safeMin));
     params = updateParamValue(params, "price_max", String(safeMax));
     router.push(`${pathname}?${params.toString()}`);
   };
   const minPercent = minPercentValue;
   const maxPercent = maxPercentValue;
-  const rangeDisabled = !Number.isFinite(minRange) || !Number.isFinite(maxRange);
+  const rangeDisabled = !Number.isFinite(minRange) || !Number.isFinite(sliderMax);
   const minOnTop =
     minPercentValue > maxPercentValue - 5;
 

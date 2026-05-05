@@ -39,15 +39,15 @@ export const metadata: Metadata = buildPageMetadata({
 });
 
 type FeaturedCategory = {
-  id: string;
-  name: string;
-  slug: string;
-  image?: string | null;
-  icon?: string | null;
-  product_count?: number | null;
-  is_featured?: boolean | null;
+id: string;
+name: string;
+slug: string;
+slug_path?: string | null;
+image?: string | null;
+icon?: string | null;
+product_count?: number | null;
+is_featured?: boolean | null;
 };
-
 type Spotlight = {
   id: string;
   name?: string;
@@ -335,7 +335,7 @@ export default async function Home() {
               const href = spotlightProduct
                 ? buildProductPath(spotlightProduct)
                 : spotlightCategory
-                ? buildCategoryPath(spotlightCategory.slug)
+                ? buildCategoryPath(spotlightCategory.slug_path || spotlightCategory.slug)
                 : "/products/";
               const isProductSpotlight = Boolean(spotlightProduct);
 
@@ -385,13 +385,13 @@ export default async function Home() {
               {band.category.name}
             </h2>
             <Link
-              href={buildCategoryPath(band.category.slug)}
+              href={buildCategoryPath(band.category.slug_path || band.category.slug)}
               prefetch={false}
               className="text-xs font-semibold uppercase tracking-[0.2em] text-foreground/60 hover:text-foreground"
+              onClick={() => console.log("Category URL:", band.category.slug_path, band.category.slug)}
             >
               View All
-            </Link>
-          </div>
+            </Link>          </div>
           <div className="mt-4">
             <ProductGrid
               products={band.products}
@@ -429,12 +429,7 @@ export default async function Home() {
       </section>
 
       <section className={`${sectionWrapperClass} py-8`}>
-        <h2 className="text-sm font-semibold uppercase tracking-[0.2em] text-foreground/70">
-          Recently viewed
-        </h2>
-        <div className="mt-4">
-          <RecentlyViewedSection />
-        </div>
+        <RecentlyViewedSection />
       </section>
 
       {showByCategories.length ? (
@@ -446,7 +441,7 @@ export default async function Home() {
             {showByCategories.map((category) => (
               <Link
                 key={category.id}
-                href={buildCategoryPath(category.slug)}
+                href={buildCategoryPath(category.slug_path || category.slug)}
                 prefetch={false}
                 className="group"
               >

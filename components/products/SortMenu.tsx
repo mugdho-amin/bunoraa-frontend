@@ -41,24 +41,20 @@ export function SortMenu({
       : "h-10 min-h-10 w-full rounded-xl border border-border bg-card px-3 text-sm text-foreground sm:w-[12.5rem]";
 
   return (
-    <label className={cn("flex w-full items-center gap-2 text-sm text-foreground/70 sm:w-auto", className)}>
-      <span className="whitespace-nowrap text-xs font-medium uppercase tracking-[0.12em] text-foreground/60 sm:text-sm sm:normal-case sm:tracking-normal">
-        Sort
-      </span>
-      <select
-        value={currentOrdering}
-        onChange={(event) => {
-          const params = updateParamValue(searchParams, "ordering", event.target.value);
-          router.push(`${pathname}?${params.toString()}`);
-        }}
-        className={selectClass}
-      >
-        {options.map((option) => (
-          <option key={option.value || "default"} value={option.value}>
-            {option.label}
-          </option>
-        ))}
-      </select>
-    </label>
+    <select
+      value={currentOrdering}
+      onChange={(event) => {
+        const params = updateParamValue(searchParams, "ordering", event.target.value);
+        router.push(`${pathname}?${params.toString()}`);
+      }}
+      className={cn(selectClass, className)}
+      aria-label="Sort products"
+    >
+      {options.map((option) => (
+        <option key={option.value || "default"} value={option.value}>
+          {option.label}
+        </option>
+      ))}
+    </select>
   );
 }

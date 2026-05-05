@@ -116,31 +116,21 @@ export function useCart(options?: UseCartOptions) {
   const cartQuery = useQuery({
     queryKey: cartKey,
     queryFn: fetchCart,
-    enabled: includeCart,
-    staleTime: 2 * 60 * 1000,
-    gcTime: 10 * 60 * 1000,
-    refetchOnWindowFocus: false,
-    refetchOnReconnect: false,
-    refetchOnMount: false,
-    retry: (failureCount, error) => {
-      if (error instanceof ApiError && error.status === 429) return false;
-      return failureCount < 2;
-    },
+    enabled: includeCart && typeof window !== "undefined", // Only fetch on client
+    staleTime: 0, // Always fetch fresh to guarantee accuracy
+    gcTime: 0, // Don't persist across navigation
+    refetchOnWindowFocus: true,
+    retry: 1,
   });
 
   const cartSummaryQuery = useQuery({
     queryKey: cartSummaryKey,
     queryFn: fetchCartSummary,
-    enabled: includeSummary,
-    staleTime: 2 * 60 * 1000,
-    gcTime: 10 * 60 * 1000,
-    refetchOnWindowFocus: false,
-    refetchOnReconnect: false,
-    refetchOnMount: false,
-    retry: (failureCount, error) => {
-      if (error instanceof ApiError && error.status === 429) return false;
-      return failureCount < 2;
-    },
+    enabled: includeSummary && typeof window !== "undefined", // Only fetch on client
+    staleTime: 0, // Always fetch fresh
+    gcTime: 0,
+    refetchOnWindowFocus: true,
+    retry: 1,
   });
 
   const addItem = useMutation({
@@ -151,7 +141,24 @@ export function useCart(options?: UseCartOptions) {
         allowGuest: true,
       });
     },
-    onSuccess: () => {
+    onMutate: async ({ quantity = 1 }) => {
+      await queryClient.cancelQueries({ queryKey: cartKey });
+      const previousCart = queryClient.getQueryData<Cart>(cartKey);
+      
+      if (previousCart) {
+        queryClient.setQueryData<Cart>(cartKey, {
+          ...previousCart,
+          item_count: (previousCart.item_count || 0) + quantity,
+        });
+      }
+      return { previousCart };
+    },
+    onError: (_err, _vars, context) => {
+      if (context?.previousCart) {
+        queryClient.setQueryData(cartKey, context.previousCart);
+      }
+    },
+    onSettled: () => {
       queryClient.invalidateQueries({ queryKey: cartKey });
       queryClient.invalidateQueries({ queryKey: cartSummaryKey });
     },
@@ -241,7 +248,41 @@ export function useCart(options?: UseCartOptions) {
         allowGuest: true,
       });
     },
-    onSuccess: () => {
+    onMutate: async (itemId) => {
+      await queryClient.cancelQueries({ queryKey: cartKey });
+      const previous = queryClient.getQueryData<Cart>(cartKey);
+      if (!previous) return { previous };
+
+      const nextItems = previous.items.filter((item) => item.id !== itemId);
+      const nextItemCount = nextItems.reduce(
+        (sum, item) => sum + (Number.isFinite(item.quantity) ? item.quantity : 0),
+        0
+      );
+
+      const lineTotals = nextItems.map((item) => parseMoney(item.total));
+      const canSum = lineTotals.every((value) => value !== null);
+      const subtotal = canSum
+        ? formatMoney(
+            lineTotals.reduce((sum, value) => sum + (value ?? 0), 0)
+          )
+        : previous.subtotal;
+      
+      queryClient.setQueryData<Cart>(cartKey, {
+        ...previous,
+        items: nextItems,
+        item_count: nextItemCount,
+        subtotal,
+        total: subtotal,
+      });
+
+      return { previous };
+    },
+    onError: (_err, _vars, context) => {
+      if (context?.previous) {
+        queryClient.setQueryData(cartKey, context.previous);
+      }
+    },
+    onSettled: () => {
       queryClient.invalidateQueries({ queryKey: cartKey });
       queryClient.invalidateQueries({ queryKey: cartSummaryKey });
     },

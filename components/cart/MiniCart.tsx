@@ -1,75 +1,19 @@
 "use client";
 
+import * as React from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/Button";
-import { Card } from "@/components/ui/Card";
 import { useCart } from "@/components/cart/useCart";
 import { useUiMessages } from "@/components/i18n/useUiMessages";
 import { cn } from "@/lib/utils";
+import { apiFetch } from "@/lib/api";
 
-function formatMoney(amount: string | number, currency: string) {
-  if (typeof amount === "string") {
-    const trimmed = amount.trim();
-    if (!trimmed) return "";
-    if (/[^0-9.,-]/.test(trimmed)) {
-      return trimmed;
-    }
-    const normalized = trimmed.replace(/,/g, "");
-    const parsed = Number(normalized);
-    if (Number.isFinite(parsed)) {
-      amount = parsed;
-    }
-  }
-  const numeric = Number(amount);
-  if (!Number.isFinite(numeric)) {
-    return String(amount);
-  }
-  try {
-    return new Intl.NumberFormat(undefined, {
-      style: "currency",
-      currency,
-      maximumFractionDigits: 2,
-    }).format(numeric);
-  } catch {
-    return `${numeric.toFixed(2)} ${currency}`;
-  }
-}
-
-const localizedDigitMap: Record<string, string> = {
-  "٠": "0",
-  "١": "1",
-  "٢": "2",
-  "٣": "3",
-  "٤": "4",
-  "٥": "5",
-  "٦": "6",
-  "٧": "7",
-  "٨": "8",
-  "٩": "9",
-  "۰": "0",
-  "۱": "1",
-  "۲": "2",
-  "۳": "3",
-  "۴": "4",
-  "۵": "5",
-  "۶": "6",
-  "۷": "7",
-  "۸": "8",
-  "۹": "9",
-  "০": "0",
-  "১": "1",
-  "২": "2",
-  "৩": "3",
-  "৪": "4",
-  "৫": "5",
-  "৬": "6",
-  "৭": "7",
-  "৮": "8",
-  "৯": "9",
-};
-
-function normalizeLocalizedDigits(value: string) {
-  return value.replace(/[٠-٩۰-۹০-৯]/g, (digit) => localizedDigitMap[digit] || digit);
+function formatMoney(amount: string | number, config: { symbol: string, position: string }) {
+  const numeric = typeof amount === "string" ? parseMoney(amount) ?? 0 : amount;
+  const formatted = numeric.toFixed(2);
+  return config.position === 'before' 
+    ? `${config.symbol}${formatted}` 
+    : `${formatted} ${config.symbol}`;
 }
 
 function parseMoney(value: string | number | null | undefined) {
@@ -78,51 +22,13 @@ function parseMoney(value: string | number | null | undefined) {
   const trimmed = value.trim();
   if (!trimmed) return null;
 
-  let normalized = normalizeLocalizedDigits(trimmed)
+  const normalized = trimmed
     .replace(/[\u00A0\u202F\s]/g, "")
     .replace(/[−–—]/g, "-")
     .replace(/[^\d,.-]/g, "");
 
-  if (!normalized || normalized === "-" || normalized === "." || normalized === ",") {
-    return null;
-  }
-
-  const hasDot = normalized.includes(".");
-  const hasComma = normalized.includes(",");
-  if (hasDot && hasComma) {
-    if (normalized.lastIndexOf(",") > normalized.lastIndexOf(".")) {
-      normalized = normalized.replace(/\./g, "").replace(/,/g, ".");
-    } else {
-      normalized = normalized.replace(/,/g, "");
-    }
-  } else if (hasComma) {
-    const commaCount = (normalized.match(/,/g) || []).length;
-    if (commaCount === 1) {
-      const [intPart, fractionPart = ""] = normalized.split(",");
-      if (fractionPart.length > 0 && fractionPart.length <= 2) {
-        normalized = `${intPart}.${fractionPart}`;
-      } else {
-        normalized = `${intPart}${fractionPart}`;
-      }
-    } else {
-      normalized = normalized.replace(/,/g, "");
-    }
-  } else if (hasDot) {
-    const dotCount = (normalized.match(/\./g) || []).length;
-    if (dotCount > 1) {
-      const lastDotIndex = normalized.lastIndexOf(".");
-      normalized =
-        normalized.slice(0, lastDotIndex).replace(/\./g, "") +
-        normalized.slice(lastDotIndex);
-    }
-  }
-
   const parsed = Number(normalized);
   return Number.isFinite(parsed) ? parsed : null;
-}
-
-function isApproximatelyEqual(a: number, b: number, tolerance = 0.01) {
-  return Math.abs(a - b) <= tolerance;
 }
 
 export function MiniCart({
@@ -137,231 +43,134 @@ export function MiniCart({
   const { cartQuery, cartSummaryQuery, removeItem, updateItem } = useCart();
   const { t } = useUiMessages("cart");
   const handleClose = () => onClose?.();
+  const [currencyConfig, setCurrencyConfig] = React.useState({ symbol: 'BDT', position: 'after' });
+
+  React.useEffect(() => {
+    apiFetch<{symbol: string, position: string}>("/commerce/cart/currency-config/")
+      .then((res) => {
+          if (res.data) setCurrencyConfig(res.data);
+      })
+      .catch(() => {});
+  }, []);
 
   if (cartQuery.isLoading) {
-    return null;
+    return <div className="p-6 text-sm text-foreground/60">Loading your bag...</div>;
   }
 
   if (cartQuery.isError || !cartQuery.data) {
-    return null;
+    return <div className="p-6 text-sm text-red-500">Error loading cart. Please try again.</div>;
   }
 
   const cart = cartQuery.data;
-  const summary = cartSummaryQuery.data;
-  const currency = summary?.currency_code || cart.currency || "";
-  const derivedSubtotal = cart.items.reduce((sum, item) => {
-    const lineTotal = parseMoney(item.total);
-    if (lineTotal !== null) return sum + lineTotal;
+  const currency = cart.currency || "";
+
+  // Derive subtotal locally from cart items for instant updates
+  const subtotalValue = cart.items.reduce((sum, item) => {
     const unit = parseMoney(item.unit_price) ?? 0;
     const qty = Number.isFinite(item.quantity) ? item.quantity : 0;
-    return sum + unit * qty;
+    return sum + (unit * qty);
   }, 0);
-  const apiSubtotal = parseMoney(summary?.subtotal ?? cart.subtotal);
-  const preferDerivedSubtotal = derivedSubtotal > 0 && (apiSubtotal === null || apiSubtotal === 0);
-  const subtotalValue = preferDerivedSubtotal ? derivedSubtotal : apiSubtotal ?? derivedSubtotal ?? 0;
-  const formattedSubtotalValue = parseMoney(summary?.formatted_subtotal);
-  const subtotalLabel =
-    summary?.formatted_subtotal &&
-    !preferDerivedSubtotal &&
-    formattedSubtotalValue !== null &&
-    isApproximatelyEqual(formattedSubtotalValue, subtotalValue)
-      ? summary.formatted_subtotal
-      : formatMoney(subtotalValue, currency);
+  
+  const subtotalLabel = formatMoney(subtotalValue, currencyConfig);
 
+  // Use summary only for adjustments (discount, tax, etc.)
+  const summary = cartSummaryQuery.data;
   const discount = parseMoney(summary?.discount_amount ?? cart.discount_amount) ?? 0;
   const shipping = parseMoney(summary?.shipping_cost) ?? 0;
   const tax = parseMoney(summary?.tax_amount) ?? 0;
-  const giftWrap =
-    parseMoney(summary?.gift_wrap_amount ?? summary?.gift_wrap_cost) ?? 0;
+  const giftWrap = parseMoney(summary?.gift_wrap_amount ?? summary?.gift_wrap_cost) ?? 0;
   const paymentFee = parseMoney(summary?.payment_fee_amount) ?? 0;
 
-  const totalCandidate = parseMoney(summary?.total ?? cart.total);
-  let computedTotal = subtotalValue - discount + shipping + tax + giftWrap + paymentFee;
-  if (!Number.isFinite(computedTotal)) {
-    computedTotal = subtotalValue;
-  }
-  computedTotal = Math.max(0, computedTotal);
-  const totalValue =
-    totalCandidate !== null && totalCandidate > 0
-      ? totalCandidate
-      : computedTotal > 0
-      ? computedTotal
-      : subtotalValue;
-
-  const formattedTotalValue = parseMoney(summary?.formatted_total);
-  const totalLabel =
-    summary?.formatted_total &&
-    formattedTotalValue !== null &&
-    isApproximatelyEqual(formattedTotalValue, totalValue)
-      ? summary.formatted_total
-      : formatMoney(totalValue, currency);
-
-  const hasAdjustments =
-    summary?.shipping_cost !== undefined ||
-    summary?.tax_amount !== undefined ||
-    summary?.discount_amount !== undefined ||
-    summary?.gift_wrap_amount !== undefined ||
-    summary?.gift_wrap_cost !== undefined ||
-    summary?.payment_fee_amount !== undefined;
-  const showEstimatedTotal =
-    Boolean(totalLabel) &&
-    (totalValue !== subtotalValue || hasAdjustments);
-  const isMutating = updateItem.isPending || removeItem.isPending;
+  const totalValue = Math.max(0, subtotalValue - discount + shipping + tax + giftWrap + paymentFee);
+  const totalLabel = formatMoney(totalValue, currencyConfig);
 
   if (cart.items.length === 0) {
     return (
-      <Card variant="bordered" className={cn("flex h-full min-h-0 flex-col gap-4", className)}>
-        <div className="flex items-center justify-between">
-          <h3 className="text-lg font-semibold">{t("bag_title", "Your bag")}</h3>
-          {onClose ? (
-            <button
-              type="button"
-              className="text-sm text-foreground/60 hover:text-foreground"
-              onClick={onClose}
-            >
-              {t("close", "Close")}
-            </button>
-          ) : null}
-        </div>
-        <div className="rounded-xl border border-dashed border-border bg-card/40 px-4 py-7 text-center">
-          <p className="text-sm font-semibold text-foreground">
-            {t("your_bag_empty", "Your bag is empty.")}
-          </p>
-          <p className="mt-1 text-xs text-foreground/60">
-            {t("add_items_to_see_here", "Add items to see them here.")}
-          </p>
-        </div>
-        <Button asChild variant="secondary">
-          <Link href="/products/" onClick={handleClose}>
-            {t("continue_shopping", "Continue shopping")}
-          </Link>
-        </Button>
-      </Card>
+      <div className={cn("flex items-center justify-between p-3", className)}>
+        <p className="text-sm font-medium text-foreground">
+          {t("empty_bag_text", "You have no item in your bag.")}
+        </p>
+        {onClose ? (
+          <button
+            type="button"
+            className="text-foreground/60 hover:text-foreground"
+            onClick={onClose}
+            aria-label="Close"
+          >
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+          </button>
+        ) : null}
+      </div>
     );
   }
 
   return (
-    <Card variant="bordered" className={cn("flex h-full min-h-0 flex-col gap-4", className)}>
-      <div className="flex items-center justify-between">
-        <div>
-          <h3 className="text-lg font-semibold">{title || t("mini_bag_title", "Mini bag")}</h3>
-          <span className="text-sm text-foreground/60">
-            {cart.item_count} item{cart.item_count === 1 ? "" : "s"}
-          </span>
-        </div>
+    <div className={cn("flex h-full flex-col", className)}>
+      <div className="flex items-center justify-between p-3 border-b border-border">
+        <h3 className="text-base font-medium">{title || t("mini_bag_title", "Your bag")}</h3>
         {onClose ? (
           <button
             type="button"
-            className="text-sm text-foreground/60 hover:text-foreground"
+            className="text-foreground/60 hover:text-foreground"
             onClick={onClose}
           >
-            {t("close", "Close")}
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
           </button>
         ) : null}
       </div>
 
-      {cart.items.length === 0 ? null : (
-        <>
-          <div className="min-h-0 flex-1 space-y-3 overflow-y-auto pr-1">
-            {cart.items.map((item) => (
-              <div
-                key={item.id}
-                className="rounded-xl border border-border/70 bg-card/70 p-3"
-              >
-                <div className="flex items-start justify-between gap-3">
-                  <div className="min-w-0">
-                    <p className="line-clamp-2 text-sm font-medium leading-5">
-                      {item.product_name}
-                    </p>
-                    {item.variant_name ? (
-                      <p className="truncate text-[11px] text-foreground/60">
-                        {item.variant_name}
-                      </p>
-                    ) : null}
-                    <p className="text-xs text-foreground/60">
-                      {formatMoney(item.unit_price, currency)}
-                    </p>
-                  </div>
-                  <p className="shrink-0 text-sm font-semibold">
-                    {formatMoney(item.total, currency)}
-                  </p>
+      <div className="flex-1 overflow-y-auto p-3 space-y-4">
+        {cart.items.map((item) => (
+          <div key={item.id} className="flex gap-3">
+            <div className="h-20 w-16 bg-muted rounded-sm animate-pulse shrink-0" />
+            <div className="flex-1 space-y-0.5 min-w-0">
+              <p className="text-sm font-medium truncate">{item.product_name}</p>
+              <p className="text-[10px] text-foreground/60 truncate">{item.variant_name}</p>
+              <div className="flex items-center justify-between pt-1">
+                <div className="flex items-center border border-border rounded-sm">
+                  <button className="px-2 py-0.5 text-xs font-bold" onClick={() => updateItem.mutate({ itemId: item.id, quantity: Math.max(1, item.quantity - 1) })}>-</button>
+                  <span className="px-2 text-xs font-medium">{item.quantity}</span>
+                  <button className="px-2 py-0.5 text-xs font-bold" onClick={() => updateItem.mutate({ itemId: item.id, quantity: item.quantity + 1 })}>+</button>
                 </div>
-                <div className="mt-3 flex items-center justify-between gap-3">
-                  <div className="flex items-center gap-1.5">
-                    <button
-                      type="button"
-                      className="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-border text-base hover:bg-muted disabled:cursor-not-allowed disabled:opacity-50"
-                      onClick={() =>
-                        updateItem.mutate({
-                          itemId: item.id,
-                          quantity: Math.max(1, item.quantity - 1),
-                        })
-                      }
-                      aria-label={t("decrease_quantity", "Decrease quantity")}
-                      disabled={isMutating}
-                    >
-                      -
-                    </button>
-                    <span className="inline-flex min-w-[2rem] items-center justify-center text-sm font-semibold">
-                      {item.quantity}
-                    </span>
-                    <button
-                      type="button"
-                      className="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-border text-base hover:bg-muted disabled:cursor-not-allowed disabled:opacity-50"
-                      onClick={() =>
-                        updateItem.mutate({
-                          itemId: item.id,
-                          quantity: item.quantity + 1,
-                        })
-                      }
-                      aria-label={t("increase_quantity", "Increase quantity")}
-                      disabled={isMutating}
-                    >
-                      +
-                    </button>
-                  </div>
-                  <button
-                    type="button"
-                    className="text-xs font-semibold text-foreground/70 underline-offset-4 hover:text-foreground hover:underline disabled:cursor-not-allowed disabled:opacity-50"
+                <div className="flex flex-col items-end gap-0.5">
+                  <p className="text-sm font-medium">{formatMoney(item.total, currencyConfig)}</p>
+                  <button 
+                    className="text-[10px] text-foreground/40 hover:text-red-500" 
                     onClick={() => removeItem.mutate(item.id)}
-                    disabled={isMutating}
                   >
-                    {t("remove", "Remove")}
+                    Remove
                   </button>
                 </div>
               </div>
-            ))}
-          </div>
-
-          <div className="space-y-2 border-t border-border pt-3 text-sm">
-            <div className="flex items-center justify-between">
-              <span className="text-foreground/70">{t("subtotal", "Subtotal")}</span>
-              <span className="font-semibold">{subtotalLabel}</span>
             </div>
-            {showEstimatedTotal ? (
-              <div className="flex items-center justify-between">
-                <span className="text-foreground/70">
-                  {t("estimated_total", "Estimated total")}
-                </span>
-                <span className="font-semibold">{totalLabel}</span>
-              </div>
-            ) : null}
           </div>
+        ))}
+      </div>
 
-          <div className="grid gap-2">
-            <Button asChild variant="secondary">
-              <Link href="/cart/" onClick={handleClose}>
-                {t("view_bag", "View bag")}
-              </Link>
-            </Button>
-            <Button asChild variant="primary-gradient">
-              <Link href="/checkout/" onClick={handleClose}>
-                {t("checkout", "Checkout")}
-              </Link>
-            </Button>
+      <div className="p-3 border-t border-border space-y-3">
+        <div className="flex justify-between text-sm">
+          <span className="text-foreground/70">{t("subtotal", "Subtotal")}</span>
+          <span className="font-semibold">{subtotalLabel}</span>
+        </div>
+        {(discount > 0 || shipping > 0 || tax > 0) && (
+          <div className="flex justify-between text-base font-semibold">
+            <span className="text-foreground">{t("estimated_total", "Estimated Total")}</span>
+            <span className="font-bold text-primary">{totalLabel}</span>
           </div>
-        </>
-      )}
-    </Card>
+        )}
+        <div className="grid grid-cols-2 gap-2 pt-1">
+          <Button asChild variant="secondary" className="h-9 w-full uppercase tracking-widest text-[10px]">
+            <Link href="/cart/" onClick={handleClose}>
+              {t("view_bag", "View Bag")}
+            </Link>
+          </Button>
+          <Button asChild variant="primary" className="h-9 w-full uppercase tracking-widest text-[10px]">
+            <Link href="/checkout/" onClick={handleClose}>
+              {t("checkout", "Checkout")}
+            </Link>
+          </Button>
+        </div>
+      </div>
+    </div>
   );
 }

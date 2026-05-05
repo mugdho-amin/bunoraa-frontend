@@ -98,6 +98,9 @@ export function RecentlyViewedSection({
 
   return (
     <div className="space-y-4">
+      <h2 className="text-sm font-semibold uppercase tracking-[0.2em] text-foreground/70">
+        Recently viewed
+      </h2>
       <div className="grid grid-flow-col auto-cols-[78%] gap-3 overflow-x-auto pb-1 snap-x snap-mandatory sm:grid-flow-row sm:auto-cols-auto sm:grid-cols-2 sm:overflow-visible sm:pb-0 lg:grid-cols-4">
         {visibleItems.map((item) => {
           const itemWithOptionalProps = item as typeof item & { aspect_ratio?: string | null; category?: { aspect_ratio?: string | null } };

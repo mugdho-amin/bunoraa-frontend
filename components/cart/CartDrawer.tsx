@@ -8,9 +8,11 @@ import { MiniCart } from "@/components/cart/MiniCart";
 export function CartDrawer({
   isOpen,
   onClose,
+  itemCount,
 }: {
   isOpen: boolean;
   onClose: () => void;
+  itemCount: number;
 }) {
   const originalOverflow = React.useRef<string | null>(null);
   const [mounted, setMounted] = React.useState(false);
@@ -49,32 +51,43 @@ export function CartDrawer({
   return createPortal(
     <div
       data-cart-drawer-root
-      className="fixed inset-0 z-[90]"
+      className="fixed inset-0 z-[100]"
       aria-hidden={!isOpen}
       onClick={(event) => {
         if (event.target === event.currentTarget) onClose();
       }}
     >
+      {/* Dimmed Background Overlay */}
       <div
         className={cn(
-          "absolute inset-0 bg-black/35 backdrop-blur-[2px] transition-opacity",
+          "absolute inset-0 bg-foreground/10 transition-opacity duration-300 ease-in-out",
+          itemCount > 0 && "backdrop-blur-sm",
           isOpen ? "opacity-100" : "opacity-0"
         )}
         onClick={onClose}
       />
-      <aside
-        className={cn(
-          "absolute right-0 top-0 flex h-[100dvh] w-full max-w-[420px] transform flex-col bg-background/95 px-4 pb-[calc(1rem+env(safe-area-inset-bottom))] pt-[calc(0.75rem+env(safe-area-inset-top))] shadow-xl backdrop-blur-xl transition-transform sm:p-6",
-          isOpen ? "translate-x-0" : "translate-x-full"
-        )}
-        onClick={(event) => event.stopPropagation()}
-      >
-        <MiniCart
-          title="Your bag"
-          onClose={onClose}
-          className="h-full min-h-0 border-0 bg-transparent p-0 shadow-none"
-        />
-      </aside>
+      
+      {/* Dynamic Drawer Content */}
+      {itemCount === 0 ? (
+        <div 
+          className={cn(
+            "absolute top-4 right-4 flex w-80 flex-col bg-background p-4 shadow-xl rounded-lg border border-border transition-all duration-300",
+            isOpen ? "translate-y-0 opacity-100" : "-translate-y-4 opacity-0"
+          )}
+        >
+          <MiniCart onClose={onClose} className="h-auto p-0" />
+        </div>
+      ) : (
+        <aside
+          className={cn(
+            "absolute right-0 top-0 flex h-full w-full max-w-md flex-col bg-background/95 backdrop-blur-xl transition-transform duration-300 ease-in-out",
+            isOpen ? "translate-x-0" : "translate-x-full"
+          )}
+          onClick={(event) => event.stopPropagation()}
+        >
+          <MiniCart onClose={onClose} className="h-full border-none shadow-none bg-transparent p-0" />
+        </aside>
+      )}
     </div>,
     document.body
   );

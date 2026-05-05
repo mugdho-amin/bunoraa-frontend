@@ -90,12 +90,13 @@ export function HeaderClient() {
     includeUnread: true,
   });
   const count =
-    cartSummaryQuery.data?.item_count ??
     cartQuery.data?.item_count ??
+    (cartQuery.data?.items?.reduce((acc, item) => acc + (item.quantity || 0), 0) ?? 0) ??
+    cartSummaryQuery.data?.item_count ??
     0;
+
   const cartKnownEmpty =
-    (cartSummaryQuery.data ? cartSummaryQuery.data.item_count === 0 : false) ||
-    (cartQuery.data ? cartQuery.data.item_count === 0 : false);
+    (cartQuery.data ? (cartQuery.data.item_count ?? cartQuery.data.items?.length ?? 0) === 0 : false);
   const wishlistCount =
     wishlistQuery.data?.meta?.pagination?.count ??
     wishlistQuery.data?.data?.length ??
@@ -141,13 +142,7 @@ export function HeaderClient() {
     window.sessionStorage.setItem(key, "true");
   }, [count, mounted, push, t]);
 
-  React.useEffect(() => {
-    if (!open) return;
-    if (!cartQuery.data) return;
-    if (cartQuery.data.item_count > 0) return;
-    setOpen(false);
-    push(t("empty_bag_notice", "Your bag is empty."), "info", { position: "bottom" });
-  }, [cartQuery.data, open, push, t]);
+  // Removed auto-close logic to allow CartDrawer to show empty state like Etsy/Aarong
 
   React.useEffect(() => {
     if (!menuOpen) return;
@@ -207,23 +202,16 @@ export function HeaderClient() {
         type="button"
         className={`group ${iconButtonClass}`}
         onClick={() => {
-          if (!open && cartKnownEmpty) {
-            push(t("empty_bag_notice", "Your bag is empty."), "info", {
-              position: "bottom",
-            });
-            return;
-          }
           setOpen((prev) => !prev);
         }}
         aria-label="Bag"
-      >
-        <Handbag className="h-5 w-5" strokeWidth={1.8} aria-hidden="true" />
+      >        <Handbag className="h-5 w-5" strokeWidth={1.8} aria-hidden="true" />
         <span className="sr-only">Bag</span>
         <span className={`${iconTooltipClass} group-hover:opacity-100 group-focus-visible:opacity-100`} aria-hidden="true">
           Bag
         </span>
         {count > 0 ? (
-          <span className="absolute -right-1 -top-1 rounded-full bg-primary px-1.5 py-0.5 text-[11px] font-semibold text-white">
+          <span className="absolute -right-1 -top-1 rounded-full bg-accent px-1.5 py-0.5 text-[11px] font-semibold text-white">
             {count}
           </span>
         ) : null}
@@ -535,7 +523,13 @@ export function HeaderClient() {
           )
         ) : null}
       </div>
-      {open ? <CartDrawer isOpen={open} onClose={() => setOpen(false)} /> : null}
+      {open ? (
+        <CartDrawer 
+          isOpen={open} 
+          onClose={() => setOpen(false)} 
+          itemCount={cartQuery.data?.item_count ?? cartQuery.data?.items?.length ?? 0}
+        />
+      ) : null}
     </div>
   );
 }

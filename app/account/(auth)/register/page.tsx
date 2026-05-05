@@ -62,6 +62,15 @@ export default function RegisterPage() {
 
           <GoogleLoginButton nextUrl="/account/profile/" />
 
+          <div className="relative">
+            <div className="absolute inset-0 flex items-center">
+              <span className="w-full border-t border-border" />
+            </div>
+            <div className="relative flex justify-center text-xs uppercase">
+              <span className="bg-card px-2 text-foreground/50">Or continue with email</span>
+            </div>
+          </div>
+
           <form className="space-y-4" onSubmit={form.handleSubmit(onSubmit)}>
             <label className="block text-sm">
               First name

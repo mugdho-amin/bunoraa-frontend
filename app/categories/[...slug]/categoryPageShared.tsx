@@ -250,33 +250,36 @@ export async function renderCategoryPageForPath(
   return (
     <div className="min-h-screen bg-background text-foreground">
       <div className="mx-auto w-full max-w-7xl px-4 py-8 sm:px-6 sm:py-12">
-        <div className="mb-6 space-y-4 sm:mb-8">
-          <div>
-            <h1 className="text-2xl font-semibold sm:text-3xl">{category.name}</h1>
-            {(category.meta_description || category.description) ? (
-              <p className="mt-2 max-w-3xl text-sm text-foreground/70 sm:text-base">
-                {category.meta_description || category.description}
-              </p>
-            ) : null}
-            <p className="mt-2 text-sm text-foreground/60">
-              {totalCount} product{totalCount === 1 ? "" : "s"} available
-            </p>
-          </div>
-          <div className="sticky top-[calc(var(--header-offset,4.75rem)+0.25rem)] z-20 rounded-2xl border border-border/70 bg-background/95 p-3 shadow-soft backdrop-blur supports-[backdrop-filter]:bg-background/88 lg:static lg:border-0 lg:bg-transparent lg:p-0 lg:shadow-none">
-            <div className="grid gap-2 sm:flex sm:flex-wrap sm:items-center sm:gap-3 lg:justify-end">
-              {showFilters ? (
-                <FilterDrawer
-                  filters={filterData}
-                  facets={facets}
-                  categories={childCategories}
-                  productCount={totalCount}
-                  className="lg:hidden"
-                  filterParams={filterParams}
-                  currentCategoryPath={slugPath}
-                />
+        <div className="mb-6 sm:mb-8">
+          <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between lg:gap-6">
+            <div className="flex-1">
+              <h1 className="text-2xl font-semibold sm:text-3xl">{category.name}</h1>
+              {(category.meta_description || category.description) ? (
+                <p className="mt-2 max-w-3xl text-sm text-foreground/70 sm:text-base">
+                  {category.meta_description || category.description}
+                </p>
               ) : null}
-              <SortMenu className="w-full sm:w-auto" />
-              <ViewToggle className="w-full sm:w-auto" />
+              <p className="mt-1 text-sm text-foreground/60">
+                {totalCount} product{totalCount === 1 ? "" : "s"} available
+              </p>
+            </div>
+
+            <div className="sticky top-[calc(var(--header-offset,4.75rem)+0.25rem)] z-20 rounded-2xl border border-border/70 bg-background/95 p-3 shadow-soft backdrop-blur supports-[backdrop-filter]:bg-background/88 lg:static lg:z-auto lg:border-0 lg:bg-transparent lg:p-0 lg:shadow-none">
+              <div className="grid gap-2 sm:flex sm:flex-wrap sm:items-center sm:gap-3 lg:justify-end lg:flex-nowrap">
+                {showFilters ? (
+                  <FilterDrawer
+                    filters={filterData}
+                    facets={facets}
+                    categories={childCategories}
+                    productCount={totalCount}
+                    className="lg:hidden"
+                    filterParams={filterParams}
+                    currentCategoryPath={slugPath}
+                  />
+                ) : null}
+                <SortMenu className="w-full sm:w-auto min-w-[160px]" />
+                <ViewToggle className="w-full sm:w-auto" />
+              </div>
             </div>
           </div>
         </div>

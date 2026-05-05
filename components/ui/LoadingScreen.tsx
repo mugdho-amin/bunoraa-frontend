@@ -1,6 +1,7 @@
- "use client";
+"use client";
 
 import * as React from "react";
+import Image from "next/image";
 import { cn } from "@/lib/utils";
 
 type LoadingScreenProps = {
@@ -10,101 +11,106 @@ type LoadingScreenProps = {
   className?: string;
 };
 
+/**
+ * A personalized, elegant spinner for Bunoraa.
+ * Replaces the traditional progress bar with a sophisticated,
+ * branding-aware motion experience.
+ */
 export function LoadingScreen({
   title,
   subtitle,
   fullScreen = false,
   className,
 }: LoadingScreenProps) {
-  const [progress, setProgress] = React.useState(6);
-  const [dots, setDots] = React.useState("..");
-
-  React.useEffect(() => {
-    const media = window.matchMedia("(prefers-reduced-motion: reduce)");
-
-    if (media.matches) {
-      const reducedTimer = window.setInterval(() => {
-        setProgress((prev) => (prev >= 94 ? prev : Math.min(94, prev + 6)));
-      }, 900);
-      return () => window.clearInterval(reducedTimer);
-    }
-
-    const start = window.performance.now();
-    let frame = 0;
-    const tick = (now: number) => {
-      const elapsed = now - start;
-      const next = 6 + (94 - 6) * (1 - Math.exp(-elapsed / 2200));
-      setProgress(Math.min(94, next));
-      frame = window.requestAnimationFrame(tick);
-    };
-
-    frame = window.requestAnimationFrame(tick);
-    return () => window.cancelAnimationFrame(frame);
-  }, []);
-
-  React.useEffect(() => {
-    const media = window.matchMedia("(prefers-reduced-motion: reduce)");
-    if (media.matches) {
-      setDots("..");
-      return;
-    }
-
-    const frames = [".", "..", "..."];
-    let index = 1;
-    const timer = window.setInterval(() => {
-      index = (index + 1) % frames.length;
-      setDots(frames[index]);
-    }, 500);
-
-    return () => window.clearInterval(timer);
-  }, []);
-
   return (
     <div
       role="status"
       aria-live="polite"
       aria-busy="true"
       className={cn(
-        "relative flex w-full items-center justify-center overflow-hidden bg-background text-foreground",
-        fullScreen ? "min-h-screen" : "min-h-[60vh]",
+        "relative flex flex-col items-center justify-center overflow-hidden bg-background transition-colors duration-500",
+        fullScreen ? "fixed inset-0 z-[100] h-screen w-screen" : "h-full min-h-[400px] w-full",
         className
       )}
     >
-      <div className="pointer-events-none absolute -top-32 left-1/2 h-64 w-64 -translate-x-1/2 rounded-full bg-gradient-to-br from-primary/20 via-accent/10 to-transparent blur-3xl" />
-      <div className="pointer-events-none absolute bottom-0 right-0 h-72 w-72 translate-x-1/3 rounded-full bg-gradient-to-tr from-primary/10 via-accent/10 to-transparent blur-3xl" />
-      <div className="relative z-10 flex flex-col items-center gap-4 text-center">
-        <span className="text-xs font-semibold uppercase tracking-[0.4em] text-foreground/50">
-          Loading{dots}
-        </span>
-        {title ? (
-          <h1 className="font-display text-3xl font-semibold tracking-tight sm:text-4xl">
-            {title}
-          </h1>
-        ) : null}
-        {subtitle ? (
-          <p className="max-w-md text-sm text-foreground/70 sm:text-base">
-            {subtitle}
-          </p>
-        ) : null}
-        <div className="mt-2 w-44 space-y-1.5">
-          <div
-            role="progressbar"
-            aria-label="Loading progress"
-            aria-valuemin={0}
-            aria-valuemax={100}
-            aria-valuenow={Math.round(progress)}
-            className="h-1.5 overflow-hidden rounded-full bg-muted"
-          >
-            <div
-              className="h-full rounded-full bg-gradient-to-r from-primary via-accent to-primary transition-[width] duration-300 ease-out motion-reduce:transition-none"
-              style={{ width: `${progress}%` }}
+      {/* Soft Ambient Background Glows */}
+      <div className="pointer-events-none absolute left-1/2 top-1/2 h-[500px] w-[500px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-primary/5 blur-[120px]" />
+      <div className="pointer-events-none absolute left-1/3 top-1/3 h-[300px] w-[300px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-accent/5 blur-[100px]" />
+
+      <div className="relative z-10 flex flex-col items-center">
+        {/* The Personalized Spinner */}
+        <div className="relative h-24 w-24">
+          {/* Outer Ring - Constant Rotation */}
+          <div className="absolute inset-0 rounded-full border-[3px] border-primary/10" />
+          
+          {/* Animated Gradient Ring */}
+          <svg className="h-full w-full animate-[spin_3s_linear_infinite]" viewBox="0 0 100 100">
+            <defs>
+              <linearGradient id="spinner-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stopColor="hsl(var(--primary))" />
+                <stop offset="100%" stopColor="hsl(var(--primary))" />
+              </linearGradient>
+            </defs>
+            <circle
+              cx="50"
+              cy="50"
+              r="46"
+              fill="none"
+              stroke="url(#spinner-gradient)"
+              strokeWidth="4"
+              strokeLinecap="round"
+              strokeDasharray="180 120"
+              className="animate-[spinner-dash_2s_ease-in-out_infinite] opacity-80"
             />
+          </svg>
+
+          {/* Logo in center */}
+          <div className="absolute inset-0 flex items-center justify-center">
+            <div className="flex h-12 w-12 items-center justify-center overflow-hidden rounded-full bg-background shadow-inner">
+               <Image 
+                src="/icon.png" 
+                alt="Logo" 
+                width={48} 
+                height={48} 
+                className="h-8 w-8 object-contain"
+                priority
+               />
+            </div>
           </div>
-          <p className="text-[11px] font-medium tracking-[0.08em] text-foreground/55">
-            {Math.round(progress)}%
-          </p>
+        </div>
+
+        {/* Textual Content */}
+        <div className="mt-8 flex flex-col items-center gap-2">
+          {title ? (
+            <h2 className="font-display text-xl font-medium tracking-tight text-foreground">
+              {title}
+            </h2>
+          ) : null}
+          
+          {subtitle && (
+            <p className="max-w-[240px] text-center text-sm text-foreground/40 leading-relaxed">
+              {subtitle}
+            </p>
+          )}
         </div>
       </div>
+
+      <style jsx global>{`
+        @keyframes spinner-dash {
+          0% {
+            stroke-dasharray: 1, 300;
+            stroke-dashoffset: 0;
+          }
+          50% {
+            stroke-dasharray: 150, 300;
+            stroke-dashoffset: -70;
+          }
+          100% {
+            stroke-dasharray: 150, 300;
+            stroke-dashoffset: -280;
+          }
+        }
+      `}</style>
     </div>
   );
 }
