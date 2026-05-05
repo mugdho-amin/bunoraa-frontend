@@ -378,30 +378,33 @@ export default async function Home() {
         </section>
       ) : null}
 
-      {categoryBandsWithProducts.map((band) => (
-        <section key={band.category.id} className={`${sectionWrapperClass} py-8`}>
-          <div className="flex items-center justify-between gap-4">
-            <h2 className="text-sm font-semibold uppercase tracking-[0.2em] text-foreground/70">
-              {band.category.name}
-            </h2>
-            <Link
-              href={buildCategoryPath(band.category.slug_path || band.category.slug)}
-              prefetch={false}
-              className="text-xs font-semibold uppercase tracking-[0.2em] text-foreground/60 hover:text-foreground"
-              onClick={() => console.log("Category URL:", band.category.slug_path, band.category.slug)}
-            >
-              View All
-            </Link>          </div>
-          <div className="mt-4">
-            <ProductGrid
-              products={band.products}
-              cardStyle="minimal"
-              allowQuickView={true}
-              showWishlist={true}
-            />
-          </div>
-        </section>
-      ))}
+      {categoryBandsWithProducts.map((band) => {
+        console.log("DEBUG: Category Band:", band.category.name, "Slug:", band.category.slug, "Path:", band.category.slug_path);
+        return (
+          <section key={band.category.id} className={`${sectionWrapperClass} py-8`}>
+            <div className="flex items-center justify-between gap-4">
+              <h2 className="text-sm font-semibold uppercase tracking-[0.2em] text-foreground/70">
+                {band.category.name}
+              </h2>
+              <Link
+                href={`/${band.category.slug_path || band.category.slug}/`}
+                prefetch={false}
+                className="text-xs font-semibold uppercase tracking-[0.2em] text-foreground/60 hover:text-foreground"
+              >
+                View All
+              </Link>
+            </div>
+            <div className="mt-4">
+              <ProductGrid
+                products={band.products}
+                cardStyle="minimal"
+                allowQuickView={true}
+                showWishlist={true}
+              />
+            </div>
+          </section>
+        );
+      })}
 
       {seasonalFavs.length ? (
         <section className={`${sectionWrapperClass} py-8`}>

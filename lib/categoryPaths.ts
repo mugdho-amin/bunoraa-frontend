@@ -14,6 +14,6 @@ export function normalizeCategorySlugPath(slugPath: string | null | undefined): 
 
 export function buildCategoryPath(slugPath: string | null | undefined): string {
   const normalized = normalizeCategorySlugPath(slugPath);
-  if (!normalized) return "/categories/";
-  return `/categories/${normalized}/`;
+  if (!normalized) return "/";
+  return `/${normalized}/`;
 }
