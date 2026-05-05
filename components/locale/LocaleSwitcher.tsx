@@ -3,6 +3,7 @@
 import * as React from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useLocale } from "@/components/providers/LocaleProvider";
+import { useUiMessages } from "@/components/i18n/useUiMessages";
 import { apiFetch, ApiError } from "@/lib/api";
 import type { Country } from "@/lib/types";
 import { cn } from "@/lib/utils";
@@ -82,6 +83,7 @@ export function LocaleSwitcher({
   stacked = false,
   stackedInlineOnMobile = false,
   selectClassName,
+  onPreferenceChange,
 }: {
   className?: string;
   includeCountry?: boolean;
@@ -89,8 +91,14 @@ export function LocaleSwitcher({
   stacked?: boolean;
   stackedInlineOnMobile?: boolean;
   selectClassName?: string;
+  onPreferenceChange?: (change: {
+    field: "language" | "currency" | "country" | "timezone";
+    value: string;
+    label: string;
+  }) => void;
 }) {
   const { locale, setLocale, isLoading } = useLocale();
+  const { t } = useUiMessages("footer");
   const [mounted, setMounted] = React.useState(false);
   React.useEffect(() => {
     setMounted(true);
@@ -298,16 +306,26 @@ export function LocaleSwitcher({
   return (
     <div className={cn(wrapperClass, className)}>
       <label className={rowClass}>
-        <span className="whitespace-nowrap">Language</span>
+        <span className="whitespace-nowrap">{t("language", "Language")}</span>
         <select
           value={language}
-          onChange={(event) => setLocale({ language: event.target.value })}
+          onChange={(event) => {
+            const nextValue = event.target.value;
+            setLocale({ language: nextValue });
+            const nextLabel =
+              languageOptions.find((option) => option.value === nextValue)?.label || nextValue;
+            onPreferenceChange?.({
+              field: "language",
+              value: nextValue,
+              label: nextLabel,
+            });
+          }}
           disabled={isBusy || languageOptions.length === 0}
           className={cn(selectClass, selectClassName)}
         >
           {languageOptions.length === 0 ? (
             <option value="">
-              {isBusy ? "Loading..." : "No languages"}
+              {isBusy ? t("loading", "Loading...") : "No languages"}
             </option>
           ) : (
             languageOptions.map((option) => (
@@ -319,16 +337,26 @@ export function LocaleSwitcher({
         </select>
       </label>
       <label className={rowClass}>
-        <span className="whitespace-nowrap">Currency</span>
+        <span className="whitespace-nowrap">{t("currency", "Currency")}</span>
         <select
           value={currency}
-          onChange={(event) => setLocale({ currency: event.target.value })}
+          onChange={(event) => {
+            const nextValue = event.target.value;
+            setLocale({ currency: nextValue });
+            const nextLabel =
+              resolvedCurrencyOptions.find((option) => option.value === nextValue)?.label || nextValue;
+            onPreferenceChange?.({
+              field: "currency",
+              value: nextValue,
+              label: nextLabel,
+            });
+          }}
           disabled={isBusy || resolvedCurrencyOptions.length === 0}
           className={cn(selectClass, selectClassName)}
         >
           {resolvedCurrencyOptions.length === 0 ? (
             <option value="">
-              {isBusy ? "Loading..." : "No currencies"}
+              {isBusy ? t("loading", "Loading...") : "No currencies"}
             </option>
           ) : (
             resolvedCurrencyOptions.map((option) => (
@@ -341,16 +369,26 @@ export function LocaleSwitcher({
       </label>
       {includeCountry ? (
         <label className={rowClass}>
-          <span className="whitespace-nowrap">Country</span>
+          <span className="whitespace-nowrap">{t("country", "Country")}</span>
           <select
             value={country}
-            onChange={(event) => setLocale({ country: event.target.value })}
+            onChange={(event) => {
+              const nextValue = event.target.value;
+              setLocale({ country: nextValue });
+              const nextLabel =
+                resolvedCountryOptions.find((option) => option.value === nextValue)?.label || nextValue;
+              onPreferenceChange?.({
+                field: "country",
+                value: nextValue,
+                label: nextLabel,
+              });
+            }}
             disabled={isBusy || resolvedCountryOptions.length === 0}
             className={cn(selectClass, selectClassName)}
           >
             {resolvedCountryOptions.length === 0 ? (
               <option value="">
-                {isBusy ? "Loading..." : "No countries"}
+                {isBusy ? t("loading", "Loading...") : "No countries"}
               </option>
             ) : (
               resolvedCountryOptions.map((option) => (
@@ -364,16 +402,26 @@ export function LocaleSwitcher({
       ) : null}
       {includeTimezone ? (
         <label className={rowClass}>
-          <span className="whitespace-nowrap">Timezone</span>
+          <span className="whitespace-nowrap">{t("timezone", "Timezone")}</span>
           <select
             value={timezone}
-            onChange={(event) => setLocale({ timezone: event.target.value })}
+            onChange={(event) => {
+              const nextValue = event.target.value;
+              setLocale({ timezone: nextValue });
+              const nextLabel =
+                resolvedTimezoneOptions.find((option) => option.value === nextValue)?.label || nextValue;
+              onPreferenceChange?.({
+                field: "timezone",
+                value: nextValue,
+                label: nextLabel,
+              });
+            }}
             disabled={isBusy || resolvedTimezoneOptions.length === 0}
             className={cn(selectClass, selectClassName)}
           >
             {resolvedTimezoneOptions.length === 0 ? (
               <option value="">
-                {isBusy ? "Loading..." : "No timezones"}
+                {isBusy ? t("loading", "Loading...") : "No timezones"}
               </option>
             ) : (
               resolvedTimezoneOptions.map((option) => (

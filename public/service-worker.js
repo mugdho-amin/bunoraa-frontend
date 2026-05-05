@@ -12,9 +12,6 @@ const PAGES_CACHE = `bunoraa-pages-${CACHE_VERSION}`;
 
 // Assets to cache on install
 const STATIC_ASSETS = [
-  '/',
-  '/offline.html',
-  '/styles/offline.css',
   '/icon.png',
   '/apple-icon.png',
   '/favicon.ico',
@@ -117,19 +114,18 @@ self.addEventListener('fetch', (event) => {
     return;
   }
   
-  // Route to appropriate cache strategy
   if (isAssetRequest(request)) {
     event.respondWith(assetStrategy(request));
-  } else if (isAPIRequest(request)) {
-    event.respondWith(apiStrategy(request));
-  } else if (isPageRequest(request)) {
-    event.respondWith(pageStrategy(request));
   }
 });
 
 // Helper: Check if request is for static assets
 function isAssetRequest(request) {
-  return /\.(js|css|woff2?|json)$/.test(request.url);
+  const url = new URL(request.url);
+  return (
+    url.pathname.startsWith('/_next/static/') ||
+    /\.(js|css|woff2?|webmanifest)$/.test(url.pathname)
+  );
 }
 
 // Helper: Check if request is for images

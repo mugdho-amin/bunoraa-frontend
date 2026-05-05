@@ -8,6 +8,7 @@ import { useAuthContext } from "@/components/providers/AuthProvider";
 import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
 import { useToast } from "@/components/ui/ToastProvider";
+import { useUiMessages } from "@/components/i18n/useUiMessages";
 import { apiFetch } from "@/lib/api";
 import { formatAddressLine } from "@/lib/address";
 import type { OrderDetail } from "@/lib/types";
@@ -24,6 +25,7 @@ export default function CheckoutSuccessPage() {
   const { hasToken } = useAuthContext();
   const searchParams = useSearchParams();
   const { push } = useToast();
+  const { t } = useUiMessages("checkout");
   const orderId = searchParams.get("order_id");
   const orderNumber = searchParams.get("order_number");
   const accessToken = searchParams.get("access_token");
@@ -34,12 +36,12 @@ export default function CheckoutSuccessPage() {
       if (!value) return;
       try {
         await navigator.clipboard.writeText(value);
-        push("Order number copied.", "success");
+        push(t("order_number_copied", "Order number copied."), "success");
       } catch {
-        push("Could not copy order number.", "error");
+        push(t("copy_failed", "Could not copy order number."), "error");
       }
     },
-    [push]
+    [push, t]
   );
 
   const orderQuery = useQuery({
@@ -55,20 +57,24 @@ export default function CheckoutSuccessPage() {
           <Card variant="bordered" className="space-y-6">
             <div>
               <p className="text-xs uppercase tracking-[0.3em] text-foreground/60">
-                Order confirmed
+                {t("order_confirmed", "Order confirmed")}
               </p>
-              <h1 className="text-3xl font-semibold">Thank you for your purchase</h1>
+              <h1 className="text-3xl font-semibold">
+                {t("thank_you", "Thank you for your purchase")}
+              </h1>
               <p className="mt-2 text-sm text-foreground/60">
-                We&apos;re processing your order now.
+                {t("processing_order_now", "We're processing your order now.")}
               </p>
             </div>
 
             {orderQuery.isLoading ? (
-              <p className="text-sm text-foreground/60">Loading order details...</p>
+              <p className="text-sm text-foreground/60">
+                {t("loading_order_details", "Loading order details...")}
+              </p>
             ) : orderQuery.isError ? (
               <div className="space-y-2">
                 <p className="text-sm text-foreground/60">
-                  We couldn&apos;t load full order details yet.
+                  {t("order_details_unavailable", "We couldn't load full order details yet.")}
                 </p>
                 {orderNumber ? (
                   <button
@@ -81,7 +87,10 @@ export default function CheckoutSuccessPage() {
                   </button>
                 ) : null}
                 <p className="text-xs text-foreground/60">
-                  If you need help, please contact support with your order number.
+                  {t(
+                    "contact_support_order",
+                    "If you need help, please contact support with your order number."
+                  )}
                 </p>
               </div>
             ) : orderQuery.data ? (
@@ -105,7 +114,7 @@ export default function CheckoutSuccessPage() {
                 </p>
                 <div className="rounded-xl border border-border bg-card p-4">
                   <p className="text-xs uppercase tracking-[0.2em] text-foreground/60">
-                    Shipping to
+                    {t("shipping_to", "Shipping to")}
                   </p>
                   <p className="mt-2 font-semibold">
                     {[orderQuery.data.shipping_address?.first_name, orderQuery.data.shipping_address?.last_name]
@@ -128,12 +137,15 @@ export default function CheckoutSuccessPage() {
                   Order #{orderNumber}
                 </button>
                 <p className="text-sm text-foreground/60">
-                  Your order is confirmed. We&apos;ll email you with updates.
+                  {t(
+                    "email_updates",
+                    "Your order is confirmed. We'll email you with updates."
+                  )}
                 </p>
               </div>
             ) : (
               <p className="text-sm text-foreground/60">
-                Your order is confirmed.
+                {t("order_confirmed_simple", "Your order is confirmed.")}
               </p>
             )}
 
@@ -147,12 +159,14 @@ export default function CheckoutSuccessPage() {
                         : "/orders/"
                     }
                   >
-                    {accessToken ? "View order details" : "View orders"}
+                    {accessToken
+                      ? t("view_order_details", "View order details")
+                      : t("view_orders", "View orders")}
                   </Link>
                 </Button>
               ) : null}
               <Button asChild variant="secondary">
-                <Link href="/">Continue shopping</Link>
+                <Link href="/">{t("continue_shopping", "Continue shopping")}</Link>
               </Button>
             </div>
           </Card>

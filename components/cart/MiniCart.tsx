@@ -4,6 +4,7 @@ import Link from "next/link";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { useCart } from "@/components/cart/useCart";
+import { useUiMessages } from "@/components/i18n/useUiMessages";
 import { cn } from "@/lib/utils";
 
 function formatMoney(amount: string | number, currency: string) {
@@ -125,7 +126,7 @@ function isApproximatelyEqual(a: number, b: number, tolerance = 0.01) {
 }
 
 export function MiniCart({
-  title = "Mini bag",
+  title,
   onClose,
   className,
 }: {
@@ -134,6 +135,7 @@ export function MiniCart({
   className?: string;
 }) {
   const { cartQuery, cartSummaryQuery, removeItem, updateItem } = useCart();
+  const { t } = useUiMessages("cart");
   const handleClose = () => onClose?.();
 
   if (cartQuery.isLoading) {
@@ -210,26 +212,28 @@ export function MiniCart({
     return (
       <Card variant="bordered" className={cn("flex h-full min-h-0 flex-col gap-4", className)}>
         <div className="flex items-center justify-between">
-          <h3 className="text-lg font-semibold">Bag</h3>
+          <h3 className="text-lg font-semibold">{t("bag_title", "Your bag")}</h3>
           {onClose ? (
             <button
               type="button"
               className="text-sm text-foreground/60 hover:text-foreground"
               onClick={onClose}
             >
-              Close
+              {t("close", "Close")}
             </button>
           ) : null}
         </div>
         <div className="rounded-xl border border-dashed border-border bg-card/40 px-4 py-7 text-center">
-          <p className="text-sm font-semibold text-foreground">Your bag is empty.</p>
+          <p className="text-sm font-semibold text-foreground">
+            {t("your_bag_empty", "Your bag is empty.")}
+          </p>
           <p className="mt-1 text-xs text-foreground/60">
-            Add items to see them here.
+            {t("add_items_to_see_here", "Add items to see them here.")}
           </p>
         </div>
         <Button asChild variant="secondary">
           <Link href="/products/" onClick={handleClose}>
-            Continue shopping
+            {t("continue_shopping", "Continue shopping")}
           </Link>
         </Button>
       </Card>
@@ -240,7 +244,7 @@ export function MiniCart({
     <Card variant="bordered" className={cn("flex h-full min-h-0 flex-col gap-4", className)}>
       <div className="flex items-center justify-between">
         <div>
-          <h3 className="text-lg font-semibold">{title}</h3>
+          <h3 className="text-lg font-semibold">{title || t("mini_bag_title", "Mini bag")}</h3>
           <span className="text-sm text-foreground/60">
             {cart.item_count} item{cart.item_count === 1 ? "" : "s"}
           </span>
@@ -251,7 +255,7 @@ export function MiniCart({
             className="text-sm text-foreground/60 hover:text-foreground"
             onClick={onClose}
           >
-            Close
+            {t("close", "Close")}
           </button>
         ) : null}
       </div>
@@ -293,7 +297,7 @@ export function MiniCart({
                           quantity: Math.max(1, item.quantity - 1),
                         })
                       }
-                      aria-label="Decrease quantity"
+                      aria-label={t("decrease_quantity", "Decrease quantity")}
                       disabled={isMutating}
                     >
                       -
@@ -310,7 +314,7 @@ export function MiniCart({
                           quantity: item.quantity + 1,
                         })
                       }
-                      aria-label="Increase quantity"
+                      aria-label={t("increase_quantity", "Increase quantity")}
                       disabled={isMutating}
                     >
                       +
@@ -322,7 +326,7 @@ export function MiniCart({
                     onClick={() => removeItem.mutate(item.id)}
                     disabled={isMutating}
                   >
-                    Remove
+                    {t("remove", "Remove")}
                   </button>
                 </div>
               </div>
@@ -331,12 +335,14 @@ export function MiniCart({
 
           <div className="space-y-2 border-t border-border pt-3 text-sm">
             <div className="flex items-center justify-between">
-              <span className="text-foreground/70">Subtotal</span>
+              <span className="text-foreground/70">{t("subtotal", "Subtotal")}</span>
               <span className="font-semibold">{subtotalLabel}</span>
             </div>
             {showEstimatedTotal ? (
               <div className="flex items-center justify-between">
-                <span className="text-foreground/70">Estimated total</span>
+                <span className="text-foreground/70">
+                  {t("estimated_total", "Estimated total")}
+                </span>
                 <span className="font-semibold">{totalLabel}</span>
               </div>
             ) : null}
@@ -345,12 +351,12 @@ export function MiniCart({
           <div className="grid gap-2">
             <Button asChild variant="secondary">
               <Link href="/cart/" onClick={handleClose}>
-                View bag
+                {t("view_bag", "View bag")}
               </Link>
             </Button>
             <Button asChild variant="primary-gradient">
               <Link href="/checkout/" onClick={handleClose}>
-                Checkout
+                {t("checkout", "Checkout")}
               </Link>
             </Button>
           </div>

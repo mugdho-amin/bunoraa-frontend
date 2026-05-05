@@ -25,36 +25,65 @@ function PerformanceMonitoring() {
 function ServiceWorkerRegistration() {
   useEffect(() => {
     if (
-      typeof window !== "undefined" &&
-      "serviceWorker" in navigator &&
-      process.env.NODE_ENV === "production"
+      typeof window === "undefined" ||
+      !("serviceWorker" in navigator) ||
+      process.env.NODE_ENV !== "production"
     ) {
-      navigator.serviceWorker
-        .register("/service-worker.js")
-        .then((registration) => {
-          console.log("[SW] Service Worker registered:", registration.scope);
-
-          // Handle updates
-          registration.addEventListener("updatefound", () => {
-            const newWorker = registration.installing;
-            if (newWorker) {
-              newWorker.addEventListener("statechange", () => {
-                if (
-                  newWorker.state === "installed" &&
-                  navigator.serviceWorker.controller
-                ) {
-                  // New version available
-                  console.log("[SW] New version available");
-                  // Optionally show update notification here
-                }
-              });
-            }
-          });
-        })
-        .catch((error) => {
-          console.error("[SW] Service Worker registration failed:", error);
-        });
+      return;
     }
+
+    const swEnabled =
+      process.env.NEXT_PUBLIC_ENABLE_SERVICE_WORKER === "true" ||
+      process.env.NEXT_PUBLIC_ENABLE_SERVICE_WORKER === "1";
+
+    const unregisterLegacyWorkers = async () => {
+      try {
+        const registrations = await navigator.serviceWorker.getRegistrations();
+        await Promise.all(
+          registrations
+            .filter((registration) => registration.active?.scriptURL?.includes("/service-worker.js"))
+            .map((registration) => registration.unregister())
+        );
+        if ("caches" in window) {
+          const keys = await caches.keys();
+          await Promise.all(
+            keys
+              .filter((key) => key.startsWith("bunoraa-"))
+              .map((key) => caches.delete(key))
+          );
+        }
+      } catch (error) {
+        console.error("[SW] Failed to clean up legacy service worker:", error);
+      }
+    };
+
+    if (!swEnabled) {
+      unregisterLegacyWorkers();
+      return;
+    }
+
+    navigator.serviceWorker
+      .register("/service-worker.js")
+      .then((registration) => {
+        console.log("[SW] Service Worker registered:", registration.scope);
+
+        registration.addEventListener("updatefound", () => {
+          const newWorker = registration.installing;
+          if (newWorker) {
+            newWorker.addEventListener("statechange", () => {
+              if (
+                newWorker.state === "installed" &&
+                navigator.serviceWorker.controller
+              ) {
+                console.log("[SW] New version available");
+              }
+            });
+          }
+        });
+      })
+      .catch((error) => {
+        console.error("[SW] Service Worker registration failed:", error);
+      });
   }, []);
 
   return null;

@@ -234,38 +234,49 @@ export function HeroBannerSlider({
             if (!value) return undefined;
             const trimmed = value.trim();
             if (!trimmed) return undefined;
-            try {
-              const parsed = new URL(trimmed, "http://example.com");
-              const isAbsolute = /^https?:\/\//i.test(trimmed);
-              if (!isAbsolute || !parsed.pathname.startsWith("/")) {
+
+            // If it's a relative path, use it directly (will use current frontend origin)
+            if (trimmed.startsWith("/")) {
+              return trimmed;
+            }
+
+            // If it's an absolute URL, validate and use it
+            if (/^https?:\/\//i.test(trimmed)) {
+              try {
+                const parsed = new URL(trimmed);
+                const currentHost = typeof window !== "undefined" ? window.location.hostname : "";
+                const backendHost = (() => {
+                  try {
+                    const apiUrl = process.env.NEXT_PUBLIC_API_BASE_URL?.trim();
+                    if (apiUrl) {
+                      return new URL(apiUrl).hostname;
+                    }
+                  } catch {
+                    // ignore invalid env URL
+                  }
+                  return "";
+                })();
+
+                const isInternalUrl =
+                  parsed.hostname === currentHost ||
+                  (backendHost && parsed.hostname === backendHost) ||
+                  /bunoraa/i.test(parsed.hostname);
+
+                if (isInternalUrl) {
+                  // Return just the pathname for internal URLs so they use frontend origin
+                  return `${parsed.pathname}${parsed.search}${parsed.hash}`;
+                }
+
+                // External URL, return as-is
+                return trimmed;
+              } catch {
+                // Invalid URL, return as-is
                 return trimmed;
               }
-
-              const currentHost = typeof window !== "undefined" ? window.location.hostname : "";
-              const backendHost = (() => {
-                try {
-                  const apiUrl = process.env.NEXT_PUBLIC_API_BASE_URL?.trim();
-                  if (apiUrl) {
-                    return new URL(apiUrl).hostname;
-                  }
-                } catch {
-                  // ignore invalid env URL
-                }
-                return "";
-              })();
-
-              const isInternalUrl =
-                parsed.hostname === currentHost ||
-                (backendHost && parsed.hostname === backendHost) ||
-                /bunoraa/i.test(parsed.hostname);
-
-              if (isInternalUrl) {
-                return `${parsed.pathname}${parsed.search}${parsed.hash}`;
-              }
-            } catch {
-              // ignore invalid URL, fallback to raw value
             }
-            return trimmed;
+
+            // Non-relative, non-absolute string - prepend /
+            return `/${trimmed}`;
           };
 
           const normalizedLinkUrl = normalizeLinkUrl(banner.link_url);

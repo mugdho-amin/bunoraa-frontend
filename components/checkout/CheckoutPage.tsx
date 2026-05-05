@@ -504,10 +504,12 @@ export function CheckoutPage() {
       }
       const orderId = payload?.order_id as string | undefined;
       const orderNumber = payload?.order_number as string | undefined;
+      const guestAccessToken = payload?.guest_access_token as string | undefined;
       if (orderId || orderNumber) {
         const params = new URLSearchParams();
         if (orderId) params.set("order_id", orderId);
         if (orderNumber) params.set("order_number", orderNumber);
+        if (guestAccessToken) params.set("access_token", guestAccessToken);
         router.replace(`/checkout/success?${params.toString()}`);
       } else {
         router.replace("/orders/");

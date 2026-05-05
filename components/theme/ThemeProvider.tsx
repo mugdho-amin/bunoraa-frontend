@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import { useUiMessages } from "@/components/i18n/useUiMessages";
 import { cn } from "@/lib/utils";
 
 export type ThemeName =
@@ -111,11 +112,14 @@ export function useTheme() {
 export function ThemeSwitcher({
   className,
   selectClassName,
+  onThemeChange,
 }: {
   className?: string;
   selectClassName?: string;
+  onThemeChange?: (theme: ThemeName, label: string) => void;
 }) {
   const { theme, setTheme } = useTheme();
+  const { t } = useUiMessages("footer");
 
   return (
     <label
@@ -124,10 +128,17 @@ export function ThemeSwitcher({
         className
       )}
     >
-      <span className="whitespace-nowrap">Theme</span>
+      <span className="whitespace-nowrap">{t("theme", "Theme")}</span>
       <select
         value={theme}
-        onChange={(event) => setTheme(event.target.value as ThemeName)}
+        onChange={(event) => {
+          const nextTheme = event.target.value as ThemeName;
+          setTheme(nextTheme);
+          onThemeChange?.(
+            nextTheme,
+            nextTheme.charAt(0).toUpperCase() + nextTheme.slice(1)
+          );
+        }}
         className={cn(
           "h-10 min-h-10 w-[10.5rem] rounded-lg border border-border bg-card px-2 text-sm leading-tight text-foreground sm:w-44 sm:text-sm",
           selectClassName

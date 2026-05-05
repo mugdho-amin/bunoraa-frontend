@@ -838,6 +838,18 @@ export function ProductDetailClient({
   const [sizeChartExpanded, setSizeChartExpanded] = React.useState(false);
   const [moreInfoExpanded, setMoreInfoExpanded] = React.useState(false);
   const [returnsExpanded, setReturnsExpanded] = React.useState(false);
+  const sizeAttributeFallback = React.useMemo(
+    () =>
+      (product.attributes || []).filter((attr) =>
+        /(size|waist|inseam|chest|bust|hip|length|width|foot)/i.test(
+          `${attr.attribute.name} ${attr.attribute.slug || ""}`
+        )
+      ),
+    [product.attributes]
+  );
+  const hasSizeChartContent = Boolean(
+    product.size_charts?.length || sizeAttributeFallback.length
+  );
 
   // Review stats query - fetched at top level to use in multiple places
   const reviewStatsQuery = useQuery({
@@ -1294,6 +1306,7 @@ export function ProductDetailClient({
             </section>
 
             {/* Size Chart */}
+            {hasSizeChartContent ? (
             <section id="size-chart" className="space-y-2 border-b border-border pb-3">
               <button
                 type="button"
@@ -1374,9 +1387,9 @@ export function ProductDetailClient({
                         </div>
                       );
                     })
-                  ) : product.attributes?.length ? (
+                  ) : sizeAttributeFallback.length ? (
                     <div className="grid gap-2 text-sm text-foreground/70">
-                      {product.attributes.map((attr) => (
+                      {sizeAttributeFallback.map((attr) => (
                         <div key={attr.id} className="flex items-center justify-between border-b border-border/70 py-1">
                           <span className="uppercase tracking-[0.12em] text-foreground/60">
                             {attr.attribute.name}
@@ -1391,6 +1404,7 @@ export function ProductDetailClient({
                 </div>
               )}
             </section>
+            ) : null}
 
             {/* More Information */}
             <section id="more-info" className="space-y-2 border-b border-border pb-3">

@@ -17,6 +17,7 @@ import { cn } from "@/lib/utils";
 import { formatMoney } from "@/lib/money";
 import { getStoredLocale } from "@/lib/locale";
 import { buildCategoryPath } from "@/lib/categoryPaths";
+import { useUiMessages } from "@/components/i18n/useUiMessages";
 
 export type CategoryFacet = {
   id: string;
@@ -65,6 +66,7 @@ export function FilterPanel({
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
+  const { t } = useUiMessages("filters");
   const [activeFilters, setActiveFilters] = React.useState<ProductFilterResponse | null>(filters);
   const [preferredCurrency, setPreferredCurrency] = React.useState<string | undefined>();
   const [activeHandle, setActiveHandle] = React.useState<"min" | "max" | null>(null);
@@ -78,7 +80,6 @@ export function FilterPanel({
   }, []);
 
   const paramsKey = React.useMemo(() => JSON.stringify(filterParams || {}), [filterParams]);
-  const shouldHideFilters = typeof productCount === "number" && productCount <= 1;
 
   React.useEffect(() => {
     let cancelled = false;
@@ -130,6 +131,11 @@ export function FilterPanel({
   const [maxPercentValue, setMaxPercentValue] = React.useState(100);
 
   React.useEffect(() => {
+    if (rangeSpan <= 0) {
+      setMinPercentValue(0);
+      setMaxPercentValue(100);
+      return;
+    }
     const nextMin = clampValue(parseNumber(current.priceMin, minRange), minRange, maxRange);
     const nextMax = clampValue(parseNumber(current.priceMax, maxRange), minRange, maxRange);
     const safeMin = Math.min(nextMin, nextMax);
@@ -139,22 +145,35 @@ export function FilterPanel({
   }, [current.priceMin, current.priceMax, minRange, maxRange, rangeSpan, percentFromValue]);
 
   const applyPrice = () => {
-    if (rangeSpan <= 0) return;
-    const rawMin = valueFromPercent(Math.min(minPercentValue, maxPercentValue));
-    const rawMax = valueFromPercent(Math.max(minPercentValue, maxPercentValue));
-    const safeMin = clampValue(Number(rawMin.toFixed(2)), minRange, sliderMax);
-    const safeMax = clampValue(Number(rawMax.toFixed(2)), minRange, sliderMax);
+    const safeMin =
+      rangeSpan <= 0
+        ? minRange
+        : clampValue(
+            Number(
+              valueFromPercent(Math.min(minPercentValue, maxPercentValue)).toFixed(2)
+            ),
+            minRange,
+            sliderMax
+          );
+    const safeMax =
+      rangeSpan <= 0
+        ? maxRange
+        : clampValue(
+            Number(
+              valueFromPercent(Math.max(minPercentValue, maxPercentValue)).toFixed(2)
+            ),
+            minRange,
+            sliderMax
+          );
     let params = updateParamValue(searchParams, "price_min", String(safeMin));
     params = updateParamValue(params, "price_max", String(safeMax));
     router.push(`${pathname}?${params.toString()}`);
   };
   const minPercent = minPercentValue;
   const maxPercent = maxPercentValue;
-  const rangeDisabled = !Number.isFinite(minRange) || !Number.isFinite(maxRange) || rangeSpan <= 0;
+  const rangeDisabled = !Number.isFinite(minRange) || !Number.isFinite(maxRange);
   const minOnTop =
     minPercentValue > maxPercentValue - 5;
-  const minZ = activeHandle === "min" || minOnTop ? "z-30" : "z-10";
-  const maxZ = activeHandle === "max" ? "z-30" : "z-20";
 
   const attributeGroups = React.useMemo(() => {
     const groups: Array<{ name: string; slug: string; values: Array<{ value: string; count?: number }> }> = [];
@@ -262,10 +281,6 @@ export function FilterPanel({
     },
     { label: `${formatLabel(bucketStep * 3)}+`, min: bucketStep * 3, max: null },
   ];
-
-  if (shouldHideFilters) {
-    return null;
-  }
 
   if (isMinimal) {
     return (
@@ -388,7 +403,9 @@ export function FilterPanel({
     <div className={cn("space-y-6", className)}>
       <div className="flex items-center justify-between rounded-xl border border-border/70 bg-card/40 px-3 py-2.5 text-sm">
         <span className="font-medium text-foreground/80">
-          {typeof productCount === "number" ? `${productCount} products` : "Filters"}
+          {typeof productCount === "number"
+            ? t("product_count", "{count} products", { count: productCount })
+            : t("filters", "Filters")}
         </span>
         {hasAppliedFilters ? (
           <Button
@@ -400,12 +417,12 @@ export function FilterPanel({
               router.push(`${pathname}?${params.toString()}`);
             }}
           >
-            Clear all
+            {t("clear_all", "Clear all")}
           </Button>
         ) : null}
       </div>
       {visibleCategories.length ? (
-        <Section title="Subcategories">
+        <Section title={t("subcategories", "Subcategories")}>
           <div className="flex flex-wrap gap-2">
             {visibleCategories.map((category) => (
               <Link
@@ -422,7 +439,7 @@ export function FilterPanel({
           </div>
         </Section>
       ) : null}
-      <Section title="Price range">
+      <Section title={t("price_range", "Price range")}>
         <div className="space-y-3">
           <div className="relative h-6 pt-1">
             <div className="pointer-events-none absolute inset-x-0 top-2 h-2 rounded-full bg-muted" />
@@ -489,7 +506,7 @@ export function FilterPanel({
         </div>
       </Section>
 
-      <Section title="Availability">
+      <Section title={t("availability", "Availability")}>
         <label className="flex min-h-10 items-center gap-2 text-sm">
           <input
             type="checkbox"
@@ -504,7 +521,7 @@ export function FilterPanel({
               router.push(`${pathname}?${params.toString()}`);
             }}
           />
-          In stock only
+          {t("in_stock_only", "In stock only")}
         </label>
         {activeFilters?.has_on_sale ? (
           <label className="flex min-h-10 items-center gap-2 text-sm">
@@ -521,7 +538,7 @@ export function FilterPanel({
                 router.push(`${pathname}?${params.toString()}`);
               }}
             />
-            On sale
+            {t("on_sale", "On sale")}
           </label>
         ) : null}
         <label className="flex min-h-10 items-center gap-2 text-sm">
@@ -538,11 +555,11 @@ export function FilterPanel({
               router.push(`${pathname}?${params.toString()}`);
             }}
           />
-          New arrivals
+          {t("new_arrivals", "New arrivals")}
         </label>
       </Section>
 
-      <Section title="Rating">
+      <Section title={t("rating", "Rating")}>
         {[4, 3, 2].map((rating) => (
           <label key={rating} className="flex min-h-10 items-center gap-2 text-sm">
             <input
@@ -555,7 +572,7 @@ export function FilterPanel({
                 router.push(`${pathname}?${params.toString()}`);
               }}
             />
-            {rating}+ stars
+            {t("stars_plus", "{value}+ stars", { value: rating })}
           </label>
         ))}
         {current.minRating ? (

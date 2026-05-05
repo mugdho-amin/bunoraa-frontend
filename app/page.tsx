@@ -62,6 +62,10 @@ type HomepageData = {
   bestsellers: ProductListItem[];
   on_sale: ProductListItem[];
   featured_categories: FeaturedCategory[];
+  category_bands?: Array<{
+    category: FeaturedCategory;
+    products: ProductListItem[];
+  }>;
   collections: Collection[];
   spotlights?: Spotlight[];
   show_by_categories?: FeaturedCategory[];
@@ -77,6 +81,7 @@ const DEFAULT_HOMEPAGE_DATA: HomepageData = {
   bestsellers: [],
   on_sale: [],
   featured_categories: [],
+  category_bands: [],
   collections: [],
   spotlights: [],
   show_by_categories: [],
@@ -118,6 +123,9 @@ async function getHomepageData() {
       on_sale: asArray<ProductListItem>((payload as HomepageData).on_sale),
       featured_categories: asArray<FeaturedCategory>(
         (payload as HomepageData).featured_categories
+      ),
+      category_bands: asArray<{ category: FeaturedCategory; products: ProductListItem[] }>(
+        (payload as HomepageData).category_bands
       ),
       collections: asArray<Collection>((payload as HomepageData).collections),
       spotlights: asArray<Spotlight>((payload as HomepageData).spotlights),
@@ -213,13 +221,20 @@ export default async function Home() {
     (category) => Boolean(category.is_featured) || featuredCategorySlugs.has(category.slug)
   );
   const homepageCategories = featuredCategories.slice(0, 3);
-  const categoryProducts = await Promise.all(
-    homepageCategories.map((category) => getCategoryProducts(category.slug))
+  const providedCategoryBands = asArray<{ category: FeaturedCategory; products: ProductListItem[] }>(
+    homepageData.category_bands
   );
-  const categoryBands = homepageCategories.map((category, index) => ({
-    category,
-    products: categoryProducts[index] || [],
-  }));
+  const categoryBands =
+    providedCategoryBands.length > 0
+      ? providedCategoryBands
+      : (
+          await Promise.all(
+            homepageCategories.map(async (category) => ({
+              category,
+              products: await getCategoryProducts(category.slug),
+            }))
+          )
+        );
   const seenHomepageProductIds = new Set<string>();
   const categoryBandsWithProducts = categoryBands
     .map((band) => ({

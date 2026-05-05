@@ -282,6 +282,11 @@
     z-index: var(--slider-max-z, 20);
   }
 
+  html.cart-drawer-open body > :not([data-cart-drawer-root]):not([data-toast-root]):not(script) {
+    filter: blur(6px);
+    transition: filter 0.2s ease;
+  }
+
   input:not([type="checkbox"]):not([type="radio"]):not([type="range"]),
   select,
   textarea {

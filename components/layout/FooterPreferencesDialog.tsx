@@ -5,8 +5,10 @@ import { cn } from "@/lib/utils";
 import { Card } from "@/components/ui/Card";
 import { LocaleSwitcher } from "@/components/locale/LocaleSwitcher";
 import { ThemeSwitcher, useTheme } from "@/components/theme/ThemeProvider";
+import { useUiMessages } from "@/components/i18n/useUiMessages";
 import { useLocale } from "@/components/providers/LocaleProvider";
 import { Button } from "@/components/ui/Button";
+import { useToast } from "@/components/ui/ToastProvider";
 
 function formatTheme(theme: string): string {
   if (!theme) return "System";
@@ -32,7 +34,22 @@ function normalizeText(value?: string | null): string {
 export function FooterPreferencesDialog({ className }: { className?: string }) {
   const { theme } = useTheme();
   const { locale } = useLocale();
+  const { t } = useUiMessages("footer");
+  const { push } = useToast();
   const [isOpen, setIsOpen] = React.useState(false);
+
+  const handlePreferenceToast = React.useCallback(
+    (field: "theme" | "language" | "currency" | "country" | "timezone", label: string) => {
+      const key = `${field}_changed` as const;
+      setIsOpen(false);
+      push(
+        t(key, `${field} changed to {value}.`, { value: label }),
+        "success",
+        { position: "bottom" }
+      );
+    },
+    [push, t]
+  );
 
   React.useEffect(() => {
     if (!isOpen) return;
@@ -100,7 +117,7 @@ export function FooterPreferencesDialog({ className }: { className?: string }) {
           className="fixed inset-0 z-[80] flex items-end justify-center overflow-y-auto bg-black/50 p-3 pb-[calc(0.75rem+env(safe-area-inset-bottom))] sm:items-center sm:p-4"
           role="dialog"
           aria-modal="true"
-          aria-label="Update preferences"
+          aria-label={t("display_preferences", "Display preferences")}
         >
           <button
             type="button"
@@ -113,15 +130,18 @@ export function FooterPreferencesDialog({ className }: { className?: string }) {
             className="relative z-10 w-full max-w-xl max-h-[min(92dvh,44rem)] overflow-y-auto bg-background p-4 sm:p-6"
           >
             <div className="mb-4 flex items-center justify-between gap-3">
-              <h2 className="text-lg font-semibold">Display preferences</h2>
+              <h2 className="text-lg font-semibold">
+                {t("display_preferences", "Display preferences")}
+              </h2>
               <Button variant="ghost" size="sm" onClick={() => setIsOpen(false)}>
-                Close
+                {t("close", "Close")}
               </Button>
             </div>
             <div className="space-y-4">
               <ThemeSwitcher
                 className="grid w-full grid-cols-[minmax(6.5rem,auto)_minmax(0,1fr)] items-center gap-3 text-sm font-medium text-foreground/80 sm:gap-4"
                 selectClassName="w-full sm:w-52 sm:justify-self-end"
+                onThemeChange={(_, label) => handlePreferenceToast("theme", label)}
               />
               <LocaleSwitcher
                 includeCountry
@@ -129,6 +149,9 @@ export function FooterPreferencesDialog({ className }: { className?: string }) {
                 stackedInlineOnMobile
                 className="w-full"
                 selectClassName="w-full sm:w-52 sm:justify-self-end"
+                onPreferenceChange={(change) =>
+                  handlePreferenceToast(change.field, change.label)
+                }
               />
             </div>
           </Card>

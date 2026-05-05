@@ -5,11 +5,12 @@ import Link from "next/link";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { useAuth } from "@/components/auth/useAuth";
+import { useUiMessages } from "@/components/i18n/useUiMessages";
 
 export function AuthGate({
   children,
-  title = "Authentication required",
-  description = "Please sign in to continue.",
+  title,
+  description,
   nextHref,
   allowGuest = false,
 }: {
@@ -20,6 +21,7 @@ export function AuthGate({
   allowGuest?: boolean;
 }) {
   const { hasToken } = useAuth();
+  const { t } = useUiMessages("auth");
   const [mounted, setMounted] = React.useState(false);
   const loginHref = nextHref
     ? `/account/login/?next=${encodeURIComponent(nextHref)}`
@@ -48,10 +50,14 @@ export function AuthGate({
       <div className="min-h-screen bg-background text-foreground">
         <div className="mx-auto w-full max-w-3xl px-3 sm:px-5 py-20">
           <Card variant="bordered" className="space-y-4">
-            <h1 className="text-2xl font-semibold">{title}</h1>
-            <p className="text-sm text-foreground/70">{description}</p>
+            <h1 className="text-2xl font-semibold">
+              {title || t("authentication_required", "Authentication required")}
+            </h1>
+            <p className="text-sm text-foreground/70">
+              {description || t("please_sign_in_continue", "Please sign in to continue.")}
+            </p>
             <Button asChild variant="primary-gradient">
-              <Link href={loginHref}>Sign in</Link>
+              <Link href={loginHref}>{t("sign_in", "Sign in")}</Link>
             </Button>
           </Card>
         </div>

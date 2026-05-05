@@ -220,7 +220,12 @@ export async function renderCategoryPageForPath(
         }
       : undefined);
   const totalCount = pagination?.count ?? products.length;
-  const showFilters = totalCount > 1;
+  const showFilters = Boolean(
+    filterData ||
+    facets.length ||
+    childCategories.length ||
+    totalCount > 0
+  );
   const requestParams = buildCategoryProductsParams(resolvedSearchParams);
 
   const categoryUrl = buildCategoryPath(slugPath);

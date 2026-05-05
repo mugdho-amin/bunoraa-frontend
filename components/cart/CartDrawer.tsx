@@ -34,9 +34,11 @@ export function CartDrawer({
     const original = document.body.style.overflow;
     originalOverflow.current = original;
     document.body.style.overflow = "hidden";
+    document.documentElement.classList.add("cart-drawer-open");
     return () => {
       document.body.style.overflow = originalOverflow.current || "";
       originalOverflow.current = null;
+      document.documentElement.classList.remove("cart-drawer-open");
     };
   }, [isOpen]);
 
@@ -46,6 +48,7 @@ export function CartDrawer({
 
   return createPortal(
     <div
+      data-cart-drawer-root
       className="fixed inset-0 z-[90]"
       aria-hidden={!isOpen}
       onClick={(event) => {
@@ -54,19 +57,23 @@ export function CartDrawer({
     >
       <div
         className={cn(
-          "absolute inset-0 bg-black/40 transition-opacity",
+          "absolute inset-0 bg-black/35 backdrop-blur-[2px] transition-opacity",
           isOpen ? "opacity-100" : "opacity-0"
         )}
         onClick={onClose}
       />
       <aside
         className={cn(
-          "absolute right-0 top-0 flex h-[100dvh] w-full max-w-[420px] transform flex-col bg-background px-4 pb-[calc(1rem+env(safe-area-inset-bottom))] pt-[calc(0.75rem+env(safe-area-inset-top))] shadow-xl transition-transform sm:p-6",
+          "absolute right-0 top-0 flex h-[100dvh] w-full max-w-[420px] transform flex-col bg-background/95 px-4 pb-[calc(1rem+env(safe-area-inset-bottom))] pt-[calc(0.75rem+env(safe-area-inset-top))] shadow-xl backdrop-blur-xl transition-transform sm:p-6",
           isOpen ? "translate-x-0" : "translate-x-full"
         )}
         onClick={(event) => event.stopPropagation()}
       >
-        <MiniCart title="Your bag" onClose={onClose} className="h-full min-h-0" />
+        <MiniCart
+          title="Your bag"
+          onClose={onClose}
+          className="h-full min-h-0 border-0 bg-transparent p-0 shadow-none"
+        />
       </aside>
     </div>,
     document.body

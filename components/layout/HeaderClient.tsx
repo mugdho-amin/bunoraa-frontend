@@ -31,6 +31,7 @@ import { useAuthContext } from "@/components/providers/AuthProvider";
 import { useWishlist } from "@/components/wishlist/useWishlist";
 import { useNotifications } from "@/components/notifications/useNotifications";
 import { useToast } from "@/components/ui/ToastProvider";
+import { useUiMessages } from "@/components/i18n/useUiMessages";
 
 const CartDrawer = dynamic(
   () => import("@/components/cart/CartDrawer").then((mod) => mod.CartDrawer),
@@ -68,6 +69,7 @@ export function HeaderClient() {
   const [menuOpen, setMenuOpen] = React.useState(false);
   const menuRef = React.useRef<HTMLDivElement | null>(null);
   const { push } = useToast();
+  const { t } = useUiMessages("cart");
   const {
     hasToken,
     profileQuery,
@@ -76,10 +78,11 @@ export function HeaderClient() {
     switchAccount,
     logout,
   } = useAuthContext();
+  const shouldLoadCartSummary = mounted;
   const shouldLoadHeaderCounts = mounted && hasToken;
   const { cartQuery, cartSummaryQuery } = useCart({
     includeCart: open,
-    includeSummary: shouldLoadHeaderCounts,
+    includeSummary: shouldLoadCartSummary,
   });
   const { wishlistQuery } = useWishlist({ enabled: shouldLoadHeaderCounts });
   const { unreadCountQuery } = useNotifications(undefined, {
@@ -90,6 +93,9 @@ export function HeaderClient() {
     cartSummaryQuery.data?.item_count ??
     cartQuery.data?.item_count ??
     0;
+  const cartKnownEmpty =
+    (cartSummaryQuery.data ? cartSummaryQuery.data.item_count === 0 : false) ||
+    (cartQuery.data ? cartQuery.data.item_count === 0 : false);
   const wishlistCount =
     wishlistQuery.data?.meta?.pagination?.count ??
     wishlistQuery.data?.data?.length ??
@@ -131,9 +137,17 @@ export function HeaderClient() {
     if (typeof window === "undefined") return;
     const key = "cart_prompt_shown";
     if (window.sessionStorage.getItem(key)) return;
-    push("You have items waiting in your bag.", "info");
+    push(t("items_waiting_notice", "You have items waiting in your bag."), "info");
     window.sessionStorage.setItem(key, "true");
-  }, [count, mounted, push]);
+  }, [count, mounted, push, t]);
+
+  React.useEffect(() => {
+    if (!open) return;
+    if (!cartQuery.data) return;
+    if (cartQuery.data.item_count > 0) return;
+    setOpen(false);
+    push(t("empty_bag_notice", "Your bag is empty."), "info", { position: "bottom" });
+  }, [cartQuery.data, open, push, t]);
 
   React.useEffect(() => {
     if (!menuOpen) return;
@@ -192,7 +206,15 @@ export function HeaderClient() {
       <button
         type="button"
         className={`group ${iconButtonClass}`}
-        onClick={() => setOpen((prev) => !prev)}
+        onClick={() => {
+          if (!open && cartKnownEmpty) {
+            push(t("empty_bag_notice", "Your bag is empty."), "info", {
+              position: "bottom",
+            });
+            return;
+          }
+          setOpen((prev) => !prev);
+        }}
         aria-label="Bag"
       >
         <Handbag className="h-5 w-5" strokeWidth={1.8} aria-hidden="true" />
