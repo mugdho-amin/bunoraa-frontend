@@ -127,6 +127,7 @@ export function RecentlyViewedSection({
                 />
                 <Link
                   href={`/products/${item.slug}/`}
+                  prefetch={false}
                   className="absolute inset-0 z-10"
                   aria-label={`View ${item.name}`}
                 />
@@ -145,6 +146,7 @@ export function RecentlyViewedSection({
               <div className="mt-3 space-y-1">
                 <Link
                   href={`/products/${item.slug}/`}
+                  prefetch={false}
                   className="block text-sm font-medium leading-snug text-foreground"
                 >
                   {item.name}

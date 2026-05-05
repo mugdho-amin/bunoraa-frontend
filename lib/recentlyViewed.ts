@@ -10,6 +10,11 @@ export type RecentlyViewedItem = Pick<
 const KEY = "bunoraa-recently-viewed";
 const MAX_ITEMS = 12;
 
+function isValidProductSlug(slug: string): boolean {
+  const trimmed = slug.trim();
+  return Boolean(trimmed) && !/[/?#]/.test(trimmed);
+}
+
 function normalizeSlug(slug: string): string {
   return slug.trim().toLowerCase();
 }
@@ -21,7 +26,7 @@ function normalizeItems(items: RecentlyViewedItem[]): RecentlyViewedItem[] {
   for (const item of items) {
     if (!item || typeof item.id !== "string" || typeof item.slug !== "string") continue;
     const slug = item.slug.trim();
-    if (!slug) continue;
+    if (!isValidProductSlug(slug)) continue;
     const key = normalizeSlug(slug);
     if (seen.has(key)) continue;
     seen.add(key);
@@ -54,7 +59,7 @@ export function getRecentlyViewed(): RecentlyViewedItem[] {
 
 export function addRecentlyViewed(item: Omit<RecentlyViewedItem, "viewed_at">) {
   if (typeof window === "undefined") return;
-  if (typeof item.slug !== "string" || !item.slug.trim()) return;
+  if (typeof item.slug !== "string" || !isValidProductSlug(item.slug)) return;
   const slugKey = normalizeSlug(item.slug);
   const items = getRecentlyViewed().filter(
     (existing) => existing.id !== item.id && normalizeSlug(existing.slug) !== slugKey

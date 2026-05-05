@@ -2,7 +2,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { apiFetch } from "@/lib/api";
 import type { UserPreferences } from "@/lib/types";
 
-const preferencesKey = ["account", "preferences"] as const;
+export const preferencesKey = ["account", "preferences"] as const;
 
 async function fetchPreferences() {
   const response = await apiFetch<UserPreferences>("/accounts/preferences/");

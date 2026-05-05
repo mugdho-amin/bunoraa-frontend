@@ -1,17 +1,14 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { apiFetch, ApiError } from "@/lib/api";
 import type { ProductListItem, ProductFilterResponse } from "@/lib/types";
-import { ProductGrid } from "@/components/products/ProductGrid";
 import { FilterPanel } from "@/components/products/FilterPanel";
 import { FilterDrawer } from "@/components/products/FilterDrawer";
 import { AppliedFilters } from "@/components/products/AppliedFilters";
+import { InfiniteProductGrid } from "@/components/products/InfiniteProductGrid";
 import { SortMenu } from "@/components/products/SortMenu";
 import { ViewToggle } from "@/components/products/ViewToggle";
-import { Button } from "@/components/ui/Button";
 import { notFound } from "next/navigation";
 import type { CategoryFacet } from "@/components/products/FilterPanel";
-import { RecentlyViewedSection } from "@/components/products/RecentlyViewedSection";
 import { getServerLocaleHeaders } from "@/lib/serverLocale";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { buildCollectionPage, buildItemList, buildPageMetadata } from "@/lib/seo";
@@ -34,6 +31,12 @@ type Category = {
 };
 
 export type CategorySearchParams = Record<string, string | string[] | undefined>;
+type RequestParamValue =
+  | string
+  | number
+  | boolean
+  | Array<string | number | boolean>
+  | undefined;
 
 function firstValue(value: string | string[] | undefined): string | undefined {
   if (Array.isArray(value)) return value[0];
@@ -54,6 +57,32 @@ function parsePageNumber(searchParams: CategorySearchParams): number {
   return Number.isFinite(page) && page > 1 ? Math.floor(page) : 1;
 }
 
+function buildCategoryProductsParams(
+  searchParams: CategorySearchParams,
+  page?: number
+): Record<string, RequestParamValue> {
+  const params: Record<string, RequestParamValue> = {};
+
+  Object.entries(searchParams).forEach(([key, value]) => {
+    if (key === "view") return;
+    if (key === "page") return;
+    if (value === undefined) return;
+    if (Array.isArray(value)) {
+      params[key] = value.filter((item) => item.trim() !== "");
+      return;
+    }
+    if (value !== "") {
+      params[key] = value;
+    }
+  });
+
+  if (page && page > 1) {
+    params.page = page;
+  }
+
+  return params;
+}
+
 async function getCategory(slug: string) {
   try {
     const response = await apiFetch<Category>(`/catalog/categories/${slug}/`, {
@@ -69,41 +98,13 @@ async function getCategory(slug: string) {
 }
 
 async function getCategoryProducts(slug: string, searchParams: CategorySearchParams) {
-  const params: Record<string, string | number | boolean | Array<string | number | boolean> | undefined> = {};
-  Object.entries(searchParams).forEach(([key, value]) => {
-    // Skip non-filter parameters
-    if (key === "view") return;
-    if (value === undefined) return;
-    
-    // Handle array values (for multi-select filters)
-    if (Array.isArray(value)) {
-      // Filter out empty strings
-      const filtered = value.filter(v => String(v).trim() !== "");
-      if (filtered.length > 0) {
-        params[key] = filtered;
-      }
-      return;
-    }
-    
-    // Handle string values
-    if (typeof value === "string") {
-      const trimmed = value.trim();
-      // Always pass page, even if empty
-      if (key === "page") {
-        params[key] = Number(trimmed) || 1;
-        return;
-      }
-      // Pass other non-empty values
-      if (trimmed !== "") {
-        params[key] = trimmed;
-      }
-    }
-  });
-
   const response = await apiFetch<ProductListItem[]>(
     `/catalog/categories/${slug}/products/`,
     {
-      params,
+      params: buildCategoryProductsParams(
+        searchParams,
+        parsePageNumber(searchParams)
+      ),
       headers: await getServerLocaleHeaders(),
       cache: "no-store"
     }
@@ -220,26 +221,7 @@ export async function renderCategoryPageForPath(
       : undefined);
   const totalCount = pagination?.count ?? products.length;
   const showFilters = totalCount > 1;
-  const showPagination =
-    (pagination?.total_pages ? pagination.total_pages > 1 : totalCount > products.length) &&
-    products.length > 0;
-  const showRecentlyViewed = totalCount > 1;
-
-  const baseParams = new URLSearchParams();
-  Object.entries(resolvedSearchParams).forEach(([key, value]) => {
-    if (key === "page" || value === undefined) return;
-    if (Array.isArray(value)) {
-      value.forEach((item) => baseParams.append(key, item));
-    } else if (value !== "") {
-      baseParams.set(key, value);
-    }
-  });
-
-  const pageLink = (pageNumber: number) => {
-    const params = new URLSearchParams(baseParams.toString());
-    params.set("page", String(pageNumber));
-    return `?${params.toString()}`;
-  };
+  const requestParams = buildCategoryProductsParams(resolvedSearchParams);
 
   const categoryUrl = buildCategoryPath(slugPath);
   const itemListId = `${categoryUrl}#itemlist`;
@@ -309,42 +291,20 @@ export async function renderCategoryPageForPath(
           ) : null}
           <div className="space-y-6">
             <AppliedFilters />
-            <ProductGrid products={products} view={view} />
-
-            {showPagination ? (
-              <div className="mt-8 grid grid-cols-2 items-center gap-2 rounded-xl border border-border/70 bg-card/30 p-3 sm:mt-10 sm:flex sm:justify-between sm:p-4">
-                <span className="order-1 col-span-2 text-center text-sm text-foreground/60 sm:order-none sm:col-span-1">
-                  Page {page}
-                  {pagination?.total_pages ? ` of ${pagination.total_pages}` : ""}
-                </span>
-                {pagination?.previous ? (
-                  <Button asChild variant="ghost" size="sm" className="order-2 w-full sm:order-none sm:w-auto">
-                    <Link href={pageLink(page - 1)} prefetch>Previous</Link>
-                  </Button>
-                ) : (
-                  <span className="order-2 rounded-xl px-4 py-2 text-center text-sm text-foreground/40 sm:order-none">
-                    Previous
-                  </span>
-                )}
-                {pagination?.next ? (
-                  <Button asChild variant="ghost" size="sm" className="order-3 w-full sm:order-none sm:w-auto">
-                    <Link href={pageLink(page + 1)} prefetch>Next</Link>
-                  </Button>
-                ) : (
-                  <span className="order-3 rounded-xl px-4 py-2 text-center text-sm text-foreground/40 sm:order-none">
-                    Next
-                  </span>
-                )}
-              </div>
-            ) : null}
+            <InfiniteProductGrid
+              endpoint={`/catalog/categories/${slugPath}/products/`}
+              requestParams={requestParams}
+              initialProducts={products}
+              initialPagination={pagination}
+              resetKey={JSON.stringify({
+                endpoint: `/catalog/categories/${slugPath}/products/`,
+                params: requestParams,
+                view,
+              })}
+              view={view}
+            />
           </div>
         </div>
-
-        {showRecentlyViewed ? (
-          <div className="mt-12">
-            <RecentlyViewedSection />
-          </div>
-        ) : null}
       </div>
       <JsonLd data={[collectionPage, productList]} />
     </div>

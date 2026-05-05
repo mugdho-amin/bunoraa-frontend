@@ -12,8 +12,41 @@ export function AppliedFilters({ variant = "default" }: { variant?: "default" | 
   const filters = parseFilters(searchParams);
   const applied = getAppliedFilters(filters);
 
-  if (variant === "minimal") return null;
   if (!applied.length) return null;
+
+  if (variant === "minimal") {
+    return (
+      <div className="flex flex-wrap items-center gap-2">
+        <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-foreground/55">
+          Active filters
+        </p>
+        {applied.map((filter) => (
+          <button
+            key={`${filter.key}-${filter.value || filter.label}`}
+            type="button"
+            onClick={() => {
+              const params = removeAppliedFilter(searchParams, filter);
+              router.push(`${pathname}?${params.toString()}`);
+            }}
+            className="inline-flex min-h-9 items-center rounded-full border border-border bg-card px-3 py-1 text-xs font-medium text-foreground/80"
+          >
+            {filter.label}
+          </button>
+        ))}
+        <Button
+          variant="ghost"
+          size="sm"
+          className="px-2.5 text-xs"
+          onClick={() => {
+            const params = clearAllFilters(searchParams);
+            router.push(`${pathname}?${params.toString()}`);
+          }}
+        >
+          Clear all
+        </Button>
+      </div>
+    );
+  }
 
   return (
     <div className="rounded-xl border border-border/70 bg-card/40 p-3">

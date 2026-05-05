@@ -18,6 +18,12 @@ export type AppliedFilter = {
   value?: string;
 };
 
+function humanizeLabel(value: string) {
+  return value
+    .replace(/[_-]+/g, " ")
+    .replace(/\b\w/g, (char) => char.toUpperCase());
+}
+
 function parseBool(value: string | null) {
   return value === "1" || value === "true";
 }
@@ -94,7 +100,11 @@ export function getAppliedFilters(filters: ProductFilterState): AppliedFilter[] 
 
   Object.entries(filters.attrs).forEach(([slug, values]) => {
     values.forEach((value) => {
-      applied.push({ key: `attr_${slug}`, label: `${slug}: ${value}`, value });
+      applied.push({
+        key: `attr_${slug}`,
+        label: `${humanizeLabel(slug)}: ${value}`,
+        value,
+      });
     });
   });
 

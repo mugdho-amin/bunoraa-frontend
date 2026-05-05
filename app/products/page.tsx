@@ -1,16 +1,16 @@
 import type { Metadata } from "next";
 import dynamic from "next/dynamic";
-import Link from "next/link";
 import { apiFetch } from "@/lib/api";
 import type { ProductListItem, ProductFilterResponse } from "@/lib/types";
 import { getServerLocaleHeaders } from "@/lib/serverLocale";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { buildCollectionPage, buildItemList, buildPageMetadata } from "@/lib/seo";
 import { buildProductPath } from "@/lib/productPaths";
-import { cn } from "@/lib/utils";
-
-const ProductGrid = dynamic(
-  () => import("@/components/products/ProductGrid").then((mod) => mod.ProductGrid)
+const InfiniteProductGrid = dynamic(
+  () =>
+    import("@/components/products/InfiniteProductGrid").then(
+      (mod) => mod.InfiniteProductGrid
+    )
 );
 const FilterPanel = dynamic(
   () => import("@/components/products/FilterPanel").then((mod) => mod.FilterPanel)
@@ -24,11 +24,14 @@ const AppliedFilters = dynamic(
 const SortMenu = dynamic(
   () => import("@/components/products/SortMenu").then((mod) => mod.SortMenu)
 );
-const RecentlyViewedSection = dynamic(
-  () => import("@/components/products/RecentlyViewedSection").then((mod) => mod.RecentlyViewedSection)
-);
 
 type SearchParams = Record<string, string | string[] | undefined>;
+type RequestParamValue =
+  | string
+  | number
+  | boolean
+  | Array<string | number | boolean>
+  | undefined;
 
 function firstValue(value: string | string[] | undefined): string | undefined {
   if (Array.isArray(value)) return value[0];
@@ -47,6 +50,32 @@ function parsePageNumber(searchParams: SearchParams): number {
   const rawPage = firstValue(searchParams.page);
   const page = Number(rawPage || 1);
   return Number.isFinite(page) && page > 1 ? Math.floor(page) : 1;
+}
+
+function buildProductRequestParams(
+  searchParams: SearchParams,
+  page?: number
+): Record<string, RequestParamValue> {
+  const params: Record<string, RequestParamValue> = {};
+
+  Object.entries(searchParams).forEach(([key, value]) => {
+    if (key === "view") return;
+    if (key === "page") return;
+    if (value === undefined) return;
+    if (Array.isArray(value)) {
+      params[key] = value.filter((item) => item.trim() !== "");
+      return;
+    }
+    if (value !== "") {
+      params[key] = value;
+    }
+  });
+
+  if (page && page > 1) {
+    params.page = page;
+  }
+
+  return params;
 }
 
 export async function generateMetadata({
@@ -87,21 +116,8 @@ export async function generateMetadata({
 }
 
 async function getProducts(searchParams: SearchParams) {
-  const params: Record<string, string | number | boolean | Array<string | number | boolean> | undefined> = {};
-  Object.entries(searchParams).forEach(([key, value]) => {
-    if (key === "view") return;
-    if (value === undefined) return;
-    if (Array.isArray(value)) {
-      params[key] = value;
-      return;
-    }
-    if (value !== "") {
-      params[key] = key === "page" ? Number(value) || 1 : value;
-    }
-  });
-
   return apiFetch<ProductListItem[]>("/catalog/products/", {
-    params,
+    params: buildProductRequestParams(searchParams, parsePageNumber(searchParams)),
     headers: await getServerLocaleHeaders()
   });
 }
@@ -168,33 +184,7 @@ export default async function ProductsPage({
       : undefined);
   const totalCount = pagination?.count ?? products.length;
   const showFilters = totalCount > 1;
-  const showPagination =
-    (pagination?.total_pages ? pagination.total_pages > 1 : totalCount > products.length) &&
-    products.length > 0;
-  const showRecentlyViewed = totalCount > 1;
-
-  const baseParams = new URLSearchParams();
-  Object.entries(resolved).forEach(([key, value]) => {
-    if (key === "page" || value === undefined) return;
-    if (Array.isArray(value)) {
-      value.forEach((item) => baseParams.append(key, item));
-    } else if (value !== "") {
-      baseParams.set(key, value);
-    }
-  });
-
-  const pageLink = (page: number) => {
-    const params = new URLSearchParams(baseParams.toString());
-    params.set("page", String(page));
-    return `?${params.toString()}`;
-  };
-  const totalPages = pagination?.total_pages || 1;
-  const windowSize = 5;
-  const startPage = Math.max(1, Math.min(currentPage - 2, totalPages - windowSize + 1));
-  const endPage = Math.min(totalPages, startPage + windowSize - 1);
-  const pageNumbers = Array.from({ length: Math.max(0, endPage - startPage + 1) }, (_, i) => startPage + i);
-  const showFirst = startPage > 1;
-  const showLast = endPage < totalPages;
+  const requestParams = buildProductRequestParams(resolved);
 
   const listId = "/products/#itemlist";
   const productList = buildItemList(
@@ -228,10 +218,9 @@ export default async function ProductsPage({
                 productCount={totalCount}
                 className="lg:hidden"
                 filterParams={filterParams}
-                variant="minimal"
               />
             ) : null}
-            <SortMenu variant="minimal" />
+            <SortMenu />
           </div>
         </div>
 
@@ -242,78 +231,26 @@ export default async function ProductsPage({
                 filters={filterData}
                 productCount={totalCount}
                 filterParams={filterParams}
-                variant="minimal"
               />
             </aside>
           ) : null}
           <div className="space-y-6">
             <AppliedFilters variant="minimal" />
-            <ProductGrid products={products} view={view} cardStyle="minimal" />
-
-            {showPagination ? (
-              <div className="mt-10 flex flex-wrap items-center justify-center gap-2 text-sm">
-                {pagination?.previous ? (
-                  <Link
-                    href={pageLink(currentPage - 1)}
-                    className="rounded-full border border-border px-3 py-1.5 hover:border-foreground"
-                  >
-                    Prev
-                  </Link>
-                ) : null}
-                {showFirst ? (
-                  <>
-                    <Link
-                      href={pageLink(1)}
-                      className="rounded-full border border-border px-3 py-1.5 hover:border-foreground"
-                    >
-                      1
-                    </Link>
-                    <span className="px-2 text-foreground/50">...</span>
-                  </>
-                ) : null}
-                {pageNumbers.map((page) => (
-                  <Link
-                    key={page}
-                    href={pageLink(page)}
-                    className={cn(
-                      "rounded-full border px-3 py-1.5",
-                      page === currentPage
-                        ? "border-foreground bg-foreground text-background"
-                        : "border-border hover:border-foreground"
-                    )}
-                  >
-                    {page}
-                  </Link>
-                ))}
-                {showLast ? (
-                  <>
-                    <span className="px-2 text-foreground/50">...</span>
-                    <Link
-                      href={pageLink(totalPages)}
-                      className="rounded-full border border-border px-3 py-1.5 hover:border-foreground"
-                    >
-                      {totalPages}
-                    </Link>
-                  </>
-                ) : null}
-                {pagination?.next ? (
-                  <Link
-                    href={pageLink(currentPage + 1)}
-                    className="rounded-full border border-border px-3 py-1.5 hover:border-foreground"
-                  >
-                    Next
-                  </Link>
-                ) : null}
-              </div>
-            ) : null}
+            <InfiniteProductGrid
+              endpoint="/catalog/products/"
+              requestParams={requestParams}
+              initialProducts={products}
+              initialPagination={pagination}
+              resetKey={JSON.stringify({
+                endpoint: "/catalog/products/",
+                params: requestParams,
+                view,
+              })}
+              view={view}
+              cardStyle="minimal"
+            />
           </div>
         </div>
-
-        {showRecentlyViewed ? (
-          <div className="mt-12">
-            <RecentlyViewedSection />
-          </div>
-        ) : null}
       </div>
       {products.length ? <JsonLd data={[collectionPage, productList]} /> : null}
     </div>
