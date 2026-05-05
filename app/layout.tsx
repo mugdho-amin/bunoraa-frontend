@@ -169,6 +169,7 @@ export default function RootLayout({
         <Script id="theme-bootstrap" strategy="beforeInteractive">
           {themeBootstrapScript}
         </Script>
+        <Script src="https://accounts.google.com/gsi/client" strategy="afterInteractive" />
         <SkipToContent />
         <Providers>
           <Header />
