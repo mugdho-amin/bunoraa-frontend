@@ -1469,15 +1469,10 @@ export function ProductDetailClient({
 
       <ShippingEstimator product={product} quantity={quantity} unitPrice={unitPrice} />
 
-      <section className="space-y-2">
-        <h2 className="text-sm font-semibold uppercase tracking-[0.2em] text-foreground/70">
-          Recently viewed
-        </h2>
-        <RecentlyViewedSection
-          excludeProductId={product.id}
-          excludeProductSlug={product.slug}
-        />
-      </section>
+      <RecentlyViewedSection
+        excludeProductId={product.id}
+        excludeProductSlug={product.slug}
+      />
 
       {relatedProducts && relatedProducts.length ? (
         <section className="space-y-4">
