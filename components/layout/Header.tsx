@@ -11,12 +11,12 @@ import { buildCategoryPath } from "@/lib/categoryPaths";
 import { hasPublishedBundles } from "@/lib/bundles";
 import { getSiteSettings } from "@/lib/siteSettings.server";
 
-type Category = { id: string; name: string; slug: string };
+type Category = { id: string; name: string; slug: string; slug_path?: string | null };
 
 async function getMenuPages() {
   try {
     const response = await apiFetch<MenuPage[]>("/pages/menu/", {
-      
+      next: { revalidate: 300 },
     });
     return asArray<MenuPage>(response.data);
   } catch {
@@ -27,7 +27,8 @@ async function getMenuPages() {
 async function getTopCategories() {
   try {
     const response = await apiFetch<Category[]>("/catalog/categories/", {
-      params: { page_size: 8, has_products: true }
+      params: { page_size: 8, has_products: true },
+      next: { revalidate: 300 },
     });
     return asArray<Category>(response.data);
   } catch {
@@ -86,7 +87,7 @@ export async function Header() {
                 <Link
                   key={category.id}
                   className="text-foreground/70 hover:text-foreground"
-                  href={buildCategoryPath(category.slug)}
+                  href={buildCategoryPath(category.slug_path || category.slug)}
                   prefetch={false}
                 >
                   {category.name}

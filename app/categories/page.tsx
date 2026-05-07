@@ -4,7 +4,6 @@ import Image from "next/image";
 import { apiFetch } from "@/lib/api";
 import { Card } from "@/components/ui/Card";
 import { JsonLd } from "@/components/seo/JsonLd";
-import { getLazyImageProps } from "@/lib/lazyImage";
 import { buildCollectionPage, buildItemList, buildPageMetadata } from "@/lib/seo";
 import { buildCategoryPath } from "@/lib/categoryPaths";
 
@@ -18,6 +17,7 @@ type Category = {
   id: string;
   name: string;
   slug: string;
+  slug_path?: string | null;
   path?: string;
   image?: string | null;
   icon?: string | null;
@@ -37,7 +37,7 @@ export default async function CategoriesPage() {
   const list = buildItemList(
     categories.map((category) => ({
       name: category.name,
-      url: buildCategoryPath(category.slug),
+      url: buildCategoryPath(category.slug_path || category.slug),
       image: category.image || undefined,
       description: undefined,
     })),
@@ -87,7 +87,7 @@ export default async function CategoriesPage() {
                 </div>
                 <Link
                   className="text-sm font-medium text-primary"
-                  href={buildCategoryPath(category.slug)}
+                  href={buildCategoryPath(category.slug_path || category.slug)}
                 >
                   View
                 </Link>

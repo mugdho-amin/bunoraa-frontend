@@ -1,6 +1,7 @@
 import { ProductGrid } from "@/components/products/ProductGrid";
 import Link from "next/link";
 import { ProductListItem, Category } from "@/lib/types";
+import { buildCategoryPath } from "@/lib/categoryPaths";
 
 interface CategoryBandProps {
   band: {
@@ -17,7 +18,7 @@ export const CategoryBand = ({ band }: CategoryBandProps) => {
           {band.category.name}
         </h2>
         <Link
-          href={`/${band.category.slug_path || band.category.slug}/`}
+          href={buildCategoryPath(band.category.slug_path || band.category.slug)}
           prefetch={false}
           className="text-xs font-semibold uppercase tracking-[0.2em] text-foreground/60 hover:text-foreground"
         >

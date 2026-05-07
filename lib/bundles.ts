@@ -8,7 +8,8 @@ export const hasPublishedBundles = cache(async (): Promise<boolean> => {
     const response = await apiFetch<Bundle[] | { results?: Bundle[]; count?: number }>(
       "/catalog/bundles/",
       {
-        params: { page_size: 1 }
+        params: { page_size: 1 },
+        next: { revalidate: 300 },
       }
     );
     const metaCount = response.meta?.pagination?.count;

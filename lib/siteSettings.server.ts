@@ -7,6 +7,7 @@ export const getSiteSettings = cache(async (): Promise<SiteSettings | null> => {
   try {
     const response = await apiFetch<SiteSettings>("/pages/settings/", {
       headers: await getServerLocaleHeaders(),
+      next: { revalidate: 300 },
     });
     return response.data;
   } catch {

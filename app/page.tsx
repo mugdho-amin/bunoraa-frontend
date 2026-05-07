@@ -1,5 +1,3 @@
-export const dynamic = "force-dynamic";
-
 import type { Metadata } from "next";
 import dynamicImport from "next/dynamic";
 import Link from "next/link";
@@ -14,7 +12,6 @@ import type {
 import { asArray } from "@/lib/array";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { absoluteUrl, buildItemList, buildPageMetadata, cleanObject } from "@/lib/seo";
-import { buildCategoryPath } from "@/lib/categoryPaths";
 import { buildProductPath } from "@/lib/productPaths";
 import { getSiteSettings } from "@/lib/siteSettings.server";
 import { SectionSkeleton } from "@/components/ui/Skeleton";
@@ -65,10 +62,7 @@ type HomepageData = {
   bestsellers: ProductListItem[];
   on_sale: ProductListItem[];
   featured_categories: FeaturedCategory[];
-  category_bands?: Array<{
-    category: FeaturedCategory;
-    products: ProductListItem[];
-  }>;
+  category_bands?: CategoryBandData[];
   collections: Collection[];
   spotlights?: Spotlight[];
   show_by_categories?: FeaturedCategory[];
@@ -76,6 +70,11 @@ type HomepageData = {
 
 type Banner = HeroBanner & {
   position?: string | null;
+};
+
+type CategoryBandData = {
+  category: FeaturedCategory;
+  products: ProductListItem[];
 };
 
 const DEFAULT_HOMEPAGE_DATA: HomepageData = {
@@ -89,6 +88,8 @@ const DEFAULT_HOMEPAGE_DATA: HomepageData = {
   spotlights: [],
   show_by_categories: [],
 };
+
+const HOMEPAGE_REVALIDATE_SECONDS = 120;
 
 const pickText = (...values: Array<string | null | undefined>) => {
   for (const value of values) {
@@ -112,6 +113,7 @@ async function getHomepageData() {
   try {
     const response = await apiFetch<HomepageData>("/catalog/homepage/", {
       headers: await getServerLocaleHeaders(),
+      next: { revalidate: HOMEPAGE_REVALIDATE_SECONDS },
     });
     const payload =
       response.data && typeof response.data === "object" && !Array.isArray(response.data)
@@ -127,9 +129,7 @@ async function getHomepageData() {
       featured_categories: asArray<FeaturedCategory>(
         (payload as HomepageData).featured_categories
       ),
-      category_bands: asArray<{ category: FeaturedCategory; products: ProductListItem[] }>(
-        (payload as HomepageData).category_bands
-      ),
+      category_bands: asArray<CategoryBandData>((payload as HomepageData).category_bands),
       collections: asArray<Collection>((payload as HomepageData).collections),
       spotlights: asArray<Spotlight>((payload as HomepageData).spotlights),
       show_by_categories: asArray<FeaturedCategory>((payload as HomepageData).show_by_categories),
@@ -145,6 +145,7 @@ async function getBanners(position?: string) {
     const response = await apiFetch<Banner[]>("/promotions/banners/", {
       params: position ? { position } : undefined,
       headers: await getServerLocaleHeaders(),
+      next: { revalidate: HOMEPAGE_REVALIDATE_SECONDS },
     });
     return asArray<Banner>(response.data);
   } catch (error) {
@@ -153,28 +154,11 @@ async function getBanners(position?: string) {
   }
 }
 
-async function getCategoryProducts(slug: string) {
-  try {
-    const response = await apiFetch<
-      ProductListItem[] | { results?: ProductListItem[] }
-    >("/catalog/products/by-category/", {
-      params: {
-        category: slug,
-        page_size: 8,
-        include_descendants: true,
-        primary_only: true,
-      },
-      headers: await getServerLocaleHeaders(),
-    });
-    const payload = response.data as ProductListItem[] | { results?: ProductListItem[] };
-    if (Array.isArray(payload)) return payload;
-    return asArray<ProductListItem>(payload.results);
-  } catch {
-    return [] as ProductListItem[];
-  }
-}
-
-async function CategoryBandsLoader({ categoryBandsWithProducts }: { categoryBandsWithProducts: any[] }) {
+async function CategoryBandsLoader({
+  categoryBandsWithProducts,
+}: {
+  categoryBandsWithProducts: CategoryBandData[];
+}) {
   return (
     <>
       {categoryBandsWithProducts.map((band) => (
@@ -197,8 +181,6 @@ export default async function Home() {
   const onSale = asArray<ProductListItem>(homepageData.on_sale);
   const featuredCategories = asArray<FeaturedCategory>(homepageData.featured_categories);
   const spotlights = asArray<Spotlight>(homepageData.spotlights);
-  const showByCategoriesRaw = asArray<FeaturedCategory>(homepageData.show_by_categories);
-  const featuredCategorySlugs = new Set(featuredCategories.map((c) => c.slug));
   const featuredCategoryIds = new Set(featuredCategories.map((c) => c.id));
   
   const resolveCategoryId = (p: ProductListItem) => {
@@ -213,15 +195,7 @@ export default async function Home() {
   const filteredNewArrivals = filterProducts(newArrivals);
   const filteredBestsellers = filterProducts(bestsellers);
   const filteredOnSale = filterProducts(onSale);
-  const showByCategories = showByCategoriesRaw.filter((c) => Boolean(c.is_featured) || featuredCategorySlugs.has(c.slug));
-  
-  const homepageCategories = featuredCategories.slice(0, 3);
-  const categoryBands = await Promise.all(
-    homepageCategories.map(async (c) => ({
-      category: c,
-      products: await getCategoryProducts(c.slug),
-    }))
-  );
+  const categoryBands = asArray<CategoryBandData>(homepageData.category_bands);
 
   const seenIds = new Set<string>();
   const categoryBandsWithProducts = categoryBands

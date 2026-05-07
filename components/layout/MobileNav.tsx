@@ -30,7 +30,7 @@ import {
   Sparkles,
 } from "lucide-react";
 
-type Category = { id: string; name: string; slug: string };
+type Category = { id: string; name: string; slug: string; slug_path?: string | null };
 
 export function MobileNav({
   categories,
@@ -371,10 +371,10 @@ export function MobileNav({
                               key={category.id}
                               className={cn(
                                 "block rounded-lg px-2.5 py-2 text-sm text-foreground/70 transition hover:bg-muted hover:text-foreground",
-                                isActiveLink(buildCategoryPath(category.slug)) &&
+                                isActiveLink(buildCategoryPath(category.slug_path || category.slug)) &&
                                   "bg-primary/10 text-primary font-medium"
                               )}
-                              href={buildCategoryPath(category.slug)}
+                              href={buildCategoryPath(category.slug_path || category.slug)}
                               onClick={closeNav}
                             >
                               {category.name}

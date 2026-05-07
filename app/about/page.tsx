@@ -21,6 +21,7 @@ type CategoryPreview = {
   id: string;
   name: string;
   slug: string;
+  slug_path?: string | null;
   product_count?: number | null;
 };
 
@@ -415,7 +416,7 @@ export default async function AboutPage() {
                 {categorySnapshot.items.map((category) => (
                   <Link
                     key={category.id}
-                    href={buildCategoryPath(category.slug)}
+                    href={buildCategoryPath(category.slug_path || category.slug)}
                     className="inline-flex items-center rounded-full border border-border bg-muted/30 px-3 py-1.5 text-sm hover:bg-muted"
                   >
                     {category.name}

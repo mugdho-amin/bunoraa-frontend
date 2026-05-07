@@ -21,7 +21,7 @@ const FOOTER_CATEGORY_LIMIT = 5;
 async function getFooterPages() {
   try {
     const response = await apiFetch<MenuPage[]>("/pages/footer/", {
-      
+      next: { revalidate: 300 },
     });
     return asArray<MenuPage>(response.data);
   } catch {
@@ -32,7 +32,7 @@ async function getFooterPages() {
 async function getPublishedPages() {
   try {
     const response = await apiFetch<MenuPage[]>("/pages/", {
-      
+      next: { revalidate: 300 },
     });
     return asArray<MenuPage>(response.data);
   } catch {
@@ -43,7 +43,7 @@ async function getPublishedPages() {
 async function getContactSettings() {
   try {
     const response = await apiFetch<ContactSettings>("/contacts/settings/", {
-      
+      next: { revalidate: 300 },
     });
     return response.data;
   } catch {
@@ -55,7 +55,8 @@ async function getTopCategories() {
   try {
     const response = await apiFetch<Category[]>("/catalog/categories/", {
       // Request one extra so we can decide whether to show "Browse all categories".
-      params: { page_size: FOOTER_CATEGORY_LIMIT + 1, has_products: true }
+      params: { page_size: FOOTER_CATEGORY_LIMIT + 1, has_products: true },
+      next: { revalidate: 300 },
     });
     return asArray<Category>(response.data);
   } catch {
@@ -370,7 +371,7 @@ export async function Footer() {
           ...categories.slice(0, FOOTER_CATEGORY_LIMIT).map((category) => ({
             key: `category-${category.id}`,
             label: category.name,
-            href: buildCategoryPath(category.slug),
+            href: buildCategoryPath(category.slug_path || category.slug),
             isCta: false,
           })),
           ...(hasMoreCategories

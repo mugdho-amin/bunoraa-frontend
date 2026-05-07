@@ -37,7 +37,7 @@ type SearchParams = Record<string, string | string[] | undefined>;
 
 type SearchResponse = {
   products: ProductListItem[];
-  categories: Array<{ id: string; name: string; slug: string }>;
+  categories: Array<{ id: string; name: string; slug: string; slug_path?: string | null }>;
   query: string;
 };
 
@@ -269,7 +269,7 @@ export default async function SearchPage({
               <Link
                 key={category.id}
                 className="rounded-full border border-border px-4 py-2 text-sm"
-                href={buildCategoryPath(category.slug)}
+                href={buildCategoryPath(category.slug_path || category.slug)}
               >
                 {category.name}
               </Link>
