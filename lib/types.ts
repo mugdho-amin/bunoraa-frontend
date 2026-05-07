@@ -397,6 +397,7 @@ export type Category = {
   id: string;
   name: string;
   slug: string;
+  slug_path?: string | null;
 };
 
 export type FAQItem = {

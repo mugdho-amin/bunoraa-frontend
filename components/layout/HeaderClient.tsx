@@ -89,10 +89,11 @@ export function HeaderClient() {
     includeList: false,
     includeUnread: true,
   });
+  const cartItems = cartQuery.data?.items ?? [];
   const count =
-    cartQuery.data?.item_count ??
-    (cartQuery.data?.items?.reduce((acc, item) => acc + (item.quantity || 0), 0) ?? 0) ??
-    cartSummaryQuery.data?.item_count ??
+    cartItems.reduce((acc, item) => acc + (item.quantity || 0), 0) ||
+    cartQuery.data?.item_count ||
+    cartSummaryQuery.data?.item_count ||
     0;
 
   const cartKnownEmpty =

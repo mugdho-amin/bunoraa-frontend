@@ -18,7 +18,7 @@ const metadataBase = new URL(
     : `https://${SITE_URL}`
 );
 
-export const dynamic = "force-dynamic";
+// export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
   metadataBase,
@@ -160,16 +160,16 @@ export default function RootLayout({
     },
   });
 
-  if (disablePrerender) {
-    noStore();
-  }
+// if (disablePrerender) {
+//   noStore();
+// }
   return (
     <html lang="en" className="system" suppressHydrationWarning>
       <body className="min-h-screen bg-background text-foreground antialiased">
         <Script id="theme-bootstrap" strategy="beforeInteractive">
           {themeBootstrapScript}
         </Script>
-        <Script src="https://accounts.google.com/gsi/client" strategy="afterInteractive" />
+        <Script src="https://accounts.google.com/gsi/client" strategy="lazyOnload" />
         <SkipToContent />
         <Providers>
           <Header />

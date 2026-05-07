@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import dynamicImport from "next/dynamic";
 import Link from "next/link";
 import Image from "next/image";
+import { Suspense } from "react";
 import { apiFetch } from "@/lib/api";
 import { getServerLocaleHeaders } from "@/lib/serverLocale";
 import type {
@@ -14,8 +15,8 @@ import { absoluteUrl, buildItemList, buildPageMetadata, cleanObject } from "@/li
 import { buildCategoryPath } from "@/lib/categoryPaths";
 import { buildProductPath } from "@/lib/productPaths";
 import { getSiteSettings } from "@/lib/siteSettings.server";
-
-export const dynamic = "force-dynamic";
+import { SectionSkeleton } from "@/components/ui/Skeleton";
+import { CategoryBand } from "@/components/products/CategoryBand";
 
 const ProductGrid = dynamicImport(
   () => import("@/components/products/ProductGrid").then((mod) => mod.ProductGrid)
@@ -171,15 +172,21 @@ async function getCategoryProducts(slug: string) {
   }
 }
 
+async function CategoryBandsLoader({ categoryBandsWithProducts }: { categoryBandsWithProducts: any[] }) {
+  return (
+    <>
+      {categoryBandsWithProducts.map((band) => (
+        <CategoryBand key={band.category.id} band={band} />
+      ))}
+    </>
+  );
+}
+
 export default async function Home() {
-  const [
-    homepageData,
-    heroBanners,
-    siteSettings,
-  ] = await Promise.all([
-    getHomepageData(),
+  const [heroBanners, siteSettings, homepageData] = await Promise.all([
     getBanners("home_hero"),
     getSiteSettings(),
+    getHomepageData(),
   ]);
 
   const featuredProducts = asArray<ProductListItem>(homepageData.featured_products);
@@ -189,65 +196,43 @@ export default async function Home() {
   const featuredCategories = asArray<FeaturedCategory>(homepageData.featured_categories);
   const spotlights = asArray<Spotlight>(homepageData.spotlights);
   const showByCategoriesRaw = asArray<FeaturedCategory>(homepageData.show_by_categories);
-  const featuredCategorySlugs = new Set(
-    featuredCategories.map((category) => category.slug)
-  );
-  const featuredCategoryIds = new Set(
-    featuredCategories.map((category) => category.id)
-  );
-  const resolveHomepageFeaturedCategoryId = (product: ProductListItem) => {
-    if (!product.primary_category_id) return null;
-    if (featuredCategoryIds.has(product.primary_category_id)) {
-      return product.primary_category_id;
-    }
-    const rawPath = product.primary_category_path || "";
-    const pathIds = rawPath.split("/").map((part) => part.trim()).filter(Boolean);
-    if (!pathIds.length) return null;
-    for (let index = pathIds.length - 2; index >= 0; index -= 1) {
-      const ancestorId = pathIds[index];
-      if (featuredCategoryIds.has(ancestorId)) {
-        return ancestorId;
-      }
-    }
+  const featuredCategorySlugs = new Set(featuredCategories.map((c) => c.slug));
+  const featuredCategoryIds = new Set(featuredCategories.map((c) => c.id));
+  
+  const resolveCategoryId = (p: ProductListItem) => {
+    if (p.primary_category_id && featuredCategoryIds.has(p.primary_category_id)) return p.primary_category_id;
+    const pathIds = (p.primary_category_path || "").split("/").filter(Boolean);
+    for (let i = pathIds.length - 1; i >= 0; i--) if (featuredCategoryIds.has(pathIds[i])) return pathIds[i];
     return null;
   };
-  const filterFeaturedScopeProducts = (products: ProductListItem[]) =>
-    products.filter((product) => Boolean(resolveHomepageFeaturedCategoryId(product)));
-  const filteredFeaturedProducts = filterFeaturedScopeProducts(featuredProducts);
-  const filteredNewArrivals = filterFeaturedScopeProducts(newArrivals);
-  const filteredBestsellers = filterFeaturedScopeProducts(bestsellers);
-  const filteredOnSale = filterFeaturedScopeProducts(onSale);
-  const showByCategories = showByCategoriesRaw.filter(
-    (category) => Boolean(category.is_featured) || featuredCategorySlugs.has(category.slug)
-  );
+  
+  const filterProducts = (products: ProductListItem[]) => products.filter((p) => Boolean(resolveCategoryId(p)));
+  const filteredFeaturedProducts = filterProducts(featuredProducts);
+  const filteredNewArrivals = filterProducts(newArrivals);
+  const filteredBestsellers = filterProducts(bestsellers);
+  const filteredOnSale = filterProducts(onSale);
+  const showByCategories = showByCategoriesRaw.filter((c) => Boolean(c.is_featured) || featuredCategorySlugs.has(c.slug));
+  
   const homepageCategories = featuredCategories.slice(0, 3);
-  const providedCategoryBands = asArray<{ category: FeaturedCategory; products: ProductListItem[] }>(
-    homepageData.category_bands
+  const categoryBands = await Promise.all(
+    homepageCategories.map(async (c) => ({
+      category: c,
+      products: await getCategoryProducts(c.slug),
+    }))
   );
-  const categoryBands =
-    providedCategoryBands.length > 0
-      ? providedCategoryBands
-      : (
-          await Promise.all(
-            homepageCategories.map(async (category) => ({
-              category,
-              products: await getCategoryProducts(category.slug),
-            }))
-          )
-        );
-  const seenHomepageProductIds = new Set<string>();
+
+  const seenIds = new Set<string>();
   const categoryBandsWithProducts = categoryBands
-    .map((band) => ({
-      ...band,
-      products: band.products.filter((product) => {
-        if (!product?.id) return false;
-        if (resolveHomepageFeaturedCategoryId(product) !== band.category.id) return false;
-        if (seenHomepageProductIds.has(product.id)) return false;
-        seenHomepageProductIds.add(product.id);
+    .map((b) => ({
+      ...b,
+      products: b.products.filter((p) => {
+        if (!p?.id || resolveCategoryId(p) !== b.category.id || seenIds.has(p.id)) return false;
+        seenIds.add(p.id);
         return true;
       }),
     }))
-    .filter((band) => band.products.length > 0);
+    .filter((b) => b.products.length > 0);
+
   const collections = asArray<Collection>(homepageData.collections);
   const brandName = pickText(siteSettings?.site_name);
   const heroDescription = pickText(
@@ -255,8 +240,6 @@ export default async function Home() {
     siteSettings?.tagline,
     siteSettings?.site_description
   );
-
-  const seasonalFavs = filteredOnSale.slice(0, 8);
 
   const homePageSchema = cleanObject({
     "@context": "https://schema.org",
@@ -311,165 +294,48 @@ export default async function Home() {
 
       {spotlights.length ? (
         <section className={`${sectionWrapperClass} py-8`}>
-          <h2 className="text-sm font-semibold uppercase tracking-[0.2em] text-foreground/70">
-            Spotlights
-          </h2>
+          <h2 className="text-sm font-semibold uppercase tracking-[0.2em] text-foreground/70">Spotlights</h2>
           <div className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {spotlights.map((spotlight: Spotlight) => {
-              const spotlightProduct = spotlight.product || null;
-              const spotlightCategory = spotlight.category || null;
-              const spotlightTitle =
-                spotlight.name ||
-                spotlightProduct?.name ||
-                spotlightCategory?.name ||
-                "Spotlight";
-              const spotlightSubtitle =
-                spotlightProduct?.short_description ||
-                (spotlightCategory?.product_count
-                  ? `${spotlightCategory.product_count} products`
-                  : "Curated highlight");
-              const spotlightImage =
-                getImage(spotlightProduct) ||
-                spotlightCategory?.image ||
-                null;
-              const href = spotlightProduct
-                ? buildProductPath(spotlightProduct)
-                : spotlightCategory
-                ? buildCategoryPath(spotlightCategory.slug_path || spotlightCategory.slug)
-                : "/products/";
-              const isProductSpotlight = Boolean(spotlightProduct);
-
-              return (
-                <Link
-                  key={spotlight.id}
-                  href={href}
-                  prefetch={false}
-                  className="group overflow-hidden rounded-2xl border border-border bg-card"
-                  target={isProductSpotlight ? "_blank" : undefined}
-                  rel={isProductSpotlight ? "noopener noreferrer" : undefined}
-                >
-                  <div className="relative aspect-[16/10] overflow-hidden bg-muted">
-                    {spotlightImage ? (
-                      <Image
-                        src={spotlightImage}
-                        alt={spotlightTitle}
-                        fill
-                        sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                        quality={70}
-                        loading="lazy"
-                        decoding="async"
-                        className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-[1.02]"
-                      />
-                    ) : null}
-                  </div>
-                  <div className="space-y-1 p-4">
-                    <p className="text-xs uppercase tracking-[0.2em] text-foreground/60">
-                      {spotlight.placement || "home"}
-                    </p>
-                    <p className="line-clamp-1 text-lg font-semibold">{spotlightTitle}</p>
-                    <p className="line-clamp-2 text-sm text-foreground/70">
-                      {spotlightSubtitle || "Explore this featured recommendation."}
-                    </p>
-                  </div>
-                </Link>
-              );
-            })}
-          </div>
-        </section>
-      ) : null}
-
-      {categoryBandsWithProducts.map((band) => {
-        console.log("DEBUG: Category Band:", band.category.name, "Slug:", band.category.slug, "Path:", band.category.slug_path);
-        return (
-          <section key={band.category.id} className={`${sectionWrapperClass} py-8`}>
-            <div className="flex items-center justify-between gap-4">
-              <h2 className="text-sm font-semibold uppercase tracking-[0.2em] text-foreground/70">
-                {band.category.name}
-              </h2>
-              <Link
-                href={`/${band.category.slug_path || band.category.slug}/`}
-                prefetch={false}
-                className="text-xs font-semibold uppercase tracking-[0.2em] text-foreground/60 hover:text-foreground"
-              >
-                View All
-              </Link>
-            </div>
-            <div className="mt-4">
-              <ProductGrid
-                products={band.products}
-                cardStyle="minimal"
-                allowQuickView={true}
-                showWishlist={true}
-              />
-            </div>
-          </section>
-        );
-      })}
-
-      {seasonalFavs.length ? (
-        <section className={`${sectionWrapperClass} py-8`}>
-          <h2 className="text-sm font-semibold uppercase tracking-[0.2em] text-foreground/70">
-            Seasonal Favs
-          </h2>
-          <div className="mt-4">
-            <ProductGrid
-              products={seasonalFavs}
-              cardStyle="minimal"
-              allowQuickView={true}
-              showWishlist={true}
-            />
-          </div>
-        </section>
-      ) : null}
-
-      <section className={`${sectionWrapperClass} py-8`}>
-        <HomeProductTabs
-          newDrops={filteredNewArrivals}
-          trending={filteredBestsellers}
-          allowQuickView={true}
-          showWishlist={true}
-        />
-      </section>
-
-      <section className={`${sectionWrapperClass} py-8`}>
-        <RecentlyViewedSection />
-      </section>
-
-      {showByCategories.length ? (
-        <section className={`${sectionWrapperClass} py-8`}>
-          <h2 className="text-sm font-semibold uppercase tracking-[0.2em] text-foreground/70">
-            Show By Category
-          </h2>
-          <div className="mt-4 grid gap-4 sm:grid-cols-3">
-            {showByCategories.map((category) => (
-              <Link
-                key={category.id}
-                href={buildCategoryPath(category.slug_path || category.slug)}
-                prefetch={false}
-                className="group"
-              >
-                <div className="relative aspect-[4/3] overflow-hidden bg-muted">
-                  {category.image ? (
-                    <Image
-                      src={category.image}
-                      alt={category.name}
-                      fill
-                      sizes="(max-width: 640px) 100vw, 33vw"
-                      quality={68}
-                      loading="lazy"
-                      decoding="async"
-                      className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-[1.02]"
-                    />
-                  ) : null}
-                </div>
-                <p className="mt-2 text-sm font-semibold uppercase tracking-[0.18em] text-foreground/70">
-                  {category.name}
-                </p>
-              </Link>
+            {spotlights.map((spotlight) => (
+               <Link key={spotlight.id} href={spotlight.product ? buildProductPath(spotlight.product) : "/"} className="group overflow-hidden rounded-2xl border border-border bg-card">
+                 <div className="relative aspect-[16/10] overflow-hidden bg-muted">
+                    {spotlight.product?.primary_image && <Image src={spotlight.product.primary_image as string} alt={spotlight.name || "Spotlight"} fill className="object-cover transition-transform duration-300 group-hover:scale-[1.02]" />}
+                 </div>
+               </Link>
             ))}
           </div>
         </section>
       ) : null}
+
+      <Suspense fallback={<SectionSkeleton title="Loading Categories..." />}>
+        <CategoryBandsLoader categoryBandsWithProducts={categoryBandsWithProducts} />
+      </Suspense>
+
+      <Suspense fallback={<SectionSkeleton title="Seasonal Favs" />}>
+        {filteredOnSale.length ? (
+          <section className={`${sectionWrapperClass} py-8`}>
+            <h2 className="text-sm font-semibold uppercase tracking-[0.2em] text-foreground/70">Seasonal Favs</h2>
+            <div className="mt-4">
+              <ProductGrid products={filteredOnSale.slice(0, 8)} cardStyle="minimal" allowQuickView={true} showWishlist={true} />
+            </div>
+          </section>
+        ) : null}
+      </Suspense>
+
+      <Suspense fallback={<SectionSkeleton title="Recommended" />}>
+        <section className={`${sectionWrapperClass} py-8`}>
+          <HomeProductTabs
+            newDrops={filteredNewArrivals}
+            trending={filteredBestsellers}
+            allowQuickView={true}
+            showWishlist={true}
+          />
+        </section>
+      </Suspense>
+
+      <section className={`${sectionWrapperClass} py-8`}>
+        <RecentlyViewedSection />
+      </section>
 
       <JsonLd data={jsonLd} />
     </div>

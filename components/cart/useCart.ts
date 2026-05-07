@@ -116,20 +116,18 @@ export function useCart(options?: UseCartOptions) {
   const cartQuery = useQuery({
     queryKey: cartKey,
     queryFn: fetchCart,
-    enabled: includeCart && typeof window !== "undefined", // Only fetch on client
-    staleTime: 0, // Always fetch fresh to guarantee accuracy
-    gcTime: 0, // Don't persist across navigation
-    refetchOnWindowFocus: true,
+    enabled: includeCart,
+    staleTime: 60000,
+    refetchOnWindowFocus: false,
     retry: 1,
   });
 
   const cartSummaryQuery = useQuery({
     queryKey: cartSummaryKey,
     queryFn: fetchCartSummary,
-    enabled: includeSummary && typeof window !== "undefined", // Only fetch on client
-    staleTime: 0, // Always fetch fresh
-    gcTime: 0,
-    refetchOnWindowFocus: true,
+    enabled: includeSummary,
+    staleTime: 60000,
+    refetchOnWindowFocus: false,
     retry: 1,
   });
 
@@ -146,9 +144,10 @@ export function useCart(options?: UseCartOptions) {
       const previousCart = queryClient.getQueryData<Cart>(cartKey);
       
       if (previousCart) {
+        const currentCount = Number(previousCart.item_count) || 0;
         queryClient.setQueryData<Cart>(cartKey, {
           ...previousCart,
-          item_count: (previousCart.item_count || 0) + quantity,
+          item_count: currentCount + Number(quantity),
         });
       }
       return { previousCart };
