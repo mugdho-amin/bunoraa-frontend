@@ -1,7 +1,7 @@
 import * as React from "react";
 import { cn } from "@/lib/utils";
 
-type ButtonVariant = "primary" | "secondary" | "ghost" | "primary-gradient";
+type ButtonVariant = "primary" | "secondary" | "ghost" | "primary-gradient" | "outline";
 type ButtonSize = "sm" | "md" | "lg";
 
 const variantClasses: Record<ButtonVariant, string> = {
@@ -12,6 +12,8 @@ const variantClasses: Record<ButtonVariant, string> = {
   ghost: "bg-transparent text-foreground hover:bg-muted",
   "primary-gradient":
     "bg-gradient-to-r from-blue-500 via-indigo-500 to-purple-500 text-white shadow-soft hover:opacity-95",
+  outline:
+    "border border-primary text-primary hover:bg-primary/5",
 };
 
 const sizeClasses: Record<ButtonSize, string> = {

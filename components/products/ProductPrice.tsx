@@ -8,6 +8,7 @@ export function ProductPrice({
   currency,
   className,
   priceClassName,
+  salePriceClassName,
 }: {
   price?: string | null;
   salePrice?: string | null;
@@ -15,6 +16,7 @@ export function ProductPrice({
   currency: string;
   className?: string;
   priceClassName?: string;
+  salePriceClassName?: string;
 }) {
   const base = currentPrice || salePrice || price || "";
   const showSale = Boolean(salePrice && price && salePrice !== price);
@@ -25,7 +27,7 @@ export function ProductPrice({
         {formatMoney(base, currency)}
       </span>
       {showSale ? (
-        <span className="text-sm text-foreground/50 line-through">
+        <span className={cn("text-sm text-foreground/50 line-through", salePriceClassName)}>
           {formatMoney(price || "", currency)}
         </span>
       ) : null}

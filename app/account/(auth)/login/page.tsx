@@ -13,6 +13,7 @@ import { apiFetch } from "@/lib/api";
 import { setTokens } from "@/lib/auth";
 import { decodeRequestOptions, encodeCredential } from "../../../../lib/webauthn";
 import { GoogleLoginButton } from "@/components/auth/GoogleLoginButton";
+import { useTranslation } from "@/lib/i18n";
 
 const schema = z.object({
   email: z.string().email("Enter a valid email"),
@@ -23,6 +24,7 @@ const schema = z.object({
 type FormValues = z.infer<typeof schema>;
 
 export default function LoginPage() {
+  const { t } = useTranslation();
   const router = useRouter();
   const searchParams = useSearchParams();
   const { login, verifyMfa } = useAuth();
@@ -36,9 +38,11 @@ export default function LoginPage() {
   const [passwordValue, setPasswordValue] = React.useState("");
   const [showForgotDialog, setShowForgotDialog] = React.useState(false);
   const [forgotSent, setForgotSent] = React.useState(false);
+  
   const forgotForm = useForm<{ email: string }>({
     resolver: zodResolver(z.object({ email: z.string().email("Enter a valid email") })),
   });
+  
   const form = useForm<FormValues>({
     resolver: zodResolver(schema),
     defaultValues: { remember: true },
@@ -156,7 +160,7 @@ export default function LoginPage() {
       <div className="mx-auto w-full max-w-md px-3 sm:px-5 py-20">
         <Card variant="bordered" className="space-y-6">
           <div>
-            <h1 className="text-2xl font-semibold">Sign in</h1>
+            <h1 className="text-2xl font-semibold">{t("common.auth.sign_in")}</h1>
           </div>
 
           <GoogleLoginButton nextUrl={nextUrl} onError={setMfaError} />
@@ -166,14 +170,14 @@ export default function LoginPage() {
               <span className="w-full border-t border-border" />
             </div>
             <div className="relative flex justify-center text-xs uppercase">
-              <span className="bg-card px-2 text-foreground/50">Or continue with email</span>
+              <span className="bg-card px-2 text-foreground/50">{t("common.auth.or_continue_with")}</span>
             </div>
           </div>
 
           {!mfaToken ? (
             <form className="space-y-4" onSubmit={form.handleSubmit(onSubmit)}>
               <label className="block text-sm">
-                Email
+                {t("common.auth.email")}
                 <input
                   className="mt-2 w-full rounded-lg border border-border bg-card px-3 py-2"
                   type="email"
@@ -182,7 +186,7 @@ export default function LoginPage() {
               </label>
 
               <label className="block text-sm">
-                Password
+                {t("common.auth.password")}
                 <div className="relative mt-2">
                   <input
                     className={`w-full rounded-lg border border-border bg-card px-3 py-2 pr-12 transition-all ${showPassword ? "text-base tracking-normal font-normal" : "text-xl tracking-widest font-bold [-webkit-text-stroke:1px_currentColor]"}`}
@@ -208,7 +212,7 @@ export default function LoginPage() {
 
               <label className="flex items-center gap-2 text-sm">
                 <input type="checkbox" {...form.register("remember")} />
-                Remember me
+                {t("common.auth.remember_me")}
               </label>
 
               {login.isError ? (
@@ -222,7 +226,7 @@ export default function LoginPage() {
               ) : null}
 
               <Button type="submit" className="w-full" disabled={login.isPending}>
-                {login.isPending ? "Signing in..." : "Sign in"}
+                {login.isPending ? t("common.auth.signing_in") : t("common.auth.sign_in")}
               </Button>
               <Button
                 type="button"
@@ -313,10 +317,10 @@ export default function LoginPage() {
               onClick={() => setShowForgotDialog(true)}
               className="text-primary hover:underline"
             >
-              Forgot password?
+              {t("common.auth.forgot_password")}
             </button>
             <Link className="text-primary" href="/account/register/">
-              Create account
+              {t("common.auth.create_account")}
             </Link>
           </div>
         </Card>
@@ -333,7 +337,7 @@ export default function LoginPage() {
               onClick={(e) => e.stopPropagation()}
             >
               <div className="flex items-center justify-between">
-                <h2 className="text-xl font-semibold">Reset password</h2>
+                <h2 className="text-xl font-semibold">{t("common.auth.reset_password")}</h2>
                 <button
                   type="button"
                   onClick={() => setShowForgotDialog(false)}
@@ -346,7 +350,7 @@ export default function LoginPage() {
 
               {forgotSent ? (
                 <p className="text-sm text-foreground/70">
-                  If an account exists with that email, a reset link has been sent.
+                  {t("common.auth.check_email_reset")}
                 </p>
               ) : (
                 <form
@@ -360,7 +364,7 @@ export default function LoginPage() {
                   })}
                 >
                   <label className="block text-sm">
-                    Email
+                    {t("common.auth.email")}
                     <input
                       className="mt-2 w-full rounded-lg border border-border bg-card px-3 py-2"
                       type="email"
@@ -368,7 +372,7 @@ export default function LoginPage() {
                     />
                   </label>
                   <Button type="submit" className="w-full">
-                    Send reset link
+                    {t("common.auth.send_reset_link")}
                   </Button>
                 </form>
               )}

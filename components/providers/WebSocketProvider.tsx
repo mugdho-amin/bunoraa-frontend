@@ -74,12 +74,29 @@ export function WebSocketProvider({ children }: { children: React.ReactNode }) {
       };
 
       ws.onmessage = (event) => {
-        let payload: unknown = event.data;
+        let payload: any = null;
         try {
           payload = JSON.parse(event.data);
         } catch {
-          payload = event.data;
+          return;
         }
+
+        if (!payload) return;
+
+        // Handle server-side heartbeat
+        if (payload.type === "ping") {
+          if (ws.readyState === WebSocket.OPEN) {
+            ws.send(JSON.stringify({ type: "pong", timestamp: Date.now() / 1000 }));
+          }
+          return;
+        }
+
+        // Log server errors
+        if (payload.type === "error") {
+          console.error(`[WebSocket:${channel}] Server error:`, payload.message);
+          return;
+        }
+
         setLastMessage((prev) => ({ ...prev, [channel]: payload }));
 
         if (channel === "cart") {

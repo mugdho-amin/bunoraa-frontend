@@ -11,6 +11,7 @@ import { AccessibilityProvider } from "@/components/providers/AccessibilityProvi
 import { SiteSettingsProvider } from "@/components/providers/SiteSettingsProvider";
 import { ToastProvider } from "@/components/ui/ToastProvider";
 import { LanguageSynchronizer } from "@/components/providers/LanguageSynchronizer";
+import { I18nProvider } from "@/lib/i18n";
 import { initPerformanceMonitoring } from "@/lib/performance";
 
 // Initialize performance monitoring
@@ -98,12 +99,14 @@ export function Providers({ children }: { children: React.ReactNode }) {
             <AuthProvider>
               <AccessibilityProvider>
                 <LocaleProvider>
-                  <LanguageSynchronizer />
-                  <WebSocketProvider>
-                    <PerformanceMonitoring />
-                    <ServiceWorkerRegistration />
-                    {children}
-                  </WebSocketProvider>
+                  <I18nProvider>
+                    <LanguageSynchronizer />
+                    <WebSocketProvider>
+                      <PerformanceMonitoring />
+                      <ServiceWorkerRegistration />
+                      {children}
+                    </WebSocketProvider>
+                  </I18nProvider>
                 </LocaleProvider>
               </AccessibilityProvider>
             </AuthProvider>

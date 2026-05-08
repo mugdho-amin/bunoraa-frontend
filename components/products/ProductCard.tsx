@@ -14,6 +14,7 @@ import { ProductPrice } from "@/components/products/ProductPrice";
 import { cn } from "@/lib/utils";
 import { compareItemFromProduct, useCompareToggle } from "@/components/products/compareHelpers";
 import { buildProductPath } from "@/lib/productPaths";
+import { useUiMessages } from "@/components/i18n/useUiMessages";
 
 const DEFAULT_CARD_ASPECT_RATIO = 4 / 5;
 
@@ -135,6 +136,7 @@ function InteractiveProductCard({
   onQuickView?: (slug: string) => void;
 }) {
   const { isInCompare, toggleCompare } = useCompareToggle(product);
+  const { t } = useUiMessages("cart");
   const image =
     typeof product.primary_image === "string"
       ? product.primary_image
@@ -167,16 +169,16 @@ function InteractiveProductCard({
             type="button"
             className="absolute inset-0 z-0"
             onClick={() => onQuickView?.(product.slug)}
-            aria-label={`Quick view ${product.name}`}
+            aria-label={`${t("quick_view", "Quick view")} ${product.name}`}
           >
-            <span className="sr-only">Quick view</span>
+            <span className="sr-only">{t("quick_view", "Quick view")}</span>
           </button>
         ) : (
           <Link
             href={productHref}
             prefetch={false}
             className="absolute inset-0 z-0"
-            aria-label={`View ${product.name}`}
+            aria-label={`${t("view_product", "View")} ${product.name}`}
             target="_blank"
             rel="noopener noreferrer"
           />
@@ -211,7 +213,7 @@ function InteractiveProductCard({
               className="w-full bg-background/90 backdrop-blur sm:w-auto"
               onClick={() => onQuickView?.(product.slug)}
             >
-              Quick view
+              {t("quick_view", "Quick view")}
             </Button>
           </div>
         ) : null}
@@ -220,7 +222,7 @@ function InteractiveProductCard({
       <div className="flex flex-1 flex-col gap-2">
         <div>
           <p className="text-[11px] uppercase tracking-[0.16em] text-foreground/60">
-            {product.primary_category_name || "Featured"}
+            {product.primary_category_name || t("featured", "Featured")}
           </p>
           <Link
             href={productHref}
@@ -246,7 +248,7 @@ function InteractiveProductCard({
             size="sm"
             variant="secondary"
             className="w-full justify-center sm:flex-1"
-            label={product.is_in_stock ? "Add to bag" : "Out of stock"}
+            label={product.is_in_stock ? t("add_to_bag", "Add to bag") : t("out_of_stock", "Out of stock")}
             disabled={!product.is_in_stock}
           />
           <Button
@@ -255,7 +257,7 @@ function InteractiveProductCard({
             className="w-full justify-center sm:w-auto sm:min-w-[110px]"
             onClick={() => toggleCompare(compareItemFromProduct(product))}
           >
-            {isInCompare ? "Compared" : "Compare"}
+            {isInCompare ? t("compared", "Compared") : t("compare", "Compare")}
           </Button>
         </div>
       </div>

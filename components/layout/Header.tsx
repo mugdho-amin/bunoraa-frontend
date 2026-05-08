@@ -6,6 +6,7 @@ import { HeaderBrand } from "@/components/layout/HeaderBrand";
 import { SearchBar } from "@/components/search/SearchBar";
 import { MobileNavWrapper } from "@/components/layout/MobileNavWrapper";
 import { MobileHeaderVisibility } from "@/components/layout/MobileHeaderVisibility";
+import { TranslatedHeaderLink } from "@/components/layout/TranslatedHeaderLink";
 import { asArray } from "@/lib/array";
 import { buildCategoryPath } from "@/lib/categoryPaths";
 import { hasPublishedBundles } from "@/lib/bundles";
@@ -73,16 +74,12 @@ export async function Header() {
               <div className="w-48">
                 <SearchBar hideSubmitButtonOnDesktop />
               </div>
-              <Link
-                className="group relative inline-flex items-center gap-2 rounded-full border border-primary/30 bg-primary/10 px-3 py-1.5 text-sm font-semibold text-primary transition duration-200 hover:-translate-y-0.5 hover:border-primary/50 hover:bg-primary hover:text-white hover:shadow-soft focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
+              <TranslatedHeaderLink
                 href="/preorders/"
-                prefetch={false}
-              >
-                Preorders
-                <span className="hidden text-[10px] font-semibold uppercase tracking-[0.2em] text-primary/70 group-hover:text-white/80 xl:inline">
-                  New
-                </span>
-              </Link>
+                className="group relative inline-flex items-center gap-2 rounded-full border border-primary/30 bg-primary/10 px-3 py-1.5 text-sm font-semibold text-primary transition duration-200 hover:-translate-y-0.5 hover:border-primary/50 hover:bg-primary hover:text-white hover:shadow-soft focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
+                labelKey="common.header.preorders"
+                badgeKey="common.header.new"
+              />
               {categories.slice(0, 4).map((category) => (
                 <Link
                   key={category.id}

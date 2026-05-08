@@ -16,6 +16,7 @@ import { cn } from "@/lib/utils";
 import { buildProductPath } from "@/lib/productPaths";
 import { getLazyImageProps } from "@/lib/lazyImage";
 import { ShareModal } from "@/components/cart/ShareModal";
+import { useUiMessages } from "@/components/i18n/useUiMessages";
 
 type ValidationIssue = {
   type?: string;
@@ -197,6 +198,7 @@ function CartItemRow({
   resetSignal: number;
   resetTargetId: string | null;
 }) {
+  const { t } = useUiMessages("cart");
   const [quantity, setQuantity] = React.useState<number>(item.quantity);
   const manualEditRef = React.useRef(false);
   const debounceRef = React.useRef<number | null>(null);
@@ -310,7 +312,7 @@ function CartItemRow({
             <p className="text-xs text-foreground/60">{item.variant_name}</p>
           ) : null}
           {!item.in_stock ? (
-            <p className="mt-1 text-xs font-semibold text-error-500">Out of stock</p>
+            <p className="mt-1 text-xs font-semibold text-error-500">{t("common.cart.out_of_stock")}</p>
           ) : null}
         </div>
       </div>
@@ -319,7 +321,7 @@ function CartItemRow({
         <div className="grid w-full grid-cols-2 gap-2 sm:w-auto sm:grid-cols-[auto_auto] sm:gap-4">
           <div className="rounded-xl border border-border/70 bg-muted/20 px-3 py-2 sm:border-0 sm:bg-transparent sm:px-0 sm:py-0">
             <p className="text-[10px] uppercase tracking-[0.15em] text-foreground/50 sm:hidden">
-              Unit price
+              {t("common.cart.unit_price")}
             </p>
             <p className="text-sm text-foreground/70">
               {formatMoney(item.unit_price, currency)}
@@ -327,7 +329,7 @@ function CartItemRow({
           </div>
           <div className="rounded-xl border border-border/70 bg-muted/20 px-3 py-2 text-right sm:min-w-[120px] sm:border-0 sm:bg-transparent sm:px-0 sm:py-0">
             <p className="text-[10px] uppercase tracking-[0.15em] text-foreground/50 sm:hidden">
-              Line total
+              {t("common.cart.line_total")}
             </p>
             <p className="text-sm font-semibold">{formatMoney(item.total, currency)}</p>
           </div>
@@ -436,6 +438,7 @@ function CartItemRow({
 }
 
 export function CartPage() {
+  const { t } = useUiMessages("cart");
   const { push } = useToast();
   const { hasToken } = useAuthContext();
   const {

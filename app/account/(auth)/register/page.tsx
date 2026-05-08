@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { useAuth } from "@/components/auth/useAuth";
 import { GoogleLoginButton } from "@/components/auth/GoogleLoginButton";
+import { useTranslation } from "@/lib/i18n";
 
 const schema = z
   .object({
@@ -28,6 +29,7 @@ const schema = z
 type FormValues = z.infer<typeof schema>;
 
 export default function RegisterPage() {
+  const { t } = useTranslation();
   const [showPassword, setShowPassword] = React.useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = React.useState(false);
   const [passwordValue, setPasswordValue] = React.useState("");
@@ -35,6 +37,7 @@ export default function RegisterPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { register } = useAuth();
+  
   const form = useForm<FormValues>({
     resolver: zodResolver(schema),
     defaultValues: {
@@ -57,7 +60,7 @@ export default function RegisterPage() {
       <div className="mx-auto w-full max-w-md px-3 sm:px-5 py-20">
         <Card variant="bordered" className="space-y-6">
           <div>
-            <h1 className="text-2xl font-semibold">Create account</h1>
+            <h1 className="text-2xl font-semibold">{t("common.auth.create_account")}</h1>
           </div>
 
           <GoogleLoginButton nextUrl="/account/profile/" />
@@ -67,34 +70,34 @@ export default function RegisterPage() {
               <span className="w-full border-t border-border" />
             </div>
             <div className="relative flex justify-center text-xs uppercase">
-              <span className="bg-card px-2 text-foreground/50">Or continue with email</span>
+              <span className="bg-card px-2 text-foreground/50">{t("common.auth.or_continue_with")}</span>
             </div>
           </div>
 
           <form className="space-y-4" onSubmit={form.handleSubmit(onSubmit)}>
             <label className="block text-sm">
-              First name
+              {t("common.auth.first_name")}
               <input
                 className="mt-2 w-full rounded-lg border border-border bg-card px-3 py-2"
                 {...form.register("first_name")}
               />
             </label>
             <label className="block text-sm">
-              Last name
+              {t("common.auth.last_name")}
               <input
                 className="mt-2 w-full rounded-lg border border-border bg-card px-3 py-2"
                 {...form.register("last_name")}
               />
             </label>
             <label className="block text-sm">
-              Phone
+              {t("common.auth.phone")}
               <input
                 className="mt-2 w-full rounded-lg border border-border bg-card px-3 py-2"
                 {...form.register("phone")}
               />
             </label>
             <label className="block text-sm">
-              Email
+              {t("common.auth.email")}
               <input
                 className="mt-2 w-full rounded-lg border border-border bg-card px-3 py-2"
                 type="email"
@@ -102,7 +105,7 @@ export default function RegisterPage() {
               />
             </label>
             <label className="block text-sm">
-              Password
+              {t("common.auth.password")}
               <div className="relative mt-2">
                 <input
                   className={`w-full rounded-lg border border-border bg-card px-3 py-2 pr-12 transition-all ${showPassword ? "text-base tracking-normal font-normal" : "text-xl tracking-widest font-bold [-webkit-text-stroke:1px_currentColor]"}`}
@@ -126,7 +129,7 @@ export default function RegisterPage() {
               </div>
             </label>
             <label className="block text-sm">
-              Confirm password
+              {t("common.auth.confirm_password")}
               <div className="relative mt-2">
                 <input
                   className={`w-full rounded-lg border border-border bg-card px-3 py-2 pr-12 transition-all ${showConfirmPassword ? "text-base tracking-normal font-normal" : "text-xl tracking-widest font-bold [-webkit-text-stroke:1px_currentColor]"}`}
@@ -159,14 +162,14 @@ export default function RegisterPage() {
             ) : null}
 
             <Button type="submit" className="w-full" disabled={register.isPending}>
-              {register.isPending ? "Creating..." : "Create account"}
+              {register.isPending ? t("common.auth.creating_account") : t("common.auth.create_account")}
             </Button>
           </form>
 
           <p className="text-sm text-foreground/70">
-            Already have an account?{" "}
+            {t("common.auth.already_have_account")}{" "}
             <Link className="text-primary" href="/account/login/">
-              Sign in
+              {t("common.auth.sign_in")}
             </Link>
           </p>
         </Card>

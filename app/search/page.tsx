@@ -10,6 +10,7 @@ import { JsonLd } from "@/components/seo/JsonLd";
 import { buildItemList, buildNoIndexMetadata, buildSearchResultsPage } from "@/lib/seo";
 import { buildCategoryPath } from "@/lib/categoryPaths";
 import { buildProductPath } from "@/lib/productPaths";
+import { getTranslations } from "@/lib/i18n.server";
 
 const ProductGrid = dynamic(
   () => import("@/components/products/ProductGrid").then((mod) => mod.ProductGrid)
@@ -52,34 +53,25 @@ async function getSearchMeta(query: string) {
 async function getProducts(searchParams: SearchParams) {
   const params: Record<string, string | number | boolean | Array<string | number | boolean> | undefined> = {};
   Object.entries(searchParams).forEach(([key, value]) => {
-    // Skip non-filter parameters
     if (key === "view") return;
     if (value === undefined) return;
-    
-    // Handle array values (for multi-select filters)
     if (Array.isArray(value)) {
-      // Filter out empty strings
       const filtered = value.filter(v => String(v).trim() !== "");
       if (filtered.length > 0) {
         params[key] = filtered;
       }
       return;
     }
-    
-    // Handle string values
     if (typeof value === "string") {
       const trimmed = value.trim();
-      // Handle search query - map 'q' to 'search'
       if (key === "q" && trimmed !== "") {
         params.search = trimmed;
         return;
       }
-      // Handle page parameter
       if (key === "page") {
         params[key] = Number(trimmed) || 1;
         return;
       }
-      // Pass other non-empty values
       if (trimmed !== "") {
         params[key] = trimmed;
       }
@@ -116,11 +108,13 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const resolved = await searchParams;
   const query = typeof resolved.q === "string" ? resolved.q.trim() : "";
+  const { t } = await getTranslations();
+  
   return buildNoIndexMetadata({
-    title: query ? `Search results for "${query}"` : "Search",
+    title: query ? `${t("common.search.results_for")} "${query}"` : t("common.search.title"),
     description: query
-      ? `Search results for "${query}" on Bunoraa.`
-      : "Search Bunoraa products.",
+      ? `${t("common.search.results_for")} "${query}" on Bunoraa.`
+      : t("common.search.catalog_search"),
     path: "/search/",
   });
 }
@@ -130,6 +124,7 @@ export default async function SearchPage({
 }: {
   searchParams: Promise<SearchParams>;
 }) {
+  const { t } = await getTranslations();
   const resolved = await searchParams;
   const query = typeof resolved.q === "string" ? resolved.q : "";
   const filterParams = query ? { q: query } : undefined;
@@ -142,11 +137,11 @@ export default async function SearchPage({
         <div className="mx-auto w-full max-w-6xl px-3 sm:px-5 py-12">
           <div className="mb-8">
             <p className="text-sm uppercase tracking-[0.2em] text-foreground/60">
-              Search
+              {t("common.search.title")}
             </p>
-            <h1 className="text-3xl font-semibold">Search the catalog</h1>
+            <h1 className="text-3xl font-semibold">{t("common.search.catalog_search")}</h1>
           </div>
-          <p className="text-sm text-foreground/60">Add a query using ?q=your-search.</p>
+          <p className="text-sm text-foreground/60">{t("common.search.no_query")}</p>
         </div>
       </div>
     );
@@ -189,11 +184,11 @@ export default async function SearchPage({
       image: (product.primary_image as string | undefined) || undefined,
       description: product.short_description || undefined,
     })),
-    `Search results for "${query}"`,
+    `${t("common.search.results_for")} "${query}"`,
     listId
   );
   const searchPageSchema = buildSearchResultsPage({
-    name: `Search results for "${query}"`,
+    name: `${t("common.search.results_for")} "${query}"`,
     description: `Products matching "${query}".`,
     url: `/search/?q=${encodeURIComponent(query)}`,
     itemListId: listId,
@@ -242,10 +237,10 @@ export default async function SearchPage({
         <div className="mb-8 flex flex-wrap items-center justify-between gap-4">
           <div>
             <p className="text-sm uppercase tracking-[0.2em] text-foreground/60">
-              Search
+              {t("common.search.title")}
             </p>
             <h1 className="text-3xl font-semibold">
-              Results for &quot;{query}&quot;
+              {t("common.search.results_for")} &quot;{query}&quot;
             </h1>
           </div>
           <div className="flex flex-wrap items-center gap-3">
@@ -268,7 +263,7 @@ export default async function SearchPage({
             {meta.categories.map((category) => (
               <Link
                 key={category.id}
-                className="rounded-full border border-border px-4 py-2 text-sm"
+                className="rounded-full border border-border px-4 py-2 text-sm transition-colors hover:border-primary hover:text-primary"
                 href={buildCategoryPath(category.slug_path || category.slug)}
               >
                 {category.name}
@@ -290,30 +285,30 @@ export default async function SearchPage({
           ) : null}
           <div className="space-y-6">
             <AppliedFilters />
-            <ProductGrid products={products} view={view} emptyMessage="No products found." />
+            <ProductGrid products={products} view={view} emptyMessage={t("common.search.no_results")} />
 
             {showPagination ? (
               <div className="mt-10 flex items-center justify-between">
                 {pagination?.previous ? (
                   <Button asChild variant="ghost" size="sm">
-                    <Link href={pageLink(currentPage - 1)}>Previous</Link>
+                    <Link href={pageLink(currentPage - 1)}>{t("common.search.previous")}</Link>
                   </Button>
                 ) : (
                   <span className="rounded-xl px-4 py-2 text-sm text-foreground/40">
-                    Previous
+                    {t("common.search.previous")}
                   </span>
                 )}
                 <span className="text-sm text-foreground/60">
-                  Page {currentPage}
-                  {pagination?.total_pages ? ` of ${pagination.total_pages}` : ""}
+                  {t("common.search.page")} {currentPage}
+                  {pagination?.total_pages ? ` ${t("common.search.of")} ${pagination.total_pages}` : ""}
                 </span>
                 {pagination?.next ? (
                   <Button asChild variant="ghost" size="sm">
-                    <Link href={pageLink(currentPage + 1)}>Next</Link>
+                    <Link href={pageLink(currentPage + 1)}>{t("common.search.next")}</Link>
                   </Button>
                 ) : (
                   <span className="rounded-xl px-4 py-2 text-sm text-foreground/40">
-                    Next
+                    {t("common.search.next")}
                   </span>
                 )}
               </div>

@@ -16,7 +16,12 @@ type ApiFetchOptions = {
   allowGuest?: boolean;
   suppressError?: boolean;
   suppressErrorStatus?: number[];
+  retries?: number;
+  retryDelay?: number;
 };
+
+const MAX_RETRIES = 3;
+const INITIAL_RETRY_DELAY = 1000; // 1 second
 
 const PUBLIC_API_BASE_URL = (process.env.NEXT_PUBLIC_API_BASE_URL || "").replace(/\/$/, "");
 const INTERNAL_API_BASE_URL = (process.env.NEXT_INTERNAL_API_BASE_URL || "").replace(/\/$/, "");
@@ -331,11 +336,16 @@ export async function apiFetch<T>(path: string, options: ApiFetchOptions = {}): 
   const isFormData =
     typeof FormData !== "undefined" && body instanceof FormData;
 
+  const requestId = typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function' 
+    ? crypto.randomUUID() 
+    : Math.random().toString(36).substring(2, 11);
+
   const init: RequestInit & { next?: { revalidate?: number } } = {
     method,
     headers: {
       ...(isFormData ? {} : { "Content-Type": "application/json" }),
       "X-Requested-With": "XMLHttpRequest",
+      "X-Request-ID": requestId,
       ...(csrfToken ? { "X-CSRFToken": csrfToken } : {}),
       ...(token ? { Authorization: `Bearer ${token}` } : {}),
       ...localeHeaders,

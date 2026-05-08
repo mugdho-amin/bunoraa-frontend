@@ -9,6 +9,7 @@ import { JsonLd } from "@/components/seo/JsonLd";
 import { DEFAULT_OG_IMAGE_PATH, SITE_NAME, SITE_URL, absoluteUrl, cleanObject } from "@/lib/seo";
 import Script from "next/script";
 import { DeferredClientEnhancements } from "@/components/layout/DeferredClientEnhancements";
+import { WebVitalsReporter } from "@/components/analytics/WebVitalsReporter";
 
 const SITE_DESCRIPTION =
   "Discover curated products, bundles, and artisan-made collections at Bunoraa.";
@@ -171,6 +172,7 @@ export default function RootLayout({
         </Script>
         <Script src="https://accounts.google.com/gsi/client" strategy="lazyOnload" />
         <SkipToContent />
+        <WebVitalsReporter />
         <Providers>
           <Header />
           <main id="main-content" className="min-h-[70vh]" role="main" aria-label="Main content">
