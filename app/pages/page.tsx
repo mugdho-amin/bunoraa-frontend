@@ -5,7 +5,6 @@ import { Card } from "@/components/ui/Card";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { buildItemList, buildPageMetadata } from "@/lib/seo";
 
-export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = buildPageMetadata({
   title: "Guides and Pages",

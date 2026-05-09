@@ -15,7 +15,6 @@ import { absoluteUrl, buildPageMetadata, cleanObject } from "@/lib/seo";
 import { asArray } from "@/lib/array";
 import { buildCategoryPath } from "@/lib/categoryPaths";
 
-export const dynamic = "force-dynamic";
 
 type CategoryPreview = {
   id: string;

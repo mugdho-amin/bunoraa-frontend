@@ -19,14 +19,11 @@ export const metadata: Metadata = buildPageMetadata({
 async function getCollections() {
   try {
     const response = await apiFetch<Collection[] | { results?: Collection[]; count?: number }>(
-      "/catalog/collections/",
-      {
-        
-      }
+      "/catalog/collections/"
     );
     return asArray<Collection>(response.data);
   } catch (error) {
-    if (error instanceof ApiError && error.status === 404) {
+    if (error instanceof ApiError && (error.status === 404 || error.status === 503)) {
       return [];
     }
     throw error;
