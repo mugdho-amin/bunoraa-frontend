@@ -1,7 +1,7 @@
 
 import type { Metadata } from "next";
 import Link from "next/link";
-import { apiFetch } from "@/lib/api";
+import { apiFetch, ApiError } from "@/lib/api";
 import type { SubscriptionPlan } from "@/lib/types";
 import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
@@ -14,10 +14,15 @@ export const metadata: Metadata = buildPageMetadata({
 });
 
 async function getPlans() {
-  const response = await apiFetch<SubscriptionPlan[]>("/subscriptions/plans/", {
-    
-  });
-  return response.data;
+  try {
+    const response = await apiFetch<SubscriptionPlan[]>("/subscriptions/plans/");
+    return response.data;
+  } catch (error) {
+    if (error instanceof ApiError && (error.status === 404 || error.status === 503)) {
+      return [];
+    }
+    throw error;
+  }
 }
 
 export default async function SubscriptionsLandingPage() {

@@ -111,8 +111,14 @@ const getImage = (product: ProductListItem | null | undefined) => {
 
 async function getHomepageData() {
   try {
+    let headers = {};
+    try {
+        headers = await getServerLocaleHeaders();
+    } catch {
+        // Fallback for static generation where cookies() might not be available
+    }
     const response = await apiFetch<HomepageData>("/catalog/homepage/", {
-      headers: await getServerLocaleHeaders(),
+      headers,
       next: { revalidate: HOMEPAGE_REVALIDATE_SECONDS },
     });
     const payload =
@@ -135,6 +141,9 @@ async function getHomepageData() {
       show_by_categories: asArray<FeaturedCategory>((payload as HomepageData).show_by_categories),
     };
   } catch (error) {
+    if (error instanceof ApiError && (error.status === 404 || error.status === 503)) {
+      return DEFAULT_HOMEPAGE_DATA;
+    }
     console.error("Failed to fetch homepage data:", error instanceof Error ? error.message : error);
     return DEFAULT_HOMEPAGE_DATA;
   }
@@ -142,13 +151,22 @@ async function getHomepageData() {
 
 async function getBanners(position?: string) {
   try {
+    let headers = {};
+    try {
+        headers = await getServerLocaleHeaders();
+    } catch {
+        // Fallback for static generation where cookies() might not be available
+    }
     const response = await apiFetch<Banner[]>("/promotions/banners/", {
       params: position ? { position } : undefined,
-      headers: await getServerLocaleHeaders(),
+      headers,
       next: { revalidate: HOMEPAGE_REVALIDATE_SECONDS },
     });
     return asArray<Banner>(response.data);
   } catch (error) {
+    if (error instanceof ApiError && (error.status === 404 || error.status === 503)) {
+      return [] as Banner[];
+    }
     console.error(`Failed to fetch banners for position ${position}:`, error instanceof Error ? error.message : error);
     return [] as Banner[];
   }
