@@ -3,7 +3,7 @@ import dynamicImport from "next/dynamic";
 import Link from "next/link";
 import Image from "next/image";
 import { Suspense } from "react";
-import { apiFetch } from "@/lib/api";
+import { apiFetch, ApiError } from "@/lib/api";
 import { getServerLocaleHeaders } from "@/lib/serverLocale";
 import type {
   Collection,
@@ -140,7 +140,7 @@ async function getHomepageData() {
       spotlights: asArray<Spotlight>((payload as HomepageData).spotlights),
       show_by_categories: asArray<FeaturedCategory>((payload as HomepageData).show_by_categories),
     };
-  } catch (error) {
+  } catch (error: unknown) {
     if (error instanceof ApiError && (error.status === 404 || error.status === 503)) {
       return DEFAULT_HOMEPAGE_DATA;
     }
@@ -163,7 +163,7 @@ async function getBanners(position?: string) {
       next: { revalidate: HOMEPAGE_REVALIDATE_SECONDS },
     });
     return asArray<Banner>(response.data);
-  } catch (error) {
+  } catch (error: unknown) {
     if (error instanceof ApiError && (error.status === 404 || error.status === 503)) {
       return [] as Banner[];
     }
