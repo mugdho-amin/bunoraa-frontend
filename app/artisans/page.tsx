@@ -19,14 +19,11 @@ export const metadata: Metadata = buildPageMetadata({
 async function getArtisans() {
   try {
     const response = await apiFetch<Artisan[] | { results?: Artisan[]; count?: number }>(
-      "/artisans/",
-      {
-        
-      }
+      "/artisans/"
     );
     return asArray<Artisan>(response.data);
   } catch (error) {
-    if (error instanceof ApiError && error.status === 404) {
+    if (error instanceof ApiError && (error.status === 404 || error.status === 503)) {
       return [];
     }
     throw error;
