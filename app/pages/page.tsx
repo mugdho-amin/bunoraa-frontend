@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { apiFetch } from "@/lib/api";
+import { apiFetch, ApiError } from "@/lib/api";
 import { Card } from "@/components/ui/Card";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { buildItemList, buildPageMetadata } from "@/lib/seo";
@@ -20,10 +20,15 @@ type PageSummary = {
 };
 
 async function getPages() {
-  const response = await apiFetch<PageSummary[]>("/pages/", {
-    
-  });
-  return response.data;
+  try {
+    const response = await apiFetch<PageSummary[]>("/pages/");
+    return response.data;
+  } catch (error) {
+    if (error instanceof ApiError && (error.status === 404 || error.status === 503)) {
+      return [];
+    }
+    throw error;
+  }
 }
 
 export default async function PagesIndex() {

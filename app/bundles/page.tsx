@@ -27,7 +27,7 @@ async function getBundles() {
     );
     return asArray<Bundle>(response.data);
   } catch (error) {
-    if (error instanceof ApiError && error.status === 404) {
+    if (error instanceof ApiError && (error.status === 404 || error.status === 503)) {
       return [];
     }
     throw error;
