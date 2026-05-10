@@ -5,6 +5,29 @@ import { apiFetch } from "./api";
 
 type TranslationBundle = Record<string, any>;
 
+// Cache for keys reported in the current session to avoid duplicates
+const reportedKeys = new Set<string>();
+let reportQueue: string[] = [];
+let reportTimeout: NodeJS.Timeout | null = null;
+
+const flushReportQueue = async () => {
+  if (reportQueue.length === 0) return;
+  
+  const keysToSend = [...reportQueue];
+  reportQueue = [];
+  reportTimeout = null;
+
+  try {
+    await apiFetch(`/i18n/messages/report-missing/`, {
+      method: "POST",
+      body: { keys: keysToSend },
+    });
+  } catch (error) {
+    console.error("Failed to report missing keys:", error);
+    // If it failed (e.g. 429), we don't retry immediately to avoid further load
+  }
+};
+
 /**
  * Client-side translation hook with automatic missing key reporting.
  */
@@ -40,15 +63,17 @@ export function useTranslation(namespaces: string[] = ["common"], lang?: string)
     fetchTranslations();
   }, [fetchTranslations]);
 
-  const reportMissingKey = useCallback(async (key: string) => {
-    try {
-      await apiFetch(`/i18n/messages/report-missing/`, {
-        method: "POST",
-        body: { keys: [key] },
-      });
-    } catch {
-      // Fail silently
+  const reportMissingKey = useCallback((key: string) => {
+    if (reportedKeys.has(key)) return;
+    
+    reportedKeys.add(key);
+    reportQueue.push(key);
+
+    if (reportTimeout) {
+      clearTimeout(reportTimeout);
     }
+    
+    reportTimeout = setTimeout(flushReportQueue, 1000);
   }, []);
 
   const t = useCallback(
