@@ -15,6 +15,7 @@ import { cn } from "@/lib/utils";
 import { compareItemFromProduct, useCompareToggle } from "@/components/products/compareHelpers";
 import { buildProductPath } from "@/lib/productPaths";
 import { useUiMessages } from "@/components/i18n/useUiMessages";
+import { useMediaUrl } from "@/components/providers/SiteSettingsProvider";
 
 const DEFAULT_CARD_ASPECT_RATIO = 4 / 5;
 
@@ -43,10 +44,12 @@ function MinimalProductCard({
   showQuickView?: boolean;
   onQuickView?: (slug: string) => void;
 }) {
+  const mediaUrl = useMediaUrl();
   const image =
     typeof product.primary_image === "string"
       ? product.primary_image
       : (product.primary_image as unknown as { image?: string | null })?.image || null;
+  const fullImageUrl = image && image.startsWith('/') ? `${mediaUrl}${image.replace(/^\/+/, '')}` : image;
   const productHref = buildProductPath(product);
 
   const canQuickView = typeof onQuickView === "function";
@@ -85,9 +88,9 @@ function MinimalProductCard({
             aria-label={`View ${product.name}`}
           />
         )}
-        {image ? (
+        {fullImageUrl ? (
           <Image
-            src={image}
+            src={fullImageUrl}
             alt={product.name}
             fill
             sizes={gridImageSizes}
@@ -137,10 +140,12 @@ function InteractiveProductCard({
 }) {
   const { isInCompare, toggleCompare } = useCompareToggle(product);
   const { t } = useUiMessages("cart");
+  const mediaUrl = useMediaUrl();
   const image =
     typeof product.primary_image === "string"
       ? product.primary_image
       : (product.primary_image as unknown as { image?: string | null })?.image || null;
+  const fullImageUrl = image && image.startsWith('/') ? `${mediaUrl}${image.replace(/^\/+/, '')}` : image;
   const productHref = buildProductPath(product);
 
   const canQuickView = typeof onQuickView === "function";
@@ -190,9 +195,9 @@ function InteractiveProductCard({
           color="fixed-black"
           className="absolute right-0 top-0 z-20 opacity-100 scale-75 transition sm:scale-100 sm:right-2 sm:top-2 sm:pointer-events-none sm:opacity-0 sm:group-hover:pointer-events-auto sm:group-hover:opacity-100"
         />
-        {image ? (
+        {fullImageUrl ? (
           <Image
-            src={image}
+            src={fullImageUrl}
             alt={product.name}
             fill
             sizes={variant === "list" ? listImageSizes : gridImageSizes}
