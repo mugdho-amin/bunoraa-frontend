@@ -49,7 +49,8 @@ function MinimalProductCard({
     typeof product.primary_image === "string"
       ? product.primary_image
       : (product.primary_image as unknown as { image?: string | null })?.image || null;
-  const fullImageUrl = image && image.startsWith('/') ? `${mediaUrl}${image.replace(/^\/+/, '')}` : image;
+  // Only prepend mediaUrl if image is relative (doesn't start with http/https or /)
+  const fullImageUrl = image && !image.startsWith('http') && !image.startsWith('/') ? `${mediaUrl}${image}` : image;
   const productHref = buildProductPath(product);
 
   const canQuickView = typeof onQuickView === "function";
@@ -145,7 +146,8 @@ function InteractiveProductCard({
     typeof product.primary_image === "string"
       ? product.primary_image
       : (product.primary_image as unknown as { image?: string | null })?.image || null;
-  const fullImageUrl = image && image.startsWith('/') ? `${mediaUrl}${image.replace(/^\/+/, '')}` : image;
+  // Only prepend mediaUrl if image is relative (doesn't start with http/https or /)
+  const fullImageUrl = image && !image.startsWith('http') && !image.startsWith('/') ? `${mediaUrl}${image}` : image;
   const productHref = buildProductPath(product);
 
   const canQuickView = typeof onQuickView === "function";

@@ -14,8 +14,8 @@ export default function r2Loader({
   width: number;
   quality?: number;
 }) {
-  // If absolute URL and not on our media domain, return as is
-  if (src.startsWith('http') && !src.includes('media.bunoraa.com')) {
+  // If URL is already absolute, return as-is to avoid double-prefixing
+  if (src.startsWith('http://') || src.startsWith('https://')) {
     return src;
   }
 
