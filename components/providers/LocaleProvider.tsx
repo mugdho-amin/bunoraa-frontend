@@ -223,9 +223,14 @@ export function LocaleProvider({ children }: { children: React.ReactNode }) {
     [router, startTransition, updatePrefs]
   );
 
+  const contextValue = React.useMemo(
+    () => ({ locale, setLocale, isLoading: prefsQuery.isLoading }),
+    [locale, setLocale, prefsQuery.isLoading]
+  );
+
   return (
     <LocaleContext.Provider
-      value={{ locale, setLocale, isLoading: prefsQuery.isLoading }}
+      value={contextValue}
     >
       {children}
     </LocaleContext.Provider>

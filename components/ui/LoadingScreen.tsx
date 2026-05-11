@@ -67,13 +67,10 @@ export function LoadingScreen({
           {/* Logo in center */}
           <div className="absolute inset-0 flex items-center justify-center">
             <div className="flex h-12 w-12 items-center justify-center overflow-hidden rounded-full bg-background shadow-inner">
-               <Image 
+               <img 
                 src="/icon.png" 
-                alt="Logo" 
-                width={48} 
-                height={48} 
+                alt="B" 
                 className="h-8 w-8 object-contain"
-                priority
                />
             </div>
           </div>
