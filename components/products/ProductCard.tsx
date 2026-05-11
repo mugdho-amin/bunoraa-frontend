@@ -272,7 +272,6 @@ function InteractiveProductCard({
             />
             <Button
               variant="secondary"
-              size="icon"
               className={cn(
                 "h-9 w-9 rounded-lg border-border/40 hover:bg-muted transition-colors",
                 isInCompare && "text-primary border-primary/20 bg-primary/5"
