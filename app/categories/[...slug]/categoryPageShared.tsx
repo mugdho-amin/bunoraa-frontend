@@ -14,6 +14,7 @@ import { JsonLd } from "@/components/seo/JsonLd";
 import { buildCollectionPage, buildItemList, buildPageMetadata } from "@/lib/seo";
 import { buildCategoryPath } from "@/lib/categoryPaths";
 import { buildProductPath } from "@/lib/productPaths";
+import { cn } from "@/lib/utils";
 
 type Category = {
   id: string;
@@ -173,6 +174,10 @@ export async function buildCategoryMetadataForPath(
   };
 }
 
+import { Breadcrumbs } from "@/components/layout/Breadcrumbs";
+
+// ... (keep types and existing helper functions)
+
 export async function renderCategoryPageForPath(
   slugPath: string,
   resolvedSearchParams: CategorySearchParams
@@ -192,81 +197,59 @@ export async function renderCategoryPageForPath(
   ]);
   const childCategories = category.children || [];
 
-  const rawData = productsResponse.data as
-    | ProductListItem[]
-    | {
-        results?: ProductListItem[];
-        count?: number;
-        next?: string | null;
-        previous?: string | null;
-      };
-  const products = Array.isArray(rawData)
-    ? rawData
-    : Array.isArray(rawData?.results)
-    ? rawData.results
-    : [];
-  const pagination =
-    productsResponse.meta?.pagination ||
-    (rawData && !Array.isArray(rawData)
-      ? {
-          count: rawData.count ?? products.length,
-          next: rawData.next ?? null,
-          previous: rawData.previous ?? null,
-          page,
-          page_size: products.length,
-          total_pages: rawData.count
-            ? Math.max(1, Math.ceil(rawData.count / Math.max(products.length, 1)))
-            : 1,
-        }
-      : undefined);
+  const rawData = productsResponse.data as any;
+  const products = Array.isArray(rawData) ? rawData : rawData?.results || [];
+  const pagination = productsResponse.meta?.pagination || (rawData && !Array.isArray(rawData) ? {
+    count: rawData.count ?? products.length,
+    next: rawData.next ?? null,
+    previous: rawData.previous ?? null,
+    page,
+    page_size: products.length,
+    total_pages: Math.ceil((rawData.count || 0) / (products.length || 1))
+  } : undefined);
+
   const totalCount = pagination?.count ?? products.length;
-  const showFilters = Boolean(
-    filterData ||
-    facets.length ||
-    childCategories.length ||
-    totalCount > 0
-  );
+  const showFilters = Boolean(filterData || facets.length || childCategories.length || totalCount > 0);
   const requestParams = buildCategoryProductsParams(resolvedSearchParams);
 
-  const categoryUrl = buildCategoryPath(slugPath);
-  const itemListId = `${categoryUrl}#itemlist`;
-  const productList = buildItemList(
-    products.slice(0, 50).map((product) => ({
-      name: product.name,
-      url: buildProductPath(product),
-      image: (product.primary_image as string | undefined) || undefined,
-      description: product.short_description || undefined,
-    })),
-    `${category.name} products`,
-    itemListId
-  );
-  const collectionPage = buildCollectionPage({
-    name: category.meta_title || category.name,
-    description: category.meta_description || category.description || undefined,
-    url: categoryUrl,
-    itemListId,
-  });
+  const breadcrumbItems = [
+    { name: "Home", url: "/" },
+    ...slugPath.split("/").map((part, idx, arr) => {
+      const currentPath = arr.slice(0, idx + 1).join("/");
+      return {
+        name: part.split("-").map(p => p.charAt(0).toUpperCase() + p.slice(1)).join(" "),
+        url: buildCategoryPath(currentPath)
+      };
+    })
+  ];
 
   return (
-    <div className="min-h-screen bg-background text-foreground">
-      <div className="mx-auto w-full max-w-7xl px-4 py-8 sm:px-6 sm:py-12">
-        <div className="mb-6 sm:mb-8">
-          <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between lg:gap-6">
-            <div className="flex-1">
-              <h1 className="text-2xl font-semibold sm:text-3xl">{category.name}</h1>
-              {(category.meta_description || category.description) ? (
-                <p className="mt-2 max-w-3xl text-sm text-foreground/70 sm:text-base">
+    <div className="min-h-screen bg-background selection:bg-primary selection:text-primary-foreground">
+      <div className="mx-auto w-full max-w-7xl px-4 py-6 sm:px-6 lg:py-10">
+        {/* Header Section */}
+        <div className="mb-10 space-y-6">
+          <Breadcrumbs items={breadcrumbItems} />
+          
+          <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
+            <div className="flex-1 space-y-3">
+              <h1 className="text-3xl font-bold tracking-tight text-foreground sm:text-4xl lg:text-5xl">
+                {category.name}
+              </h1>
+              {(category.meta_description || category.description) && (
+                <p className="max-w-2xl text-sm leading-relaxed text-muted-foreground sm:text-base">
                   {category.meta_description || category.description}
                 </p>
-              ) : null}
-              <p className="mt-1 text-sm text-foreground/60">
-                {totalCount} product{totalCount === 1 ? "" : "s"} available
-              </p>
+              )}
+              <div className="flex items-center gap-2 text-xs font-medium uppercase tracking-wider text-muted-foreground/60">
+                <span className="h-px w-8 bg-border" />
+                {totalCount} Curated Products
+              </div>
             </div>
 
-            <div className="sticky top-[calc(var(--header-offset,4.75rem)+0.25rem)] z-20 rounded-2xl border border-border/70 bg-background/95 p-3 shadow-soft backdrop-blur supports-[backdrop-filter]:bg-background/88 lg:static lg:z-auto lg:border-0 lg:bg-transparent lg:p-0 lg:shadow-none">
-              <div className="grid gap-2 sm:flex sm:flex-wrap sm:items-center sm:gap-3 lg:justify-end lg:flex-nowrap">
-                {showFilters ? (
+            {/* Mobile Actions Bar */}
+            <div className="sticky top-[var(--header-offset,4.75rem)] z-30 flex items-center gap-2 rounded-2xl border border-border/60 bg-background/80 p-2 shadow-sm backdrop-blur-xl lg:static lg:z-auto lg:border-0 lg:bg-transparent lg:p-0 lg:shadow-none">
+              <div className="flex flex-1 items-center gap-2 sm:flex-initial">
+                {showFilters && (
                   <FilterDrawer
                     filters={filterData}
                     facets={facets}
@@ -276,45 +259,48 @@ export async function renderCategoryPageForPath(
                     filterParams={filterParams}
                     currentCategoryPath={slugPath}
                   />
-                ) : null}
-                <SortMenu className="w-full sm:w-auto min-w-[160px]" />
-                <ViewToggle className="w-full sm:w-auto" />
+                )}
+                <SortMenu className="h-10 w-full sm:w-auto min-w-[140px] rounded-xl border-border/50 lg:h-11 lg:min-w-[180px]" />
+                <ViewToggle className="h-10 border-border/50 lg:h-11" />
               </div>
             </div>
           </div>
         </div>
 
-        <div className={showFilters ? "grid gap-8 lg:grid-cols-[260px_1fr]" : "grid gap-8"}>
-          {showFilters ? (
+        {/* Content Section */}
+        <div className={cn("grid gap-10", showFilters ? "lg:grid-cols-[240px_1fr]" : "grid-cols-1")}>
+          {showFilters && (
             <aside className="hidden lg:block">
-              <FilterPanel
-                filters={filterData}
-                facets={facets}
-                categories={childCategories}
-                productCount={totalCount}
-                currentCategoryPath={slugPath}
-                filterParams={filterParams}
-              />
+              <div className="sticky top-28 space-y-8">
+                <FilterPanel
+                  filters={filterData}
+                  facets={facets}
+                  categories={childCategories}
+                  productCount={totalCount}
+                  currentCategoryPath={slugPath}
+                  filterParams={filterParams}
+                />
+              </div>
             </aside>
-          ) : null}
-          <div className="space-y-6">
+          )}
+
+          <main className="space-y-8">
             <AppliedFilters />
-            <InfiniteProductGrid
-              endpoint={`/catalog/categories/${slugPath}/products/`}
-              requestParams={requestParams}
-              initialProducts={products}
-              initialPagination={pagination}
-              resetKey={JSON.stringify({
-                endpoint: `/catalog/categories/${slugPath}/products/`,
-                params: requestParams,
-                view,
-              })}
-              view={view}
-            />
-          </div>
+            
+            <div className="relative">
+              <InfiniteProductGrid
+                endpoint={`/catalog/categories/${slugPath}/products/`}
+                requestParams={requestParams}
+                initialProducts={products}
+                initialPagination={pagination}
+                resetKey={JSON.stringify({ endpoint: slugPath, params: requestParams, view })}
+                view={view}
+                className="min-h-[400px]"
+              />
+            </div>
+          </main>
         </div>
       </div>
-      <JsonLd data={[collectionPage, productList]} />
     </div>
   );
 }

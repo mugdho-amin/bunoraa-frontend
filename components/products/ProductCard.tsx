@@ -142,133 +142,152 @@ function InteractiveProductCard({
   const { isInCompare, toggleCompare } = useCompareToggle(product);
   const { t } = useUiMessages("cart");
   const mediaUrl = useMediaUrl();
-  const image =
+
+  const getFullUrl = (img: string | null | undefined) => {
+    if (!img) return null;
+    return !img.startsWith("http") && !img.startsWith("/") ? `${mediaUrl}${img}` : img;
+  };
+
+  const primaryImageUrl = getFullUrl(
     typeof product.primary_image === "string"
       ? product.primary_image
-      : (product.primary_image as unknown as { image?: string | null })?.image || null;
-  // Only prepend mediaUrl if image is relative (doesn't start with http/https or /)
-  const fullImageUrl = image && !image.startsWith('http') && !image.startsWith('/') ? `${mediaUrl}${image}` : image;
+      : (product.primary_image as any)?.image
+  );
+  const secondaryImageUrl = getFullUrl(product.secondary_image);
   const productHref = buildProductPath(product);
 
-  const canQuickView = typeof onQuickView === "function";
   const aspectRatioValue = parseAspectRatio(product.aspect_ratio);
-  const gridImageSizes =
-    "(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw";
+  const gridImageSizes = "(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw";
   const listImageSizes = "(max-width: 640px) 100vw, 224px";
 
   return (
-    <Card
-      variant="bordered"
+    <div
       className={cn(
-        "group flex flex-col gap-3 p-4 sm:gap-4 sm:p-5",
-        variant === "list" ? "sm:flex-row sm:items-center" : ""
+        "group relative flex flex-col transition-all duration-300",
+        variant === "list"
+          ? "sm:flex-row sm:items-start gap-6 border-b border-border/50 pb-8 last:border-0"
+          : "bg-background rounded-2xl border border-border/40 hover:border-border hover:shadow-[0_12px_40px_-12px_rgba(0,0,0,0.08)]"
       )}
     >
       <div
         className={cn(
-          "relative overflow-hidden rounded-xl bg-muted",
-          variant === "list" ? "h-40 w-full sm:h-40 sm:w-56" : ""
+          "relative overflow-hidden bg-muted transition-all duration-500",
+          variant === "list"
+            ? "aspect-[4/5] w-full sm:w-56 rounded-xl"
+            : "aspect-[var(--aspect-ratio)] rounded-t-2xl",
         )}
-        style={variant !== "list" ? { aspectRatio: aspectRatioValue } : undefined}
+        style={{ "--aspect-ratio": aspectRatioValue } as React.CSSProperties}
       >
-        {canQuickView ? (
-          <button
-            type="button"
-            className="absolute inset-0 z-0"
-            onClick={() => onQuickView?.(product.slug)}
-            aria-label={`${t("quick_view", "Quick view")} ${product.name}`}
-          >
-            <span className="sr-only">{t("quick_view", "Quick view")}</span>
-          </button>
-        ) : (
-          <Link
-            href={productHref}
-            prefetch={false}
-            className="absolute inset-0 z-0"
-            aria-label={`${t("view_product", "View")} ${product.name}`}
-            target="_blank"
-            rel="noopener noreferrer"
-          />
-        )}
-        <WishlistIconButton
-          productId={product.id}
-          variant="ghost"
-          size="lg"
-          color="fixed-black"
-          className="absolute right-0 top-0 z-20 opacity-100 scale-75 transition sm:scale-100 sm:right-2 sm:top-2 sm:pointer-events-none sm:opacity-0 sm:group-hover:pointer-events-auto sm:group-hover:opacity-100"
-        />
-        {fullImageUrl ? (
+        <Link href={productHref} className="absolute inset-0 z-10">
+          <span className="sr-only">{product.name}</span>
+        </Link>
+
+        {/* Images */}
+        {primaryImageUrl && (
           <Image
-            src={fullImageUrl}
+            src={primaryImageUrl}
             alt={product.name}
             fill
             sizes={variant === "list" ? listImageSizes : gridImageSizes}
-            quality={72}
-            loading="lazy"
-            decoding="async"
-            className="h-full w-full object-cover"
+            quality={85}
+            className={cn(
+              "object-cover transition-all duration-700 ease-out group-hover:scale-110",
+              secondaryImageUrl && "group-hover:opacity-0"
+            )}
           />
-        ) : null}
-        <div className="absolute left-2 top-2 z-10 sm:left-3 sm:top-3">
+        )}
+        {secondaryImageUrl && (
+          <Image
+            src={secondaryImageUrl}
+            alt={`${product.name} - alternate`}
+            fill
+            sizes={variant === "list" ? listImageSizes : gridImageSizes}
+            quality={85}
+            className="object-cover opacity-0 transition-all duration-700 ease-out scale-105 group-hover:scale-110 group-hover:opacity-100"
+          />
+        )}
+
+        {/* Badges & Overlays */}
+        <div className="absolute left-3 top-3 z-20 flex flex-col gap-1.5">
           <ProductBadges product={product} omitOnSale />
         </div>
-        {showQuickView ? (
-          <div className="absolute bottom-2 left-2 right-2 z-20 opacity-100 transition sm:bottom-3 sm:left-3 sm:right-auto sm:pointer-events-none sm:opacity-0 sm:group-hover:pointer-events-auto sm:group-hover:opacity-100">
+
+        <WishlistIconButton
+          productId={product.id}
+          className="absolute right-3 top-3 z-30 sm:translate-y-2 sm:opacity-0 sm:group-hover:translate-y-0 sm:group-hover:opacity-100 transition-all duration-300"
+        />
+
+        {showQuickView && (
+          <div className="absolute inset-x-0 bottom-0 z-20 p-3 translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-out hidden sm:block">
             <Button
-              size="sm"
               variant="secondary"
-              className="w-full bg-background/90 backdrop-blur sm:w-auto"
-              onClick={() => onQuickView?.(product.slug)}
+              size="sm"
+              className="w-full bg-background/90 backdrop-blur-sm border-0 shadow-lg hover:bg-background"
+              onClick={(e) => {
+                e.preventDefault();
+                onQuickView?.(product.slug);
+              }}
             >
-              {t("quick_view", "Quick view")}
+              {t("quick_view", "Quick View")}
             </Button>
           </div>
-        ) : null}
+        )}
       </div>
 
-      <div className="flex flex-1 flex-col gap-2">
-        <div>
-          <p className="text-[11px] uppercase tracking-[0.16em] text-foreground/60">
-            {product.primary_category_name || t("featured", "Featured")}
+      <div className={cn("flex flex-1 flex-col p-4 sm:p-5", variant === "list" && "sm:p-0")}>
+        <div className="mb-2 space-y-1">
+          <p className="text-[10px] font-bold uppercase tracking-[0.1em] text-muted-foreground/80">
+            {product.primary_category_name}
           </p>
           <Link
             href={productHref}
-            prefetch={false}
-            className="block text-base font-normal leading-snug sm:text-lg"
-            target="_blank"
-            rel="noopener noreferrer"
+            className="line-clamp-1 text-sm font-medium hover:text-primary transition-colors sm:text-base leading-tight"
           >
             {product.name}
           </Link>
         </div>
-        <RatingStars rating={product.average_rating || 0} count={product.reviews_count} />
-        <ProductPrice
-          price={product.price}
-          salePrice={product.sale_price}
-          currentPrice={product.current_price}
-          currency={product.currency}
-          priceClassName="text-sm font-medium sm:text-base"
-        />
-        <div className="mt-auto grid grid-cols-2 gap-2 sm:flex sm:flex-nowrap sm:items-center">
-          <AddToCartButton
-            productId={product.id}
-            size="sm"
-            variant="secondary"
-            className="w-full justify-center sm:flex-1"
-            label={product.is_in_stock ? t("add_to_bag", "Add to bag") : t("out_of_stock", "Out of stock")}
-            disabled={!product.is_in_stock}
-          />
-          <Button
-            size="sm"
-            variant={isInCompare ? "primary" : "secondary"}
-            className="w-full justify-center sm:w-auto sm:min-w-[110px]"
-            onClick={() => toggleCompare(compareItemFromProduct(product))}
-          >
-            {isInCompare ? t("compared", "Compared") : t("compare", "Compare")}
-          </Button>
+
+        <div className="mt-auto space-y-4">
+          <div className="flex items-end justify-between gap-2">
+            <ProductPrice
+              price={product.price}
+              salePrice={product.sale_price}
+              currentPrice={product.current_price}
+              currency={product.currency}
+              priceClassName="text-base font-semibold text-foreground"
+            />
+            <RatingStars rating={product.average_rating || 0} count={product.reviews_count} size="sm" />
+          </div>
+
+          <div className="grid grid-cols-[1fr_auto] gap-2">
+            <AddToCartButton
+              productId={product.id}
+              variant={product.is_in_stock ? "primary" : "secondary"}
+              className={cn(
+                "h-9 text-[11px] font-bold uppercase tracking-wider rounded-lg shadow-sm",
+                !product.is_in_stock && "opacity-50"
+              )}
+              label={product.is_in_stock ? t("add_to_bag", "Add to Bag") : t("out_of_stock", "Sold Out")}
+              disabled={!product.is_in_stock}
+            />
+            <Button
+              variant="secondary"
+              size="icon"
+              className={cn(
+                "h-9 w-9 rounded-lg border-border/40 hover:bg-muted transition-colors",
+                isInCompare && "text-primary border-primary/20 bg-primary/5"
+              )}
+              onClick={() => toggleCompare(compareItemFromProduct(product))}
+              aria-label={isInCompare ? "Remove from compare" : "Add to compare"}
+            >
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M16 3h5v5M8 21H3v-5M21 3l-7 7M3 21l7-7" />
+              </svg>
+            </Button>
+          </div>
         </div>
       </div>
-    </Card>
+    </div>
   );
 }
 

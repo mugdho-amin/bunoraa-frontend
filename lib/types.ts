@@ -55,6 +55,7 @@ export type ProductListItem = {
   reviews_count?: number | null;
   views_count?: number | null;
   primary_image?: string | null;
+  secondary_image?: string | null;
   primary_category_id?: string | null;
   primary_category_path?: string | null;
   primary_category_name?: string | null;

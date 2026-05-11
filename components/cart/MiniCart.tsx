@@ -2,6 +2,7 @@
 
 import * as React from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { Button } from "@/components/ui/Button";
 import { useCart } from "@/components/cart/useCart";
 import { useUiMessages } from "@/components/i18n/useUiMessages";
@@ -122,7 +123,17 @@ export function MiniCart({
       <div className="flex-1 overflow-y-auto p-3 space-y-4">
         {cart.items.map((item) => (
           <div key={item.id} className="flex gap-3">
-            <div className="h-20 w-16 bg-muted rounded-sm animate-pulse shrink-0" />
+            <div className="relative h-20 w-16 bg-muted rounded-sm shrink-0 overflow-hidden">
+              {item.product_image ? (
+                <Image
+                  src={item.product_image}
+                  alt={item.product_name}
+                  fill
+                  className="object-cover"
+                  sizes="64px"
+                />
+              ) : null}
+            </div>
             <div className="flex-1 space-y-0.5 min-w-0">
               <p className="text-sm font-medium truncate">{item.product_name}</p>
               <p className="text-[10px] text-foreground/60 truncate">{item.variant_name}</p>
