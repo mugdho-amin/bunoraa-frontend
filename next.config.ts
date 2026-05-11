@@ -63,6 +63,7 @@ const nextConfig: NextConfig = {
     contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
   },
   compress: false,
+  output: 'standalone',
   experimental: {
     optimizePackageImports: [
       "@/components",
