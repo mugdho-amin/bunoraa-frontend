@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { cache } from "react";
 import dynamic from "next/dynamic";
 import Link from "next/link";
 import { apiFetch, ApiError } from "@/lib/api";
@@ -14,7 +15,7 @@ const ProductGrid = dynamic(
   () => import("@/components/products/ProductGrid").then((mod) => mod.ProductGrid)
 );
 
-async function getBundle(slug: string) {
+const getBundle = cache(async (slug: string) => {
   try {
     const response = await apiFetch<Bundle>(`/catalog/bundles/${slug}/`, {
       headers: await getServerLocaleHeaders()
@@ -26,16 +27,15 @@ async function getBundle(slug: string) {
     }
     throw error;
   }
-}
+});
 
-async function getBundleProducts(slug: string) {
+const getBundleProducts = cache(async (slug: string) => {
   const response = await apiFetch<ProductListItem[]>(
-    `/catalog/bundles/${slug}/`,
+    `/catalog/bundles/${slug}/products/`,
     { headers: await getServerLocaleHeaders()}
   );
-  const data = response.data as unknown as { items?: ProductListItem[] };
-  return data.items || [];
-}
+  return response.data;
+});
 
 export async function generateMetadata({
   params,
