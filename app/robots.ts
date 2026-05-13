@@ -2,9 +2,8 @@ import type { MetadataRoute } from "next";
 import { getBackendBaseUrl } from "@/lib/seo";
 
 export default function robots(): MetadataRoute.Robots {
-  // Sitemaps are served from the backend/API, not the frontend
-  const backendBaseUrl = getBackendBaseUrl();
-  const sitemapUrl = `${backendBaseUrl}/sitemap.xml`;
+  // Sitemaps are proxied from the backend to the frontend domain
+  const sitemapUrl = "/sitemap.xml";
 
   return {
     rules: {
@@ -16,6 +15,7 @@ export default function robots(): MetadataRoute.Robots {
         "/oauth/",
         "/email/",
         "/health/",
+        "/status/",
         "/api/schema/",
         "/api/schema/swagger-ui/",
         "/api/schema/redoc/",

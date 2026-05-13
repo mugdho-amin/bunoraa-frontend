@@ -94,6 +94,21 @@ const nextConfig: NextConfig = {
       },
     ];
   },
+  async rewrites() {
+    const backendBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || "https://api.bunoraa.com";
+    const apiBaseUrl = backendBaseUrl.replace(/\/api\/v\d+\/?$/, "");
+
+    return [
+      {
+        source: "/sitemap.xml",
+        destination: `${apiBaseUrl}/sitemap.xml`,
+      },
+      {
+        source: "/sitemap-:section.xml",
+        destination: `${apiBaseUrl}/sitemap-:section.xml`,
+      },
+    ];
+  },
 };
 
 export default nextConfig;
