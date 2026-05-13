@@ -1,7 +1,11 @@
 import type { MetadataRoute } from "next";
-import { absoluteUrl } from "@/lib/seo";
+import { getBackendBaseUrl } from "@/lib/seo";
 
 export default function robots(): MetadataRoute.Robots {
+  // Sitemaps are served from the backend/API, not the frontend
+  const backendBaseUrl = getBackendBaseUrl();
+  const sitemapUrl = `${backendBaseUrl}/sitemap.xml`;
+
   return {
     rules: {
       userAgent: "*",
@@ -17,6 +21,6 @@ export default function robots(): MetadataRoute.Robots {
         "/api/schema/redoc/",
       ],
     },
-    sitemap: absoluteUrl("/sitemap.xml"),
+    sitemap: sitemapUrl,
   };
 }

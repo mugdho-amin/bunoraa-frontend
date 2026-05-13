@@ -11,6 +11,17 @@ export const SITE_URL = (process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3
 export const SITE_NAME = "Bunoraa";
 export const DEFAULT_OG_IMAGE_PATH = "/opengraph-image";
 
+/**
+ * Get the backend API base URL (without trailing /api/v1)
+ * Used for accessing backend-only endpoints like sitemaps
+ * @returns Backend base URL (e.g., https://api.bunoraa.com or https://backend.hf.space)
+ */
+export function getBackendBaseUrl(): string {
+  const apiUrl = process.env.NEXT_PUBLIC_API_BASE_URL || "https://api.bunoraa.com";
+  // Remove /api/v* suffix if present to get base backend URL
+  return apiUrl.replace(/\/api\/v\d+\/?$/, "") || "https://api.bunoraa.com";
+}
+
 export function absoluteUrl(path: UrlLike): string {
   if (!path) return SITE_URL;
   if (path.startsWith("//")) return `https:${path}`;
