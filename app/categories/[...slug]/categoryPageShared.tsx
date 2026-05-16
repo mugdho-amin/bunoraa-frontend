@@ -232,17 +232,27 @@ export async function renderCategoryPageForPath(
           
           <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
             <div className="flex-1 space-y-3">
-              <h1 className="text-3xl font-bold tracking-tight text-foreground sm:text-4xl lg:text-5xl">
+              <h1 className="text-4xl font-bold tracking-tight text-foreground sm:text-5xl lg:text-6xl mb-4">
                 {category.name}
               </h1>
-              {(category.meta_description || category.description) && (
-                <p className="max-w-2xl text-sm leading-relaxed text-muted-foreground sm:text-base">
-                  {category.meta_description || category.description}
-                </p>
+              
+              {category.description && (
+                <div className="relative max-w-3xl group">
+                  <div className="absolute -left-4 top-0 bottom-0 w-1 bg-primary/20 rounded-full hidden sm:block" />
+                  <div className="prose prose-stone prose-sm sm:prose-base !text-secondary-700/90 font-serif italic leading-relaxed">
+                    <p className="line-clamp-3 group-hover:line-clamp-none transition-all duration-500 ease-in-out">
+                      {category.description}
+                    </p>
+                  </div>
+                </div>
               )}
-              <div className="flex items-center gap-2 text-xs font-medium uppercase tracking-wider text-muted-foreground/60">
-                <span className="h-px w-8 bg-border" />
-                {totalCount} Curated Products
+
+              <div className="flex items-center gap-4 pt-2">
+                <div className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.2em] text-primary">
+                  <span className="h-1.5 w-1.5 rounded-full bg-primary animate-pulse-soft" />
+                  {totalCount} Curated Pieces
+                </div>
+                <div className="h-px flex-1 max-w-[100px] bg-border/60" />
               </div>
             </div>
 
@@ -300,11 +310,20 @@ export async function renderCategoryPageForPath(
             </div>
 
             {category.description && (
-              <div className="mt-16 border-t border-border/60 pt-12">
-                <div className="prose prose-stone prose-sm sm:prose-base max-w-4xl mx-auto text-muted-foreground leading-relaxed">
-                  {category.description.split('\n').map((paragraph, i) => (
-                    <p key={i}>{paragraph}</p>
-                  ))}
+              <div className="mt-20 border-t border-border/40 pt-16 pb-8 bg-secondary-50/30 -mx-4 px-4 sm:-mx-6 sm:px-6 rounded-3xl">
+                <div className="max-w-3xl mx-auto space-y-8">
+                  <div className="text-center space-y-2">
+                    <h2 className="text-2xl font-bold tracking-tight text-foreground sm:text-3xl">
+                      About the {category.name} Collection
+                    </h2>
+                    <div className="h-1 w-12 bg-primary mx-auto rounded-full" />
+                  </div>
+                  
+                  <div className="prose prose-stone prose-sm sm:prose-base max-w-none text-secondary-700/80 leading-relaxed font-serif text-center italic">
+                    {category.description.split('\n').map((paragraph, i) => (
+                      <p key={i} className="mb-4">{paragraph}</p>
+                    ))}
+                  </div>
                 </div>
               </div>
             )}
