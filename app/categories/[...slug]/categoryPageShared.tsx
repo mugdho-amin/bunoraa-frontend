@@ -10,10 +10,8 @@ import { ViewToggle } from "@/components/products/ViewToggle";
 import { notFound } from "next/navigation";
 import type { CategoryFacet } from "@/components/products/FilterPanel";
 import { getServerLocaleHeaders } from "@/lib/serverLocale";
-import { JsonLd } from "@/components/seo/JsonLd";
-import { buildCollectionPage, buildItemList, buildPageMetadata } from "@/lib/seo";
+import { buildPageMetadata } from "@/lib/seo";
 import { buildCategoryPath } from "@/lib/categoryPaths";
-import { buildProductPath } from "@/lib/productPaths";
 import { cn } from "@/lib/utils";
 
 type Category = {
@@ -197,15 +195,18 @@ export async function renderCategoryPageForPath(
   ]);
   const childCategories = category.children || [];
 
-  const rawData = productsResponse.data as any;
-  const products = Array.isArray(rawData) ? rawData : rawData?.results || [];
+  const rawData = productsResponse.data as unknown;
+  const products = Array.isArray(rawData) 
+    ? (rawData as ProductListItem[]) 
+    : ((rawData as Record<string, unknown>)?.results as ProductListItem[]) || [];
+    
   const pagination = productsResponse.meta?.pagination || (rawData && !Array.isArray(rawData) ? {
-    count: rawData.count ?? products.length,
-    next: rawData.next ?? null,
-    previous: rawData.previous ?? null,
+    count: ((rawData as Record<string, unknown>).count as number) ?? products.length,
+    next: ((rawData as Record<string, unknown>).next as string | null) ?? null,
+    previous: ((rawData as Record<string, unknown>).previous as string | null) ?? null,
     page,
     page_size: products.length,
-    total_pages: Math.ceil((rawData.count || 0) / (products.length || 1))
+    total_pages: Math.ceil((((rawData as Record<string, unknown>).count as number) || 0) / (products.length || 1))
   } : undefined);
 
   const totalCount = pagination?.count ?? products.length;
