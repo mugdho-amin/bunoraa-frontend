@@ -298,6 +298,16 @@ export async function renderCategoryPageForPath(
                 className="min-h-[400px]"
               />
             </div>
+
+            {category.description && (
+              <div className="mt-16 border-t border-border/60 pt-12">
+                <div className="prose prose-stone prose-sm sm:prose-base max-w-4xl mx-auto text-muted-foreground leading-relaxed">
+                  {category.description.split('\n').map((paragraph, i) => (
+                    <p key={i}>{paragraph}</p>
+                  ))}
+                </div>
+              </div>
+            )}
           </main>
         </div>
       </div>

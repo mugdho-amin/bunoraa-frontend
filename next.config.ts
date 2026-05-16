@@ -3,14 +3,12 @@ import type { RemotePattern } from "next/dist/shared/lib/image-config";
 import path from "path";
 
 const remotePatterns: RemotePattern[] = [
-  // Localhost for development
   {
     protocol: "http",
     hostname: "localhost",
     port: "8000",
     pathname: "/**",
   },
-  // S3 and S3-compatible services (AWS, Cloudflare R2, DigitalOcean Spaces, etc.)
   {
     protocol: "https",
     hostname: "**.amazonaws.com",
@@ -26,7 +24,6 @@ const remotePatterns: RemotePattern[] = [
     hostname: "**.digitaloceanspaces.com",
     pathname: "/**",
   },
-  // Generic media/CDN domains
   {
     protocol: "https",
     hostname: "media.**",
@@ -44,8 +41,7 @@ const remotePatterns: RemotePattern[] = [
   },
 ];
 
-const shouldDisableImageOptimization =
-  process.env.NODE_ENV !== "production";
+const shouldDisableImageOptimization = process.env.NODE_ENV !== "production";
 
 const nextConfig: NextConfig = {
   trailingSlash: true,
@@ -57,7 +53,7 @@ const nextConfig: NextConfig = {
     formats: ["image/avif", "image/webp"],
     deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048, 3840],
     imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
-    minimumCacheTTL: 31536000, // 1 year cache TTL for optimized images
+    minimumCacheTTL: 31536000,
     qualities: [60, 64, 72, 75],
     dangerouslyAllowSVG: true,
     contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
@@ -82,9 +78,33 @@ const nextConfig: NextConfig = {
       { source: "/catalog", destination: "/", permanent: true },
       { source: "/catalog/", destination: "/", permanent: true },
       { source: "/catalog/products/:path*", destination: "/products/:path*", permanent: true },
-      { source: "/catalog/category/:path*", destination: "/categories/:path*", permanent: true },
+
+      // Direct Taxonomy Mapping: Resolves /catalog/category/ and /categories/ legacy paths straight to flat root folders
+      { source: "/catalog/category/women/:path*", destination: "/women/:path*", permanent: true },
+      { source: "/catalog/category/men/:path*", destination: "/men/:path*", permanent: true },
+      { source: "/catalog/category/kids/:path*", destination: "/kids/:path*", permanent: true },
+      { source: "/catalog/category/home-decor/:path*", destination: "/home-decor/:path*", permanent: true },
+      { source: "/catalog/category/techniques/:path*", destination: "/techniques/:path*", permanent: true },
+      { source: "/catalog/category/collections/:path*", destination: "/collections/:path*", permanent: true },
+
       { source: "/products/category/:path*", destination: "/categories/:path*", permanent: true },
       { source: "/categories/category/:path*", destination: "/categories/:path*", permanent: true },
+
+      // Clean, unnested redirects for absolute paths
+      { source: "/categories/women/:path*", destination: "/women/:path*", permanent: true },
+      { source: "/categories/women/", destination: "/women/", permanent: true },
+      { source: "/categories/men/:path*", destination: "/men/:path*", permanent: true },
+      { source: "/categories/men/", destination: "/men/", permanent: true },
+      { source: "/categories/kids/:path*", destination: "/kids/:path*", permanent: true },
+      { source: "/categories/kids/", destination: "/kids/", permanent: true },
+      { source: "/categories/home-decor/:path*", destination: "/home-decor/:path*", permanent: true },
+      { source: "/categories/home-decor/", destination: "/home-decor/", permanent: true },
+      { source: "/categories/techniques/:path*", destination: "/techniques/:path*", permanent: true },
+      { source: "/categories/techniques/", destination: "/techniques/", permanent: true },
+      { source: "/categories/collections/:path*", destination: "/collections/:path*", permanent: true },
+      { source: "/categories/collections/", destination: "/collections/", permanent: true },
+
+      // Client Dashboard Management Accounts
       { source: "/account/", destination: "/account/profile/", permanent: false },
       { source: "/account/dashboard/", destination: "/account/profile/", permanent: false },
       {
