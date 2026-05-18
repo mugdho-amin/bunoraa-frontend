@@ -4,5 +4,5 @@ import { getSiteSettings } from "@/lib/siteSettings.server";
 export default async function Loading() {
   const settings = await getSiteSettings();
 
-  return <LoadingScreen fullScreen fallbackLogoSrc={settings?.logo || settings?.favicon} />;
+  return <LoadingScreen fullScreen fallbackLogoSrc={settings?.logo || settings?.favicon || undefined} />;
 }
