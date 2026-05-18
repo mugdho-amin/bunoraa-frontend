@@ -15,9 +15,25 @@ const QuickViewModal = dynamic(
   }
 );
 
+function gridColsClass(cols: number, cardStyle: string): string {
+  if (cardStyle === "fashion") {
+    if (cols === 2) return "grid-cols-1 sm:grid-cols-2";
+    if (cols === 6) return "grid-cols-2 lg:grid-cols-6";
+    return "grid-cols-2 lg:grid-cols-4";
+  }
+  if (cardStyle === "minimal") {
+    if (cols === 2) return "grid-cols-1 sm:grid-cols-2";
+    if (cols === 6) return "grid-cols-2 sm:grid-cols-3 lg:grid-cols-6";
+    return "grid-cols-2 sm:grid-cols-3 lg:grid-cols-4";
+  }
+  if (cols === 2) return "grid-cols-1 sm:grid-cols-2";
+  if (cols === 6) return "grid-cols-2 sm:grid-cols-3 lg:grid-cols-6";
+  return "grid-cols-2 sm:grid-cols-3 lg:grid-cols-4";
+}
+
 export function ProductGrid({
   products,
-  view = "grid",
+  cols = 4,
   cardVariant,
   cardStyle = "default",
   allowQuickView = true,
@@ -26,7 +42,7 @@ export function ProductGrid({
   emptyMessage = "We could not find any products matching your current filters.",
 }: {
   products: ProductListItem[];
-  view?: "grid" | "list";
+  cols?: number;
   cardVariant?: ProductCardVariantName;
   cardStyle?: "default" | "minimal" | "fashion";
   allowQuickView?: boolean;
@@ -39,7 +55,7 @@ export function ProductGrid({
 
   if (isLoading) {
     return (
-      <div className="grid gap-4 sm:gap-6 sm:grid-cols-2 lg:grid-cols-3">
+      <div className={cn("grid gap-4 sm:gap-6", gridColsClass(cols, cardStyle))}>
         {Array.from({ length: 6 }).map((_, index) => (
           <ProductCardSkeleton key={index} />
         ))}
@@ -64,13 +80,7 @@ export function ProductGrid({
       <div
         className={cn(
           "grid gap-3 sm:gap-5",
-          cardStyle === "minimal"
-            ? "grid-cols-2 gap-x-3 gap-y-5 sm:grid-cols-3 sm:gap-x-4 sm:gap-y-6 lg:grid-cols-4"
-            : cardStyle === "fashion"
-            ? "grid-cols-2 gap-x-4 gap-y-8 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3"
-            : view === "list"
-            ? "grid-cols-1"
-            : "sm:grid-cols-2 lg:grid-cols-3"
+          gridColsClass(cols, cardStyle)
         )}
       >
         {products.map((product) => (
@@ -90,8 +100,6 @@ export function ProductGrid({
                   ? "fashion"
                   : cardStyle === "minimal"
                   ? "minimal"
-                  : view === "list"
-                  ? "list"
                   : "grid"
               }
               showWishlist={showWishlist}

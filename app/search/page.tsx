@@ -53,7 +53,7 @@ async function getSearchMeta(query: string) {
 async function getProducts(searchParams: SearchParams) {
   const params: Record<string, string | number | boolean | Array<string | number | boolean> | undefined> = {};
   Object.entries(searchParams).forEach(([key, value]) => {
-    if (key === "view") return;
+    if (key === "view" || key === "cols") return;
     if (value === undefined) return;
     if (Array.isArray(value)) {
       const filtered = value.filter(v => String(v).trim() !== "");
@@ -128,7 +128,8 @@ export default async function SearchPage({
   const resolved = await searchParams;
   const query = typeof resolved.q === "string" ? resolved.q : "";
   const filterParams = query ? { q: query } : undefined;
-  const view = resolved.view === "list" ? "list" : "grid";
+  const rawCols = resolved.cols;
+  const cols = rawCols === "2" || rawCols === "6" ? Number(rawCols) : 4;
   const currentPage = Number(resolved.page || 1) || 1;
 
   if (!query) {
@@ -285,7 +286,7 @@ export default async function SearchPage({
           ) : null}
           <div className="space-y-6">
             <AppliedFilters />
-            <ProductGrid products={products} view={view} emptyMessage={t("common.search.no_results")} />
+            <ProductGrid products={products} cols={cols} emptyMessage={t("common.search.no_results")} />
 
             {showPagination ? (
               <div className="mt-10 flex items-center justify-between">

@@ -330,10 +330,10 @@ function FashionVariant({
         )}
       </div>
 
-      <div className="py-4 space-y-1 text-center">
+      <div className="py-4 space-y-1 text-left">
         <Link
           href={productHref}
-          className="block text-[13px] font-normal tracking-tight text-foreground/80 hover:text-foreground transition-colors line-clamp-1 px-2"
+          className="block text-[13px] font-normal tracking-tight text-foreground/80 hover:text-foreground transition-colors line-clamp-1"
         >
           {product.name}
         </Link>
@@ -343,7 +343,7 @@ function FashionVariant({
           currentPrice={product.current_price}
           currency={product.currency}
           priceClassName="text-[14px] font-bold text-foreground"
-          className="flex items-center justify-center gap-2"
+          className="flex items-center justify-start gap-2"
         />
       </div>
     </div>

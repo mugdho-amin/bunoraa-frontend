@@ -38,7 +38,7 @@ export function InfiniteProductGrid({
   initialProducts,
   initialPagination,
   resetKey,
-  view = "grid",
+  cols = 4,
   cardStyle = "default",
   className,
   emptyMessage,
@@ -48,7 +48,7 @@ export function InfiniteProductGrid({
   initialProducts: ProductListItem[];
   initialPagination?: ApiPagination;
   resetKey: string;
-  view?: "grid" | "list";
+  cols?: number;
   cardStyle?: "default" | "minimal" | "fashion";
   className?: string;
   emptyMessage?: string;
@@ -123,7 +123,7 @@ export function InfiniteProductGrid({
     <div className={cn("space-y-6", className)}>
       <ProductGrid
         products={products}
-        view={view}
+        cols={cols}
         cardStyle={cardStyle}
         emptyMessage={emptyMessage}
       />

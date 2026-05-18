@@ -40,7 +40,7 @@ function firstValue(value: string | string[] | undefined): string | undefined {
 
 function hasIndexBustingFilters(searchParams: SearchParams): boolean {
   return Object.entries(searchParams).some(([key, value]) => {
-    if (key === "page" || key === "view") return false;
+    if (key === "page" || key === "view" || key === "cols") return false;
     if (Array.isArray(value)) return value.some((entry) => entry.trim() !== "");
     return Boolean(value && value.trim() !== "");
   });
@@ -59,7 +59,7 @@ function buildProductRequestParams(
   const params: Record<string, RequestParamValue> = {};
 
   Object.entries(searchParams).forEach(([key, value]) => {
-    if (key === "view") return;
+    if (key === "view" || key === "cols") return;
     if (key === "page") return;
     if (value === undefined) return;
     if (Array.isArray(value)) {
@@ -142,7 +142,8 @@ export default async function ProductsPage({
 }) {
   const resolved = await searchParams;
   const currentPage = Number(resolved.page || 1) || 1;
-  const view = resolved.view === "list" ? "list" : "grid";
+  const rawCols = resolved.cols;
+  const cols = rawCols === "2" || rawCols === "6" ? Number(rawCols) : 4;
   const filterParams =
     resolved.q && typeof resolved.q === "string" && resolved.q.trim()
       ? { q: resolved.q }
@@ -244,9 +245,9 @@ export default async function ProductsPage({
               resetKey={JSON.stringify({
                 endpoint: "/catalog/products/",
                 params: requestParams,
-                view,
+                cols,
               })}
-              view={view}
+              cols={cols}
               cardStyle="minimal"
             />
           </div>

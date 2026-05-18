@@ -181,7 +181,8 @@ export async function renderCategoryPageForPath(
   resolvedSearchParams: CategorySearchParams
 ) {
   const page = Number(resolvedSearchParams.page || 1) || 1;
-  const view = resolvedSearchParams.view === "list" ? "list" : "grid";
+  const rawCols = resolvedSearchParams.cols;
+  const cols: number = rawCols === "2" || rawCols === "6" ? Number(rawCols) : 4;
   const filterParams: Record<string, string> = { category: slugPath };
   if (resolvedSearchParams.q && typeof resolvedSearchParams.q === "string") {
     filterParams.q = resolvedSearchParams.q;
@@ -304,8 +305,8 @@ export async function renderCategoryPageForPath(
                 requestParams={requestParams}
                 initialProducts={products}
                 initialPagination={pagination}
-                resetKey={JSON.stringify({ endpoint: slugPath, params: requestParams, view })}
-                view={view}
+                resetKey={JSON.stringify({ endpoint: slugPath, params: requestParams, cols })}
+                cols={cols}
                 cardStyle="fashion"
                 className="min-h-[400px]"
               />
