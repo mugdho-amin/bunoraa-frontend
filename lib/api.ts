@@ -300,6 +300,12 @@ async function refreshAccessToken() {
   return refreshPromise;
 }
 
+let _defaultReqCounter = 0;
+
+function generateRequestId(): string {
+  return `req-${++_defaultReqCounter}`;
+}
+
 export async function apiFetch<T>(path: string, options: ApiFetchOptions = {}): Promise<ApiResponse<T>> {
   const {
     method = "GET",
@@ -333,9 +339,7 @@ export async function apiFetch<T>(path: string, options: ApiFetchOptions = {}): 
   const isFormData =
     typeof FormData !== "undefined" && body instanceof FormData;
 
-  const requestId = typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function' 
-    ? crypto.randomUUID() 
-    : Math.random().toString(36).substring(2, 11);
+  const requestId = generateRequestId();
 
   const init: RequestInit & { next?: { revalidate?: number } } = {
     method,

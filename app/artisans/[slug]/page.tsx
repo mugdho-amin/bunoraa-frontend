@@ -9,6 +9,7 @@ import { JsonLd } from "@/components/seo/JsonLd";
 import { absoluteUrl, buildBreadcrumbList, buildItemList, buildPageMetadata, cleanObject } from "@/lib/seo";
 import { buildProductPath } from "@/lib/productPaths";
 import { getLazyImageProps } from "@/lib/lazyImage";
+import { headers } from "next/headers";
 
 async function tryGetArtisan(slug: string) {
   try {
@@ -38,6 +39,7 @@ export async function generateMetadata({
   params: Promise<{ slug: string }>;
 }): Promise<Metadata> {
   const { slug } = await params;
+  headers(); // ensure request context before crypto.randomUUID
   const artisan = await tryGetArtisan(slug);
   return buildPageMetadata({
     title: artisan?.name ? `${artisan.name} | Artisan` : "Artisan Profile",
@@ -54,6 +56,7 @@ export default async function ArtisanDetailPage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
+  headers(); // ensure request context before crypto.randomUUID
   const [artisan, products] = await Promise.all([
     tryGetArtisan(slug),
     tryGetArtisanProducts(slug),

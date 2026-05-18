@@ -3,7 +3,7 @@ import dynamicImport from "next/dynamic";
 import Link from "next/link";
 import Image from "next/image";
 import { Suspense } from "react";
-import { cacheLife, cacheTag } from "next/cache";
+
 import { apiFetch, ApiError } from "@/lib/api";
 import { getServerLocaleHeaders } from "@/lib/serverLocale";
 import type {
@@ -109,10 +109,6 @@ const getImage = (product: ProductListItem | null | undefined) => {
 };
 
 async function getHomepageData() {
-  "use cache";
-  cacheLife("minutes");
-  cacheTag("homepage-data");
-
   try {
     let headers = {};
     try {
@@ -152,10 +148,6 @@ async function getHomepageData() {
 }
 
 async function getBanners(position?: string) {
-  "use cache";
-  cacheLife("minutes");
-  if (position) cacheTag(`banners-${position}`);
-
   try {
     let headers = {};
     try {

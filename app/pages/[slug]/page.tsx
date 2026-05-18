@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { headers } from "next/headers";
 import { apiFetch, ApiError } from "@/lib/api";
 import type { PageDetail } from "@/lib/types";
 import { notFound } from "next/navigation";
@@ -25,6 +26,7 @@ export async function generateMetadata({
   params: Promise<{ slug: string }>;
 }): Promise<Metadata> {
   const { slug } = await params;
+  headers(); // ensure request context before crypto.randomUUID
   const page = await getPage(slug);
   return buildPageMetadata({
     title: page.meta_title || page.title,
@@ -39,6 +41,7 @@ export default async function PageDetail({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
+  headers(); // ensure request context before crypto.randomUUID
   const page = await getPage(slug);
   const pageUrl = `/pages/${page.slug}/`;
   const pageSchema = cleanObject({

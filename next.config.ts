@@ -61,7 +61,6 @@ const nextConfig: NextConfig = {
   compress: false,
   output: 'standalone',
   reactCompiler: true,
-  cacheComponents: true,
   experimental: {
     turbopackFileSystemCacheForBuild: true,
     optimizeCss: false,
