@@ -235,7 +235,7 @@ export default async function ProductsPage({
               />
             </aside>
           ) : null}
-          <div className="space-y-6">
+          <div className="space-y-6 -mx-3 sm:-mx-5 lg:mx-0">
             <AppliedFilters variant="minimal" />
             <InfiniteProductGrid
               endpoint="/catalog/products/"

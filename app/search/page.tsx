@@ -284,7 +284,7 @@ export default async function SearchPage({
               />
             </aside>
           ) : null}
-          <div className="space-y-6">
+          <div className="space-y-6 -mx-3 sm:-mx-5 lg:mx-0">
             <AppliedFilters />
             <ProductGrid products={products} cols={cols} emptyMessage={t("common.search.no_results")} />
 

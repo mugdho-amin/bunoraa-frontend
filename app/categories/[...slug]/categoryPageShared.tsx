@@ -302,7 +302,7 @@ export async function renderCategoryPageForPath(
           <main className="space-y-8">
             <AppliedFilters />
             
-            <div className="relative">
+            <div className="relative -mx-4 sm:-mx-6 lg:mx-0">
               <InfiniteProductGrid
                 endpoint={`/catalog/categories/${slugPath}/products/`}
                 requestParams={requestParams}
@@ -315,26 +315,27 @@ export async function renderCategoryPageForPath(
               />
             </div>
 
-            {category.description && (
-              <div className="mt-20 border-t border-border/40 pt-16 pb-8 bg-muted/30 -mx-4 px-4 sm:-mx-6 sm:px-6 rounded-3xl">
-                <div className="max-w-3xl mx-auto space-y-8">
-                  <div className="text-center space-y-2">
-                    <h2 className="text-2xl font-bold tracking-tight text-foreground sm:text-3xl">
-                      About the {category.name} Collection
-                    </h2>
-                    <div className="h-1 w-12 bg-primary mx-auto rounded-full" />
-                  </div>
-                  
-                  <div className="text-sm sm:text-base max-w-none text-foreground/80 leading-relaxed font-serif text-center italic">
-                    {category.description.split('\n').map((paragraph, i) => (
-                      <p key={i} className="mb-4">{paragraph}</p>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            )}
           </main>
         </div>
+
+        {category.description && (
+          <div className="mt-20 border-t border-border/40 pt-16 pb-8 bg-muted/30 -mx-4 px-4 sm:-mx-6 sm:px-6 rounded-3xl">
+            <div className="mx-auto max-w-3xl space-y-8">
+              <div className="text-center space-y-2">
+                <h2 className="text-2xl font-bold tracking-tight text-foreground sm:text-3xl">
+                  About the {category.name} Collection
+                </h2>
+                <div className="h-1 w-12 bg-primary mx-auto rounded-full" />
+              </div>
+              
+              <div className="text-sm sm:text-base max-w-none text-foreground/80 leading-relaxed font-serif text-center italic">
+                {category.description.split('\n').map((paragraph, i) => (
+                  <p key={i} className="mb-4">{paragraph}</p>
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </div>
     </FilterSidebarProvider>
