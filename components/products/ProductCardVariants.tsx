@@ -309,7 +309,7 @@ function FashionVariant({
           <WishlistIconButton
             productId={product.id}
             variant="ghost"
-            className="h-9 w-9 rounded-full bg-background/90 text-foreground shadow-sm hover:bg-background flex items-center justify-center p-0"
+            className="h-9 w-9 rounded-full text-foreground shadow-sm hover:bg-background flex items-center justify-center p-0"
           />
         </div>
 
