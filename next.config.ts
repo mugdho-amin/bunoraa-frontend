@@ -61,14 +61,8 @@ const nextConfig: NextConfig = {
   compress: false,
   output: 'standalone',
   reactCompiler: true,
+  cacheComponents: true,
   experimental: {
-    optimizePackageImports: [
-      "lucide-react",
-      "@hookform/resolvers",
-      "zod",
-    ],
-    turbopackFileSystemCacheForDev: true,
-    cacheComponents: true,
     turbopackFileSystemCacheForBuild: true,
     optimizeCss: false,
   },
