@@ -68,6 +68,7 @@ const nextConfig: NextConfig = {
       "zod",
     ],
     turbopackFileSystemCacheForDev: true,
+    cacheComponents: true,
     turbopackFileSystemCacheForBuild: true,
     optimizeCss: false,
   },
