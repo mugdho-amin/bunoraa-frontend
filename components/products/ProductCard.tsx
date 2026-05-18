@@ -316,7 +316,6 @@ export function ProductCard({
       <MinimalProductCard
         product={product}
         showWishlist={showWishlist}
-        showQuickView={showQuickView}
         onQuickView={onQuickView}
       />
     );
