@@ -240,7 +240,7 @@ export async function renderCategoryPageForPath(
               {category.description && (
                 <div className="relative max-w-3xl group">
                   <div className="absolute -left-4 top-0 bottom-0 w-1 bg-primary/20 rounded-full hidden sm:block" />
-                  <div className="prose prose-stone prose-sm sm:prose-base !text-secondary-700/90 font-serif italic leading-relaxed">
+                  <div className="text-sm sm:text-base text-foreground/80 font-serif italic leading-relaxed">
                     <p className="line-clamp-3 group-hover:line-clamp-none transition-all duration-500 ease-in-out">
                       {category.description}
                     </p>
@@ -312,7 +312,7 @@ export async function renderCategoryPageForPath(
             </div>
 
             {category.description && (
-              <div className="mt-20 border-t border-border/40 pt-16 pb-8 bg-secondary-50/30 -mx-4 px-4 sm:-mx-6 sm:px-6 rounded-3xl">
+              <div className="mt-20 border-t border-border/40 pt-16 pb-8 bg-muted/30 -mx-4 px-4 sm:-mx-6 sm:px-6 rounded-3xl">
                 <div className="max-w-3xl mx-auto space-y-8">
                   <div className="text-center space-y-2">
                     <h2 className="text-2xl font-bold tracking-tight text-foreground sm:text-3xl">
@@ -321,7 +321,7 @@ export async function renderCategoryPageForPath(
                     <div className="h-1 w-12 bg-primary mx-auto rounded-full" />
                   </div>
                   
-                  <div className="prose prose-stone prose-sm sm:prose-base max-w-none text-secondary-700/80 leading-relaxed font-serif text-center italic">
+                  <div className="text-sm sm:text-base max-w-none text-foreground/80 leading-relaxed font-serif text-center italic">
                     {category.description.split('\n').map((paragraph, i) => (
                       <p key={i} className="mb-4">{paragraph}</p>
                     ))}

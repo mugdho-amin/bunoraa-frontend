@@ -94,10 +94,10 @@ export function ProductBadges({
           className={cn(
             "rounded-full px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.2em]",
             badge.tone === "accent"
-              ? "bg-accent-500/15 text-accent-600"
+              ? "bg-accent/15 text-accent"
               : badge.tone === "secondary"
-              ? "bg-secondary-200 text-secondary-700"
-              : "bg-primary-500/15 text-primary-700",
+              ? "bg-secondary/20 text-secondary"
+              : "bg-primary/15 text-primary",
             badge.className
           )}
         >
