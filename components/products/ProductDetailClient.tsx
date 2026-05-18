@@ -163,7 +163,7 @@ function ReviewSkeleton() {
   return (
     <div className="space-y-6">
       {[1, 2].map((i) => (
-        <div key={i} className="space-y-3 rounded-2xl border border-border/40 p-5">
+        <div key={i} className="space-y-3 border border-border/40 p-5">
           <div className="flex items-center justify-between">
             <div className="h-4 w-32 animate-pulse rounded bg-muted" />
             <div className="h-4 w-24 animate-pulse rounded bg-muted" />
@@ -280,7 +280,7 @@ function ProductGallery({
                 type="button"
                 onClick={() => setActive(index)}
                 className={cn(
-                  "relative aspect-square w-20 flex-shrink-0 overflow-hidden rounded-lg border-2 transition-all duration-300",
+                  "relative aspect-square w-20 flex-shrink-0 overflow-hidden border-2 transition-all duration-300",
                   index === active ? "border-primary shadow-md" : "border-transparent hover:border-primary/40"
                 )}
                 aria-label={`Show image ${index + 1}`}
@@ -309,7 +309,7 @@ function ProductGallery({
         <div
           className={cn(
             "relative aspect-[4/5] w-full overflow-hidden bg-muted transition-all duration-500",
-            isMinimal ? "rounded-3xl" : "rounded-2xl lg:mx-auto lg:max-w-[500px]"
+            isMinimal ? "" : "lg:mx-auto lg:max-w-[500px]"
           )}
           onMouseEnter={() => setIsHovering(true)}
           onMouseLeave={() => {
@@ -357,7 +357,7 @@ function ProductGallery({
                 type="button"
                 onClick={() => setActive(index)}
                 className={cn(
-                  "relative aspect-square w-16 flex-shrink-0 overflow-hidden rounded-xl border-2 transition-all",
+                  "relative aspect-square w-16 flex-shrink-0 overflow-hidden border-2 transition-all",
                   index === active ? "border-primary" : "border-transparent"
                 )}
               >
@@ -386,7 +386,7 @@ function ProductGallery({
               <img
                 src={activeImage.image}
                 alt={activeImage.alt}
-                className="max-h-[85vh] object-contain rounded-2xl shadow-2xl"
+                className="max-h-[85vh] object-contain shadow-2xl"
               />
               {hasMultipleImages && (
                 <>
@@ -440,7 +440,7 @@ function BackInStockForm({
   });
 
   return (
-    <Card variant="bordered" className="space-y-4 p-5 rounded-2xl bg-muted/30 border-dashed border-2">
+    <Card variant="bordered" className="space-y-4 p-5 bg-muted/30 border-dashed border-2">
       <div className="flex items-center gap-3">
         <div className="h-10 w-10 rounded-full bg-accent/10 flex items-center justify-center text-accent">
           <Info size={20} />
@@ -528,7 +528,7 @@ function ShippingEstimator({
   };
 
   return (
-    <Card variant="bordered" className="p-6 rounded-2xl bg-muted/10 space-y-5">
+    <Card variant="bordered" className="p-6 bg-muted/10 space-y-5">
       <div className="flex items-center gap-3">
         <Truck size={20} className="text-primary" />
         <h3 className="text-sm font-bold uppercase tracking-widest text-foreground/80">
@@ -644,7 +644,7 @@ function ProductReviews({ product, reviewStatsQuery: sharedReviewStatsQuery }: {
   });
 
   return (
-    <Card variant="bordered" className="p-8 rounded-3xl space-y-10">
+    <Card variant="bordered" className="p-8 space-y-10">
       <div className="flex flex-col md:flex-row gap-10 md:items-center">
         <div className="space-y-3">
           <h3 className="text-2xl font-bold tracking-tight">Customer Reviews</h3>
@@ -713,7 +713,7 @@ function ProductReviews({ product, reviewStatsQuery: sharedReviewStatsQuery }: {
             ))}
           </div>
         ) : (
-          <div className="py-20 text-center space-y-3 bg-muted/10 rounded-3xl border border-dashed border-border/60">
+          <div className="py-20 text-center space-y-3 bg-muted/10 border border-dashed border-border/60">
             <p className="text-sm font-bold text-foreground/40 uppercase tracking-widest">No reviews yet</p>
             <p className="text-xs text-foreground/30">Be the first to share your experience with this item.</p>
           </div>
@@ -766,7 +766,7 @@ function ProductReviews({ product, reviewStatsQuery: sharedReviewStatsQuery }: {
                     key={v}
                     onClick={() => setRating(v)}
                     className={cn(
-                      "h-12 w-12 rounded-2xl border-2 transition-all flex items-center justify-center font-bold text-sm",
+                      "h-12 w-12 border-2 transition-all flex items-center justify-center font-bold text-sm",
                       rating === v ? "border-primary bg-primary text-white scale-110 shadow-lg shadow-primary/20" : "border-border/60 text-foreground/40 hover:border-primary/40"
                     )}
                    >
@@ -995,7 +995,7 @@ export function ProductDetailClient({
                         type="button"
                         onClick={() => handleOptionSelect(group.slug, value)}
                         className={cn(
-                          "relative flex h-11 min-w-[3rem] items-center justify-center gap-2 rounded-2xl border-2 px-4 transition-all duration-300",
+                          "relative flex h-11 min-w-[3rem] items-center justify-center gap-2 border-2 px-4 transition-all duration-300",
                           selected
                             ? "border-primary bg-primary/5 text-primary scale-105 shadow-sm"
                             : "border-border/60 text-foreground/60 hover:border-primary/30"
@@ -1030,7 +1030,7 @@ export function ProductDetailClient({
                 quantity={quantity}
                 size="lg"
                 variant="primary"
-                className="w-full h-14 rounded-2xl text-base font-bold shadow-2xl shadow-primary/20 hover:scale-[1.01] active:scale-95 transition-all"
+                className="w-full h-14 text-base font-bold shadow-2xl shadow-primary/20 hover:scale-[1.01] active:scale-95 transition-all"
                 disabled={!inStock}
                 label={inStock ? "Add to Shopping Bag" : "Currently Unavailable"}
               />
@@ -1061,7 +1061,7 @@ export function ProductDetailClient({
                      {product.size_charts?.map(link => (
                         <div key={link.size_chart.id} className="space-y-3">
                            <p className="font-bold text-foreground/80">{link.size_chart.name} ({link.size_chart.unit})</p>
-                           <div className="overflow-x-auto rounded-xl border border-border/60">
+                           <div className="overflow-x-auto border border-border/60">
                               <table className="w-full text-xs text-left">
                                  <thead className="bg-muted/50 border-b border-border/60">
                                     <tr>{link.size_chart.columns?.map(c => <th key={c} className="p-3 font-black uppercase tracking-widest">{c}</th>)}</tr>

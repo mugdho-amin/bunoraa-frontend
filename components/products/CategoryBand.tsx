@@ -25,7 +25,7 @@ export const CategoryBand = ({ band }: CategoryBandProps) => {
           View All
         </Link>
       </div>
-      <div className="mt-4">
+      <div className="mt-4 -mx-3 sm:-mx-5 lg:mx-0">
         <ProductGrid
           products={band.products}
           cardStyle="minimal"

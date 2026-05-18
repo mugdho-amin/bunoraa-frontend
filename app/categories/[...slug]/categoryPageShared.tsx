@@ -239,17 +239,6 @@ export async function renderCategoryPageForPath(
               <h1 className="text-4xl font-bold tracking-tight text-foreground sm:text-5xl lg:text-6xl mb-4">
                 {category.name}
               </h1>
-              
-              {category.description && (
-                <div className="relative max-w-3xl group">
-                  <div className="absolute -left-4 top-0 bottom-0 w-1 bg-primary/20 rounded-full hidden sm:block" />
-                  <div className="text-sm sm:text-base text-foreground/80 font-serif italic leading-relaxed">
-                    <p className="line-clamp-3 group-hover:line-clamp-none transition-all duration-500 ease-in-out">
-                      {category.description}
-                    </p>
-                  </div>
-                </div>
-              )}
 
               <div className="flex items-center gap-4 pt-2">
                 <div className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.2em] text-primary">
@@ -282,6 +271,17 @@ export async function renderCategoryPageForPath(
               </div>
             </div>
           </div>
+
+          {category.description && (
+            <div className="relative max-w-4xl group">
+              <div className="absolute -left-4 top-0 bottom-0 w-1 bg-primary/20 rounded-full hidden sm:block" />
+              <div className="text-sm sm:text-base text-foreground/80 font-serif italic leading-relaxed">
+                <p className="line-clamp-3 group-hover:line-clamp-none transition-all duration-500 ease-in-out">
+                  {category.description}
+                </p>
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Content Section */}
