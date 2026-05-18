@@ -143,8 +143,8 @@ function StockBadge({ product }: { product: ProductListItem }) {
       className={cn(
         "inline-flex items-center rounded-full px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.2em]",
         product.is_in_stock
-          ? "bg-success-500/10 text-success-700"
-          : "bg-error-500/10 text-error-700"
+          ? "bg-success/15 text-success"
+          : "bg-error/15 text-error"
       )}
     >
       {product.is_in_stock ? "In stock" : "Out of stock"}
@@ -309,7 +309,7 @@ function FashionVariant({
           <WishlistIconButton
             productId={product.id}
             variant="ghost"
-            className="h-9 w-9 rounded-full bg-white/90 text-black shadow-sm hover:bg-white flex items-center justify-center p-0"
+            className="h-9 w-9 rounded-full bg-background/90 text-foreground shadow-sm hover:bg-background flex items-center justify-center p-0"
           />
         </div>
 
@@ -318,7 +318,7 @@ function FashionVariant({
           <div className="absolute inset-x-0 bottom-0 z-20 p-0 translate-y-full transition-transform duration-300 group-hover:translate-y-0">
             <Button
               variant="secondary"
-              className="w-full bg-black/90 text-white hover:bg-black border-0 rounded-none h-12 text-[11px] font-bold uppercase tracking-[0.2em] backdrop-blur-sm"
+              className="w-full bg-foreground/90 text-background hover:bg-foreground border-0 rounded-none h-12 text-[11px] font-bold uppercase tracking-[0.2em] backdrop-blur-sm"
               onClick={(e) => {
                 e.preventDefault();
                 onQuickView(product.slug);
@@ -333,7 +333,7 @@ function FashionVariant({
       <div className="py-4 space-y-1 text-center">
         <Link
           href={productHref}
-          className="block text-[13px] font-normal tracking-tight text-foreground/80 hover:text-black transition-colors line-clamp-1 px-2"
+          className="block text-[13px] font-normal tracking-tight text-foreground/80 hover:text-foreground transition-colors line-clamp-1 px-2"
         >
           {product.name}
         </Link>
@@ -342,7 +342,7 @@ function FashionVariant({
           salePrice={product.sale_price}
           currentPrice={product.current_price}
           currency={product.currency}
-          priceClassName="text-[14px] font-bold text-black"
+          priceClassName="text-[14px] font-bold text-foreground"
           className="flex items-center justify-center gap-2"
         />
       </div>
@@ -511,7 +511,7 @@ function DealVariant({ product, onQuickView, className }: RenderProps) {
         <div className="flex flex-wrap items-center justify-between gap-2">
           <StockBadge product={product} />
           {discount ? (
-            <span className="rounded-full bg-accent-500 px-2.5 py-1 text-xs font-semibold text-white">
+            <span className="rounded-full bg-accent px-2.5 py-1 text-xs font-semibold text-white">
               Save {discount}%
             </span>
           ) : null}

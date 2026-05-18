@@ -69,7 +69,7 @@ export function QuickViewModal({
     >
       <button
         type="button"
-        className="absolute inset-0 bg-black/50"
+        className="absolute inset-0 bg-foreground/50"
         aria-label="Close quick view"
         onClick={onClose}
       />
@@ -84,7 +84,7 @@ export function QuickViewModal({
           <div className="absolute right-4 top-4 z-20">
             <button
               onClick={onClose}
-              className="group flex h-10 w-10 items-center justify-center rounded-full bg-white/80 text-black shadow-sm backdrop-blur transition-all hover:bg-black hover:text-white"
+              className="group flex h-10 w-10 items-center justify-center rounded-full bg-background/80 text-foreground shadow-sm backdrop-blur transition-all hover:bg-foreground hover:text-background"
               aria-label="Close"
             >
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -126,7 +126,7 @@ export function QuickViewModal({
                       {data.primary_category_name}
                     </p>
                   ) : null}
-                  <h3 className="text-2xl font-bold tracking-tight text-black sm:text-3xl lg:text-4xl">
+                  <h3 className="text-2xl font-bold tracking-tight text-foreground sm:text-3xl lg:text-4xl">
                     {data.name}
                   </h3>
                   <div className="flex items-center gap-4 pt-1">
@@ -135,7 +135,7 @@ export function QuickViewModal({
                       salePrice={data.sale_price}
                       currentPrice={data.current_price}
                       currency={data.currency}
-                      priceClassName="text-xl font-bold text-black sm:text-2xl"
+                      priceClassName="text-xl font-bold text-foreground sm:text-2xl"
                       className="flex items-baseline gap-3"
                     />
                     <ProductBadges product={data} badges={data.badges} omitOnSale />
@@ -161,13 +161,13 @@ export function QuickViewModal({
                     productId={data.id}
                     variant="primary"
                     size="lg"
-                    className="h-14 w-full rounded-none bg-black text-[13px] font-bold uppercase tracking-[0.2em] text-white hover:bg-black/90"
+                    className="h-14 w-full rounded-none bg-foreground text-[13px] font-bold uppercase tracking-[0.2em] text-background hover:bg-foreground/90"
                   />
                   <Button
                     asChild
                     variant="ghost"
                     size="lg"
-                    className="h-14 w-full rounded-none border border-black/10 text-[11px] font-bold uppercase tracking-[0.2em] hover:bg-black hover:text-white transition-all"
+                    className="h-14 w-full rounded-none border border-border text-[11px] font-bold uppercase tracking-[0.2em] hover:bg-foreground hover:text-background transition-all"
                   >
                     <Link
                       href={buildProductPath(data)}

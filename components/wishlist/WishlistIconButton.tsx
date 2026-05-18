@@ -67,11 +67,11 @@ export function WishlistIconButton({
   const iconTone =
     color === "fixed-black"
       ? isInWishlist
-        ? "fill-error-500 text-error-500"
-        : "fill-transparent text-black group-hover/heart:fill-error-500 group-hover/heart:text-error-500"
+        ? "fill-error text-error"
+        : "fill-transparent text-foreground group-hover/heart:fill-error group-hover/heart:text-error"
       : isInWishlist
-      ? "fill-error-500 text-error-500"
-      : "fill-transparent text-foreground/70 group-hover/heart:fill-error-500 group-hover/heart:text-error-500";
+      ? "fill-error text-error"
+      : "fill-transparent text-foreground/70 group-hover/heart:fill-error group-hover/heart:text-error";
 
   return (
     <button

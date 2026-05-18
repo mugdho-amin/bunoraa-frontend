@@ -150,7 +150,7 @@ export function InfiniteProductGrid({
               </p>
             )}
             {loadMoreError ? (
-              <p className="text-sm text-red-600">{loadMoreError}</p>
+              <p className="text-sm text-error">{loadMoreError}</p>
             ) : null}
           </div>
           {hasMore ? <div ref={sentinelRef} className="h-1 w-full" aria-hidden="true" /> : null}
