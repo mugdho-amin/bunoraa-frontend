@@ -25,7 +25,8 @@ export type ProductCardVariantName =
   | "rating-focus"
   | "compare-focus"
   | "inventory-focus"
-  | "dense-row";
+  | "dense-row"
+  | "fashion";
 
 export const PRODUCT_CARD_VARIANTS: Array<{
   id: ProductCardVariantName;
@@ -38,6 +39,12 @@ export const PRODUCT_CARD_VARIANTS: Array<{
     name: "Standard Grid",
     description: "Balanced card with media, badges, price, rating, and full actions.",
     bestFor: "Category and search grids",
+  },
+  {
+    id: "fashion",
+    name: "Fashion Clean",
+    description: "Minimalist, image-first card with hover-swap and overlay actions.",
+    bestFor: "Fashion collections and category pages",
   },
   {
     id: "compact",
@@ -252,6 +259,94 @@ function SharedTitle({
     >
       {product.name}
     </Link>
+  );
+}
+
+function FashionVariant({
+  product,
+  onQuickView,
+  className,
+}: RenderProps) {
+  const primaryImage = resolveImage(product);
+  const secondaryImage = product.secondary_image;
+  const productHref = buildProductPath(product);
+
+  return (
+    <div className={cn("group flex flex-col", className)}>
+      <div className="relative aspect-[3/4] overflow-hidden bg-muted rounded-none transition-all duration-500">
+        <Link href={productHref} className="absolute inset-0 z-10">
+          <span className="sr-only">{product.name}</span>
+        </Link>
+        
+        {/* Images with hover swap */}
+        {primaryImage && (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            src={primaryImage}
+            alt={product.name}
+            className={cn(
+              "h-full w-full object-cover transition-opacity duration-700 ease-in-out",
+              secondaryImage && "group-hover:opacity-0"
+            )}
+          />
+        )}
+        {secondaryImage && (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            src={secondaryImage}
+            alt={`${product.name} secondary`}
+            className="absolute inset-0 h-full w-full object-cover opacity-0 transition-opacity duration-700 ease-in-out group-hover:opacity-100"
+          />
+        )}
+
+        {/* Badges Overlay */}
+        <div className="absolute left-2 top-2 z-20">
+          <ProductBadges product={product} omitOnSale />
+        </div>
+
+        {/* Wishlist Overlay */}
+        <div className="absolute right-2 top-2 z-20 translate-y-2 opacity-0 transition-all duration-300 group-hover:translate-y-0 group-hover:opacity-100">
+          <WishlistIconButton
+            productId={product.id}
+            variant="ghost"
+            className="h-9 w-9 rounded-full bg-white/90 text-black shadow-sm hover:bg-white flex items-center justify-center p-0"
+          />
+        </div>
+
+        {/* Quick View Overlay */}
+        {onQuickView && (
+          <div className="absolute inset-x-0 bottom-0 z-20 p-0 translate-y-full transition-transform duration-300 group-hover:translate-y-0">
+            <Button
+              variant="secondary"
+              className="w-full bg-black/90 text-white hover:bg-black border-0 rounded-none h-12 text-[11px] font-bold uppercase tracking-[0.2em] backdrop-blur-sm"
+              onClick={(e) => {
+                e.preventDefault();
+                onQuickView(product.slug);
+              }}
+            >
+              Quick View
+            </Button>
+          </div>
+        )}
+      </div>
+
+      <div className="py-4 space-y-1 text-center">
+        <Link
+          href={productHref}
+          className="block text-[13px] font-normal tracking-tight text-foreground/80 hover:text-black transition-colors line-clamp-1 px-2"
+        >
+          {product.name}
+        </Link>
+        <ProductPrice
+          price={product.price}
+          salePrice={product.sale_price}
+          currentPrice={product.current_price}
+          currency={product.currency}
+          priceClassName="text-[14px] font-bold text-black"
+          className="flex items-center justify-center gap-2"
+        />
+      </div>
+    </div>
   );
 }
 
@@ -777,6 +872,8 @@ export function ProductCardVariant({
   };
 
   switch (variant) {
+    case "fashion":
+      return <FashionVariant {...renderProps} />;
     case "standard":
       return <StandardVariant {...renderProps} />;
     case "compact":

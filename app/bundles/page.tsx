@@ -65,6 +65,7 @@ export default async function BundlesPage() {
                 // eslint-disable-next-line @next/next/no-img-element
                 <img
                   {...getLazyImageProps(bundle.image, bundle.name)}
+                  alt={bundle.name}
                   className="h-full w-full object-cover"
                 />
               ) : null}

@@ -20,9 +20,6 @@ type ApiFetchOptions = {
   retryDelay?: number;
 };
 
-const MAX_RETRIES = 3;
-const INITIAL_RETRY_DELAY = 1000; // 1 second
-
 const PUBLIC_API_BASE_URL = (process.env.NEXT_PUBLIC_API_BASE_URL || "").replace(/\/$/, "");
 const INTERNAL_API_BASE_URL = (process.env.NEXT_INTERNAL_API_BASE_URL || "").replace(/\/$/, "");
 const FALLBACK_SITE_URL =

@@ -96,8 +96,6 @@ export function HeaderClient() {
     cartSummaryQuery.data?.item_count ||
     0;
 
-  const cartKnownEmpty =
-    (cartQuery.data ? (cartQuery.data.item_count ?? cartQuery.data.items?.length ?? 0) === 0 : false);
   const wishlistCount =
     wishlistQuery.data?.meta?.pagination?.count ??
     wishlistQuery.data?.data?.length ??

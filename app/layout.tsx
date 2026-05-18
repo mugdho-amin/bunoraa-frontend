@@ -1,5 +1,4 @@
 import type { Metadata, Viewport } from "next";
-import { unstable_noStore as noStore } from "next/cache";
 import "./globals.css";
 import { Providers } from "@/components/providers/Providers";
 import { Header } from "@/components/layout/Header";
@@ -96,10 +95,6 @@ export const viewport: Viewport = {
   viewportFit: "cover",
 };
 
-const disablePrerender =
-  process.env.NEXT_DISABLE_PRERENDER === "true" ||
-  process.env.NEXT_DISABLE_PRERENDER === "1";
-
 const themeBootstrapScript = `
 (() => {
   try {
@@ -161,9 +156,6 @@ export default function RootLayout({
     },
   });
 
-// if (disablePrerender) {
-//   noStore();
-// }
   return (
     <html lang="en" className="system" suppressHydrationWarning>
       <body className="min-h-screen bg-background text-foreground antialiased">

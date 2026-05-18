@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import Image from "next/image";
 import { apiFetch } from "@/lib/api";
-import { Card } from "@/components/ui/Card";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { buildCollectionPage, buildItemList, buildPageMetadata } from "@/lib/seo";
 import { buildCategoryPath } from "@/lib/categoryPaths";
@@ -31,25 +30,6 @@ async function getCategories() {
     params: { parent_id: "null" }
   });
   return response.data;
-}
-
-function CategorySkeleton() {
-  return (
-    <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-      {[1, 2, 3, 4, 5, 6].map((i) => (
-        <div key={i} className="flex flex-col gap-4">
-          <div className="relative aspect-[4/3] animate-pulse rounded-3xl bg-muted" />
-          <div className="flex items-center justify-between px-2">
-            <div className="space-y-2">
-              <div className="h-5 w-32 animate-pulse rounded bg-muted" />
-              <div className="h-4 w-20 animate-pulse rounded bg-muted" />
-            </div>
-            <div className="h-4 w-10 animate-pulse rounded bg-muted" />
-          </div>
-        </div>
-      ))}
-    </div>
-  );
 }
 
 export default async function CategoriesPage() {

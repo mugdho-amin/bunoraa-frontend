@@ -1,7 +1,6 @@
 "use client";
 
 import Image, { ImageProps } from "next/image";
-import { getLazyImageProps } from "@/lib/lazyImage";
 
 interface LazyImageProps extends Omit<ImageProps, "loading" | "decoding"> {
   /**

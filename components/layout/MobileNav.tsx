@@ -32,6 +32,79 @@ import {
 
 type Category = { id: string; name: string; slug: string; slug_path?: string | null };
 
+/* ── Section header component ── */
+const SectionHeader = ({
+  icon: Icon,
+  label,
+  isOpen,
+  onToggle,
+}: {
+  icon: React.ElementType;
+  label: string;
+  isOpen: boolean;
+  onToggle: () => void;
+}) => (
+  <button
+    type="button"
+    className="flex w-full items-center justify-between rounded-lg px-1 py-1.5 text-left text-xs font-semibold uppercase tracking-[0.2em] text-foreground/50 transition hover:text-foreground/70"
+    onClick={onToggle}
+    aria-expanded={isOpen}
+  >
+    <span className="inline-flex items-center gap-2">
+      <Icon className="h-3.5 w-3.5" />
+      {label}
+    </span>
+    {isOpen ? (
+      <ChevronDown className="h-3.5 w-3.5" />
+    ) : (
+      <ChevronRight className="h-3.5 w-3.5" />
+    )}
+  </button>
+);
+
+/* ── Nav link with icon ── */
+const NavLink = ({
+  href,
+  icon: Icon,
+  label,
+  isActive,
+  onClick,
+  badge,
+  highlight,
+}: {
+  href: string;
+  icon: React.ElementType;
+  label: string;
+  isActive: boolean;
+  onClick: () => void;
+  badge?: string;
+  highlight?: boolean;
+}) => (
+  <Link
+    className={cn(
+      "flex items-center gap-3 rounded-xl border px-3 py-2.5 text-sm transition-colors",
+      "border-transparent text-foreground/80 hover:border-border hover:bg-muted hover:text-foreground",
+      "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40",
+      isActive && "border-primary/25 bg-primary/10 text-primary",
+      highlight &&
+        !isActive &&
+        "border-primary/30 bg-primary/5 text-primary font-medium"
+    )}
+    href={href}
+    onClick={onClick}
+  >
+    <Icon className="h-4 w-4 shrink-0 opacity-60" />
+    <span className="flex-1">{label}</span>
+    {badge ? (
+      <span className="rounded-full bg-primary/15 px-2 py-0.5 text-[10px] font-semibold text-primary">
+        {badge}
+      </span>
+    ) : (
+      <ChevronRight className="h-3.5 w-3.5 shrink-0 text-foreground/25" />
+    )}
+  </Link>
+);
+
 export function MobileNav({
   categories,
   menuPages,
@@ -74,20 +147,6 @@ export function MobileNav({
     },
     [pathname, normalizePath]
   );
-
-  const navLinkClass = React.useCallback(
-    (href: string) =>
-      cn(
-        "block rounded-xl border px-3 py-2.5 text-sm transition-colors",
-        "border-transparent text-foreground/90 hover:border-border hover:bg-muted hover:text-foreground",
-        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40",
-        isActiveLink(href) && "border-primary/25 bg-primary/10 text-primary"
-      ),
-    [isActiveLink]
-  );
-
-  const accountItemClass =
-    "block w-full rounded-xl border border-transparent px-3 py-2.5 text-left text-sm text-foreground/90 transition-colors hover:border-border hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40";
 
   const closeNav = React.useCallback(() => {
     setOpen(false);
@@ -165,73 +224,6 @@ export function MobileNav({
       ? (parts[0][0] + parts[parts.length - 1][0]).toUpperCase()
       : parts[0].slice(0, 2).toUpperCase();
   }, [profileQuery.data]);
-
-  /* ── Section header component ── */
-  const SectionHeader = ({
-    sectionKey,
-    icon: Icon,
-    label,
-  }: {
-    sectionKey: string;
-    icon: React.ElementType;
-    label: string;
-  }) => (
-    <button
-      type="button"
-      className="flex w-full items-center justify-between rounded-lg px-1 py-1.5 text-left text-xs font-semibold uppercase tracking-[0.2em] text-foreground/50 transition hover:text-foreground/70"
-      onClick={() => toggleSection(sectionKey)}
-      aria-expanded={isSectionOpen(sectionKey)}
-    >
-      <span className="inline-flex items-center gap-2">
-        <Icon className="h-3.5 w-3.5" />
-        {label}
-      </span>
-      {isSectionOpen(sectionKey) ? (
-        <ChevronDown className="h-3.5 w-3.5" />
-      ) : (
-        <ChevronRight className="h-3.5 w-3.5" />
-      )}
-    </button>
-  );
-
-  /* ── Nav link with icon ── */
-  const NavLink = ({
-    href,
-    icon: Icon,
-    label,
-    badge,
-    highlight,
-  }: {
-    href: string;
-    icon: React.ElementType;
-    label: string;
-    badge?: string;
-    highlight?: boolean;
-  }) => (
-    <Link
-      className={cn(
-        "flex items-center gap-3 rounded-xl border px-3 py-2.5 text-sm transition-colors",
-        "border-transparent text-foreground/80 hover:border-border hover:bg-muted hover:text-foreground",
-        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40",
-        isActiveLink(href) && "border-primary/25 bg-primary/10 text-primary",
-        highlight &&
-          !isActiveLink(href) &&
-          "border-primary/30 bg-primary/5 text-primary font-medium"
-      )}
-      href={href}
-      onClick={closeNav}
-    >
-      <Icon className="h-4 w-4 shrink-0 opacity-60" />
-      <span className="flex-1">{label}</span>
-      {badge ? (
-        <span className="rounded-full bg-primary/15 px-2 py-0.5 text-[10px] font-semibold text-primary">
-          {badge}
-        </span>
-      ) : (
-        <ChevronRight className="h-3.5 w-3.5 shrink-0 text-foreground/25" />
-      )}
-    </Link>
-  );
 
   return (
     <div className="lg:hidden">
@@ -340,14 +332,53 @@ export function MobileNav({
             {/* ── Navigation ── */}
             <nav className="min-h-0 flex-1 space-y-1 overflow-y-auto px-4 pb-[max(1.5rem,env(safe-area-inset-bottom))] text-sm scrollbar-thin">
               {/* ── Shop section ── */}
-              <SectionHeader sectionKey="shop" icon={ShoppingBag} label="Shop" />
+              <SectionHeader
+                sectionKey="shop"
+                icon={ShoppingBag}
+                label="Shop"
+                isOpen={isSectionOpen("shop")}
+                onToggle={() => toggleSection("shop")}
+              />
               {isSectionOpen("shop") ? (
                 <div className="space-y-1 pb-2">
-                  <NavLink href="/products/" icon={Package} label="All Products" />
-                  <NavLink href="/collections/" icon={Layers} label="Collections" />
-                  {hasBundles ? <NavLink href="/bundles/" icon={LayoutGrid} label="Bundles" /> : null}
-                  <NavLink href="/preorders/" icon={Sparkles} label="Preorders" highlight />
-                  <NavLink href="/categories/" icon={Tags} label="All Categories" />
+                  <NavLink
+                    href="/products/"
+                    icon={Package}
+                    label="All Products"
+                    isActive={isActiveLink("/products/")}
+                    onClick={closeNav}
+                  />
+                  <NavLink
+                    href="/collections/"
+                    icon={Layers}
+                    label="Collections"
+                    isActive={isActiveLink("/collections/")}
+                    onClick={closeNav}
+                  />
+                  {hasBundles ? (
+                    <NavLink
+                      href="/bundles/"
+                      icon={LayoutGrid}
+                      label="Bundles"
+                      isActive={isActiveLink("/bundles/")}
+                      onClick={closeNav}
+                    />
+                  ) : null}
+                  <NavLink
+                    href="/preorders/"
+                    icon={Sparkles}
+                    label="Preorders"
+                    isActive={isActiveLink("/preorders/")}
+                    onClick={closeNav}
+                    highlight
+                  />
+                  <NavLink
+                    href="/categories/"
+                    icon={Tags}
+                    label="All Categories"
+                    isActive={isActiveLink("/categories/")}
+                    onClick={closeNav}
+                  />
 
                   {/* Expandable categories */}
                   {categories.length > 0 ? (
@@ -401,13 +432,43 @@ export function MobileNav({
               {/* ── Account section ── */}
               {hasToken ? (
                 <>
-                  <SectionHeader sectionKey="account" icon={User} label="Account" />
+                  <SectionHeader
+                    sectionKey="account"
+                    icon={User}
+                    label="Account"
+                    isOpen={isSectionOpen("account")}
+                    onToggle={() => toggleSection("account")}
+                  />
                   {isSectionOpen("account") ? (
                     <div className="space-y-1 pb-2">
-                      <NavLink href="/account/profile/" icon={User} label="Profile" />
-                      <NavLink href="/account/orders/" icon={ClipboardList} label="Orders" />
-                      <NavLink href="/wishlist/" icon={Heart} label="Wishlist" />
-                      <NavLink href="/cart/" icon={ShoppingBag} label="Bag" />
+                      <NavLink
+                        href="/account/profile/"
+                        icon={User}
+                        label="Profile"
+                        isActive={isActiveLink("/account/profile/")}
+                        onClick={closeNav}
+                      />
+                      <NavLink
+                        href="/account/orders/"
+                        icon={ClipboardList}
+                        label="Orders"
+                        isActive={isActiveLink("/account/orders/")}
+                        onClick={closeNav}
+                      />
+                      <NavLink
+                        href="/wishlist/"
+                        icon={Heart}
+                        label="Wishlist"
+                        isActive={isActiveLink("/wishlist/")}
+                        onClick={closeNav}
+                      />
+                      <NavLink
+                        href="/cart/"
+                        icon={ShoppingBag}
+                        label="Bag"
+                        isActive={isActiveLink("/cart/")}
+                        onClick={closeNav}
+                      />
 
                       {/* Switch account */}
                       {otherAccounts.length > 0 ? (
@@ -442,6 +503,8 @@ export function MobileNav({
                           href={`/account/login/?next=${encodeURIComponent(pathname || "/account/profile/")}&add_account=1`}
                           icon={UserPlus2}
                           label="Add account"
+                          isActive={false}
+                          onClick={closeNav}
                         />
                       ) : null}
                     </div>
@@ -449,8 +512,20 @@ export function MobileNav({
                 </>
               ) : (
                 <div className="space-y-1 pb-2">
-                  <NavLink href="/wishlist/" icon={Heart} label="Wishlist" />
-                  <NavLink href="/cart/" icon={ShoppingBag} label="Bag" />
+                  <NavLink
+                    href="/wishlist/"
+                    icon={Heart}
+                    label="Wishlist"
+                    isActive={isActiveLink("/wishlist/")}
+                    onClick={closeNav}
+                  />
+                  <NavLink
+                    href="/cart/"
+                    icon={ShoppingBag}
+                    label="Bag"
+                    isActive={isActiveLink("/cart/")}
+                    onClick={closeNav}
+                  />
                 </div>
               )}
 
@@ -458,7 +533,13 @@ export function MobileNav({
               {menuPages.length > 0 ? (
                 <>
                   <div className="my-1 border-t border-border" />
-                  <SectionHeader sectionKey="pages" icon={FileText} label="Pages" />
+                  <SectionHeader
+                    sectionKey="pages"
+                    icon={FileText}
+                    label="Pages"
+                    isOpen={isSectionOpen("pages")}
+                    onToggle={() => toggleSection("pages")}
+                  />
                   {isSectionOpen("pages") ? (
                     <div className="space-y-1 pb-2">
                       {menuPages.slice(0, 8).map((page) => (
@@ -467,6 +548,8 @@ export function MobileNav({
                           href={`/pages/${page.slug}/`}
                           icon={FileText}
                           label={page.title}
+                          isActive={isActiveLink(`/pages/${page.slug}/`)}
+                          onClick={closeNav}
                         />
                       ))}
                     </div>
@@ -476,11 +559,29 @@ export function MobileNav({
 
               {/* ── Support section ── */}
               <div className="my-1 border-t border-border" />
-              <SectionHeader sectionKey="support" icon={HelpCircle} label="Support" />
+              <SectionHeader
+                sectionKey="support"
+                icon={HelpCircle}
+                label="Support"
+                isOpen={isSectionOpen("support")}
+                onToggle={() => toggleSection("support")}
+              />
               {isSectionOpen("support") ? (
                 <div className="space-y-1 pb-4">
-                  <NavLink href="/contact/" icon={Mail} label="Contact" />
-                  <NavLink href="/faq/" icon={HelpCircle} label="FAQ" />
+                  <NavLink
+                    href="/contact/"
+                    icon={Mail}
+                    label="Contact"
+                    isActive={isActiveLink("/contact/")}
+                    onClick={closeNav}
+                  />
+                  <NavLink
+                    href="/faq/"
+                    icon={HelpCircle}
+                    label="FAQ"
+                    isActive={isActiveLink("/faq/")}
+                    onClick={closeNav}
+                  />
                 </div>
               ) : null}
             </nav>
@@ -490,3 +591,4 @@ export function MobileNav({
     </div>
   );
 }
+

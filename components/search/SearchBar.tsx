@@ -9,7 +9,6 @@ import { apiFetch } from "@/lib/api";
 import type { ProductListItem } from "@/lib/types";
 import { buildCategoryPath } from "@/lib/categoryPaths";
 import { buildProductPath } from "@/lib/productPaths";
-import { getLazyImageProps } from "@/lib/lazyImage";
 
 function useDebouncedValue<T>(value: T, delay = 300) {
   const [debounced, setDebounced] = React.useState(value);

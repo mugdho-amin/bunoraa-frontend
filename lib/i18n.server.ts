@@ -12,11 +12,11 @@ export async function getTranslations(lang?: string, namespaces: string[] = ['co
     lang = headers['X-User-Language'] || 'en';
   }
 
-  let translations: Record<string, any> = {};
+  let translations: Record<string, unknown> = {};
 
   try {
     // Fetch dynamic translations from backend
-    const response = await apiFetch<Record<string, any>>(`/i18n/messages/`, {
+    const response = await apiFetch<Record<string, unknown>>(`/i18n/messages/`, {
       params: {
         lang,
         namespaces: namespaces.join(','),
@@ -25,7 +25,7 @@ export async function getTranslations(lang?: string, namespaces: string[] = ['co
     });
 
     if (response.success && response.data?.messages) {
-      translations = response.data.messages;
+      translations = response.data.messages as Record<string, unknown>;
     }
   } catch (error) {
     console.error(`Failed to fetch dynamic translations for ${lang}:`, error);
@@ -37,20 +37,20 @@ export async function getTranslations(lang?: string, namespaces: string[] = ['co
 
       // 1. Try exact match (raw text keys like "Shop")
       if (typeof translations[key] === 'string') {
-        resolved = translations[key];
+        resolved = translations[key] as string;
       } else {
         // 2. Try nested paths (legacy support if needed)
         const keys = key.split('.');
-        let value = translations;
+        let value: unknown = translations;
         for (const k of keys) {
-          value = value?.[k];
+          value = (value as Record<string, unknown>)?.[k];
         }
         
         if (typeof value === 'string') {
           resolved = value;
-        } else if (typeof translations.common?.[key] === 'string') {
+        } else if (typeof (translations.common as Record<string, unknown>)?.[key] === 'string') {
           // 3. Try common namespace fallback
-          resolved = translations.common[key];
+          resolved = (translations.common as Record<string, unknown>)[key] as string;
         } else if (key.includes('.')) {
           // 4. Ultimate Fallback: Pretty print technical keys
           const parts = key.split('.');

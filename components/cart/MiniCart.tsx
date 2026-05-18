@@ -63,7 +63,6 @@ export function MiniCart({
   }
 
   const cart = cartQuery.data;
-  const currency = cart.currency || "";
 
   // Derive subtotal locally from cart items for instant updates
   const subtotalValue = cart.items.reduce((sum, item) => {

@@ -28,7 +28,7 @@ export function ProductGrid({
   products: ProductListItem[];
   view?: "grid" | "list";
   cardVariant?: ProductCardVariantName;
-  cardStyle?: "default" | "minimal";
+  cardStyle?: "default" | "minimal" | "fashion";
   allowQuickView?: boolean;
   showWishlist?: boolean;
   isLoading?: boolean;
@@ -66,6 +66,8 @@ export function ProductGrid({
           "grid gap-3 sm:gap-5",
           cardStyle === "minimal"
             ? "grid-cols-2 gap-x-3 gap-y-5 sm:grid-cols-3 sm:gap-x-4 sm:gap-y-6 lg:grid-cols-4"
+            : cardStyle === "fashion"
+            ? "grid-cols-2 gap-x-4 gap-y-8 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3"
             : view === "list"
             ? "grid-cols-1"
             : "sm:grid-cols-2 lg:grid-cols-3"
@@ -83,7 +85,15 @@ export function ProductGrid({
             <ProductCard
               key={product.id}
               product={product}
-              variant={cardStyle === "minimal" ? "minimal" : view === "list" ? "list" : "grid"}
+              variant={
+                cardStyle === "fashion"
+                  ? "fashion"
+                  : cardStyle === "minimal"
+                  ? "minimal"
+                  : view === "list"
+                  ? "list"
+                  : "grid"
+              }
               showWishlist={showWishlist}
               showQuickView={showQuickViewButton}
               onQuickView={allowQuickView ? setQuickViewSlug : undefined}

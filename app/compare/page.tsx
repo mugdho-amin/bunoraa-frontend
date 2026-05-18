@@ -2,6 +2,7 @@
 
 import * as React from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { apiFetch } from "@/lib/api";
 import type { ProductDetail } from "@/lib/types";
 import { getCompareItems, clearCompareItems } from "@/lib/compare";
@@ -10,7 +11,6 @@ import { Button } from "@/components/ui/Button";
 import { ProductPrice } from "@/components/products/ProductPrice";
 import { RatingStars } from "@/components/products/RatingStars";
 import { buildProductPath } from "@/lib/productPaths";
-import { getLazyImageProps } from "@/lib/lazyImage";
 
 export default function ComparePage() {
   const [items, setItems] = React.useState(getCompareItems());
@@ -92,11 +92,14 @@ export default function ComparePage() {
               const detail = details[item.id];
               return (
                 <Card key={item.id} variant="bordered" className="space-y-3 p-4">
-                  <div className="aspect-[4/5] overflow-hidden rounded-xl bg-muted">
+                  <div className="relative aspect-[4/5] overflow-hidden rounded-xl bg-muted">
                     {item.primary_image ? (
-                      <img
-                        {...getLazyImageProps(item.primary_image, item.name)}
-                        className="h-full w-full object-cover"
+                      <Image
+                        src={item.primary_image}
+                        alt={item.name}
+                        fill
+                        className="object-cover"
+                        sizes="(max-width: 768px) 50vw, (max-width: 1024px) 25vw, 20vw"
                       />
                     ) : null}
                   </div>

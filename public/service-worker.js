@@ -7,8 +7,6 @@
 
 const CACHE_VERSION = 'v1';
 const STATIC_CACHE = `bunoraa-static-${CACHE_VERSION}`;
-const API_CACHE = `bunoraa-api-${CACHE_VERSION}`;
-const PAGES_CACHE = `bunoraa-pages-${CACHE_VERSION}`;
 
 // Assets to cache on install
 const STATIC_ASSETS = [
@@ -17,25 +15,6 @@ const STATIC_ASSETS = [
   '/favicon.ico',
   '/site.webmanifest',
 ];
-
-// Cache strategies
-const CACHE_STRATEGIES = {
-  // Network first for API calls
-  api: {
-    maxAge: 60 * 1000, // 1 minute
-    maxEntries: 100,
-  },
-  // Cache first with network fallback for static assets
-  static: {
-    maxAge: 24 * 60 * 60 * 1000, // 24 hours
-    maxEntries: 200,
-  },
-  // Cache first for pages with short TTL
-  pages: {
-    maxAge: 5 * 60 * 1000, // 5 minutes
-    maxEntries: 50,
-  },
-};
 
 // Install event - cache static assets
 self.addEventListener('install', (event) => {
@@ -133,19 +112,6 @@ function isImageRequest(request) {
   return /\.(png|jpg|jpeg|gif|svg|webp|avif|ico)$/.test(request.url);
 }
 
-// Helper: Check if request is for API
-function isAPIRequest(request) {
-  const url = new URL(request.url);
-  return url.pathname.startsWith('/api/') || 
-         url.pathname.startsWith('/graphql');
-}
-
-// Helper: Check if request is for page
-function isPageRequest(request) {
-  const acceptHeader = request.headers.get('accept') || '';
-  return acceptHeader.includes('text/html');
-}
-
 // Strategy: Cache first for static assets
 async function assetStrategy(request) {
   const cache = await caches.open(STATIC_CACHE);
@@ -169,107 +135,6 @@ async function assetStrategy(request) {
   }
 }
 
-// Strategy: Network first for API calls
-async function apiStrategy(request) {
-  const cache = await caches.open(API_CACHE);
-  
-  try {
-    const networkResponse = await fetch(request);
-    
-    if (networkResponse.ok) {
-      // Cache successful API responses
-      const responseClone = networkResponse.clone();
-      cache.put(request, responseClone);
-      
-      // Enforce cache size limits
-      enforceCacheLimit(cache, CACHE_STRATEGIES.api.maxEntries);
-      
-      return networkResponse;
-    }
-    
-    throw new Error('Network response not ok');
-  } catch {
-    // Network failed, try cache
-    const cached = await cache.match(request);
-    
-    if (cached) {
-      console.log('[SW] Serving cached API response');
-      return cached;
-    }
-    
-    // Return offline error for API
-    return new Response(
-      JSON.stringify({ 
-        error: 'Offline', 
-        message: 'You are currently offline. Please check your connection.' 
-      }),
-      {
-        status: 503,
-        headers: { 'Content-Type': 'application/json' },
-      }
-    );
-  }
-}
-
-// Strategy: Network first with offline fallback for pages
-async function pageStrategy(request) {
-  const cache = await caches.open(PAGES_CACHE);
-  
-  try {
-    const networkResponse = await fetch(request);
-    
-    if (networkResponse.ok) {
-      cache.put(request, networkResponse.clone());
-      enforceCacheLimit(cache, CACHE_STRATEGIES.pages.maxEntries);
-      return networkResponse;
-    }
-    
-    throw new Error('Network response not ok');
-  } catch {
-    const cached = await cache.match(request);
-    
-    if (cached) {
-      return cached;
-    }
-    
-    // Return offline page
-    const offlinePage = await caches.match('/offline.html');
-    if (offlinePage) {
-      return offlinePage;
-    }
-    
-    // Generic offline response
-    return new Response(
-      `<!DOCTYPE html>
-      <html>
-        <head>
-          <title>Offline - Bunoraa</title>
-          <meta name="viewport" content="width=device-width, initial-scale=1">
-          <style>
-            body { font-family: system-ui, sans-serif; display: flex; align-items: center; justify-content: center; min-height: 100vh; margin: 0; background: #f9fafb; }
-            .container { text-align: center; padding: 2rem; }
-            h1 { color: #1f2937; margin-bottom: 1rem; }
-            p { color: #6b7280; margin-bottom: 1.5rem; }
-            a { color: #059669; text-decoration: none; }
-            a:hover { text-decoration: underline; }
-          </style>
-        </head>
-        <body>
-          <div class="container">
-            <h1>You're Offline</h1>
-            <p>Please check your internet connection and try again.</p>
-            <a href="/">← Back to Home</a>
-          </div>
-        </body>
-      </html>`,
-      {
-        status: 200,
-        headers: { 'Content-Type': 'text/html' },
-      }
-    );
-  }
-}
-
 // Helper: Fetch and cache in background
 async function fetchAndCache(request, cache) {
   try {
@@ -277,20 +142,8 @@ async function fetchAndCache(request, cache) {
     if (response.ok) {
       cache.put(request, response);
     }
-  } catch (error) {
+  } catch {
     // Silently fail background updates
-  }
-}
-
-// Helper: Enforce cache size limit
-async function enforceCacheLimit(cache, maxEntries) {
-  const keys = await cache.keys();
-  if (keys.length > maxEntries) {
-    // Delete oldest entries
-    const keysToDelete = keys.slice(0, keys.length - maxEntries);
-    for (const key of keysToDelete) {
-      cache.delete(key);
-    }
   }
 }
 

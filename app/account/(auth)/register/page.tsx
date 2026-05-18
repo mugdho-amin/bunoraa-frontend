@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import * as React from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -35,7 +35,6 @@ export default function RegisterPage() {
   const [passwordValue, setPasswordValue] = React.useState("");
   const [confirmPasswordValue, setConfirmPasswordValue] = React.useState("");
   const router = useRouter();
-  const searchParams = useSearchParams();
   const { register } = useAuth();
   
   const form = useForm<FormValues>({

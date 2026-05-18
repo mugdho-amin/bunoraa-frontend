@@ -49,7 +49,7 @@ export function InfiniteProductGrid({
   initialPagination?: ApiPagination;
   resetKey: string;
   view?: "grid" | "list";
-  cardStyle?: "default" | "minimal";
+  cardStyle?: "default" | "minimal" | "fashion";
   className?: string;
   emptyMessage?: string;
 }) {

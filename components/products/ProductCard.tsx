@@ -4,7 +4,6 @@ import * as React from "react";
 import Link from "next/link";
 import Image from "next/image";
 import type { ProductListItem } from "@/lib/types";
-import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
 import { WishlistIconButton } from "@/components/wishlist/WishlistIconButton";
 import { AddToCartButton } from "@/components/cart/AddToCartButton";
@@ -16,6 +15,7 @@ import { compareItemFromProduct, useCompareToggle } from "@/components/products/
 import { buildProductPath } from "@/lib/productPaths";
 import { useUiMessages } from "@/components/i18n/useUiMessages";
 import { useMediaUrl } from "@/components/providers/SiteSettingsProvider";
+import { ProductCardVariant } from "@/components/products/ProductCardVariants";
 
 const DEFAULT_CARD_ASPECT_RATIO = 4 / 5;
 
@@ -36,12 +36,10 @@ function parseAspectRatio(value?: string | null) {
 function MinimalProductCard({
   product,
   showWishlist = true,
-  showQuickView,
   onQuickView,
 }: {
   product: ProductListItem;
   showWishlist?: boolean;
-  showQuickView?: boolean;
   onQuickView?: (slug: string) => void;
 }) {
   const mediaUrl = useMediaUrl();
@@ -151,7 +149,7 @@ function InteractiveProductCard({
   const primaryImageUrl = getFullUrl(
     typeof product.primary_image === "string"
       ? product.primary_image
-      : (product.primary_image as any)?.image
+      : (product.primary_image as unknown as { image?: string | null })?.image
   );
   const secondaryImageUrl = getFullUrl(product.secondary_image);
   const productHref = buildProductPath(product);
@@ -298,11 +296,21 @@ export function ProductCard({
   onQuickView,
 }: {
   product: ProductListItem;
-  variant?: "grid" | "list" | "minimal";
+  variant?: "grid" | "list" | "minimal" | "fashion";
   showWishlist?: boolean;
   showQuickView?: boolean;
   onQuickView?: (slug: string) => void;
 }) {
+  if (variant === "fashion") {
+    return (
+      <ProductCardVariant
+        product={product}
+        variant="fashion"
+        onQuickView={onQuickView}
+      />
+    );
+  }
+
   if (variant === "minimal") {
     return (
       <MinimalProductCard
@@ -317,7 +325,7 @@ export function ProductCard({
   return (
     <InteractiveProductCard
       product={product}
-      variant={variant}
+      variant={variant === "list" ? "list" : "grid"}
       showQuickView={showQuickView}
       onQuickView={onQuickView}
     />

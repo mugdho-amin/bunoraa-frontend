@@ -178,6 +178,7 @@ export default function OrderDetailPage() {
                             // eslint-disable-next-line @next/next/no-img-element
                             <img
                               {...getLazyImageProps(item.product_image, item.product_name)}
+                              alt={item.product_name}
                               className="h-full w-full object-cover"
                             />
                           ) : null}

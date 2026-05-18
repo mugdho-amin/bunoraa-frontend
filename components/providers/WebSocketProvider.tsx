@@ -74,17 +74,18 @@ export function WebSocketProvider({ children }: { children: React.ReactNode }) {
       };
 
       ws.onmessage = (event) => {
-        let payload: any = null;
+        let payload: unknown = null;
         try {
           payload = JSON.parse(event.data);
         } catch {
           return;
         }
 
-        if (!payload) return;
+        if (!payload || typeof payload !== "object") return;
+        const payloadObj = payload as Record<string, unknown>;
 
         // Handle server-side heartbeat
-        if (payload.type === "ping") {
+        if (payloadObj.type === "ping") {
           if (ws.readyState === WebSocket.OPEN) {
             ws.send(JSON.stringify({ type: "pong", timestamp: Date.now() / 1000 }));
           }
@@ -92,12 +93,12 @@ export function WebSocketProvider({ children }: { children: React.ReactNode }) {
         }
 
         // Log server errors
-        if (payload.type === "error") {
-          console.error(`[WebSocket:${channel}] Server error:`, payload.message);
+        if (payloadObj.type === "error") {
+          console.error(`[WebSocket:${channel}] Server error:`, payloadObj.message);
           return;
         }
 
-        setLastMessage((prev) => ({ ...prev, [channel]: payload }));
+        setLastMessage((prev) => ({ ...prev, [channel]: payloadObj }));
 
         if (channel === "cart") {
           queryClient.invalidateQueries({ queryKey: ["cart"] });
@@ -108,8 +109,8 @@ export function WebSocketProvider({ children }: { children: React.ReactNode }) {
           queryClient.invalidateQueries({ queryKey: ["notifications", "unread"] });
         }
         if (channel === "search") {
-          if (payload && typeof payload === "object" && "suggestions" in (payload as object)) {
-            queryClient.setQueryData(["search", "suggestions"], payload);
+          if ("suggestions" in payloadObj) {
+            queryClient.setQueryData(["search", "suggestions"], payloadObj);
           } else {
             queryClient.invalidateQueries({ queryKey: ["search", "suggestions"] });
           }

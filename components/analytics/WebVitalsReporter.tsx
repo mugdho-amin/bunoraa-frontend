@@ -10,10 +10,8 @@ export function WebVitalsReporter() {
     }
 
     // Capture critical metrics for performance analysis
-    const { name, value, id, attribution } = metric;
-    
     // Logic to send to analytics or monitoring service could go here
-    // e.g. sendToAnalytics({ name, value, id, attribution });
+    // e.g. sendToAnalytics({ name: metric.name, value: metric.value, id: metric.id });
   });
 
   return null;

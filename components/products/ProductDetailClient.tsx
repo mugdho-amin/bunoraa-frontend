@@ -2,8 +2,6 @@
 
 import * as React from "react";
 import Link from "next/link";
-import Image from "next/image";
-import { usePathname, useSearchParams } from "next/navigation";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { apiFetch, ApiError } from "@/lib/api";
 import type {
@@ -19,7 +17,6 @@ import { Card } from "@/components/ui/Card";
 import { AddToCartButton } from "@/components/cart/AddToCartButton";
 import { RatingStars } from "@/components/products/RatingStars";
 import { ProductPrice } from "@/components/products/ProductPrice";
-import { formatMoney } from "@/lib/money";
 import { useToast } from "@/components/ui/ToastProvider";
 import { useAuthContext } from "@/components/providers/AuthProvider";
 import { addRecentlyViewed } from "@/lib/recentlyViewed";
@@ -109,22 +106,6 @@ function resolveDeliveryLabel(method: ShippingMethodOption | null | undefined) {
   return null;
 }
 
-function DetailRow({
-  label,
-  value,
-}: {
-  label: string;
-  value: React.ReactNode | null | undefined;
-}) {
-  if (value === null || value === undefined || value === "") return null;
-  return (
-    <div className="flex items-center justify-between gap-4 py-1.5 text-sm">
-      <span className="text-foreground/50">{label}</span>
-      <span className="font-medium text-foreground/80">{value}</span>
-    </div>
-  );
-}
-
 function CollapsibleSection({
   id,
   title,
@@ -134,7 +115,7 @@ function CollapsibleSection({
 }: {
   id: string;
   title: string;
-  icon?: any;
+  icon?: React.ElementType;
   children: React.ReactNode;
   defaultExpanded?: boolean;
 }) {
@@ -504,7 +485,7 @@ function ShippingEstimator({
   const { push } = useToast();
   const [country, setCountry] = React.useState("Bangladesh");
   const [state, setState] = React.useState("Dhaka");
-  const [postalCode, setPostalCode] = React.useState("");
+  const [postalCode] = React.useState("");
   const [result, setResult] = React.useState<ShippingRateResponse | null>(null);
   const [loading, setLoading] = React.useState(false);
   const safeQuantity = Math.max(1, Number.isFinite(quantity) ? quantity : 1);
@@ -514,7 +495,6 @@ function ShippingEstimator({
     toNumber(product.price) ??
     0;
   const subtotal = unitPriceValue * safeQuantity;
-  const subtotalLabel = formatMoney(subtotal, product.currency || "USD");
 
   const orderedMethods = React.useMemo(() => {
     if (!result?.methods?.length) return [] as ShippingMethodOption[];
@@ -610,8 +590,6 @@ function ShippingEstimator({
 function ProductReviews({ product, reviewStatsQuery: sharedReviewStatsQuery }: { product: ProductDetail; reviewStatsQuery: ReturnType<typeof useQuery<ReviewStatistics | undefined, Error>> }) {
   const { hasToken } = useAuthContext();
   const { push } = useToast();
-  const pathname = usePathname();
-  const searchParams = useSearchParams();
   const [page, setPage] = React.useState(1);
   const [rating, setRating] = React.useState(5);
   const [title, setTitle] = React.useState("");
@@ -834,9 +812,6 @@ export function ProductDetailClient({
   product: ProductDetail;
   relatedProducts?: ProductListItem[];
 }) {
-  const { hasToken } = useAuthContext();
-  const { push: toast } = useToast();
-
   const variants = React.useMemo<Variant[]>(() => product.variants ?? [], [product.variants]);
   const defaultVariant = React.useMemo(
     () => variants.find((v) => v.is_default) || variants[0] || null,
@@ -923,7 +898,7 @@ export function ProductDetailClient({
   };
 
   React.useEffect(() => {
-    const image = typeof product.primary_image === "string" ? product.primary_image : (product.primary_image as any)?.image;
+    const image = typeof product.primary_image === "string" ? product.primary_image : (product.primary_image as unknown as { image?: string | null })?.image;
     addRecentlyViewed({
       id: product.id,
       slug: product.slug,

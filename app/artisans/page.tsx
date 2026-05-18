@@ -60,6 +60,7 @@ export default async function ArtisansPage() {
                 // eslint-disable-next-line @next/next/no-img-element
                 <img
                   {...getLazyImageProps(artisan.avatar, artisan.name)}
+                  alt={artisan.name}
                   className="h-full w-full object-cover"
                 />
               ) : null}

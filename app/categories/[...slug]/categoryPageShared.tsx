@@ -306,6 +306,7 @@ export async function renderCategoryPageForPath(
                 initialPagination={pagination}
                 resetKey={JSON.stringify({ endpoint: slugPath, params: requestParams, view })}
                 view={view}
+                cardStyle="fashion"
                 className="min-h-[400px]"
               />
             </div>

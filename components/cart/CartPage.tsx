@@ -14,7 +14,6 @@ import { Card } from "@/components/ui/Card";
 import { useToast } from "@/components/ui/ToastProvider";
 import { cn } from "@/lib/utils";
 import { buildProductPath } from "@/lib/productPaths";
-import { getLazyImageProps } from "@/lib/lazyImage";
 import { ShareModal } from "@/components/cart/ShareModal";
 import { useUiMessages } from "@/components/i18n/useUiMessages";
 
@@ -438,7 +437,6 @@ function CartItemRow({
 }
 
 export function CartPage() {
-  const { t } = useUiMessages("cart");
   const { push } = useToast();
   const { hasToken } = useAuthContext();
   const {

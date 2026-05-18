@@ -1,5 +1,4 @@
 import type { MetadataRoute } from "next";
-import { getBackendBaseUrl } from "@/lib/seo";
 
 export default function robots(): MetadataRoute.Robots {
   // Sitemaps are proxied from the backend to the frontend domain

@@ -52,10 +52,13 @@ describe("SearchBar", () => {
 
   it("shows suggestions when typing (mocked)", async () => {
     const { apiFetch } = await import("@/lib/api");
-    (apiFetch as any).mockResolvedValue({
+    vi.mocked(apiFetch).mockResolvedValue({
+      success: true,
+      message: "OK",
+      meta: null,
       data: {
         products: [
-          { id: "1", name: "Summer Dress", slug: "summer-dress", price: "1200", currency: "BDT" },
+          { id: "1", name: "Summer Dress", slug: "summer-dress", price: "1200", currency: "BDT" } as unknown as ProductListItem,
         ],
         categories: [],
         query: "dress",
