@@ -272,16 +272,6 @@ export async function renderCategoryPageForPath(
             </div>
           </div>
 
-          {category.description && (
-            <div className="relative max-w-4xl group">
-              <div className="absolute -left-4 top-0 bottom-0 w-1 bg-primary/20 rounded-full hidden sm:block" />
-              <div className="text-sm sm:text-base text-foreground/80 font-serif italic leading-relaxed">
-                <p className="line-clamp-3 group-hover:line-clamp-none transition-all duration-500 ease-in-out">
-                  {category.description}
-                </p>
-              </div>
-            </div>
-          )}
         </div>
 
         {/* Content Section */}

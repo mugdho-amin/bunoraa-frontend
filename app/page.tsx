@@ -269,12 +269,12 @@ export default async function Home() {
     ...(collections.length ? [collectionsList] : []),
   ];
 
-  const sectionWrapperClass = "mx-auto w-full max-w-[1920px] px-3 sm:px-5";
+  const sectionWrapperClass = "px-3 sm:px-5";
 
   return (
     <div className="bg-background text-foreground">
       <section>
-        <div className={`${sectionWrapperClass} pb-6 -mx-3 sm:-mx-5 lg:mx-0`}>
+        <div className={`${sectionWrapperClass} pb-6 -mx-3 sm:-mx-5`}>
           {heroBanners.length ? (
             <HeroBannerSlider banners={heroBanners} className="mx-auto" autoAdvance={true} intervalMs={5000} />
           ) : (
@@ -286,7 +286,7 @@ export default async function Home() {
       {spotlights.length ? (
         <section className={`${sectionWrapperClass} py-8`}>
           <h2 className="text-sm font-semibold uppercase tracking-[0.2em] text-foreground/70">Spotlights</h2>
-          <div className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-3 -mx-3 sm:-mx-5 lg:mx-0">
+          <div className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-3 -mx-3 sm:-mx-5">
             {spotlights.map((spotlight) => {
               const image = spotlight.product?.primary_image as string;
               return (
@@ -317,7 +317,7 @@ export default async function Home() {
         {filteredOnSale.length ? (
           <section className={`${sectionWrapperClass} py-8`}>
             <h2 className="text-sm font-semibold uppercase tracking-[0.2em] text-foreground/70">Seasonal Favs</h2>
-            <div className="mt-4 -mx-3 sm:-mx-5 lg:mx-0">
+            <div className="mt-4 -mx-3 sm:-mx-5">
               <ProductGrid products={filteredOnSale.slice(0, 8)} cardStyle="minimal" allowQuickView={true} showWishlist={true} />
             </div>
           </section>
@@ -326,7 +326,7 @@ export default async function Home() {
 
       <Suspense fallback={<SectionSkeleton title="Recommended" />}>
           <section className={`${sectionWrapperClass} py-8`}>
-          <div className="-mx-3 sm:-mx-5 lg:mx-0">
+          <div className="-mx-3 sm:-mx-5">
             <HomeProductTabs
               newDrops={filteredNewArrivals}
               trending={filteredBestsellers}
@@ -338,7 +338,7 @@ export default async function Home() {
       </Suspense>
 
       <section className={`${sectionWrapperClass} py-8`}>
-        <div className="-mx-3 sm:-mx-5 lg:mx-0">
+        <div className="-mx-3 sm:-mx-5">
           <RecentlyViewedSection />
         </div>
       </section>
