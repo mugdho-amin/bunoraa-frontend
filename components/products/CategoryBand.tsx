@@ -12,7 +12,7 @@ interface CategoryBandProps {
 
 export const CategoryBand = ({ band }: CategoryBandProps) => {
   return (
-    <section className="mx-auto w-full max-w-7xl px-3 py-8 sm:px-5">
+    <section className="mx-auto w-full max-w-[1920px] px-3 py-8 sm:px-5">
       <div className="flex items-center justify-between gap-4">
         <h2 className="text-sm font-semibold uppercase tracking-[0.2em] text-foreground/70">
           {band.category.name}

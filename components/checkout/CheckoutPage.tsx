@@ -642,7 +642,7 @@ export function CheckoutPage() {
       description="Please sign in to continue with checkout."
     >
       <div className="min-h-screen bg-background text-foreground">
-        <div className="mx-auto w-full max-w-7xl px-4 py-6 sm:px-6 sm:py-10 lg:py-12">
+        <div className="mx-auto w-full max-w-[1920px] px-4 py-6 sm:px-6 sm:py-10 lg:py-12">
           <div className="mb-8">
             <p className="text-xs uppercase tracking-[0.3em] text-foreground/60">
               Checkout

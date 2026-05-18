@@ -269,7 +269,7 @@ export default async function Home() {
     ...(collections.length ? [collectionsList] : []),
   ];
 
-  const sectionWrapperClass = "mx-auto w-full max-w-7xl px-3 sm:px-5";
+  const sectionWrapperClass = "mx-auto w-full max-w-[1920px] px-3 sm:px-5";
 
   return (
     <div className="bg-background text-foreground">

@@ -52,7 +52,7 @@ export default async function ProductCardDesignPage() {
 
   return (
     <div className="min-h-screen bg-background text-foreground">
-      <div className="mx-auto w-full max-w-7xl px-4 py-10 sm:px-6 sm:py-12">
+      <div className="mx-auto w-full max-w-[1920px] px-4 py-10 sm:px-6 sm:py-12">
         <div className="mb-8 space-y-2">
           <p className="text-xs uppercase tracking-[0.2em] text-foreground/55">Internal Pattern Lab</p>
           <h1 className="text-3xl font-semibold sm:text-4xl">12 Product Card Variants</h1>

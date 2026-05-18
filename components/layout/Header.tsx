@@ -58,7 +58,7 @@ export async function Header() {
   return (
     <MobileHeaderVisibility>
       <header className="border-b border-border/80 bg-background/95 backdrop-blur-md supports-[backdrop-filter]:bg-background/88">
-        <div className="mx-auto w-full max-w-7xl px-3 py-4 sm:px-5">
+        <div className="mx-auto w-full max-w-[1920px] px-3 py-4 sm:px-5">
           {/* Mobile layout (grid) */}
           <div className="grid grid-cols-3 items-center lg:hidden">
             <MobileNavWrapper

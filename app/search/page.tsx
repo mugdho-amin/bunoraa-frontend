@@ -234,7 +234,7 @@ export default async function SearchPage({
 
   return (
     <div className="min-h-screen bg-background text-foreground">
-      <div className="mx-auto w-full max-w-7xl px-3 sm:px-5 py-12">
+      <div className="mx-auto w-full max-w-[1920px] px-3 sm:px-5 py-12">
         <div className="mb-8 flex flex-wrap items-center justify-between gap-4">
           <div>
             <p className="text-sm uppercase tracking-[0.2em] text-foreground/60">

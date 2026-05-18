@@ -338,7 +338,7 @@ function AgentChatConsole() {
 
   return (
     <div className="min-h-screen bg-background text-foreground">
-      <div className="mx-auto grid max-w-7xl gap-6 px-4 py-10 sm:px-6 lg:grid-cols-[300px_340px_1fr]">
+      <div className="mx-auto grid max-w-[1920px] gap-6 px-4 py-10 sm:px-6 lg:grid-cols-[300px_340px_1fr]">
         <Card variant="bordered" className="space-y-4">
           <div className="flex items-center gap-3">
             <Avatar name={agentProfile.data?.display_name || profile?.full_name} url={agentProfile.data?.avatar_url || profile?.avatar || null} />
