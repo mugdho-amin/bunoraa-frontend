@@ -144,7 +144,7 @@ export function QuickViewModal({
 
                 <div className="mb-8 flex items-center gap-3 border-y border-border/40 py-4">
                   <RatingStars rating={data.average_rating || 0} count={data.reviews_count} size="sm" />
-                  {data.reviews_count > 0 && (
+                  {(data.reviews_count ?? 0) > 0 && (
                     <>
                       <span className="h-1 w-1 rounded-full bg-border" />
                       <span className="text-xs font-medium text-foreground/60">
