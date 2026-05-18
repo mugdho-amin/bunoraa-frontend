@@ -6,9 +6,9 @@ export const ProductGridSkeleton = () => (
   </div>
 );
 
-export const SectionSkeleton = () => (
+export const SectionSkeleton = ({ title }: { title?: string }) => (
   <div className="py-8">
-    <div className="h-4 w-32 animate-pulse rounded bg-muted" />
+    {title ? <div className="h-4 w-32 animate-pulse rounded bg-muted" /> : null}
     <div className="mt-4">
       <ProductGridSkeleton />
     </div>

@@ -333,7 +333,6 @@ export function MobileNav({
             <nav className="min-h-0 flex-1 space-y-1 overflow-y-auto px-4 pb-[max(1.5rem,env(safe-area-inset-bottom))] text-sm scrollbar-thin">
               {/* ── Shop section ── */}
               <SectionHeader
-                sectionKey="shop"
                 icon={ShoppingBag}
                 label="Shop"
                 isOpen={isSectionOpen("shop")}
@@ -433,7 +432,6 @@ export function MobileNav({
               {hasToken ? (
                 <>
                   <SectionHeader
-                    sectionKey="account"
                     icon={User}
                     label="Account"
                     isOpen={isSectionOpen("account")}
@@ -534,7 +532,6 @@ export function MobileNav({
                 <>
                   <div className="my-1 border-t border-border" />
                   <SectionHeader
-                    sectionKey="pages"
                     icon={FileText}
                     label="Pages"
                     isOpen={isSectionOpen("pages")}
@@ -560,7 +557,6 @@ export function MobileNav({
               {/* ── Support section ── */}
               <div className="my-1 border-t border-border" />
               <SectionHeader
-                sectionKey="support"
                 icon={HelpCircle}
                 label="Support"
                 isOpen={isSectionOpen("support")}
