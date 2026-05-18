@@ -318,7 +318,7 @@ function FashionVariant({
           <div className="absolute inset-x-0 bottom-0 z-20 p-0 translate-y-full transition-transform duration-300 group-hover:translate-y-0">
             <Button
               variant="secondary"
-              className="w-full bg-foreground/90 text-background hover:bg-foreground border-0 rounded-none h-12 text-[11px] font-bold uppercase tracking-[0.2em] backdrop-blur-sm"
+              className="w-full bg-black/90 text-white hover:bg-black border-0 rounded-none h-12 text-[11px] font-bold uppercase tracking-[0.2em] backdrop-blur-sm"
               onClick={(e) => {
                 e.preventDefault();
                 onQuickView(product.slug);
