@@ -67,7 +67,8 @@ const nextConfig: NextConfig = {
       "@hookform/resolvers",
       "zod",
     ],
-    turbopackFileSystemCache: true,
+    turbopackFileSystemCacheForDev: true,
+    turbopackFileSystemCacheForBuild: true,
     optimizeCss: false,
   },
   turbopack: {
