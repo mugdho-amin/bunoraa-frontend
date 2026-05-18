@@ -58,51 +58,68 @@ export async function Header() {
   return (
     <MobileHeaderVisibility>
       <header className="border-b border-border/80 bg-background/95 backdrop-blur-md supports-[backdrop-filter]:bg-background/88">
-        <div className="mx-auto flex w-full max-w-7xl items-center justify-between gap-4 px-3 py-4 sm:px-5">
-          <div className="flex min-w-0 items-center gap-6">
+        <div className="mx-auto w-full max-w-7xl px-3 py-4 sm:px-5">
+          {/* Mobile layout (grid) */}
+          <div className="grid grid-cols-3 items-center lg:hidden">
             <MobileNavWrapper
               categories={categories}
               menuPages={menuPages}
               hasBundles={hasBundles}
             />
-            <HeaderBrand
-              defaultBrandName={brandName}
-              defaultFaviconUrl={faviconUrl}
-              fallbackStaticFaviconUrl="/favicon.ico"
-            />
-            <nav className="hidden items-center gap-4 text-sm lg:flex">
-              <div className="w-48">
-                <SearchBar hideSubmitButtonOnDesktop />
-              </div>
-              <TranslatedHeaderLink
-                href="/preorders/"
-                className="group relative inline-flex items-center gap-2 rounded-full border border-primary/30 bg-primary/10 px-3 py-1.5 text-sm font-semibold text-primary transition duration-200 hover:-translate-y-0.5 hover:border-primary/50 hover:bg-primary hover:text-white hover:shadow-soft focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
-                labelKey="Preorders"
-                badgeKey="New"
+            <div className="justify-self-center">
+              <HeaderBrand
+                defaultBrandName={brandName}
+                defaultFaviconUrl={faviconUrl}
+                fallbackStaticFaviconUrl="/favicon.ico"
               />
-              {categories.slice(0, 4).map((category) => (
-                <Link
-                  key={category.id}
-                  className="text-foreground/70 hover:text-foreground"
-                  href={buildCategoryPath(category.slug_path || category.slug)}
-                  prefetch={false}
-                >
-                  {category.name}
-                </Link>
-              ))}
-              {menuPages.slice(0, 3).map((page) => (
-                <Link
-                  key={page.id}
-                  className="text-foreground/70 hover:text-foreground"
-                  href={`/pages/${page.slug}/`}
-                  prefetch={false}
-                >
-                  {page.title}
-                </Link>
-              ))}
-            </nav>
+            </div>
+            <div className="justify-self-end">
+              <HeaderClient />
+            </div>
           </div>
-          <HeaderClient />
+
+          {/* Desktop layout (flex) — MobileNavWrapper omitted (its trigger is lg:hidden) */}
+          <div className="hidden items-center justify-between gap-4 lg:flex">
+            <div className="flex min-w-0 items-center gap-6">
+              <HeaderBrand
+                defaultBrandName={brandName}
+                defaultFaviconUrl={faviconUrl}
+                fallbackStaticFaviconUrl="/favicon.ico"
+              />
+              <nav className="flex items-center gap-4 text-sm">
+                <div className="w-48">
+                  <SearchBar hideSubmitButtonOnDesktop />
+                </div>
+                <TranslatedHeaderLink
+                  href="/preorders/"
+                  className="group relative inline-flex items-center gap-2 rounded-full border border-primary/30 bg-primary/10 px-3 py-1.5 text-sm font-semibold text-primary transition duration-200 hover:-translate-y-0.5 hover:border-primary/50 hover:bg-primary hover:text-white hover:shadow-soft focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
+                  labelKey="Preorders"
+                  badgeKey="New"
+                />
+                {categories.slice(0, 4).map((category) => (
+                  <Link
+                    key={category.id}
+                    className="text-foreground/70 hover:text-foreground"
+                    href={buildCategoryPath(category.slug_path || category.slug)}
+                    prefetch={false}
+                  >
+                    {category.name}
+                  </Link>
+                ))}
+                {menuPages.slice(0, 3).map((page) => (
+                  <Link
+                    key={page.id}
+                    className="text-foreground/70 hover:text-foreground"
+                    href={`/pages/${page.slug}/`}
+                    prefetch={false}
+                  >
+                    {page.title}
+                  </Link>
+                ))}
+              </nav>
+            </div>
+            <HeaderClient />
+          </div>
         </div>
       </header>
     </MobileHeaderVisibility>

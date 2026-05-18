@@ -126,10 +126,10 @@ export function QuickViewModal({
                       {data.primary_category_name}
                     </p>
                   ) : null}
-                  <h3 className="text-2xl font-bold tracking-tight text-foreground sm:text-3xl lg:text-4xl">
+                  <h3 className="text-xl font-bold tracking-tight text-foreground sm:text-2xl lg:text-3xl">
                     {data.name}
                   </h3>
-                  <div className="flex items-center gap-4 pt-1">
+                  <div className="flex flex-wrap items-center gap-3 pt-1">
                     <ProductPrice
                       price={data.price}
                       salePrice={data.sale_price}
@@ -144,10 +144,14 @@ export function QuickViewModal({
 
                 <div className="mb-8 flex items-center gap-3 border-y border-border/40 py-4">
                   <RatingStars rating={data.average_rating || 0} count={data.reviews_count} size="sm" />
-                  <span className="h-1 w-1 rounded-full bg-border" />
-                  <span className="text-xs font-medium text-foreground/60">
-                    {data.reviews_count || 0} Reviews
-                  </span>
+                  {data.reviews_count > 0 && (
+                    <>
+                      <span className="h-1 w-1 rounded-full bg-border" />
+                      <span className="text-xs font-medium text-foreground/60">
+                        {data.reviews_count} Reviews
+                      </span>
+                    </>
+                  )}
                 </div>
 
                 <div className="mb-10 space-y-4">

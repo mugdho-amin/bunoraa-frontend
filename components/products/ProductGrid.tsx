@@ -79,7 +79,7 @@ export function ProductGrid({
     <>
       <div
         className={cn(
-          "grid gap-3 sm:gap-5",
+          "grid gap-2 sm:gap-3",
           gridColsClass(cols, cardStyle)
         )}
       >

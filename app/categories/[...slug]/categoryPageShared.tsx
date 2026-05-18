@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { apiFetch, ApiError } from "@/lib/api";
 import type { ProductListItem, ProductFilterResponse } from "@/lib/types";
+import { FilterSidebar, FilterSidebarToggle, FilterSidebarProvider } from "@/components/products/FilterSidebar";
 import { FilterPanel } from "@/components/products/FilterPanel";
 import { FilterDrawer } from "@/components/products/FilterDrawer";
 import { AppliedFilters } from "@/components/products/AppliedFilters";
@@ -226,6 +227,7 @@ export async function renderCategoryPageForPath(
   ];
 
   return (
+    <FilterSidebarProvider>
     <div className="min-h-screen bg-background selection:bg-primary selection:text-primary-foreground">
       <div className="mx-auto w-full max-w-7xl px-4 py-6 sm:px-6 lg:py-10">
         {/* Header Section */}
@@ -262,15 +264,18 @@ export async function renderCategoryPageForPath(
             <div className="sticky top-[var(--header-offset,4.75rem)] z-30 flex items-center gap-2 rounded-2xl border border-border/60 bg-background/80 p-2 shadow-sm backdrop-blur-xl lg:static lg:z-auto lg:border-0 lg:bg-transparent lg:p-0 lg:shadow-none">
               <div className="flex flex-1 items-center gap-2 sm:flex-initial">
                 {showFilters && (
-                  <FilterDrawer
-                    filters={filterData}
-                    facets={facets}
-                    categories={childCategories}
-                    productCount={totalCount}
-                    className="lg:hidden"
-                    filterParams={filterParams}
-                    currentCategoryPath={slugPath}
-                  />
+                  <>
+                    <FilterDrawer
+                      filters={filterData}
+                      facets={facets}
+                      categories={childCategories}
+                      productCount={totalCount}
+                      className="lg:hidden"
+                      filterParams={filterParams}
+                      currentCategoryPath={slugPath}
+                    />
+                    <FilterSidebarToggle />
+                  </>
                 )}
                 <SortMenu className="h-10 w-full sm:w-auto min-w-[140px] rounded-xl border-border/50 lg:h-11 lg:min-w-[180px]" />
                 <ViewToggle className="h-10 border-border/50 lg:h-11" />
@@ -280,20 +285,18 @@ export async function renderCategoryPageForPath(
         </div>
 
         {/* Content Section */}
-        <div className={cn("grid gap-10", showFilters ? "lg:grid-cols-[240px_1fr]" : "grid-cols-1")}>
+        <div className={cn("grid gap-6", showFilters ? "lg:grid-cols-[auto_1fr]" : "grid-cols-1")}>
           {showFilters && (
-            <aside className="hidden lg:block">
-              <div className="sticky top-28 space-y-8">
-                <FilterPanel
-                  filters={filterData}
-                  facets={facets}
-                  categories={childCategories}
-                  productCount={totalCount}
-                  currentCategoryPath={slugPath}
-                  filterParams={filterParams}
-                />
-              </div>
-            </aside>
+            <FilterSidebar>
+              <FilterPanel
+                filters={filterData}
+                facets={facets}
+                categories={childCategories}
+                productCount={totalCount}
+                currentCategoryPath={slugPath}
+                filterParams={filterParams}
+              />
+            </FilterSidebar>
           )}
 
           <main className="space-y-8">
@@ -334,5 +337,6 @@ export async function renderCategoryPageForPath(
         </div>
       </div>
     </div>
+    </FilterSidebarProvider>
   );
 }
