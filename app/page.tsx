@@ -3,6 +3,7 @@ import dynamicImport from "next/dynamic";
 import Link from "next/link";
 import Image from "next/image";
 import { Suspense } from "react";
+import { cacheLife, cacheTag } from "next/cache";
 import { apiFetch, ApiError } from "@/lib/api";
 import { getServerLocaleHeaders } from "@/lib/serverLocale";
 import type {
@@ -89,8 +90,6 @@ const DEFAULT_HOMEPAGE_DATA: HomepageData = {
   show_by_categories: [],
 };
 
-const HOMEPAGE_REVALIDATE_SECONDS = 120;
-
 const pickText = (...values: Array<string | null | undefined>) => {
   for (const value of values) {
     if (value && value.trim()) return value.trim();
@@ -110,6 +109,10 @@ const getImage = (product: ProductListItem | null | undefined) => {
 };
 
 async function getHomepageData() {
+  "use cache";
+  cacheLife("minutes");
+  cacheTag("homepage-data");
+
   try {
     let headers = {};
     try {
@@ -119,7 +122,6 @@ async function getHomepageData() {
     }
     const response = await apiFetch<HomepageData>("/catalog/homepage/", {
       headers,
-      next: { revalidate: HOMEPAGE_REVALIDATE_SECONDS },
     });
     const payload =
       response.data && typeof response.data === "object" && !Array.isArray(response.data)
@@ -150,6 +152,10 @@ async function getHomepageData() {
 }
 
 async function getBanners(position?: string) {
+  "use cache";
+  cacheLife("minutes");
+  if (position) cacheTag(`banners-${position}`);
+
   try {
     let headers = {};
     try {
@@ -160,7 +166,6 @@ async function getBanners(position?: string) {
     const response = await apiFetch<Banner[]>("/promotions/banners/", {
       params: position ? { position } : undefined,
       headers,
-      next: { revalidate: HOMEPAGE_REVALIDATE_SECONDS },
     });
     return asArray<Banner>(response.data);
   } catch (error: unknown) {
