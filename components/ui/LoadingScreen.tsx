@@ -80,11 +80,12 @@ export function LoadingScreen({
           <div className="absolute inset-0 flex items-center justify-center">
             <div className="flex h-12 w-12 items-center justify-center overflow-hidden rounded-full bg-background shadow-inner">
                <Image 
-                src={logoSrc} 
+                src={src} 
                 alt="B" 
                 width={32}
                 height={32}
                 className="object-contain"
+                onError={handleImageError}
                />
             </div>
           </div>
