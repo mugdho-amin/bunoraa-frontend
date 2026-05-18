@@ -12,7 +12,7 @@ interface CategoryBandProps {
 
 export const CategoryBand = ({ band }: CategoryBandProps) => {
   return (
-    <section className="px-3 py-8 sm:px-5">
+    <section className="mx-auto w-full max-w-[1920px] px-3 py-8 sm:px-5">
       <div className="flex items-center justify-between gap-4">
         <h2 className="text-sm font-semibold uppercase tracking-[0.2em] text-foreground/70">
           {band.category.name}
@@ -25,7 +25,7 @@ export const CategoryBand = ({ band }: CategoryBandProps) => {
           View All
         </Link>
       </div>
-      <div className="mt-4 -mx-3 sm:-mx-5">
+      <div className="mt-4 -mx-3 sm:-mx-5 lg:mx-0">
         <ProductGrid
           products={band.products}
           cardStyle="minimal"
