@@ -1,17 +1,43 @@
 {
   "name": "Bunoraa",
   "short_name": "Bunoraa",
-  "description": "Bunoraa e-commerce storefront",
+  "description": "Discover curated products, bundles, and artisan-made collections at Bunoraa.",
   "start_url": "/",
   "scope": "/",
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#9c3d1e",
+  "orientation": "portrait",
   "icons": [
     {
       "src": "/favicon.ico",
       "sizes": "48x48",
       "type": "image/x-icon"
+    },
+    {
+      "src": "/icon.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/apple-icon.png",
+      "sizes": "180x180",
+      "type": "image/png"
     }
-  ]
+  ],
+  "shortcuts": [
+    {
+      "name": "Shop All",
+      "url": "/products/",
+      "description": "Browse all our products"
+    },
+    {
+      "name": "Collections",
+      "url": "/collections/",
+      "description": "View curated collections"
+    }
+  ],
+  "related_applications": [],
+  "prefer_related_applications": false
 }

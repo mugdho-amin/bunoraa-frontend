@@ -290,13 +290,24 @@ export default async function Home() {
         <section className={`${sectionWrapperClass} py-8`}>
           <h2 className="text-sm font-semibold uppercase tracking-[0.2em] text-foreground/70">Spotlights</h2>
           <div className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {spotlights.map((spotlight) => (
-               <Link key={spotlight.id} href={spotlight.product ? buildProductPath(spotlight.product) : "/"} className="group overflow-hidden rounded-2xl border border-border bg-card">
-                 <div className="relative aspect-[16/10] overflow-hidden bg-muted">
-                    {spotlight.product?.primary_image && <Image src={spotlight.product.primary_image as string} alt={spotlight.name || "Spotlight"} fill className="object-cover transition-transform duration-300 group-hover:scale-[1.02]" />}
-                 </div>
-               </Link>
-            ))}
+            {spotlights.map((spotlight) => {
+              const image = spotlight.product?.primary_image as string;
+              return (
+                <Link key={spotlight.id} href={spotlight.product ? buildProductPath(spotlight.product) : "/"} className="group overflow-hidden rounded-2xl border border-border bg-card">
+                  <div className="relative aspect-[16/10] overflow-hidden bg-muted">
+                    {image && (
+                      <Image 
+                        src={image} 
+                        alt={spotlight.name || spotlight.product?.name || "Spotlight"} 
+                        fill 
+                        sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                        className="object-cover transition-transform duration-300 group-hover:scale-[1.02]" 
+                      />
+                    )}
+                  </div>
+                </Link>
+              );
+            })}
           </div>
         </section>
       ) : null}

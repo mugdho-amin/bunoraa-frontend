@@ -175,24 +175,39 @@ export function HeroBannerSlider({
           const content = (
             <div
               className={cn(
-                "relative w-full overflow-hidden",
+                "relative h-full w-full overflow-hidden",
                 isActive ? "opacity-100" : "opacity-0"
               )}
               style={slideStyle}
             >
               {hasLoadedImage ? (
-                <Image
-                  src={banner.image}
-                  alt={banner.title}
-                  fill
-                  sizes="100vw"
-                  quality={index === 0 ? 60 : 64}
-                  priority={index === 0}
-                  fetchPriority={index === 0 ? "high" : "low"}
-                  loading={index === 0 ? "eager" : "lazy"}
-                  decoding={index === 0 ? "sync" : "async"}
-                  className="object-cover"
-                />
+                <>
+                  <Image
+                    src={banner.image}
+                    alt={banner.title}
+                    fill
+                    sizes="100vw"
+                    quality={index === 0 ? 70 : 64}
+                    priority={index === 0}
+                    loading={index === 0 ? "eager" : "lazy"}
+                    className={cn(
+                      "object-cover",
+                      banner.image_mobile ? "hidden sm:block" : "block"
+                    )}
+                  />
+                  {banner.image_mobile && (
+                    <Image
+                      src={banner.image_mobile}
+                      alt={banner.title}
+                      fill
+                      sizes="100vw"
+                      quality={index === 0 ? 70 : 64}
+                      priority={index === 0}
+                      loading={index === 0 ? "eager" : "lazy"}
+                      className="object-cover block sm:hidden"
+                    />
+                  )}
+                </>
               ) : (
                 <div className="h-full w-full bg-muted" />
               )}

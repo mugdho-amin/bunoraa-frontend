@@ -60,12 +60,14 @@ const nextConfig: NextConfig = {
   },
   compress: false,
   output: 'standalone',
+  reactCompiler: true,
   experimental: {
     optimizePackageImports: [
-      "@/components",
-      "@/lib",
-      "@/app",
+      "lucide-react",
+      "@hookform/resolvers",
+      "zod",
     ],
+    turbopackFileSystemCache: true,
     optimizeCss: false,
   },
   turbopack: {

@@ -86,6 +86,11 @@ export const metadata: Metadata = {
   }),
   other: {
     "apple-mobile-web-app-title": SITE_NAME,
+    "apple-mobile-web-app-capable": "yes",
+    "apple-mobile-web-app-status-bar-style": "default",
+    "format-detection": "telephone=no",
+    "mobile-web-app-capable": "yes",
+    "theme-color": "#9c3d1e",
   },
 };
 
@@ -93,6 +98,7 @@ export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
   viewportFit: "cover",
+  themeColor: "#9c3d1e",
 };
 
 const themeBootstrapScript = `
