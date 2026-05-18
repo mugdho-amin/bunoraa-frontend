@@ -8,6 +8,8 @@ type LoadingScreenProps = {
   title?: string;
   subtitle?: string;
   fullScreen?: boolean;
+  logoSrc?: string;
+  fallbackLogoSrc?: string;
   className?: string;
 };
 
@@ -20,8 +22,18 @@ export function LoadingScreen({
   title,
   subtitle,
   fullScreen = false,
+  logoSrc,
+  fallbackLogoSrc,
   className,
 }: LoadingScreenProps) {
+  const [src, setSrc] = React.useState("/icon.png");
+
+  const handleImageError = () => {
+    if (src === "/icon.png" && fallbackLogoSrc) {
+      setSrc(fallbackLogoSrc);
+    }
+  };
+
   return (
     <div
       role="status"
@@ -68,7 +80,7 @@ export function LoadingScreen({
           <div className="absolute inset-0 flex items-center justify-center">
             <div className="flex h-12 w-12 items-center justify-center overflow-hidden rounded-full bg-background shadow-inner">
                <Image 
-                src="/icon.png" 
+                src={logoSrc} 
                 alt="B" 
                 width={32}
                 height={32}

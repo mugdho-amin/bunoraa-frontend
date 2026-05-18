@@ -274,7 +274,7 @@ export default async function Home() {
   return (
     <div className="bg-background text-foreground">
       <section>
-        <div className={`${sectionWrapperClass} pb-6 -mx-3 sm:-mx-5`}>
+        <div className="w-full pb-6">
           {heroBanners.length ? (
             <HeroBannerSlider banners={heroBanners} className="mx-auto" autoAdvance={true} intervalMs={5000} />
           ) : (
