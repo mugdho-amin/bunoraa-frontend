@@ -23,7 +23,7 @@ import { addRecentlyViewed } from "@/lib/recentlyViewed";
 import { cn } from "@/lib/utils";
 import { RecentlyViewedSection } from "@/components/products/RecentlyViewedSection";
 import { ProductGrid } from "@/components/products/ProductGrid";
-import { buildProductPath } from "@/lib/productPaths";
+import { buildProductCategoryTrail, buildProductPath } from "@/lib/productPaths";
 import { buildCategoryPath } from "@/lib/categoryPaths";
 import { ChevronLeft, ChevronRight, ChevronUp, ChevronDown, X, Info, Truck, RefreshCw } from "lucide-react";
 import { getLazyImageProps } from "@/lib/lazyImage";

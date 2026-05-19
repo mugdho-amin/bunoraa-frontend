@@ -53,16 +53,16 @@ export function buildProductCategoryTrail(
   const trail: Array<{ name: string; slugPath: string }> = [];
 
   if (product.breadcrumbs?.length) {
+    let accumulatedPath = "";
     product.breadcrumbs.forEach((crumb) => {
       const slug = cleanSegment(crumb.slug);
       const name = (crumb.name || "").trim();
       if (!slug || !name) return;
 
-      // Because the taxonomy uses globally unique slugs mapped to explicit top-level
-      // directory folders, we do not compound parent segments.
+      accumulatedPath = accumulatedPath ? `${accumulatedPath}/${slug}` : slug;
       trail.push({
         name,
-        slugPath: slug
+        slugPath: accumulatedPath
       });
     });
 

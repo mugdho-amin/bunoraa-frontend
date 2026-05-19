@@ -105,17 +105,18 @@ export function FilterPanel({
   const maxRange = parseNumber(activeFilters?.price_range?.max, minRange + 100);
   const sliderMax = Math.max(maxRange, minRange + 1);
   const rangeSpan = Math.max(1, sliderMax - minRange);
-  const currencySymbol = activeFilters?.price_range?.currency_symbol || "$";
+  const currencySymbolDisplay = activeFilters?.price_range?.currency_symbol || "$";
 
   // Local state for Price Slider to ensure zero "jumps" during interaction
-  const [localMin, setLocalMin] = React.useState<number>(minRange);
-  const [localMax, setLocalMax] = React.useState<number>(sliderMax);
+  // We use string | number to allow the user to clear the input field (empty string)
+  const [localMin, setLocalMin] = React.useState<number | string>(minRange);
+  const [localMax, setLocalMax] = React.useState<number | string>(sliderMax);
 
   // Initialize and Sync local state with URL/Backend when not dragging
   React.useEffect(() => {
     if (isDragging) return;
-    const urlMin = current.priceMin ? Number(current.priceMin) : minRange;
-    const urlMax = current.priceMax ? Number(current.priceMax) : sliderMax;
+    const urlMin = current.priceMin !== undefined ? Number(current.priceMin) : minRange;
+    const urlMax = current.priceMax !== undefined ? Number(current.priceMax) : sliderMax;
     setLocalMin(clampValue(urlMin, minRange, sliderMax));
     setLocalMax(clampValue(urlMax, minRange, sliderMax));
   }, [current.priceMin, current.priceMax, minRange, sliderMax, isDragging]);
@@ -141,17 +142,22 @@ export function FilterPanel({
   }, [paramsKey]);
 
   const applyPrice = () => {
-    const finalMin = Math.min(localMin, localMax);
-    const finalMax = Math.max(localMin, localMax);
-    let params = updateParamValue(searchParams, "price_min", String(finalMin));
-    params = updateParamValue(params, "price_max", String(finalMax));
+    const finalMin = localMin === "" ? null : Number(localMin);
+    const finalMax = localMax === "" ? null : Number(localMax);
+    
+    let params = updateParamValue(searchParams, "price_min", finalMin === null ? null : String(finalMin));
+    params = updateParamValue(params, "price_max", finalMax === null ? null : String(finalMax));
+    
     router.push(`${pathname}?${params.toString()}`, { scroll: false });
   };
 
-  const minPercent = ((localMin - minRange) / rangeSpan) * 100;
-  const maxPercent = ((localMax - minRange) / rangeSpan) * 100;
+  const displayMin = localMin === "" ? minRange : Number(localMin);
+  const displayMax = localMax === "" ? sliderMax : Number(localMax);
+
+  const minPercent = ((displayMin - minRange) / rangeSpan) * 100;
+  const maxPercent = ((displayMax - minRange) / rangeSpan) * 100;
   const rangeDisabled = !Number.isFinite(minRange) || !Number.isFinite(sliderMax);
-  const minOnTop = localMin > localMax - rangeSpan * 0.05;
+  const minOnTop = displayMin > displayMax - rangeSpan * 0.05;
 
   /**
    * PRODUCTION BEST PRACTICE: Intelligent attribute grouping and facet merging.
@@ -220,7 +226,6 @@ export function FilterPanel({
   };
 
   const isMinimal = variant === "minimal";
-  const currencySymbolDisplay = activeFilters?.price_range?.currency_symbol || currencySymbol;
 
   // Minimal view logic (reused for mobile drawer headers)
   if (isMinimal) {
@@ -258,7 +263,6 @@ export function FilterPanel({
              })}
            </ul>
         </div>
-        {/* ... could add top 5 popular attributes here if needed ... */}
       </div>
     );
   }
@@ -321,11 +325,11 @@ export function FilterPanel({
               min={minRange}
               max={sliderMax}
               step={1}
-              value={localMin}
+              value={displayMin}
               disabled={rangeDisabled}
               onMouseDown={() => { setActiveHandle("min"); setIsDragging(true); }}
               onTouchStart={() => { setActiveHandle("min"); setIsDragging(true); }}
-              onChange={(e) => setLocalMin(Math.min(Number(e.target.value), localMax))}
+              onChange={(e) => setLocalMin(Math.min(Number(e.target.value), displayMax))}
               onMouseUp={() => { setIsDragging(false); applyPrice(); }}
               onTouchEnd={() => { setIsDragging(false); applyPrice(); }}
               className="range-slider range-slider-min absolute inset-x-0 w-full appearance-none bg-transparent pointer-events-none"
@@ -337,11 +341,11 @@ export function FilterPanel({
               min={minRange}
               max={sliderMax}
               step={1}
-              value={localMax}
+              value={displayMax}
               disabled={rangeDisabled}
               onMouseDown={() => { setActiveHandle("max"); setIsDragging(true); }}
               onTouchStart={() => { setActiveHandle("max"); setIsDragging(true); }}
-              onChange={(e) => setLocalMax(Math.max(Number(e.target.value), localMin))}
+              onChange={(e) => setLocalMax(Math.max(Number(e.target.value), displayMin))}
               onMouseUp={() => { setIsDragging(false); applyPrice(); }}
               onTouchEnd={() => { setIsDragging(false); applyPrice(); }}
               className="range-slider range-slider-max absolute inset-x-0 w-full appearance-none bg-transparent pointer-events-none"
@@ -357,9 +361,22 @@ export function FilterPanel({
                 <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-xs font-bold text-foreground/30">{currencySymbolDisplay}</span>
                 <input 
                   type="number" 
-                  value={Math.round(localMin)}
-                  onChange={(e) => setLocalMin(clampValue(Number(e.target.value), minRange, sliderMax))}
+                  value={localMin}
+                  onChange={(e) => {
+                    const val = e.target.value;
+                    if (val === "") {
+                      setLocalMin("");
+                    } else {
+                      setLocalMin(clampValue(Number(val), minRange, sliderMax));
+                    }
+                  }}
                   onBlur={applyPrice}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      applyPrice();
+                      (e.target as HTMLInputElement).blur();
+                    }
+                  }}
                   className="w-full h-11 pl-8 pr-3 bg-muted/20 border border-border/40 rounded-2xl text-sm font-black focus:ring-1 focus:ring-primary/20 outline-none no-spin transition-all"
                 />
               </div>
@@ -370,9 +387,22 @@ export function FilterPanel({
                 <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-xs font-bold text-foreground/30">{currencySymbolDisplay}</span>
                 <input 
                   type="number" 
-                  value={Math.round(localMax)}
-                  onChange={(e) => setLocalMax(clampValue(Number(e.target.value), minRange, sliderMax))}
+                  value={localMax}
+                  onChange={(e) => {
+                    const val = e.target.value;
+                    if (val === "") {
+                      setLocalMax("");
+                    } else {
+                      setLocalMax(clampValue(Number(val), minRange, sliderMax));
+                    }
+                  }}
                   onBlur={applyPrice}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      applyPrice();
+                      (e.target as HTMLInputElement).blur();
+                    }
+                  }}
                   className="w-full h-11 pl-8 pr-3 bg-muted/20 border border-border/40 rounded-2xl text-sm font-black focus:ring-1 focus:ring-primary/20 outline-none no-spin transition-all"
                 />
               </div>
