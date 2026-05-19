@@ -39,7 +39,6 @@ export function MobileFilterSortBar({
             filterParams={filterParams}
             currentCategoryPath={currentCategoryPath}
             className="w-full sm:w-auto"
-            triggerLabel="Filters"
           />
         </div>
         
