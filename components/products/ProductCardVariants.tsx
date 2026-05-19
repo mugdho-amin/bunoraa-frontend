@@ -330,7 +330,7 @@ function FashionVariant({
         )}
       </div>
 
-      <div className="py-4 space-y-1 text-left">
+      <div className="pt-1 pb-4 space-y-1 text-left">
         <Link
           href={productHref}
           className="block pl-1 text-[13px] font-normal tracking-tight text-foreground/80 hover:text-foreground transition-colors line-clamp-1"
@@ -358,7 +358,7 @@ function StandardVariant({
   className,
 }: RenderProps) {
   return (
-    <Card variant="bordered" className={cn("group flex flex-col gap-4 p-4 sm:p-5", className)}>
+    <Card variant="bordered" className={cn("group flex flex-col gap-2 p-4 sm:p-5", className)}>
       <BaseMedia product={product} className="aspect-[4/5]" onQuickView={onQuickView} />
       <div className="space-y-2">
         <p className="pl-1 text-[11px] uppercase tracking-[0.16em] text-foreground/60">
@@ -399,7 +399,7 @@ function StandardVariant({
 
 function CompactVariant({ product, onQuickView, className }: RenderProps) {
   return (
-    <Card variant="bordered" className={cn("flex flex-col gap-3 p-3", className)}>
+    <Card variant="bordered" className={cn("flex flex-col gap-1.5 p-3", className)}>
       <BaseMedia product={product} className="aspect-square" showBadges={false} onQuickView={onQuickView} />
       <div className="space-y-1">
         <SharedTitle product={product} className="line-clamp-2 pl-1 text-sm" />
@@ -434,9 +434,9 @@ function HorizontalVariant({
   className,
 }: RenderProps) {
   return (
-    <Card variant="bordered" className={cn("flex flex-col gap-4 p-4 sm:flex-row sm:items-center", className)}>
+    <Card variant="bordered" className={cn("flex flex-col gap-2.5 p-4 sm:flex-row sm:items-center", className)}>
       <BaseMedia product={product} className="h-40 w-full sm:h-36 sm:w-44" onQuickView={onQuickView} />
-      <div className="flex min-w-0 flex-1 flex-col gap-2">
+      <div className="flex min-w-0 flex-1 flex-col gap-1">
         <p className="pl-1 text-xs uppercase tracking-[0.16em] text-foreground/60">{getCategoryLabel(product)}</p>
         <SharedTitle product={product} className="line-clamp-2 pl-1 text-lg" />
         <RatingStars rating={product.average_rating || 0} count={product.reviews_count} className="pl-1" />
@@ -606,7 +606,7 @@ function MinimalVariant({ product, onQuickView, className }: RenderProps) {
 
 function EditorialVariant({ product, onQuickView, className }: RenderProps) {
   return (
-    <Card variant="glass" className={cn("space-y-4 border border-border/70 p-4 sm:p-5", className)}>
+    <Card variant="glass" className={cn("space-y-2 border border-border/70 p-4 sm:p-5", className)}>
       <BaseMedia product={product} className="aspect-[5/4]" showBadges={false} onQuickView={onQuickView} />
       <div className="space-y-2">
         <p className="pl-1 text-xs uppercase tracking-[0.2em] text-foreground/60">Curated pick</p>
@@ -654,7 +654,7 @@ function RatingFocusVariant({
   className,
 }: RenderProps) {
   return (
-    <Card variant="bordered" className={cn("space-y-4 p-4", className)}>
+    <Card variant="bordered" className={cn("space-y-2 p-4", className)}>
       <BaseMedia product={product} className="aspect-square" onQuickView={onQuickView} />
       <div className="space-y-2">
         <div className="flex items-center justify-between gap-2">
@@ -704,7 +704,7 @@ function CompareFocusVariant({
   className,
 }: RenderProps) {
   return (
-    <Card variant="bordered" className={cn("flex flex-col gap-4 p-4", className)}>
+    <Card variant="bordered" className={cn("flex flex-col gap-2 p-4", className)}>
       <BaseMedia product={product} className="aspect-[4/3]" showBadges={false} onQuickView={onQuickView} />
       <div className="space-y-2">
         <SharedTitle product={product} className="line-clamp-2 pl-1 text-lg" />
@@ -754,7 +754,7 @@ function InventoryFocusVariant({
   className,
 }: RenderProps) {
   return (
-    <Card variant="bordered" className={cn("space-y-3 border border-border/80 p-4", className)}>
+    <Card variant="bordered" className={cn("space-y-1.5 border border-border/80 p-4", className)}>
       <div className="flex items-center justify-between gap-2">
         <StockBadge product={product} />
         {inCart ? (
@@ -805,7 +805,7 @@ function DenseRowVariant({
   return (
     <Card
       variant="bordered"
-      className={cn("grid grid-cols-1 items-center gap-3 p-3 sm:grid-cols-[84px_minmax(0,1fr)_auto_auto_auto]", className)}
+      className={cn("grid grid-cols-1 items-center gap-1.5 p-3 sm:grid-cols-[84px_minmax(0,1fr)_auto_auto_auto]", className)}
     >
       <BaseMedia
         product={product}

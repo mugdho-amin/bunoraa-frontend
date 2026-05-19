@@ -36,10 +36,6 @@ export type CategoryFilterItem = {
   product_count?: number | null;
 };
 
-/**
- * PRODUCTION BEST PRACTICE: Robust, borderless section wrapper
- * Improved typography and interaction states.
- */
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   const [isOpen, setIsOpen] = React.useState(true);
   return (
@@ -107,8 +103,7 @@ export function FilterPanel({
   const rangeSpan = Math.max(1, sliderMax - minRange);
   const currencySymbolDisplay = activeFilters?.price_range?.currency_symbol || "$";
 
-  // Local state for Price Slider to ensure zero "jumps" during interaction
-  // We use string | number to allow the user to clear the input field (empty string)
+  // Local state for Price Slider
   const [localMin, setLocalMin] = React.useState<number | string>(minRange);
   const [localMax, setLocalMax] = React.useState<number | string>(sliderMax);
 
@@ -120,6 +115,36 @@ export function FilterPanel({
     setLocalMin(clampValue(urlMin, minRange, sliderMax));
     setLocalMax(clampValue(urlMax, minRange, sliderMax));
   }, [current.priceMin, current.priceMax, minRange, sliderMax, isDragging]);
+
+  // DEBOUNCED URL UPDATE FOR PERFORMANCE (CSR Optimized)
+  const applyPriceDebounced = React.useCallback(
+    (min: number | string, max: number | string) => {
+      const finalMin = min === "" ? null : Number(min);
+      const finalMax = max === "" ? null : Number(max);
+      
+      const nextParams = new URLSearchParams(searchParams.toString());
+      if (finalMin !== null) nextParams.set("price_min", String(finalMin));
+      else nextParams.delete("price_min");
+      
+      if (finalMax !== null) nextParams.set("price_max", String(finalMax));
+      else nextParams.delete("price_max");
+      
+      nextParams.delete("page");
+      router.push(`${pathname}?${nextParams.toString()}`, { scroll: false });
+    },
+    [pathname, router, searchParams]
+  );
+
+  const timeoutRef = React.useRef<NodeJS.Timeout | null>(null);
+
+  const handleApply = (min: number | string, max: number | string, immediate = false) => {
+    if (timeoutRef.current) clearTimeout(timeoutRef.current);
+    if (immediate) {
+      applyPriceDebounced(min, max);
+    } else {
+      timeoutRef.current = setTimeout(() => applyPriceDebounced(min, max), 400);
+    }
+  };
 
   // Update backend data when relevant props change
   React.useEffect(() => {
@@ -141,16 +166,6 @@ export function FilterPanel({
     return () => { cancelled = true; };
   }, [paramsKey]);
 
-  const applyPrice = () => {
-    const finalMin = localMin === "" ? null : Number(localMin);
-    const finalMax = localMax === "" ? null : Number(localMax);
-    
-    let params = updateParamValue(searchParams, "price_min", finalMin === null ? null : String(finalMin));
-    params = updateParamValue(params, "price_max", finalMax === null ? null : String(finalMax));
-    
-    router.push(`${pathname}?${params.toString()}`, { scroll: false });
-  };
-
   const displayMin = localMin === "" ? minRange : Number(localMin);
   const displayMax = localMax === "" ? sliderMax : Number(localMax);
 
@@ -159,15 +174,8 @@ export function FilterPanel({
   const rangeDisabled = !Number.isFinite(minRange) || !Number.isFinite(sliderMax);
   const minOnTop = displayMin > displayMax - rangeSpan * 0.05;
 
-  /**
-   * PRODUCTION BEST PRACTICE: Intelligent attribute grouping and facet merging.
-   * Ensures that specific category facets (sizes, colors, materials) are combined 
-   * with general product filters.
-   */
   const attributeGroups = React.useMemo(() => {
     const groups: Array<{ name: string; slug: string; values: Array<{ value: string; count?: number }> }> = [];
-    
-    // Add base attributes from filters
     if (activeFilters?.attributes) {
       Object.entries(activeFilters.attributes).forEach(([name, info]) => {
         groups.push({
@@ -179,8 +187,6 @@ export function FilterPanel({
         });
       });
     }
-
-    // Add specific facets from category (if any)
     if (facets && facets.length) {
       facets.forEach((facet) => {
         const values = facet.value_counts
@@ -192,8 +198,6 @@ export function FilterPanel({
         groups.push({ name: facet.name, slug: facet.slug, values: cleaned });
       });
     }
-
-    // Deduplicate by slug and merge values
     const bySlug: Record<string, { name: string; slug: string; values: Array<{ value: string; count?: number }> }> = {};
     groups.forEach((group) => {
       if (!group.values.length) return;
@@ -204,7 +208,6 @@ export function FilterPanel({
         group.values.forEach((item) => {
           const existing = merged.get(item.value);
           if (existing) {
-             // If counts exist, take the one from the fresh facet data (usually more accurate)
              merged.set(item.value, { ...existing, ...item });
           } else {
              merged.set(item.value, item);
@@ -213,7 +216,6 @@ export function FilterPanel({
         bySlug[group.slug].values = Array.from(merged.values());
       }
     });
-
     return Object.values(bySlug).filter((group) => group.values.length > 0);
   }, [activeFilters, facets]);
 
@@ -227,7 +229,6 @@ export function FilterPanel({
 
   const isMinimal = variant === "minimal";
 
-  // Minimal view logic (reused for mobile drawer headers)
   if (isMinimal) {
     const bucketCount = 4;
     const bucketStep = Math.max(1, Math.ceil(maxRange / bucketCount));
@@ -239,7 +240,6 @@ export function FilterPanel({
 
     return (
       <div className={cn("space-y-8 text-[13px] text-foreground/80", className)}>
-        {/* Simplified Minimal View for quick selection */}
         <div className="space-y-4">
            <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-foreground/40">Price Range</h3>
            <ul className="space-y-2">
@@ -269,7 +269,6 @@ export function FilterPanel({
 
   return (
     <div className={cn("space-y-2", className)}>
-      {/* Filters Summary Header */}
       <div className="flex items-center justify-between py-2 mb-4 border-b border-border/20">
         <span className="text-xs font-black uppercase tracking-[0.2em] text-foreground/40">
           {typeof productCount === "number"
@@ -291,7 +290,6 @@ export function FilterPanel({
         ) : null}
       </div>
 
-      {/* Subcategories (if applicable) */}
       {(categories || []).length > 0 && (
         <Section title={t("subcategories", "Categories")}>
           <div className="flex flex-wrap gap-2">
@@ -311,13 +309,13 @@ export function FilterPanel({
         </Section>
       )}
 
-      {/* RE-IMPLEMENTED STABLE PRICE SLIDER */}
+      {/* REDESIGNED LINE-HANDLE PRICE SLIDER */}
       <Section title={t("price_range", "Price range")}>
         <div className="space-y-6 px-1">
-          <div className="relative h-6 flex items-center">
-            <div className="absolute inset-x-0 h-1 rounded-full bg-muted/60" />
+          <div className="relative h-6 flex items-center group/slider">
+            <div className="absolute inset-x-0 h-0.5 bg-muted/60" />
             <div
-              className="absolute h-1 rounded-full bg-primary transition-all duration-200"
+              className="absolute h-0.5 bg-primary transition-all duration-200"
               style={{ left: `${minPercent}%`, right: `${100 - maxPercent}%` }}
             />
             <input
@@ -329,10 +327,14 @@ export function FilterPanel({
               disabled={rangeDisabled}
               onMouseDown={() => { setActiveHandle("min"); setIsDragging(true); }}
               onTouchStart={() => { setActiveHandle("min"); setIsDragging(true); }}
-              onChange={(e) => setLocalMin(Math.min(Number(e.target.value), displayMax))}
-              onMouseUp={() => { setIsDragging(false); applyPrice(); }}
-              onTouchEnd={() => { setIsDragging(false); applyPrice(); }}
-              className="range-slider range-slider-min absolute inset-x-0 w-full appearance-none bg-transparent pointer-events-none"
+              onChange={(e) => {
+                const val = Number(e.target.value);
+                setLocalMin(Math.min(val, displayMax));
+                handleApply(Math.min(val, displayMax), localMax);
+              }}
+              onMouseUp={() => { setIsDragging(false); handleApply(localMin, localMax, true); }}
+              onTouchEnd={() => { setIsDragging(false); handleApply(localMin, localMax, true); }}
+              className="range-slider range-slider-min range-handle-line absolute inset-x-0 w-full appearance-none bg-transparent pointer-events-none"
               style={{ zIndex: activeHandle === "min" ? 40 : minOnTop ? 35 : 31 }}
               aria-label="Minimum price"
             />
@@ -345,13 +347,19 @@ export function FilterPanel({
               disabled={rangeDisabled}
               onMouseDown={() => { setActiveHandle("max"); setIsDragging(true); }}
               onTouchStart={() => { setActiveHandle("max"); setIsDragging(true); }}
-              onChange={(e) => setLocalMax(Math.max(Number(e.target.value), displayMin))}
-              onMouseUp={() => { setIsDragging(false); applyPrice(); }}
-              onTouchEnd={() => { setIsDragging(false); applyPrice(); }}
-              className="range-slider range-slider-max absolute inset-x-0 w-full appearance-none bg-transparent pointer-events-none"
+              onChange={(e) => {
+                const val = Number(e.target.value);
+                setLocalMax(Math.max(val, displayMin));
+                handleApply(localMin, Math.max(val, displayMin));
+              }}
+              onMouseUp={() => { setIsDragging(false); handleApply(localMin, localMax, true); }}
+              onTouchEnd={() => { setIsDragging(false); handleApply(localMin, localMax, true); }}
+              className="range-slider range-slider-max range-handle-line absolute inset-x-0 w-full appearance-none bg-transparent pointer-events-none"
               style={{ zIndex: activeHandle === "max" ? 40 : 32 }}
               aria-label="Maximum price"
             />
+
+            {/* Custom Line Handles via CSS (globals.css has the base styling) */}
           </div>
           
           <div className="grid grid-cols-2 gap-4">
@@ -362,22 +370,19 @@ export function FilterPanel({
                 <input 
                   type="number" 
                   value={localMin}
+                  placeholder={String(minRange)}
                   onChange={(e) => {
                     const val = e.target.value;
-                    if (val === "") {
-                      setLocalMin("");
-                    } else {
-                      setLocalMin(clampValue(Number(val), minRange, sliderMax));
-                    }
+                    setLocalMin(val === "" ? "" : clampValue(Number(val), minRange, sliderMax));
                   }}
-                  onBlur={applyPrice}
+                  onBlur={() => handleApply(localMin, localMax, true)}
                   onKeyDown={(e) => {
                     if (e.key === "Enter") {
-                      applyPrice();
+                      handleApply(localMin, localMax, true);
                       (e.target as HTMLInputElement).blur();
                     }
                   }}
-                  className="w-full h-11 pl-8 pr-3 bg-muted/20 border border-border/40 rounded-2xl text-sm font-black focus:ring-1 focus:ring-primary/20 outline-none no-spin transition-all"
+                  className="w-full h-11 pl-8 pr-3 bg-muted/10 border border-border/40 rounded-xl text-sm font-black focus:ring-1 focus:ring-primary/20 outline-none no-spin transition-all"
                 />
               </div>
             </div>
@@ -388,22 +393,19 @@ export function FilterPanel({
                 <input 
                   type="number" 
                   value={localMax}
+                  placeholder={String(sliderMax)}
                   onChange={(e) => {
                     const val = e.target.value;
-                    if (val === "") {
-                      setLocalMax("");
-                    } else {
-                      setLocalMax(clampValue(Number(val), minRange, sliderMax));
-                    }
+                    setLocalMax(val === "" ? "" : clampValue(Number(val), minRange, sliderMax));
                   }}
-                  onBlur={applyPrice}
+                  onBlur={() => handleApply(localMin, localMax, true)}
                   onKeyDown={(e) => {
                     if (e.key === "Enter") {
-                      applyPrice();
+                      handleApply(localMin, localMax, true);
                       (e.target as HTMLInputElement).blur();
                     }
                   }}
-                  className="w-full h-11 pl-8 pr-3 bg-muted/20 border border-border/40 rounded-2xl text-sm font-black focus:ring-1 focus:ring-primary/20 outline-none no-spin transition-all"
+                  className="w-full h-11 pl-8 pr-3 bg-muted/10 border border-border/40 rounded-xl text-sm font-black focus:ring-1 focus:ring-primary/20 outline-none no-spin transition-all"
                 />
               </div>
             </div>
@@ -411,18 +413,15 @@ export function FilterPanel({
         </div>
       </Section>
 
-      {/* Main Attribute Groups and Category Facets */}
       {attributeGroups.map((group) => {
         const isColor = /color|colour|shade|tone/i.test(group.name || group.slug);
         const currentValues = current.attrs[group.slug] || [];
-
         return (
           <Section key={group.slug} title={group.name}>
             <div className="flex flex-wrap gap-2.5">
               {group.values.map((item) => {
                 const isSelected = currentValues.includes(item.value);
                 const swatchColor = isColor ? getColorSwatch(item.value) : null;
-                
                 return (
                   <button
                     key={item.value}
@@ -439,16 +438,11 @@ export function FilterPanel({
                     }}
                   >
                     {swatchColor && (
-                      <span 
-                        className="h-4 w-4 rounded-full border border-white/20 shadow-sm" 
-                        style={{ backgroundColor: swatchColor }} 
-                      />
+                      <span className="h-4 w-4 rounded-full border border-white/20 shadow-sm" style={{ backgroundColor: swatchColor }} />
                     )}
                     <span className="uppercase tracking-widest">{item.value}</span>
                     {typeof item.count === "number" && (
-                      <span className={cn("ml-0.5 opacity-40 font-medium", isSelected && "text-white/60")}>
-                         {item.count}
-                      </span>
+                      <span className={cn("ml-0.5 opacity-40 font-medium", isSelected && "text-white/60")}>{item.count}</span>
                     )}
                   </button>
                 );
@@ -458,7 +452,6 @@ export function FilterPanel({
         );
       })}
 
-      {/* Availability & Misc Filters */}
       <Section title={t("availability", "Options")}>
         <div className="space-y-1.5">
           {[
@@ -488,7 +481,6 @@ export function FilterPanel({
         </div>
       </Section>
 
-      {/* Rating Filter */}
       <Section title={t("rating", "Customer Rating")}>
         <div className="grid grid-cols-1 gap-1">
           {[4, 3, 2].map((rating) => (

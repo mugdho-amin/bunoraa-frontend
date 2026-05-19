@@ -100,7 +100,7 @@ function MinimalProductCard({
           />
         ) : null}
       </div>
-      <div className="mt-2.5 space-y-1">
+      <div className="mt-1 space-y-1">
         {!product.is_in_stock ? (
           <p className="pl-1 text-[11px] font-semibold uppercase tracking-[0.2em] text-foreground/70">
             Sold Out
@@ -232,7 +232,7 @@ function InteractiveProductCard({
         )}
       </div>
 
-      <div className={cn("flex flex-1 flex-col p-4 sm:p-5", variant === "list" && "sm:p-0")}>
+      <div className={cn("flex flex-1 flex-col pt-2 px-4 pb-4 sm:pt-2.5 sm:px-5 sm:pb-5", variant === "list" && "sm:p-0")}>
         <div className="mb-2 space-y-1">
           <p className="pl-1 text-[10px] font-bold uppercase tracking-[0.1em] text-muted-foreground/80">
             {product.primary_category_name}

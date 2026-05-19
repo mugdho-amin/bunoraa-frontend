@@ -64,7 +64,7 @@ export function SortMenu({
         <Button
           variant="ghost"
           className={cn(
-            "w-full sm:w-auto h-8 px-3 rounded-lg border border-border/60 text-[10px] uppercase tracking-widest flex items-center justify-center gap-1 transition-colors hover:bg-muted/50 font-normal",
+            "w-full sm:w-auto h-8 px-2 rounded-lg border border-border/60 text-[10px] uppercase tracking-widest flex items-center justify-center gap-1 transition-colors hover:bg-muted/50 font-normal",
             className
           )}
           onClick={() => setIsOpen(true)}

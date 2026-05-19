@@ -12,6 +12,39 @@
   .no-spin {
     -moz-appearance: textfield;
   }
+
+  .range-handle-line::-webkit-slider-thumb {
+    appearance: none;
+    height: 16px;
+    width: 2px;
+    background: hsl(var(--primary));
+    cursor: pointer;
+    pointer-events: auto;
+    border-radius: 99px;
+    box-shadow: 0 0 0 4px hsl(var(--background) / 0.8);
+    transition: transform 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+  }
+
+  .range-handle-line::-webkit-slider-thumb:active {
+    transform: scaleY(1.2);
+    box-shadow: 0 0 0 6px hsl(var(--primary) / 0.1);
+  }
+
+  .range-handle-line::-moz-range-thumb {
+    appearance: none;
+    height: 16px;
+    width: 2px;
+    background: hsl(var(--primary));
+    cursor: pointer;
+    pointer-events: auto;
+    border: none;
+    border-radius: 99px;
+    box-shadow: 0 0 0 4px hsl(var(--background) / 0.8);
+  }
+
+  .range-slider {
+    @apply pointer-events-none absolute h-1 w-full outline-none;
+  }
 }
 
 @layer base {
