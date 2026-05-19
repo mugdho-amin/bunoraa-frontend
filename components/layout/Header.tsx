@@ -99,11 +99,11 @@ export async function Header() {
                 {categories.slice(0, 4).map((category) => (
                   <Link
                     key={category.id}
-                    className="text-foreground/70 hover:text-foreground"
+                    className="text-foreground/70 hover:text-foreground uppercase tracking-widest text-xs"
                     href={buildCategoryPath(category.slug_path || category.slug)}
                     prefetch={false}
                   >
-                    {category.name}
+                    {category.name.toUpperCase()}
                   </Link>
                 ))}
                 {menuPages.slice(0, 3).map((page) => (

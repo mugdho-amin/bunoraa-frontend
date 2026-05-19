@@ -407,7 +407,7 @@ export function MobileNav({
                               href={buildCategoryPath(category.slug_path || category.slug)}
                               onClick={closeNav}
                             >
-                              {category.name}
+                              {category.name.toUpperCase()}
                             </Link>
                           ))}
                           {categories.length > 12 ? (
