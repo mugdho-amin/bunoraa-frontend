@@ -9,7 +9,9 @@ import {
   CategoryFilterItem,
 } from "@/components/products/FilterPanel";
 import { cn } from "@/lib/utils";
-import { SlidersHorizontal } from "lucide-react";
+import { SlidersHorizontal, X } from "lucide-react";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { clearAllFilters } from "@/lib/productFilters";
 
 export function FilterDrawer({
   filters,
@@ -33,8 +35,17 @@ export function FilterDrawer({
   triggerLabel?: string;
 }) {
   const [open, setOpen] = React.useState(false);
-  const shouldHideFilters = typeof productCount === "number" && productCount <= 1;
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+  
+  const shouldHideFilters = typeof productCount === "number" && productCount <= 1 && !searchParams.toString();
   const closeButtonRef = React.useRef<HTMLButtonElement | null>(null);
+
+  const handleClearAll = () => {
+    const params = clearAllFilters(searchParams);
+    router.push(`${pathname}?${params.toString()}`);
+  };
 
   React.useEffect(() => {
     if (!open || shouldHideFilters) return;
@@ -58,9 +69,10 @@ export function FilterDrawer({
   }, [open, shouldHideFilters]);
 
   React.useEffect(() => {
-    if (!open || shouldHideFilters) return;
-    closeButtonRef.current?.focus();
-  }, [open, shouldHideFilters]);
+    if (open && closeButtonRef.current) {
+      closeButtonRef.current.focus();
+    }
+  }, [open]);
 
   if (shouldHideFilters) {
     return null;
@@ -70,51 +82,68 @@ export function FilterDrawer({
     <div className={cn("relative", className)}>
       <Button
         variant="secondary"
-        className="w-full sm:w-auto"
+        className="w-full sm:w-auto h-10 sm:h-11 rounded-xl font-bold uppercase tracking-widest text-[10px]"
         onClick={() => setOpen(true)}
         aria-haspopup="dialog"
         aria-expanded={open}
         aria-controls="mobile-filter-drawer"
       >
-        <SlidersHorizontal className="mr-2 h-4 w-4" />
+        <SlidersHorizontal className="mr-2 h-3.5 w-3.5" />
         {triggerLabel}
-        {typeof productCount === "number" ? ` (${productCount})` : ""}
+        {typeof productCount === "number" ? (
+           <span className="ml-1 opacity-50">({productCount})</span>
+        ) : ""}
       </Button>
 
       {open ? (
         <div
-          className="fixed inset-0 z-50"
+          className="fixed inset-0 z-[100]"
           role="dialog"
           aria-modal="true"
           aria-labelledby="mobile-filter-title"
         >
-          <div className="absolute inset-0 bg-black/45 backdrop-blur-[1px]" onClick={() => setOpen(false)} />
+          <div 
+            className="absolute inset-0 bg-black/60 backdrop-blur-sm animate-in fade-in duration-300" 
+            onClick={() => setOpen(false)} 
+          />
           <div
             id="mobile-filter-drawer"
-            className="absolute inset-x-0 bottom-0 max-h-[88dvh] overflow-hidden rounded-t-2xl border border-border bg-background shadow-2xl sm:inset-y-0 sm:left-0 sm:right-auto sm:h-[100dvh] sm:max-h-none sm:w-full sm:max-w-md sm:rounded-none sm:border-r"
+            className="absolute inset-x-0 bottom-0 max-h-[92dvh] overflow-hidden rounded-t-[2.5rem] border-t border-border bg-background shadow-2xl animate-in slide-in-from-bottom duration-500 ease-out sm:inset-y-0 sm:left-0 sm:right-auto sm:h-full sm:max-h-none sm:w-full sm:max-w-md sm:rounded-none sm:border-r"
           >
             <div className="flex h-full flex-col">
-              <div className="sticky top-0 z-10 border-b border-border bg-background/95 px-4 pb-3 pt-[max(0.75rem,env(safe-area-inset-top))] backdrop-blur supports-[backdrop-filter]:bg-background/90 sm:px-5">
-                <div className="flex items-center justify-between gap-3">
-                  <div>
-                    <h2 id="mobile-filter-title" className="text-base font-semibold sm:text-lg">
+              <div className="sticky top-0 z-10 border-b border-border/50 bg-background/95 px-6 py-5 backdrop-blur-xl">
+                <div className="flex items-center justify-between">
+                  <div className="space-y-1">
+                    <h2 id="mobile-filter-title" className="text-xl font-black tracking-tight">
                       Filters
                     </h2>
                     {typeof productCount === "number" ? (
-                      <p className="text-xs text-foreground/60">{productCount} products</p>
+                      <p className="text-[10px] font-black uppercase tracking-widest text-foreground/40">
+                        {productCount} results found
+                      </p>
                     ) : null}
                   </div>
-                  <Button
-                    ref={closeButtonRef}
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => setOpen(false)}
-                  >
-                    Close
-                  </Button>
+                  <div className="flex items-center gap-2">
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="h-8 text-[10px] font-black uppercase tracking-widest text-primary hover:bg-primary/5"
+                      onClick={handleClearAll}
+                    >
+                      Reset
+                    </Button>
+                    <button
+                      ref={closeButtonRef}
+                      onClick={() => setOpen(false)}
+                      className="flex h-10 w-10 items-center justify-center rounded-full bg-muted/50 text-foreground/60 transition-colors hover:bg-muted hover:text-foreground"
+                    >
+                      <X size={20} />
+                    </button>
+                  </div>
                 </div>
               </div>
-              <div className="min-h-0 flex-1 overflow-y-auto px-4 pb-[max(1rem,env(safe-area-inset-bottom))] pt-4 sm:px-5">
+
+              <div className="min-h-0 flex-1 overflow-y-auto px-6 py-8">
                 <FilterPanel
                   filters={filters}
                   facets={facets}
@@ -125,9 +154,14 @@ export function FilterDrawer({
                   variant={variant}
                 />
               </div>
-              <div className="border-t border-border bg-background px-4 pb-[max(0.9rem,env(safe-area-inset-bottom))] pt-3 sm:hidden">
-                <Button variant="secondary" className="w-full" onClick={() => setOpen(false)}>
-                  Show products
+
+              <div className="sticky bottom-0 border-t border-border/50 bg-background/95 p-6 backdrop-blur-xl sm:hidden">
+                <Button 
+                  variant="primary" 
+                  className="w-full h-14 rounded-2xl text-xs font-black uppercase tracking-[0.2em] shadow-xl shadow-primary/20" 
+                  onClick={() => setOpen(false)}
+                >
+                  Apply Filters
                 </Button>
               </div>
             </div>

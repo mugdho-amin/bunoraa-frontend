@@ -249,30 +249,21 @@ export async function renderCategoryPageForPath(
               </div>
             </div>
 
-            {/* Mobile Actions Bar */}
-            <div className="sticky top-[var(--header-offset,4.75rem)] z-30 flex items-center gap-2 rounded-2xl border border-border/60 bg-background/80 p-2 shadow-sm backdrop-blur-xl lg:static lg:z-auto lg:border-0 lg:bg-transparent lg:p-0 lg:shadow-none">
-              <div className="flex flex-1 items-center gap-2 sm:flex-initial">
-                {showFilters && (
-                  <>
-                    <FilterDrawer
-                      filters={filterData}
-                      facets={facets}
-                      categories={childCategories}
-                      productCount={totalCount}
-                      className="lg:hidden"
-                      filterParams={filterParams}
-                      currentCategoryPath={slugPath}
-                    />
-                    <FilterSidebarToggle />
-                  </>
-                )}
-                <SortMenu className="h-10 w-full sm:w-auto min-w-[140px] rounded-xl border-border/50 lg:h-11 lg:min-w-[180px]" />
-                <ViewToggle className="h-10 border-border/50 lg:h-11" />
-              </div>
+            {/* Desktop Actions Bar */}
+            <div className="hidden lg:flex lg:items-center lg:gap-3">
+              <SortMenu className="h-11 min-w-[180px] rounded-xl border-border/50" />
+              <ViewToggle className="h-11 border-border/50" />
             </div>
           </div>
-
         </div>
+
+        {showFilters && (
+          <MobileFilterSortBar
+            filters={filterData}
+            productCount={totalCount}
+            filterParams={filterParams}
+          />
+        )}
 
         {/* Content Section */}
         <div className={cn("grid gap-6", showFilters ? "lg:grid-cols-[auto_1fr]" : "grid-cols-1")}>
@@ -312,6 +303,26 @@ export async function renderCategoryPageForPath(
           <div className="mt-20 border-t border-border/40 pt-16 pb-8 bg-muted/30 -mx-4 px-4 sm:-mx-6 sm:px-6 rounded-3xl">
             <div className="mx-auto max-w-3xl space-y-8">
               <div className="text-center space-y-2">
+                <h2 className="text-2xl font-bold tracking-tight text-foreground sm:text-3xl">
+                  About the {category.name} Collection
+                </h2>
+                <div className="h-1 w-12 bg-primary mx-auto rounded-full" />
+              </div>
+              
+              <div className="text-sm sm:text-base max-w-none text-foreground/80 leading-relaxed font-serif text-center italic">
+                {category.description.split('\n').map((paragraph, i) => (
+                  <p key={i} className="mb-4">{paragraph}</p>
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+    </FilterSidebarProvider>
+  );
+}
+     <div className="text-center space-y-2">
                 <h2 className="text-2xl font-bold tracking-tight text-foreground sm:text-3xl">
                   About the {category.name} Collection
                 </h2>

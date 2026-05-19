@@ -34,10 +34,10 @@ const ICONS: Record<ColsOption, (active: boolean) => React.ReactNode> = {
   ),
 };
 
-const OPTIONS: { cols: ColsOption; label: string }[] = [
+const OPTIONS: { cols: ColsOption; label: string; minBreakpoint?: string }[] = [
   { cols: 2, label: "2" },
-  { cols: 4, label: "4" },
-  { cols: 6, label: "6" },
+  { cols: 4, label: "4", minBreakpoint: "sm" },
+  { cols: 6, label: "6", minBreakpoint: "lg" },
 ];
 
 export function ViewToggle({ className }: { className?: string } = {}) {
@@ -48,8 +48,8 @@ export function ViewToggle({ className }: { className?: string } = {}) {
   const currentCols: ColsOption = rawCols === "2" || rawCols === "6" ? Number(rawCols) as ColsOption : 4;
 
   return (
-    <div className={cn("flex items-center gap-0.5 rounded-xl border border-border bg-card p-0.5", className)}>
-      {OPTIONS.map(({ cols, label }) => {
+    <div className={cn("flex items-center gap-0.5 rounded-xl border border-border bg-card p-0.5 shadow-sm", className)}>
+      {OPTIONS.map(({ cols, label, minBreakpoint }) => {
         const active = currentCols === cols;
         return (
           <button
@@ -62,14 +62,16 @@ export function ViewToggle({ className }: { className?: string } = {}) {
             className={cn(
               "flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-xs font-medium transition-all",
               active
-                ? "bg-background text-foreground shadow-sm"
-                : "text-foreground/50 hover:text-foreground/80"
+                ? "bg-background text-foreground shadow-sm ring-1 ring-black/5"
+                : "text-foreground/50 hover:text-foreground/80 hover:bg-muted/50",
+              minBreakpoint === "sm" && "hidden sm:flex",
+              minBreakpoint === "lg" && "hidden lg:flex"
             )}
             aria-label={`${cols} column grid`}
             aria-pressed={active}
           >
             {ICONS[cols](active)}
-            <span className="hidden sm:inline">{label}</span>
+            <span className="hidden md:inline-block ml-1 font-bold">{label}</span>
           </button>
         );
       })}

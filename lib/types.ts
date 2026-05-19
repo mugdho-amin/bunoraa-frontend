@@ -490,6 +490,15 @@ export type OrderDetail = {
   } | null;
   tracking_number?: string | null;
   tracking_url?: string | null;
+  payment_details?: {
+    name: string;
+    instructions?: string | null;
+    bank_name?: string | null;
+    bank_account_name?: string | null;
+    bank_account_number?: string | null;
+    bank_routing_number?: string | null;
+    bank_branch?: string | null;
+  } | null;
 };
 
 export type NotificationItem = {
