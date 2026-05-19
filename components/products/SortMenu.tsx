@@ -5,14 +5,23 @@ import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import { updateParamValue } from "@/lib/productFilters";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/Button";
-import { Check, ListFilter, X, ChevronDown } from "lucide-react";
+import { Check, ListFilter, X } from "lucide-react";
 
-const options = [
+const orderingOptions = [
   { value: "-created_at", label: "Newest" },
   { value: "price", label: "Price: Low to High" },
   { value: "-price", label: "Price: High to Low" },
   { value: "name", label: "Name: A-Z" },
   { value: "-name", label: "Name: Z-A" },
+  { value: "-sales_count", label: "Bestsellers" },
+  { value: "-average_rating", label: "Top rated" },
+];
+
+const minimalOrderingOptions = [
+  { value: "", label: "Default Sorting" },
+  { value: "-created_at", label: "Latest" },
+  { value: "price", label: "Sort by price: low to high" },
+  { value: "-price", label: "Sort by price: high to low" },
 ];
 
 export function SortMenu({
@@ -20,17 +29,20 @@ export function SortMenu({
   variant = "default",
 }: {
   className?: string;
-  variant?: "default" | "drawer" | "minimal";
-}) {
+  variant?: "default" | "minimal" | "drawer";
+} = {}) {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
-  const currentOrdering = searchParams.get("ordering") || "";
   const [isOpen, setIsOpen] = React.useState(false);
+
+  const options = variant === "minimal" ? minimalOrderingOptions : orderingOptions;
+  const fallbackOrdering = variant === "minimal" ? "" : "-created_at";
+  const currentOrdering = searchParams.get("ordering") ?? fallbackOrdering;
 
   const handleSelect = (value: string) => {
     const params = updateParamValue(searchParams, "ordering", value);
-    router.push(`${pathname}?${params.toString()}`, { scroll: false });
+    router.push(`${pathname}?${params.toString()}`);
     setIsOpen(false);
   };
 
@@ -117,27 +129,26 @@ export function SortMenu({
     );
   }
 
+  const selectClass =
+    variant === "minimal"
+      ? "h-9 w-full bg-muted/20 px-2 text-xs uppercase tracking-[0.18em] text-foreground sm:w-[13rem] border-none outline-none"
+      : "h-10 min-h-10 w-full rounded-xl bg-transparent px-3 text-sm text-foreground sm:w-[12.5rem] border-none outline-none";
+
   return (
-    <div className={cn("relative flex items-center gap-2", className)}>
-      <span className="text-xs font-bold uppercase tracking-widest text-foreground/40 hidden xl:inline">Sort:</span>
-      <select
-        value={currentOrdering}
-        onChange={(event) => {
-          handleSelect(event.target.value);
-        }}
-        className={cn(
-          "h-10 w-full rounded-xl bg-muted/20 px-3 pr-8 text-sm font-medium text-foreground outline-none focus:ring-1 focus:ring-primary/40 cursor-pointer appearance-none",
-          className
-        )}
-        aria-label="Sort products"
-      >
-        {options.map((option) => (
-          <option key={option.value || "default"} value={option.value}>
-            {option.label}
-          </option>
-        ))}
-      </select>
-      <ChevronDown className="absolute right-3 h-3.5 w-3.5 text-foreground/50 pointer-events-none" />
-    </div>
+    <select
+      value={currentOrdering}
+      onChange={(event) => {
+        handleSelect(event.target.value);
+      }}
+      className={cn(selectClass, className)}
+      aria-label="Sort products"
+    >
+      {options.map((option) => (
+        <option key={option.value || "default"} value={option.value}>
+          {option.label}
+        </option>
+      ))}
+    </select>
   );
 }
+
