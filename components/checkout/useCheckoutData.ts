@@ -39,6 +39,25 @@ function extractCartFromResponse(response: unknown): Cart | null {
   return null;
 }
 
+function extractCartSummaryFromResponse(response: unknown): CartSummary | null {
+  if (!response || typeof response !== "object") return null;
+  const root = response as Record<string, unknown>;
+
+  if (root.cart_summary && typeof root.cart_summary === "object") {
+    return root.cart_summary as CartSummary;
+  }
+
+  const payload = root.data;
+  if (payload && typeof payload === "object") {
+    const payloadObj = payload as Record<string, unknown>;
+    if (payloadObj.cart_summary && typeof payloadObj.cart_summary === "object") {
+      return payloadObj.cart_summary as CartSummary;
+    }
+  }
+
+  return null;
+}
+
 function mergeSummaryWithCart(previous: CartSummary | undefined, cart: Cart): CartSummary {
   const base: CartSummary = previous ?? {
     id: cart.id,
@@ -217,8 +236,24 @@ export function useCheckoutData(options?: {
         allowGuest: true,
       });
     },
-    onSuccess: () => {
+    onMutate: async () => {
+      await queryClient.cancelQueries({ queryKey: ["cart", "summary"] });
+      const previousSummary = queryClient.getQueryData<CartSummary>(["cart", "summary"]);
+      return { previousSummary };
+    },
+    onSuccess: (response) => {
+      const cartSummary = extractCartSummaryFromResponse(response);
+      if (cartSummary) {
+        queryClient.setQueryData<CartSummary>(["cart", "summary"], cartSummary);
+      }
       queryClient.invalidateQueries({ queryKey: ["checkout", "session"] });
+    },
+    onError: (_err, _vars, context) => {
+      if (context?.previousSummary) {
+        queryClient.setQueryData<CartSummary>(["cart", "summary"], context.previousSummary);
+      }
+    },
+    onSettled: () => {
       queryClient.invalidateQueries({ queryKey: ["cart", "summary"] });
     },
   });
@@ -231,8 +266,24 @@ export function useCheckoutData(options?: {
         allowGuest: true,
       });
     },
-    onSuccess: () => {
+    onMutate: async () => {
+      await queryClient.cancelQueries({ queryKey: ["cart", "summary"] });
+      const previousSummary = queryClient.getQueryData<CartSummary>(["cart", "summary"]);
+      return { previousSummary };
+    },
+    onSuccess: (response) => {
+      const cartSummary = extractCartSummaryFromResponse(response);
+      if (cartSummary) {
+        queryClient.setQueryData<CartSummary>(["cart", "summary"], cartSummary);
+      }
       queryClient.invalidateQueries({ queryKey: ["checkout", "session"] });
+    },
+    onError: (_err, _vars, context) => {
+      if (context?.previousSummary) {
+        queryClient.setQueryData<CartSummary>(["cart", "summary"], context.previousSummary);
+      }
+    },
+    onSettled: () => {
       queryClient.invalidateQueries({ queryKey: ["cart", "summary"] });
     },
   });

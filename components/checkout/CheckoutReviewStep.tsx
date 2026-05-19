@@ -51,10 +51,7 @@ export function CheckoutReviewStep({
   });
 
   React.useEffect(() => {
-    form.reset({
-      terms_accepted: false,
-      order_notes: checkoutSession?.order_notes || "",
-    });
+    form.setValue("order_notes", checkoutSession?.order_notes || "");
   }, [checkoutSession?.order_notes, form]);
 
   const issues = validation?.issues || [];
