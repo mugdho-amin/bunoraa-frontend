@@ -116,7 +116,7 @@ export function GoogleLoginButton({
   useEffect(() => {
     if (initializedRef.current || !containerRef.current) return;
 
-    const tryInit = () => {
+    const init = () => {
       if (window.google?.accounts?.id) {
         renderGoogleButton(containerRef.current?.offsetWidth ?? 300);
         return true;
@@ -124,14 +124,22 @@ export function GoogleLoginButton({
       return false;
     };
 
-    if (!tryInit()) {
-      const interval = setInterval(() => {
-        if (tryInit()) {
-          clearInterval(interval);
-        }
-      }, 100);
-      return () => clearInterval(interval);
+    if (init()) return;
+
+    if (!document.querySelector('script[src="https://accounts.google.com/gsi/client"]')) {
+      const script = document.createElement("script");
+      script.src = "https://accounts.google.com/gsi/client";
+      script.async = true;
+      script.defer = true;
+      document.head.appendChild(script);
     }
+
+    const interval = setInterval(() => {
+      if (init()) {
+        clearInterval(interval);
+      }
+    }, 100);
+    return () => clearInterval(interval);
   }, [renderGoogleButton]);
 
   useEffect(() => {
