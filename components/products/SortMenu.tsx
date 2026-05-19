@@ -46,6 +46,18 @@ export function SortMenu({
     setIsOpen(false);
   };
 
+  React.useEffect(() => {
+    if (!isOpen || variant !== "drawer") return;
+    const originalOverflow = document.body.style.overflow;
+    const originalOverscroll = document.body.style.overscrollBehavior;
+    document.body.style.overflow = "hidden";
+    document.body.style.overscrollBehavior = "contain";
+    return () => {
+      document.body.style.overflow = originalOverflow;
+      document.body.style.overscrollBehavior = originalOverscroll;
+    };
+  }, [isOpen, variant]);
+
   if (variant === "drawer") {
     const currentLabel = options.find(o => o.value === currentOrdering)?.label || "Sort";
 
@@ -53,11 +65,11 @@ export function SortMenu({
       <>
         <Button
           variant="secondary"
-          className={cn("w-full sm:w-auto h-10 sm:h-11 rounded-xl font-bold uppercase tracking-widest text-[10px]", className)}
+          className={cn("w-full sm:w-auto h-10 sm:h-11 rounded-xl font-bold uppercase tracking-widest text-[10px] flex items-center justify-center", className)}
           onClick={() => setIsOpen(true)}
         >
-          <ListFilter className="mr-2 h-3.5 w-3.5" />
-          {currentLabel}
+          <ListFilter className="mr-2 h-3.5 w-3.5 flex-shrink-0" />
+          <span className="truncate max-w-[80px] sm:max-w-none">{currentLabel}</span>
         </Button>
 
         {isOpen && (
@@ -66,38 +78,44 @@ export function SortMenu({
               className="absolute inset-0 bg-black/60 backdrop-blur-sm animate-in fade-in duration-300" 
               onClick={() => setIsOpen(false)} 
             />
-            <div className="relative w-full max-w-md animate-in slide-in-from-bottom duration-500 ease-out sm:rounded-t-[2.5rem] overflow-hidden">
-              <div className="bg-background px-6 py-8 sm:px-8">
-                <div className="mb-6 flex items-center justify-between">
-                  <h3 className="text-xl font-black tracking-tight">Sort by</h3>
-                  <button 
-                    onClick={() => setIsOpen(false)}
-                    className="flex h-10 w-10 items-center justify-center rounded-full bg-muted/50 text-foreground/60 transition-colors hover:bg-muted hover:text-foreground"
-                  >
-                    <X className="h-5 w-5" />
-                  </button>
+            <div className="relative w-full max-w-md animate-in slide-in-from-bottom duration-500 ease-out sm:rounded-t-[2.5rem] overflow-hidden bg-background">
+              <div className="flex flex-col max-h-[85dvh]">
+                <div className="sticky top-0 z-10 flex-none bg-background px-6 py-8 sm:px-8 border-b border-border/50">
+                  <div className="flex items-center justify-between">
+                    <h3 className="text-xl font-black tracking-tight">Sort by</h3>
+                    <button 
+                      onClick={() => setIsOpen(false)}
+                      className="flex h-10 w-10 items-center justify-center rounded-full bg-muted/50 text-foreground/60 transition-colors hover:bg-muted hover:text-foreground"
+                    >
+                      <X className="h-5 w-5" />
+                    </button>
+                  </div>
                 </div>
-                <div className="space-y-2">
-                  {options.map((option) => {
-                    const isSelected = currentOrdering === option.value;
-                    return (
-                      <button
-                        key={option.value}
-                        onClick={() => handleSelect(option.value)}
-                        className={cn(
-                          "flex w-full items-center justify-between rounded-2xl px-5 py-4 text-left transition-all duration-300",
-                          isSelected 
-                            ? "bg-primary text-white shadow-xl shadow-primary/20 scale-[1.02]" 
-                            : "bg-muted/30 hover:bg-muted text-foreground/70"
-                        )}
-                      >
-                        <span className="text-sm font-bold uppercase tracking-widest">{option.label}</span>
-                        {isSelected && <Check className="h-4 w-4" />}
-                      </button>
-                    );
-                  })}
+                
+                <div className="flex-1 overflow-y-auto px-6 py-6 sm:px-8 scrolling-touch">
+                  <div className="space-y-2">
+                    {options.map((option) => {
+                      const isSelected = currentOrdering === option.value;
+                      return (
+                        <button
+                          key={option.value}
+                          onClick={() => handleSelect(option.value)}
+                          className={cn(
+                            "flex w-full items-center justify-between rounded-2xl px-5 py-4 text-left transition-all duration-300",
+                            isSelected 
+                              ? "bg-primary text-white shadow-xl shadow-primary/20 scale-[1.02]" 
+                              : "bg-muted/30 hover:bg-muted text-foreground/70"
+                          )}
+                        >
+                          <span className="text-sm font-bold uppercase tracking-widest truncate mr-2">{option.label}</span>
+                          {isSelected && <Check className="h-4 w-4 flex-shrink-0" />}
+                        </button>
+                      );
+                    })}
+                  </div>
                 </div>
-                <div className="mt-8">
+
+                <div className="sticky bottom-0 flex-none bg-background p-6 sm:p-8 border-t border-border/50">
                    <Button variant="secondary" className="w-full h-12 rounded-2xl text-[10px] font-black uppercase tracking-widest" onClick={() => setIsOpen(false)}>
                       Cancel
                    </Button>

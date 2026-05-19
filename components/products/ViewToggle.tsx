@@ -5,13 +5,18 @@ import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import { updateParamValue } from "@/lib/productFilters";
 import { cn } from "@/lib/utils";
 
-type ColsOption = 2 | 4 | 6;
+type ColsOption = 1 | 2 | 4 | 6;
 
 const ICONS: Record<ColsOption, (active: boolean) => React.ReactNode> = {
+  1: (active) => (
+    <svg width="18" height="18" viewBox="0 0 18 18" fill="none" aria-hidden="true">
+      <rect x="0.5" y="0.5" width="17" height="17" rx="1" stroke="currentColor" strokeOpacity={active ? 1 : 0.5} />
+    </svg>
+  ),
   2: (active) => (
     <svg width="18" height="18" viewBox="0 0 18 18" fill="none" aria-hidden="true">
-      <rect x="0.5" y="0.5" width="7" height="17" rx="1" stroke="currentColor" strokeOpacity={active ? 1 : 0.5} />
-      <rect x="10.5" y="0.5" width="7" height="17" rx="1" stroke="currentColor" strokeOpacity={active ? 1 : 0.5} />
+      <rect x="0.5" y="0.5" width="7.5" height="17" rx="1" stroke="currentColor" strokeOpacity={active ? 1 : 0.5} />
+      <rect x="10" y="0.5" width="7.5" height="17" rx="1" stroke="currentColor" strokeOpacity={active ? 1 : 0.5} />
     </svg>
   ),
   4: (active) => (
@@ -34,10 +39,11 @@ const ICONS: Record<ColsOption, (active: boolean) => React.ReactNode> = {
   ),
 };
 
-const OPTIONS: { cols: ColsOption; label: string; minBreakpoint?: string }[] = [
+const OPTIONS: { cols: ColsOption; label: string; breakpoint?: "xs" | "sm" | "md" | "lg" }[] = [
+  { cols: 1, label: "1", breakpoint: "xs" },
   { cols: 2, label: "2" },
-  { cols: 4, label: "4", minBreakpoint: "sm" },
-  { cols: 6, label: "6", minBreakpoint: "lg" },
+  { cols: 4, label: "4", breakpoint: "sm" },
+  { cols: 6, label: "6", breakpoint: "lg" },
 ];
 
 export function ViewToggle({ className }: { className?: string } = {}) {
@@ -45,27 +51,33 @@ export function ViewToggle({ className }: { className?: string } = {}) {
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const rawCols = searchParams.get("cols");
-  const currentCols: ColsOption = rawCols === "2" || rawCols === "6" ? Number(rawCols) as ColsOption : 4;
+  
+  // Responsive default: 2 on mobile, 4 on desktop
+  const currentCols: ColsOption = (rawCols === "1" || rawCols === "2" || rawCols === "4" || rawCols === "6") 
+    ? Number(rawCols) as ColsOption 
+    : 4;
 
   return (
     <div className={cn("flex items-center gap-0.5 rounded-xl border border-border bg-card p-0.5 shadow-sm", className)}>
-      {OPTIONS.map(({ cols, label, minBreakpoint }) => {
+      {OPTIONS.map(({ cols, label, breakpoint }) => {
         const active = currentCols === cols;
         return (
           <button
             key={cols}
             type="button"
-            onClick={() => {
+            onClick={(e) => {
+              e.preventDefault();
               const params = updateParamValue(searchParams, "cols", String(cols));
-              router.push(`${pathname}?${params.toString()}`);
+              router.push(`${pathname}?${params.toString()}`, { scroll: false });
             }}
             className={cn(
-              "flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-xs font-medium transition-all",
+              "flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-xs font-medium transition-all relative z-10",
               active
                 ? "bg-background text-foreground shadow-sm ring-1 ring-black/5"
                 : "text-foreground/50 hover:text-foreground/80 hover:bg-muted/50",
-              minBreakpoint === "sm" && "hidden sm:flex",
-              minBreakpoint === "lg" && "hidden lg:flex"
+              breakpoint === "xs" && "flex sm:hidden",
+              breakpoint === "sm" && "hidden sm:flex",
+              breakpoint === "lg" && "hidden lg:flex"
             )}
             aria-label={`${cols} column grid`}
             aria-pressed={active}
