@@ -338,8 +338,9 @@ export default async function Home() {
       </Suspense>
 
       <section className={`${sectionWrapperClass} py-8`}>
+        <h2 className="text-sm font-semibold uppercase tracking-[0.2em] text-foreground/70 mb-4">Recently viewed</h2>
         <div className="-mx-3 sm:-mx-5 lg:mx-0">
-          <RecentlyViewedSection />
+          <RecentlyViewedSection hideTitle />
         </div>
       </section>
 

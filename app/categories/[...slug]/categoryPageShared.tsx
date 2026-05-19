@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { apiFetch, ApiError } from "@/lib/api";
 import type { ProductListItem, ProductFilterResponse } from "@/lib/types";
-import { FilterSidebar, FilterSidebarProvider } from "@/components/products/FilterSidebar";
+import { FilterSidebar, FilterSidebarToggle, FilterSidebarProvider } from "@/components/products/FilterSidebar";
 import { FilterPanel } from "@/components/products/FilterPanel";
 import { AppliedFilters } from "@/components/products/AppliedFilters";
 import { InfiniteProductGrid } from "@/components/products/InfiniteProductGrid";
@@ -262,6 +262,7 @@ export async function renderCategoryPageForPath(
 
             {/* Desktop Actions Bar */}
             <div className="hidden lg:flex lg:items-center lg:gap-3">
+              {showFilters && <FilterSidebarToggle />}
               <SortMenu className="h-11 min-w-[180px] rounded-xl border-border/50" />
               <ViewToggle className="h-11 border-border/50" />
             </div>

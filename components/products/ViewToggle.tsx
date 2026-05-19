@@ -52,10 +52,19 @@ export function ViewToggle({ className }: { className?: string } = {}) {
   const searchParams = useSearchParams();
   const rawCols = searchParams.get("cols");
   
-  // Responsive default: 2 on mobile, 4 on desktop
+  // Determine if we are on mobile to set a better default
+  const [isMobile, setIsMobile] = React.useState(false);
+  
+  React.useEffect(() => {
+    const checkMobile = () => setIsMobile(window.innerWidth < 640);
+    checkMobile();
+    window.addEventListener("resize", checkMobile);
+    return () => window.removeEventListener("resize", checkMobile);
+  }, []);
+
   const currentCols: ColsOption = (rawCols === "1" || rawCols === "2" || rawCols === "4" || rawCols === "6") 
     ? Number(rawCols) as ColsOption 
-    : 4;
+    : (isMobile ? 2 : 4);
 
   return (
     <div className={cn("flex items-center gap-0.5 rounded-xl border border-border bg-card p-0.5 shadow-sm", className)}>
