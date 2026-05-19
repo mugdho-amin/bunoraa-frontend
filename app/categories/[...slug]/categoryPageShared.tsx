@@ -239,7 +239,7 @@ export async function renderCategoryPageForPath(
           
           <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
             <div className="flex-1 space-y-3">
-              <h1 className="text-4xl font-bold tracking-tight text-foreground sm:text-5xl lg:text-6xl mb-4">
+              <h1 className="text-3xl uppercase tracking-[0.1em] font-normal text-foreground sm:text-4xl lg:text-5xl mb-4">
                 {category.name}
               </h1>
 
