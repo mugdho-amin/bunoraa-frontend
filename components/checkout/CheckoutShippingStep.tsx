@@ -91,21 +91,29 @@ export function CheckoutShippingStep({
     return entries.join(" • ");
   }, []);
 
+  const debounceRef = React.useRef<ReturnType<typeof setTimeout> | null>(null);
+
   React.useEffect(() => {
     if (!onSelectionChange) return;
-    if (shippingType === "delivery") {
-      if (!selectedRateId) return;
+    if (debounceRef.current) clearTimeout(debounceRef.current);
+    debounceRef.current = setTimeout(() => {
+      if (shippingType === "delivery") {
+        if (!selectedRateId) return;
+        onSelectionChange({
+          shipping_type: "delivery",
+          shipping_rate_id: selectedRateId,
+        });
+        return;
+      }
+      if (!selectedPickupId) return;
       onSelectionChange({
-        shipping_type: "delivery",
-        shipping_rate_id: selectedRateId,
+        shipping_type: "pickup",
+        pickup_location_id: selectedPickupId,
       });
-      return;
-    }
-    if (!selectedPickupId) return;
-    onSelectionChange({
-      shipping_type: "pickup",
-      pickup_location_id: selectedPickupId,
-    });
+    }, 300);
+    return () => {
+      if (debounceRef.current) clearTimeout(debounceRef.current);
+    };
   }, [shippingType, selectedRateId, selectedPickupId, onSelectionChange]);
 
   React.useEffect(() => {
