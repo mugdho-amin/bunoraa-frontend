@@ -79,14 +79,14 @@ export function SortMenu({
               className="absolute inset-0 bg-black/60 backdrop-blur-sm animate-in fade-in duration-300" 
               onClick={() => setIsOpen(false)} 
             />
-            <div className="relative w-full max-w-md animate-in slide-in-from-bottom duration-500 ease-out sm:rounded-t-[2.5rem] overflow-hidden bg-background">
-              <div className="flex flex-col max-h-[85dvh]">
-                <div className="sticky top-0 z-10 flex-none bg-background px-6 py-8 sm:px-8 border-b border-border/50">
+            <div className="relative w-full h-full max-w-md animate-in slide-in-from-bottom duration-500 ease-out sm:rounded-none overflow-hidden bg-background">
+              <div className="flex flex-col h-full">
+                <div className="sticky top-0 z-10 flex-none bg-background px-6 py-4 sm:px-8 border-b border-border/50">
                   <div className="flex items-center justify-between">
-                    <h3 className="text-xl font-black tracking-tight">Sort by</h3>
+                    <h3 className="text-lg font-black tracking-tight">Sort by</h3>
                     <button 
                       onClick={() => setIsOpen(false)}
-                      className="flex h-10 w-10 items-center justify-center rounded-full bg-muted/50 text-foreground/60 transition-colors hover:bg-muted hover:text-foreground"
+                      className="flex h-9 w-9 items-center justify-center rounded-full bg-muted/50 text-foreground/60 transition-colors hover:bg-muted hover:text-foreground"
                     >
                       <X className="h-5 w-5" />
                     </button>
@@ -104,7 +104,7 @@ export function SortMenu({
                           className={cn(
                             "flex w-full items-center justify-between rounded-2xl px-5 py-4 text-left transition-all duration-300",
                             isSelected 
-                              ? "bg-primary text-white shadow-xl shadow-primary/20 scale-[1.02]" 
+                              ? "bg-primary text-white shadow-xl shadow-primary/20 scale-[1.01]" 
                               : "bg-muted/30 hover:bg-muted text-foreground/70"
                           )}
                         >
@@ -116,8 +116,8 @@ export function SortMenu({
                   </div>
                 </div>
 
-                <div className="sticky bottom-0 flex-none bg-background p-6 sm:p-8 border-t border-border/50">
-                   <Button variant="secondary" className="w-full h-12 rounded-2xl text-[10px] font-black uppercase tracking-widest" onClick={() => setIsOpen(false)}>
+                <div className="sticky bottom-0 flex-none bg-background p-4 sm:p-8 border-t border-border/50">
+                   <Button variant="secondary" className="w-full h-12 rounded-xl text-[10px] font-black uppercase tracking-widest" onClick={() => setIsOpen(false)}>
                       Cancel
                    </Button>
                 </div>

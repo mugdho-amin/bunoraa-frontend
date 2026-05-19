@@ -22,7 +22,6 @@ export function FilterDrawer({
   currentCategoryPath,
   filterParams,
   variant = "default",
-  triggerLabel = "Filters",
 }: {
   filters: ProductFilterResponse | null;
   facets?: CategoryFacet[];
@@ -32,7 +31,6 @@ export function FilterDrawer({
   currentCategoryPath?: string;
   filterParams?: Record<string, string>;
   variant?: "default" | "minimal";
-  triggerLabel?: string;
 }) {
   const [open, setOpen] = React.useState(false);
   const router = useRouter();
@@ -105,18 +103,18 @@ export function FilterDrawer({
           />
           <div
             id="mobile-filter-drawer"
-            className="absolute inset-x-0 bottom-0 h-[92dvh] overflow-hidden rounded-t-[2.5rem] border-t border-border bg-background shadow-2xl animate-in slide-in-from-bottom duration-500 ease-out sm:inset-y-0 sm:left-0 sm:right-auto sm:h-full sm:max-h-none sm:w-full sm:max-w-md sm:rounded-none sm:border-r"
+            className="absolute inset-0 h-full overflow-hidden rounded-none border-t border-border bg-background shadow-2xl animate-in slide-in-from-bottom duration-500 ease-out sm:inset-y-0 sm:left-0 sm:right-auto sm:h-full sm:max-h-none sm:w-full sm:max-w-md sm:rounded-none sm:border-r"
           >
             <div className="flex h-full flex-col">
-              <div className="sticky top-0 z-10 flex-none border-b border-border/50 bg-background/95 px-6 py-5 backdrop-blur-xl">
+              <div className="sticky top-0 z-10 flex-none border-b border-border/50 bg-background/95 px-6 py-3 backdrop-blur-xl">
                 <div className="flex items-center justify-between">
-                  <div className="space-y-1">
-                    <h2 id="mobile-filter-title" className="text-xl font-black tracking-tight">
+                  <div className="space-y-0.5">
+                    <h2 id="mobile-filter-title" className="text-lg font-black tracking-tight">
                       Filters
                     </h2>
                     {typeof productCount === "number" ? (
-                      <p className="text-[10px] font-black uppercase tracking-widest text-foreground/40">
-                        {productCount} results found
+                      <p className="text-[9px] font-black uppercase tracking-widest text-foreground/40">
+                        {productCount} results
                       </p>
                     ) : null}
                   </div>
@@ -132,15 +130,15 @@ export function FilterDrawer({
                     <button
                       ref={closeButtonRef}
                       onClick={() => setOpen(false)}
-                      className="flex h-10 w-10 items-center justify-center rounded-full bg-muted/50 text-foreground/60 transition-colors hover:bg-muted hover:text-foreground"
+                      className="flex h-9 w-9 items-center justify-center rounded-full bg-muted/50 text-foreground/60 transition-colors hover:bg-muted hover:text-foreground"
                     >
-                      <X size={20} />
+                      <X size={18} />
                     </button>
                   </div>
                 </div>
               </div>
 
-              <div className="min-h-0 flex-1 overflow-y-auto px-6 py-8 scrolling-touch">
+              <div className="min-h-0 flex-1 overflow-y-auto px-6 py-6 scrolling-touch">
                 <FilterPanel
                   filters={filters}
                   facets={facets}
@@ -152,10 +150,10 @@ export function FilterDrawer({
                 />
               </div>
 
-              <div className="sticky bottom-0 flex-none border-t border-border/50 bg-background/95 p-6 backdrop-blur-xl sm:hidden">
+              <div className="sticky bottom-0 flex-none border-t border-border/50 bg-background/95 p-4 backdrop-blur-xl sm:hidden">
                 <Button 
                   variant="primary" 
-                  className="w-full h-14 rounded-2xl text-xs font-black uppercase tracking-[0.2em] shadow-xl shadow-primary/20" 
+                  className="w-full h-12 rounded-xl text-[11px] font-black uppercase tracking-[0.2em] shadow-xl shadow-primary/20" 
                   onClick={() => setOpen(false)}
                 >
                   Apply Filters

@@ -884,10 +884,11 @@ export function ProductDetailClient({
   const unitPrice = selectedVariant?.current_price || selectedVariant?.price || product.current_price || product.price || "0";
   const stockLabel = !inStock ? "Currently Sold Out" : isLowStock ? `Only ${stockQty} left!` : "Ready to Ship";
   
+  const categoryTrail = buildProductCategoryTrail(product);
   const breadcrumbLinks = [
-    { label: "Home", href: "/" },
-    ...(product.primary_category ? [{ label: product.primary_category.name, href: buildCategoryPath(product.primary_category.slug) }] : []),
-    { label: product.name, href: buildProductPath(product) },
+    { label: "home", href: "/" },
+    ...categoryTrail.map(crumb => ({ label: crumb.name.toLowerCase(), href: buildCategoryPath(crumb.slugPath) })),
+    { label: product.name.toLowerCase(), href: buildProductPath(product) },
   ];
 
   return (
