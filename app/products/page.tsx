@@ -217,8 +217,8 @@ export default async function ProductsPage({
             Products
           </h1>
           <div className="hidden lg:flex lg:items-center lg:gap-3">
-            <SortMenu className="border-none" />
-            <ViewToggle className="h-10 border-none" />
+            <SortMenu className="border border-border/60 hover:border-primary/40" />
+            <ViewToggle className="h-10 border border-border/60 hover:border-primary/40" />
           </div>
 
           {showFilters ? (
