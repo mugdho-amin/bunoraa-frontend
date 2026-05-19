@@ -100,16 +100,16 @@ function MinimalProductCard({
           />
         ) : null}
       </div>
-      <div className="mt-3 flex flex-col">
+      <div className="mt-2.5 space-y-1">
         {!product.is_in_stock ? (
-          <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-foreground/70 mb-1">
+          <p className="pl-1 text-[11px] font-semibold uppercase tracking-[0.2em] text-foreground/70">
             Sold Out
           </p>
         ) : null}
         <Link
           href={productHref}
           prefetch={false}
-          className="block text-sm font-normal leading-snug text-foreground mt-1"
+          className="block pl-1 text-sm font-normal leading-snug text-foreground"
         >
           {product.name}
         </Link>
@@ -118,7 +118,7 @@ function MinimalProductCard({
           salePrice={product.sale_price}
           currentPrice={product.current_price}
           currency={product.currency}
-          className="text-foreground mt-2"
+          className="text-foreground pl-1"
           priceClassName="text-[14px] font-medium sm:text-[16px]"
         />
       </div>
@@ -233,26 +233,26 @@ function InteractiveProductCard({
       </div>
 
       <div className={cn("flex flex-1 flex-col p-4 sm:p-5", variant === "list" && "sm:p-0")}>
-        <div className="mb-2 flex flex-col">
-          <p className="text-[10px] font-bold uppercase tracking-[0.1em] text-muted-foreground/80 mb-1">
+        <div className="mb-2 space-y-1">
+          <p className="pl-1 text-[10px] font-bold uppercase tracking-[0.1em] text-muted-foreground/80">
             {product.primary_category_name}
           </p>
           <Link
             href={productHref}
-            className="line-clamp-1 text-sm font-medium hover:text-primary transition-colors sm:text-base leading-tight mt-1"
+            className="line-clamp-1 pl-1 text-sm font-medium hover:text-primary transition-colors sm:text-base leading-tight"
           >
             {product.name}
           </Link>
         </div>
 
-        <div className="mt-auto flex flex-col pt-2">
-          <div className="flex items-end justify-between gap-2 pt-2">
+        <div className="mt-auto space-y-4">
+          <div className="flex items-end justify-between gap-2">
             <ProductPrice
               price={product.price}
               salePrice={product.sale_price}
               currentPrice={product.current_price}
               currency={product.currency}
-              priceClassName="text-base font-semibold text-foreground"
+              priceClassName="text-base font-semibold text-foreground pl-1"
             />
             <RatingStars rating={product.average_rating || 0} count={product.reviews_count} size="sm" />
           </div>

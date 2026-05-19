@@ -25,10 +25,10 @@ export function FilterSidebarToggle({ className }: { className?: string }) {
       type="button"
       onClick={() => setOpen(!open)}
       className={cn(
-        "hidden lg:inline-flex items-center gap-2 h-10 px-4 rounded-xl border text-sm font-medium transition-colors",
+        "hidden lg:inline-flex items-center gap-2 h-10 px-4 rounded-xl text-sm font-medium transition-colors",
         open
-          ? "border-primary bg-primary text-primary-foreground"
-          : "border-border/50 bg-background text-foreground/70 hover:border-primary/40 hover:text-foreground",
+          ? "bg-foreground text-background shadow-md"
+          : "text-foreground/70 hover:text-foreground hover:bg-muted/30",
         className
       )}
     >

@@ -64,7 +64,7 @@ export function SortMenu({
     return (
       <>
         <Button
-          variant="secondary"
+          variant="ghost"
           className={cn("w-full sm:w-auto h-10 sm:h-11 rounded-xl font-bold uppercase tracking-widest text-[10px] flex items-center justify-center", className)}
           onClick={() => setIsOpen(true)}
         >
@@ -130,8 +130,8 @@ export function SortMenu({
 
   const selectClass =
     variant === "minimal"
-      ? "h-9 w-full border border-border bg-transparent px-2 text-xs uppercase tracking-[0.18em] text-foreground sm:w-[13rem]"
-      : "h-10 min-h-10 w-full rounded-xl border border-border bg-card px-3 text-sm text-foreground sm:w-[12.5rem]";
+      ? "h-9 w-full bg-transparent px-2 text-xs uppercase tracking-[0.18em] text-foreground sm:w-[13rem] border-none outline-none"
+      : "h-10 min-h-10 w-full rounded-xl bg-transparent px-3 text-sm text-foreground sm:w-[12.5rem] border-none outline-none";
 
   return (
     <select

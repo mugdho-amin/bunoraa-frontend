@@ -29,7 +29,7 @@ export function MobileFilterSortBar({
 }: MobileFilterSortBarProps) {
   return (
     <div className={cn("w-full lg:hidden", className)}>
-      <div className="flex items-center gap-2 rounded-2xl border border-border/50 bg-card p-2 shadow-sm ring-1 ring-black/5">
+      <div className="flex items-center gap-2 p-0">
         <div className="flex-1">
           <FilterDrawer
             filters={filters}
@@ -43,13 +43,13 @@ export function MobileFilterSortBar({
           />
         </div>
         
-        <div className="h-8 w-px bg-border/40" />
+        <div className="h-8 w-px bg-border/20" />
         
         <div className="flex-1">
           <SortMenu variant="drawer" className="w-full" />
         </div>
 
-        <div className="h-8 w-px bg-border/40" />
+        <div className="h-8 w-px bg-border/20" />
 
         <div className="flex-none">
            <ViewToggle className="h-10 border-none bg-transparent shadow-none" />

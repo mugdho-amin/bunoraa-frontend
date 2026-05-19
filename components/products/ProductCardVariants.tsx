@@ -330,10 +330,10 @@ function FashionVariant({
         )}
       </div>
 
-      <div className="py-4 flex flex-col text-left">
+      <div className="py-4 space-y-1 text-left">
         <Link
           href={productHref}
-          className="block text-[13px] font-normal tracking-tight text-foreground/80 hover:text-foreground transition-colors line-clamp-1 mt-1"
+          className="block pl-1 text-[13px] font-normal tracking-tight text-foreground/80 hover:text-foreground transition-colors line-clamp-1"
         >
           {product.name}
         </Link>
@@ -342,8 +342,8 @@ function FashionVariant({
           salePrice={product.sale_price}
           currentPrice={product.current_price}
           currency={product.currency}
-          priceClassName="text-[14px] font-bold text-foreground"
-          className="flex items-center justify-start gap-2 mt-2"
+          priceClassName="text-[14px] font-bold text-foreground pl-1"
+          className="flex items-center justify-start gap-2"
         />
       </div>
     </div>
@@ -360,18 +360,18 @@ function StandardVariant({
   return (
     <Card variant="bordered" className={cn("group flex flex-col gap-4 p-4 sm:p-5", className)}>
       <BaseMedia product={product} className="aspect-[4/5]" onQuickView={onQuickView} />
-      <div className="flex flex-col">
-        <p className="text-[11px] uppercase tracking-[0.16em] text-foreground/60 mb-1">
+      <div className="space-y-2">
+        <p className="pl-1 text-[11px] uppercase tracking-[0.16em] text-foreground/60">
           {getCategoryLabel(product)}
         </p>
-        <SharedTitle product={product} className="text-base sm:text-lg mt-1" />
-        <RatingStars rating={product.average_rating || 0} count={product.reviews_count} className="mt-1" />
+        <SharedTitle product={product} className="pl-1 text-base sm:text-lg" />
+        <RatingStars rating={product.average_rating || 0} count={product.reviews_count} className="pl-1" />
         <ProductPrice
           price={product.price}
           salePrice={product.sale_price}
           currentPrice={product.current_price}
           currency={product.currency}
-          className="mt-2"
+          className="pl-1"
         />
       </div>
       <div className="mt-auto grid grid-cols-2 gap-2">
@@ -401,14 +401,14 @@ function CompactVariant({ product, onQuickView, className }: RenderProps) {
   return (
     <Card variant="bordered" className={cn("flex flex-col gap-3 p-3", className)}>
       <BaseMedia product={product} className="aspect-square" showBadges={false} onQuickView={onQuickView} />
-      <div className="flex flex-col">
-        <SharedTitle product={product} className="line-clamp-2 text-sm mt-1" />
+      <div className="space-y-1">
+        <SharedTitle product={product} className="line-clamp-2 pl-1 text-sm" />
         <ProductPrice
           price={product.price}
           salePrice={product.sale_price}
           currentPrice={product.current_price}
           currency={product.currency}
-          className="gap-1 mt-2"
+          className="gap-1 pl-1"
           priceClassName="text-base"
         />
       </div>
@@ -436,16 +436,16 @@ function HorizontalVariant({
   return (
     <Card variant="bordered" className={cn("flex flex-col gap-4 p-4 sm:flex-row sm:items-center", className)}>
       <BaseMedia product={product} className="h-40 w-full sm:h-36 sm:w-44" onQuickView={onQuickView} />
-      <div className="flex min-w-0 flex-1 flex-col">
-        <p className="text-xs uppercase tracking-[0.16em] text-foreground/60 mb-1">{getCategoryLabel(product)}</p>
-        <SharedTitle product={product} className="line-clamp-2 text-lg mt-1" />
-        <RatingStars rating={product.average_rating || 0} count={product.reviews_count} className="mt-1" />
+      <div className="flex min-w-0 flex-1 flex-col gap-2">
+        <p className="pl-1 text-xs uppercase tracking-[0.16em] text-foreground/60">{getCategoryLabel(product)}</p>
+        <SharedTitle product={product} className="line-clamp-2 pl-1 text-lg" />
+        <RatingStars rating={product.average_rating || 0} count={product.reviews_count} className="pl-1" />
         <ProductPrice
           price={product.price}
           salePrice={product.sale_price}
           currentPrice={product.current_price}
           currency={product.currency}
-          className="mt-2"
+          className="pl-1"
         />
         <div className="mt-1 flex flex-wrap gap-2">
           <AddToCartButton
@@ -474,23 +474,23 @@ function OverlayVariant({ product, onQuickView, className }: RenderProps) {
     >
       <BaseMedia product={product} className="aspect-[4/5]" showBadges={false} onQuickView={onQuickView} />
       <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/75 via-black/20 to-transparent" />
-      <div className="absolute inset-x-0 bottom-0 z-20 p-4 text-white flex flex-col">
-        <p className="text-[10px] uppercase tracking-[0.2em] text-white/75 mb-1">{getCategoryLabel(product)}</p>
+      <div className="absolute inset-x-0 bottom-0 z-20 p-4 text-white space-y-1">
+        <p className="pl-1 text-[10px] uppercase tracking-[0.2em] text-white/75">{getCategoryLabel(product)}</p>
         <Link
           href={href}
-          className="block text-lg font-semibold leading-tight mt-1"
+          className="block pl-1 text-lg font-semibold leading-tight"
           target="_blank"
           rel="noopener noreferrer"
         >
           {product.name}
         </Link>
-        <div className="flex items-center justify-between gap-2 mt-2">
+        <div className="flex items-center justify-between gap-2">
           <ProductPrice
             price={product.price}
             salePrice={product.sale_price}
             currentPrice={product.current_price}
             currency={product.currency}
-            priceClassName="text-white"
+            priceClassName="text-white pl-1"
             className="text-white [&>*:last-child]:text-white/70"
           />
           <div className="pointer-events-auto flex items-center gap-2">
@@ -509,8 +509,8 @@ function DealVariant({ product, onQuickView, className }: RenderProps) {
   return (
     <Card variant="modern-gradient" className={cn("flex flex-col gap-4 border border-primary/20 p-4", className)}>
       <BaseMedia product={product} className="aspect-[16/10]" showBadges={false} onQuickView={onQuickView} />
-      <div className="flex flex-col">
-        <div className="flex flex-wrap items-center justify-between gap-2 mb-2">
+      <div className="space-y-2">
+        <div className="flex flex-wrap items-center justify-between gap-2">
           <StockBadge product={product} />
           {discount ? (
             <span className="rounded-full bg-accent px-2.5 py-1 text-xs font-semibold text-white">
@@ -518,14 +518,13 @@ function DealVariant({ product, onQuickView, className }: RenderProps) {
             </span>
           ) : null}
         </div>
-        <SharedTitle product={product} className="line-clamp-2 text-lg mt-1" />
+        <SharedTitle product={product} className="line-clamp-2 pl-1 text-lg" />
         <ProductPrice
           price={product.price}
           salePrice={product.sale_price}
           currentPrice={product.current_price}
           currency={product.currency}
-          priceClassName="text-2xl"
-          className="mt-2"
+          priceClassName="text-2xl pl-1"
         />
       </div>
       <AddToCartButton
@@ -543,14 +542,14 @@ function QuickAddVariant({ product, onQuickView, className }: RenderProps) {
   return (
     <Card variant="bordered" className={cn("space-y-4 p-4", className)}>
       <BaseMedia product={product} className="aspect-[3/2]" onQuickView={onQuickView} />
-      <div className="flex flex-col">
-        <SharedTitle product={product} className="text-lg mt-1" />
+      <div className="space-y-2">
+        <SharedTitle product={product} className="pl-1 text-lg" />
         <ProductPrice
           price={product.price}
           salePrice={product.sale_price}
           currentPrice={product.current_price}
           currency={product.currency}
-          className="mt-2"
+          className="pl-1"
         />
       </div>
       <div className="grid grid-cols-2 gap-2">
@@ -578,19 +577,19 @@ function MinimalVariant({ product, onQuickView, className }: RenderProps) {
           showWishlist={false}
           onQuickView={onQuickView}
         />
-        <div className="min-w-0 flex-1 flex flex-col">
-          <p className="text-[11px] uppercase tracking-[0.16em] text-foreground/60 mb-1">{getCategoryLabel(product)}</p>
-          <SharedTitle product={product} className="line-clamp-2 text-sm font-medium mt-1" />
+        <div className="min-w-0 flex-1 space-y-1">
+          <p className="pl-1 text-[11px] uppercase tracking-[0.16em] text-foreground/60">{getCategoryLabel(product)}</p>
+          <SharedTitle product={product} className="line-clamp-2 pl-1 text-sm font-medium" />
         </div>
       </div>
-      <div className="flex items-center justify-between gap-2 mt-1">
+      <div className="flex items-center justify-between gap-2">
         <ProductPrice
           price={product.price}
           salePrice={product.sale_price}
           currentPrice={product.current_price}
           currency={product.currency}
           priceClassName="text-base"
-          className="mt-1"
+          className="pl-1"
         />
         <Link
           href={buildProductPath(product)}
@@ -609,20 +608,21 @@ function EditorialVariant({ product, onQuickView, className }: RenderProps) {
   return (
     <Card variant="glass" className={cn("space-y-4 border border-border/70 p-4 sm:p-5", className)}>
       <BaseMedia product={product} className="aspect-[5/4]" showBadges={false} onQuickView={onQuickView} />
-      <div className="flex flex-col">
-        <p className="text-xs uppercase tracking-[0.2em] text-foreground/60 mb-1">Curated pick</p>
-        <SharedTitle product={product} className="text-xl mt-1" />
-        <p className="line-clamp-2 text-sm text-foreground/65 mt-2">
+      <div className="space-y-2">
+        <p className="pl-1 text-xs uppercase tracking-[0.2em] text-foreground/60">Curated pick</p>
+        <SharedTitle product={product} className="pl-1 text-xl" />
+        <p className="pl-1 line-clamp-2 text-sm text-foreground/65">
           Handpicked from our latest artisan selections with a focus on quality, finish, and utility.
         </p>
       </div>
-      <div className="flex flex-wrap items-center justify-between gap-2 mt-2">
+      <div className="flex flex-wrap items-center justify-between gap-2">
         <ProductBadges product={product} />
         <ProductPrice
           price={product.price}
           salePrice={product.sale_price}
           currentPrice={product.current_price}
           currency={product.currency}
+          className="pl-1"
         />
       </div>
       <div className="flex flex-wrap gap-2">
@@ -656,22 +656,22 @@ function RatingFocusVariant({
   return (
     <Card variant="bordered" className={cn("space-y-4 p-4", className)}>
       <BaseMedia product={product} className="aspect-square" onQuickView={onQuickView} />
-      <div className="flex flex-col">
-        <div className="flex items-center justify-between gap-2 mb-2">
+      <div className="space-y-2">
+        <div className="flex items-center justify-between gap-2">
           <RatingStars
             rating={product.average_rating || 0}
             count={product.reviews_count}
-            className="text-sm"
+            className="pl-1 text-sm"
           />
           <StockBadge product={product} />
         </div>
-        <SharedTitle product={product} className="text-lg mt-1" />
+        <SharedTitle product={product} className="pl-1 text-lg" />
         <ProductPrice
           price={product.price}
           salePrice={product.sale_price}
           currentPrice={product.current_price}
           currency={product.currency}
-          className="mt-2"
+          className="pl-1"
         />
       </div>
       <div className="grid grid-cols-2 gap-2">
@@ -706,9 +706,9 @@ function CompareFocusVariant({
   return (
     <Card variant="bordered" className={cn("flex flex-col gap-4 p-4", className)}>
       <BaseMedia product={product} className="aspect-[4/3]" showBadges={false} onQuickView={onQuickView} />
-      <div className="flex flex-col">
-        <SharedTitle product={product} className="line-clamp-2 text-lg mt-1" />
-        <div className="flex flex-wrap gap-2 text-xs text-foreground/70 mt-2">
+      <div className="space-y-2">
+        <SharedTitle product={product} className="line-clamp-2 pl-1 text-lg" />
+        <div className="flex flex-wrap gap-2 text-xs text-foreground/70 pl-1">
           <span className="rounded-full border border-border bg-card px-2.5 py-1">{getCategoryLabel(product)}</span>
           <span className="rounded-full border border-border bg-card px-2.5 py-1">
             {product.average_rating ? `${product.average_rating.toFixed(1)} stars` : "No rating yet"}
@@ -722,7 +722,7 @@ function CompareFocusVariant({
           salePrice={product.sale_price}
           currentPrice={product.current_price}
           currency={product.currency}
-          className="mt-2"
+          className="pl-1"
         />
       </div>
       <div className="grid grid-cols-2 gap-2">
@@ -765,15 +765,14 @@ function InventoryFocusVariant({
       </div>
       <div className="flex items-center gap-3">
         <BaseMedia product={product} className="h-24 w-24 shrink-0" showBadges={false} onQuickView={onQuickView} />
-        <div className="min-w-0 flex flex-col">
-          <SharedTitle product={product} className="line-clamp-2 text-base mt-1" />
+        <div className="min-w-0 space-y-1">
+          <SharedTitle product={product} className="line-clamp-2 pl-1 text-base" />
           <ProductPrice
             price={product.price}
             salePrice={product.sale_price}
             currentPrice={product.current_price}
             currency={product.currency}
-            priceClassName="text-base"
-            className="mt-2"
+            priceClassName="text-base pl-1"
           />
         </div>
       </div>
@@ -815,9 +814,9 @@ function DenseRowVariant({
         showWishlist={false}
         onQuickView={onQuickView}
       />
-      <div className="min-w-0 flex flex-col">
-        <SharedTitle product={product} className="line-clamp-1 text-sm sm:text-base mt-1" />
-        <p className="text-xs text-foreground/60 mt-1">{getCategoryLabel(product)}</p>
+      <div className="min-w-0 space-y-1">
+        <SharedTitle product={product} className="line-clamp-1 pl-1 text-sm sm:text-base" />
+        <p className="pl-1 text-xs text-foreground/60">{getCategoryLabel(product)}</p>
       </div>
       <RatingStars
         rating={product.average_rating || 0}
@@ -829,7 +828,7 @@ function DenseRowVariant({
         salePrice={product.sale_price}
         currentPrice={product.current_price}
         currency={product.currency}
-        className="sm:justify-self-end mt-2 sm:mt-0"
+        className="sm:justify-self-end pl-1 sm:pl-0"
         priceClassName="text-base"
       />
       <div className="flex items-center gap-2 sm:justify-self-end">

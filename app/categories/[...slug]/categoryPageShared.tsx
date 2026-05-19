@@ -263,8 +263,8 @@ export async function renderCategoryPageForPath(
             {/* Desktop Actions Bar */}
             <div className="hidden lg:flex lg:items-center lg:gap-3">
               {showFilters && <FilterSidebarToggle />}
-              <SortMenu className="h-11 min-w-[180px] rounded-xl border-border/50" />
-              <ViewToggle className="h-11 border-border/50" />
+              <SortMenu className="h-11 min-w-[180px] rounded-xl border-none" />
+              <ViewToggle className="h-11 border-none" />
             </div>
           </div>
         </div>

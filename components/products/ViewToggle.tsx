@@ -67,7 +67,7 @@ export function ViewToggle({ className }: { className?: string } = {}) {
     : (isMobile ? 2 : 4);
 
   return (
-    <div className={cn("flex items-center gap-0.5 rounded-xl border border-border bg-card p-0.5 shadow-sm", className)}>
+    <div className={cn("flex items-center gap-0.5 rounded-xl p-0.5", className)}>
       {OPTIONS.map(({ cols, label, breakpoint }) => {
         const active = currentCols === cols;
         return (
@@ -82,8 +82,8 @@ export function ViewToggle({ className }: { className?: string } = {}) {
             className={cn(
               "flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-xs font-medium transition-all relative z-10",
               active
-                ? "bg-background text-foreground shadow-sm ring-1 ring-black/5"
-                : "text-foreground/50 hover:text-foreground/80 hover:bg-muted/50",
+                ? "text-foreground"
+                : "text-foreground/40 hover:text-foreground/80 hover:bg-muted/20",
               breakpoint === "xs" && "flex sm:hidden",
               breakpoint === "sm" && "hidden sm:flex",
               breakpoint === "lg" && "hidden lg:flex"
@@ -92,7 +92,10 @@ export function ViewToggle({ className }: { className?: string } = {}) {
             aria-pressed={active}
           >
             {ICONS[cols](active)}
-            <span className="hidden md:inline-block ml-1 font-bold">{label}</span>
+            <span className={cn("hidden md:inline-block ml-1 font-bold", active ? "opacity-100" : "opacity-40")}>{label}</span>
+            {active && (
+              <span className="absolute bottom-0 left-1/2 -translate-x-1/2 w-4 h-0.5 bg-primary rounded-full animate-in fade-in zoom-in duration-300" />
+            )}
           </button>
         );
       })}

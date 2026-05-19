@@ -81,7 +81,7 @@ export function FilterDrawer({
   return (
     <div className={cn("relative", className)}>
       <Button
-        variant="secondary"
+        variant="ghost"
         className="w-full sm:w-auto h-10 sm:h-11 rounded-xl font-bold uppercase tracking-widest text-[10px] flex items-center justify-center"
         onClick={() => setOpen(true)}
         aria-haspopup="dialog"

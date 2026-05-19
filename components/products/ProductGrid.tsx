@@ -17,16 +17,19 @@ const QuickViewModal = dynamic(
 
 function gridColsClass(cols: number, cardStyle: string): string {
   if (cardStyle === "fashion") {
-    if (cols === 2) return "grid-cols-1 sm:grid-cols-2";
+    if (cols === 1) return "grid-cols-1";
+    if (cols === 2) return "grid-cols-2";
     if (cols === 6) return "grid-cols-2 lg:grid-cols-6";
     return "grid-cols-2 lg:grid-cols-4";
   }
   if (cardStyle === "minimal") {
-    if (cols === 2) return "grid-cols-1 sm:grid-cols-2";
+    if (cols === 1) return "grid-cols-1";
+    if (cols === 2) return "grid-cols-2";
     if (cols === 6) return "grid-cols-2 sm:grid-cols-3 lg:grid-cols-6";
     return "grid-cols-2 sm:grid-cols-3 lg:grid-cols-4";
   }
-  if (cols === 2) return "grid-cols-1 sm:grid-cols-2";
+  if (cols === 1) return "grid-cols-1";
+  if (cols === 2) return "grid-cols-2";
   if (cols === 6) return "grid-cols-2 sm:grid-cols-3 lg:grid-cols-6";
   return "grid-cols-2 sm:grid-cols-3 lg:grid-cols-4";
 }
