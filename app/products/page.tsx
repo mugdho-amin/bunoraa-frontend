@@ -147,7 +147,7 @@ export default async function ProductsPage({
   const resolved = await searchParams;
   const currentPage = Number(resolved.page || 1) || 1;
   const rawCols = resolved.cols;
-  const cols = rawCols === "2" || rawCols === "6" ? Number(rawCols) : 4;
+  const cols = (rawCols === "1" || rawCols === "2" || rawCols === "4" || rawCols === "6") ? Number(rawCols) : 4;
   const filterParams =
     resolved.q && typeof resolved.q === "string" && resolved.q.trim()
       ? { q: resolved.q }

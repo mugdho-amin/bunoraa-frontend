@@ -80,7 +80,7 @@ export function ViewToggle({ className }: { className?: string } = {}) {
               router.push(`${pathname}?${params.toString()}`, { scroll: false });
             }}
             className={cn(
-              "flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-xs font-medium transition-all relative z-10",
+              "flex items-center gap-1.5 rounded-lg px-2 py-1 text-xs font-normal transition-all relative z-10",
               active
                 ? "text-foreground"
                 : "text-foreground/40 hover:text-foreground/80 hover:bg-muted/20",
@@ -92,9 +92,9 @@ export function ViewToggle({ className }: { className?: string } = {}) {
             aria-pressed={active}
           >
             {ICONS[cols](active)}
-            <span className={cn("hidden md:inline-block ml-1 font-bold", active ? "opacity-100" : "opacity-40")}>{label}</span>
+            <span className={cn("hidden md:inline-block ml-1", active ? "opacity-100" : "opacity-40")}>{label}</span>
             {active && (
-              <span className="absolute bottom-0 left-1/2 -translate-x-1/2 w-4 h-0.5 bg-primary rounded-full animate-in fade-in zoom-in duration-300" />
+              <span className="absolute bottom-0 left-1/2 -translate-x-1/2 w-3 h-0.5 bg-primary rounded-full animate-in fade-in zoom-in duration-300" />
             )}
           </button>
         );

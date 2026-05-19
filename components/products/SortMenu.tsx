@@ -59,17 +59,18 @@ export function SortMenu({
   }, [isOpen, variant]);
 
   if (variant === "drawer") {
-    const currentLabel = options.find(o => o.value === currentOrdering)?.label || "Sort";
-
     return (
       <>
         <Button
           variant="ghost"
-          className={cn("w-full sm:w-auto h-10 sm:h-11 rounded-xl font-bold uppercase tracking-widest text-[10px] flex items-center justify-center", className)}
+          className={cn(
+            "w-full sm:w-auto h-8 px-3 rounded-lg border border-border/60 text-[10px] uppercase tracking-widest flex items-center justify-center gap-1 transition-colors hover:bg-muted/50 font-normal",
+            className
+          )}
           onClick={() => setIsOpen(true)}
         >
-          <ListFilter className="mr-2 h-3.5 w-3.5 flex-shrink-0" />
-          <span className="truncate max-w-[80px] sm:max-w-none">{currentLabel}</span>
+          <ListFilter className="h-3 w-3 flex-shrink-0" />
+          <span className="truncate">Sort</span>
         </Button>
 
         {isOpen && (

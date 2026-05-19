@@ -186,7 +186,7 @@ export async function renderCategoryPageForPath(
 ) {
   const page = Number(resolvedSearchParams.page || 1) || 1;
   const rawCols = resolvedSearchParams.cols;
-  const cols: number = rawCols === "2" || rawCols === "6" ? Number(rawCols) : 4;
+  const cols: number = (rawCols === "1" || rawCols === "2" || rawCols === "4" || rawCols === "6") ? Number(rawCols) : 4;
   const filterParams: Record<string, string> = { category: slugPath };
   if (resolvedSearchParams.q && typeof resolvedSearchParams.q === "string") {
     filterParams.q = resolvedSearchParams.q;

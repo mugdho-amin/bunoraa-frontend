@@ -82,19 +82,14 @@ export function FilterDrawer({
     <div className={cn("relative", className)}>
       <Button
         variant="ghost"
-        className="w-full sm:w-auto h-10 sm:h-11 rounded-xl font-bold uppercase tracking-widest text-[10px] flex items-center justify-center"
+        className="w-full sm:w-auto h-8 px-3 rounded-lg border border-border/60 text-[10px] uppercase tracking-widest flex items-center justify-center gap-1 transition-colors hover:bg-muted/50 font-normal"
         onClick={() => setOpen(true)}
         aria-haspopup="dialog"
         aria-expanded={open}
         aria-controls="mobile-filter-drawer"
       >
-        <SlidersHorizontal className="mr-2 h-3.5 w-3.5 flex-shrink-0" />
-        <span className="truncate">
-          {triggerLabel}
-          {typeof productCount === "number" ? (
-             <span className="ml-1 opacity-50">({productCount})</span>
-          ) : ""}
-        </span>
+        <SlidersHorizontal className="h-3 w-3 flex-shrink-0" />
+        <span className="truncate">Filters</span>
       </Button>
 
       {open ? (
