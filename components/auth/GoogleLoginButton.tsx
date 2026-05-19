@@ -58,7 +58,31 @@ export function GoogleLoginButton({
   const containerRef = useRef<HTMLDivElement>(null);
   const googleButtonRef = useRef<HTMLDivElement>(null);
   const [isLoading, setIsLoading] = useState(false);
-  const [isScriptReady, setIsScriptReady] = useState(false);
+  const initializedRef = useRef(false);
+
+  const handleCredentialResponse = useCallback(async (response: GoogleCredentialResponse) => {
+    setIsLoading(true);
+    try {
+      const res = await apiFetch<LoginResponseData>("/accounts/google/login/", {
+        method: "POST",
+        body: { credential: response.credential },
+      });
+
+      if (res.data?.access && res.data?.refresh) {
+        setTokens(res.data.access, res.data.refresh, true);
+        router.push(nextUrl);
+        router.refresh();
+      } else {
+        throw new Error("Invalid response from server");
+      }
+    } catch (error: unknown) {
+      console.error("Google login error:", error);
+      const message = error instanceof Error ? error.message : "Google sign-in failed. Please try again.";
+      onError?.(message);
+    } finally {
+      setIsLoading(false);
+    }
+  }, [nextUrl, router, onError]);
 
   const renderGoogleButton = useCallback((width: number) => {
     const google = window.google;
@@ -68,39 +92,16 @@ export function GoogleLoginButton({
     if (!clientId) return;
 
     try {
-      // Clear previous button content
+      if (!initializedRef.current) {
+        google.accounts.id.initialize({
+          client_id: clientId,
+          callback: handleCredentialResponse,
+        });
+        initializedRef.current = true;
+      }
+
       googleButtonRef.current.innerHTML = "";
 
-      // Initialize
-      google.accounts.id.initialize({
-        client_id: clientId,
-        callback: async (response: GoogleCredentialResponse) => {
-          setIsLoading(true);
-          try {
-            const res = await apiFetch<LoginResponseData>("/accounts/google/login/", {
-              method: "POST",
-              body: { credential: response.credential },
-            });
-
-            if (res.data?.access && res.data?.refresh) {
-              setTokens(res.data.access, res.data.refresh, true);
-              router.push(nextUrl);
-              router.refresh();
-            } else {
-              throw new Error("Invalid response from server");
-            }
-          } catch (error: unknown) {
-            console.error("Google login error:", error);
-            const message = error instanceof Error ? error.message : "Google sign-in failed. Please try again.";
-            onError?.(message);
-          } finally {
-            setIsLoading(false);
-          }
-        },
-      });
-
-      // Render the real Google button inside the hidden container
-      // width must be a string representing pixels
       google.accounts.id.renderButton(googleButtonRef.current, {
         theme: "outline",
         size: "large",
@@ -108,44 +109,45 @@ export function GoogleLoginButton({
         text: "signin_with",
       });
     } catch (err) {
-      console.error("Failed to initialize Google button:", err);
+      console.error("Failed to render Google button:", err);
     }
-  }, [nextUrl, router, onError]);
+  }, [handleCredentialResponse]);
 
   useEffect(() => {
-    const checkScript = () => {
+    if (initializedRef.current || !containerRef.current) return;
+
+    const tryInit = () => {
       if (window.google?.accounts?.id) {
-        setIsScriptReady(true);
+        renderGoogleButton(containerRef.current?.offsetWidth ?? 300);
         return true;
       }
       return false;
     };
 
-    if (!checkScript()) {
+    if (!tryInit()) {
       const interval = setInterval(() => {
-        if (checkScript()) {
-          setIsScriptReady(true);
+        if (tryInit()) {
           clearInterval(interval);
         }
       }, 100);
       return () => clearInterval(interval);
     }
-  }, []);
+  }, [renderGoogleButton]);
 
   useEffect(() => {
-    if (!isScriptReady || !containerRef.current) return;
+    if (!containerRef.current) return;
 
-    // Use ResizeObserver to ensure the invisible Google button 
-    // always matches the size of our theme-friendly button
     const observer = new ResizeObserver((entries) => {
       for (const entry of entries) {
-        renderGoogleButton(entry.contentRect.width);
+        if (initializedRef.current) {
+          renderGoogleButton(entry.contentRect.width);
+        }
       }
     });
 
     observer.observe(containerRef.current);
     return () => observer.disconnect();
-  }, [isScriptReady, renderGoogleButton]);
+  }, [renderGoogleButton]);
 
   if (!process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID) {
     return null;
@@ -153,11 +155,6 @@ export function GoogleLoginButton({
 
   return (
     <div ref={containerRef} className="relative w-full group">
-      {/* 
-        The Visible Button: 100% Theme Friendly.
-        Uses your site's variables, fonts, and Tailwind classes.
-        'pointer-events-none' ensures clicks pass through to the Google button below.
-      */}
       <Button
         type="button"
         variant="secondary"
@@ -189,11 +186,6 @@ export function GoogleLoginButton({
         <span className="font-medium">Continue with Google</span>
       </Button>
 
-      {/* 
-        The Functional Button: 100% Invisible Overlay.
-        This is the REAL Google button. It is absolute-positioned and transparent.
-        Because it's an iframe, we can't style it, so we hide it and let the user click through.
-      */}
       <div 
         ref={googleButtonRef} 
         className="absolute inset-0 opacity-0 cursor-pointer z-10"

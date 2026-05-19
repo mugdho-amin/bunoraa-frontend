@@ -63,7 +63,6 @@ const nextConfig: NextConfig = {
   reactCompiler: true,
   experimental: {
     turbopackFileSystemCacheForBuild: true,
-    optimizeCss: false,
   },
   turbopack: {
     resolveAlias: {

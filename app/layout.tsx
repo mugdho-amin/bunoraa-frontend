@@ -9,6 +9,56 @@ import { DEFAULT_OG_IMAGE_PATH, SITE_NAME, SITE_URL, absoluteUrl, cleanObject } 
 import Script from "next/script";
 import { DeferredClientEnhancements } from "@/components/layout/DeferredClientEnhancements";
 import { WebVitalsReporter } from "@/components/analytics/WebVitalsReporter";
+import {
+  DM_Sans,
+  Manrope,
+  Plus_Jakarta_Sans,
+  Poppins,
+  Space_Grotesk,
+  Sora,
+} from "next/font/google";
+
+const fontPoppins = Poppins({
+  subsets: ["latin"],
+  weight: ["300", "400", "500", "600", "700"],
+  variable: "--font-poppins",
+  display: "swap",
+});
+
+const fontDM_Sans = DM_Sans({
+  subsets: ["latin"],
+  weight: ["300", "400", "500", "600", "700"],
+  variable: "--font-dm-sans",
+  display: "swap",
+});
+
+const fontManrope = Manrope({
+  subsets: ["latin"],
+  weight: ["300", "400", "500", "600", "700"],
+  variable: "--font-manrope",
+  display: "swap",
+});
+
+const fontPlusJakartaSans = Plus_Jakarta_Sans({
+  subsets: ["latin"],
+  weight: ["300", "400", "500", "600", "700"],
+  variable: "--font-plus-jakarta-sans",
+  display: "swap",
+});
+
+const fontSpaceGrotesk = Space_Grotesk({
+  subsets: ["latin"],
+  weight: ["300", "400", "500", "600", "700"],
+  variable: "--font-space-grotesk",
+  display: "swap",
+});
+
+const fontSora = Sora({
+  subsets: ["latin"],
+  weight: ["300", "400", "500", "600", "700"],
+  variable: "--font-sora",
+  display: "swap",
+});
 
 const SITE_DESCRIPTION =
   "Discover curated products, bundles, and artisan-made collections at Bunoraa.";
@@ -163,12 +213,18 @@ export default function RootLayout({
   });
 
   return (
-    <html lang="en" className="system" suppressHydrationWarning>
+    <html
+      lang="en"
+      className={`system ${fontPoppins.variable} ${fontDM_Sans.variable} ${fontManrope.variable} ${fontPlusJakartaSans.variable} ${fontSpaceGrotesk.variable} ${fontSora.variable}`}
+      suppressHydrationWarning
+    >
+      <head>
+        <link rel="preconnect" href="https://accounts.google.com" crossOrigin="anonymous" />
+      </head>
       <body className="min-h-screen bg-background text-foreground antialiased">
         <Script id="theme-bootstrap" strategy="beforeInteractive">
           {themeBootstrapScript}
         </Script>
-        <Script src="https://accounts.google.com/gsi/client" strategy="lazyOnload" />
         <SkipToContent />
         <WebVitalsReporter />
         <Providers>
