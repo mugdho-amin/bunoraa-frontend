@@ -125,10 +125,15 @@ async function getFilters(slug: string, searchParams: CategorySearchParams) {
   return response.data;
 }
 
-async function getCategoryFacets(slug: string) {
+async function getCategoryFacets(slug: string, searchParams: CategorySearchParams) {
+  const params = buildCategoryProductsParams(searchParams);
   const response = await apiFetch<CategoryFacet[]>(
     `/catalog/categories/${slug}/facets/`,
-    { headers: await getServerLocaleHeaders() }
+    { 
+      params,
+      headers: await getServerLocaleHeaders(),
+      cache: "no-store"
+    }
   );
   return response.data;
 }
@@ -191,7 +196,7 @@ export async function renderCategoryPageForPath(
     getCategory(slugPath),
     getCategoryProducts(slugPath, resolvedSearchParams),
     getFilters(slugPath, resolvedSearchParams).catch(() => null),
-    getCategoryFacets(slugPath).catch(() => []),
+    getCategoryFacets(slugPath, resolvedSearchParams).catch(() => []),
   ]);
   const childCategories = category.children || [];
 
