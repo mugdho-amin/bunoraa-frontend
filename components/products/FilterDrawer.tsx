@@ -9,6 +9,7 @@ import {
   CategoryFilterItem,
 } from "@/components/products/FilterPanel";
 import { cn } from "@/lib/utils";
+import { SlidersHorizontal } from "lucide-react";
 
 export function FilterDrawer({
   filters,
@@ -19,6 +20,7 @@ export function FilterDrawer({
   currentCategoryPath,
   filterParams,
   variant = "default",
+  triggerLabel = "Filters",
 }: {
   filters: ProductFilterResponse | null;
   facets?: CategoryFacet[];
@@ -28,6 +30,7 @@ export function FilterDrawer({
   currentCategoryPath?: string;
   filterParams?: Record<string, string>;
   variant?: "default" | "minimal";
+  triggerLabel?: string;
 }) {
   const [open, setOpen] = React.useState(false);
   const shouldHideFilters = typeof productCount === "number" && productCount <= 1;
@@ -73,7 +76,8 @@ export function FilterDrawer({
         aria-expanded={open}
         aria-controls="mobile-filter-drawer"
       >
-        Filters
+        <SlidersHorizontal className="mr-2 h-4 w-4" />
+        {triggerLabel}
         {typeof productCount === "number" ? ` (${productCount})` : ""}
       </Button>
 

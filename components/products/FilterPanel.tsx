@@ -19,6 +19,7 @@ import { formatMoney } from "@/lib/money";
 import { getStoredLocale } from "@/lib/locale";
 import { buildCategoryPath } from "@/lib/categoryPaths";
 import { useUiMessages } from "@/components/i18n/useUiMessages";
+import { getColorSwatch } from "@/lib/colors";
 
 export type CategoryFacet = {
   id: string;
@@ -612,39 +613,50 @@ export function FilterPanel({
         </Section>
       ) : null}
 
-      {attributeGroups.map((group) => (
-        <Section key={group.slug} title={group.name}>
-          <div className="flex flex-wrap gap-2">
-            {group.values.map((item) => {
-              const currentValues = current.attrs[group.slug] || [];
-              const isSelected = currentValues.includes(item.value);
-              return (
-                <button
-                  key={item.value}
-                  type="button"
-                  className={cn(
-                    "inline-flex min-h-10 items-center rounded-full border px-3.5 py-1.5 text-sm",
-                    isSelected
-                      ? "border-primary bg-primary/10 text-primary"
-                      : "border-border text-foreground/70"
-                  )}
-                  onClick={() => {
-                    const params = toggleMultiValue(
-                      searchParams,
-                      `attr_${group.slug}`,
-                      item.value
-                    );
-                    router.push(`${pathname}?${params.toString()}`);
-                  }}
-                >
-                  {item.value}
-                  {typeof item.count === "number" ? ` (${item.count})` : ""}
-                </button>
-              );
-            })}
-          </div>
-        </Section>
-      ))}
+      {attributeGroups.map((group) => {
+        const isColor = /color|colour|shade|tone/i.test(group.name || group.slug);
+        return (
+          <Section key={group.slug} title={group.name}>
+            <div className="flex flex-wrap gap-2">
+              {group.values.map((item) => {
+                const currentValues = current.attrs[group.slug] || [];
+                const isSelected = currentValues.includes(item.value);
+                const swatchColor = isColor ? getColorSwatch(item.value) : null;
+                
+                return (
+                  <button
+                    key={item.value}
+                    type="button"
+                    className={cn(
+                      "inline-flex min-h-10 items-center gap-2 rounded-full border px-3.5 py-1.5 text-sm transition-all",
+                      isSelected
+                        ? "border-primary bg-primary/10 text-primary"
+                        : "border-border text-foreground/70 hover:border-border/80"
+                    )}
+                    onClick={() => {
+                      const params = toggleMultiValue(
+                        searchParams,
+                        `attr_${group.slug}`,
+                        item.value
+                      );
+                      router.push(`${pathname}?${params.toString()}`);
+                    }}
+                  >
+                    {swatchColor && (
+                      <span 
+                        className="h-4 w-4 rounded-full border border-border shadow-inner" 
+                        style={{ backgroundColor: swatchColor }} 
+                      />
+                    )}
+                    {item.value}
+                    {typeof item.count === "number" ? ` (${item.count})` : ""}
+                  </button>
+                );
+              })}
+            </div>
+          </Section>
+        );
+      })}
     </div>
   );
 }

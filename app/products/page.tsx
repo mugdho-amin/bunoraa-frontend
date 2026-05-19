@@ -24,6 +24,9 @@ const AppliedFilters = dynamic(
 const SortMenu = dynamic(
   () => import("@/components/products/SortMenu").then((mod) => mod.SortMenu)
 );
+const MobileFilterSortBar = dynamic(
+  () => import("@/components/products/MobileFilterSortBar").then((mod) => mod.MobileFilterSortBar)
+);
 
 type SearchParams = Record<string, string | string[] | undefined>;
 type RequestParamValue =
@@ -207,23 +210,23 @@ export default async function ProductsPage({
 
   return (
     <div className="min-h-screen bg-background text-foreground">
-      <div className="mx-auto w-full max-w-[1920px] px-3 sm:px-5 py-10">
+      <div className="mx-auto w-full max-w-[1920px] px-3 sm:px-5 py-10 pb-28 lg:pb-12">
         <div className="flex flex-wrap items-center justify-between gap-4">
           <h1 className="text-2xl font-semibold uppercase tracking-[0.12em] sm:text-3xl">
             Products
           </h1>
-          <div className="flex w-full flex-wrap items-center gap-3 sm:w-auto">
-            {showFilters ? (
-              <FilterDrawer
-                filters={filterData}
-                productCount={totalCount}
-                className="lg:hidden"
-                filterParams={filterParams}
-              />
-            ) : null}
+          <div className="hidden lg:flex lg:items-center lg:gap-3">
             <SortMenu />
           </div>
         </div>
+
+        {showFilters ? (
+          <MobileFilterSortBar
+            filters={filterData}
+            productCount={totalCount}
+            filterParams={filterParams}
+          />
+        ) : null}
 
         <div className={showFilters ? "mt-8 grid gap-8 lg:grid-cols-[220px_1fr]" : "mt-8 grid gap-8"}>
           {showFilters ? (
