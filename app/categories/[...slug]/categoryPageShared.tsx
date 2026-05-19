@@ -223,7 +223,7 @@ export async function renderCategoryPageForPath(
     ...slugPath.split("/").map((part, idx, arr) => {
       const currentPath = arr.slice(0, idx + 1).join("/");
       return {
-        name: part.split("-").map(p => p.charAt(0).toUpperCase() + p.slice(1)).join(" "),
+        name: part.split("-").join(" "),
         url: buildCategoryPath(currentPath)
       };
     })

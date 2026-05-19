@@ -21,7 +21,7 @@ export function Breadcrumbs({
   return (
     <nav
       aria-label="Breadcrumb"
-      className={cn("flex items-center space-x-2 text-[11px] font-medium uppercase tracking-wider text-muted-foreground/70", className)}
+      className={cn("flex items-center space-x-2 text-[11px] font-normal tracking-wide text-foreground/40", className)}
     >
       {items.map((item, index) => {
         const isLast = index === items.length - 1;
@@ -29,10 +29,10 @@ export function Breadcrumbs({
         return (
           <React.Fragment key={item.url}>
             {index > 0 && (
-              <span className="text-[10px] opacity-40">/</span>
+              <span className="text-[10px] opacity-60 px-0.5">&gt;</span>
             )}
             {isLast ? (
-              <span className="text-foreground font-semibold truncate max-w-[150px] sm:max-w-none">
+              <span className="truncate max-w-[150px] sm:max-w-none text-foreground/50">
                 {item.name}
               </span>
             ) : (

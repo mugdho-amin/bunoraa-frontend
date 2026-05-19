@@ -892,11 +892,11 @@ export function ProductDetailClient({
 
   return (
     <div className="space-y-12 pb-24">
-      <nav className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.25em] text-foreground/30">
+      <nav className="flex items-center gap-2 text-[10px] font-normal text-foreground/40">
         {breadcrumbLinks.map((crumb, index) => (
           <React.Fragment key={crumb.label}>
-            {index > 0 && <span className="text-[8px] opacity-50">/</span>}
-            <Link href={crumb.href} className="hover:text-primary transition-colors">
+            {index > 0 && <span className="text-[8px] opacity-60">&gt;</span>}
+            <Link href={crumb.href} className="hover:text-foreground transition-colors">
               {crumb.label}
             </Link>
           </React.Fragment>
