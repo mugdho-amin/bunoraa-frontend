@@ -409,17 +409,17 @@ export function CheckoutShippingStep({
 
       {error ? <p className="text-sm text-rose-500">{error}</p> : null}
 
-      <div className="flex flex-col gap-3 sm:flex-row sm:justify-between">
-        <Button type="button" variant="secondary" className="w-full sm:w-auto" onClick={onBack}>
-          Back
-        </Button>
+      <div className="flex flex-col gap-3">
         <Button
           type="button"
-          className="w-full sm:w-auto sm:min-w-[220px]"
+          className="w-full"
           onClick={handleSubmit}
           disabled={isSubmitting}
         >
           {isSubmitting ? "Saving..." : "Continue to payment"}
+        </Button>
+        <Button type="button" variant="secondary" className="w-full" onClick={onBack}>
+          Back
         </Button>
       </div>
     </Card>

@@ -233,16 +233,16 @@ export function CheckoutReviewStep({
           </p>
         ) : null}
 
-        <div className="flex flex-col gap-3 sm:flex-row sm:justify-between">
-          <Button type="button" variant="secondary" className="w-full sm:w-auto" onClick={onBack}>
-            Back
-          </Button>
+        <div className="flex flex-col gap-3">
           <Button
             type="submit"
-            className="w-full sm:w-auto sm:min-w-[220px]"
+            className="w-full"
             disabled={isSubmitting || hasBlockingIssues || Boolean(isValidating)}
           >
             {isSubmitting ? "Placing order..." : "Place order"}
+          </Button>
+          <Button type="button" variant="secondary" className="w-full" onClick={onBack}>
+            Back
           </Button>
         </div>
         {hasBlockingIssues ? (

@@ -423,16 +423,16 @@ export function CheckoutPaymentStep({
           </div>
         ) : null}
 
-        <div className="flex flex-col gap-3 sm:flex-row sm:justify-between">
-          <Button type="button" variant="secondary" className="w-full sm:w-auto" onClick={onBack}>
-            Back
-          </Button>
+        <div className="flex flex-col gap-3">
           <Button
             type="submit"
-            className="w-full sm:w-auto sm:min-w-[220px]"
+            className="w-full"
             disabled={isSubmitting || !gatewaysAvailable}
           >
             {isSubmitting ? "Saving..." : "Continue to review"}
+          </Button>
+          <Button type="button" variant="secondary" className="w-full" onClick={onBack}>
+            Back
           </Button>
         </div>
       </form>
