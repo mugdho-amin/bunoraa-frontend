@@ -5,7 +5,7 @@ import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import { updateParamValue } from "@/lib/productFilters";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/Button";
-import { Check, ListFilter } from "lucide-react";
+import { Check, ListFilter, X } from "lucide-react";
 
 const orderingOptions = [
   { value: "-created_at", label: "Newest" },
@@ -53,28 +53,31 @@ export function SortMenu({
       <>
         <Button
           variant="secondary"
-          className={cn("w-full sm:w-auto", className)}
+          className={cn("w-full sm:w-auto h-10 sm:h-11 rounded-xl font-bold uppercase tracking-widest text-[10px]", className)}
           onClick={() => setIsOpen(true)}
         >
-          <ListFilter className="mr-2 h-4 w-4" />
+          <ListFilter className="mr-2 h-3.5 w-3.5" />
           {currentLabel}
         </Button>
 
         {isOpen && (
-          <div className="fixed inset-0 z-[60] flex items-end justify-center sm:items-center">
+          <div className="fixed inset-0 z-[100] flex items-end justify-center">
             <div 
-              className="absolute inset-0 bg-black/45 backdrop-blur-[1px]" 
+              className="absolute inset-0 bg-black/60 backdrop-blur-sm animate-in fade-in duration-300" 
               onClick={() => setIsOpen(false)} 
             />
-            <div className="relative w-full max-w-md animate-in slide-in-from-bottom duration-300 sm:rounded-2xl overflow-hidden">
-              <div className="bg-background px-4 py-6 sm:px-6">
-                <div className="mb-4 flex items-center justify-between">
-                  <h3 className="text-lg font-semibold">Sort by</h3>
-                  <Button variant="ghost" size="sm" onClick={() => setIsOpen(false)}>
-                    Close
-                  </Button>
+            <div className="relative w-full max-w-md animate-in slide-in-from-bottom duration-500 ease-out sm:rounded-t-[2.5rem] overflow-hidden">
+              <div className="bg-background px-6 py-8 sm:px-8">
+                <div className="mb-6 flex items-center justify-between">
+                  <h3 className="text-xl font-black tracking-tight">Sort by</h3>
+                  <button 
+                    onClick={() => setIsOpen(false)}
+                    className="flex h-10 w-10 items-center justify-center rounded-full bg-muted/50 text-foreground/60 transition-colors hover:bg-muted hover:text-foreground"
+                  >
+                    <X className="h-5 w-5" />
+                  </button>
                 </div>
-                <div className="space-y-1">
+                <div className="space-y-2">
                   {options.map((option) => {
                     const isSelected = currentOrdering === option.value;
                     return (
@@ -82,17 +85,22 @@ export function SortMenu({
                         key={option.value}
                         onClick={() => handleSelect(option.value)}
                         className={cn(
-                          "flex w-full items-center justify-between rounded-lg px-3 py-3 text-left transition-colors",
+                          "flex w-full items-center justify-between rounded-2xl px-5 py-4 text-left transition-all duration-300",
                           isSelected 
-                            ? "bg-primary/10 font-medium text-primary" 
-                            : "hover:bg-muted"
+                            ? "bg-primary text-white shadow-xl shadow-primary/20 scale-[1.02]" 
+                            : "bg-muted/30 hover:bg-muted text-foreground/70"
                         )}
                       >
-                        <span className="text-sm">{option.label}</span>
+                        <span className="text-sm font-bold uppercase tracking-widest">{option.label}</span>
                         {isSelected && <Check className="h-4 w-4" />}
                       </button>
                     );
                   })}
+                </div>
+                <div className="mt-8">
+                   <Button variant="secondary" className="w-full h-12 rounded-2xl text-[10px] font-black uppercase tracking-widest" onClick={() => setIsOpen(false)}>
+                      Cancel
+                   </Button>
                 </div>
               </div>
             </div>
@@ -124,3 +132,4 @@ export function SortMenu({
     </select>
   );
 }
+

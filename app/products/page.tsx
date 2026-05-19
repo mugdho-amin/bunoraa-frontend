@@ -6,6 +6,7 @@ import { getServerLocaleHeaders } from "@/lib/serverLocale";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { buildCollectionPage, buildItemList, buildPageMetadata } from "@/lib/seo";
 import { buildProductPath } from "@/lib/productPaths";
+
 const InfiniteProductGrid = dynamic(
   () =>
     import("@/components/products/InfiniteProductGrid").then(
@@ -15,9 +16,6 @@ const InfiniteProductGrid = dynamic(
 const FilterPanel = dynamic(
   () => import("@/components/products/FilterPanel").then((mod) => mod.FilterPanel)
 );
-const FilterDrawer = dynamic(
-  () => import("@/components/products/FilterDrawer").then((mod) => mod.FilterDrawer)
-);
 const AppliedFilters = dynamic(
   () => import("@/components/products/AppliedFilters").then((mod) => mod.AppliedFilters)
 );
@@ -26,6 +24,9 @@ const SortMenu = dynamic(
 );
 const MobileFilterSortBar = dynamic(
   () => import("@/components/products/MobileFilterSortBar").then((mod) => mod.MobileFilterSortBar)
+);
+const ViewToggle = dynamic(
+  () => import("@/components/products/ViewToggle").then((mod) => mod.ViewToggle)
 );
 
 type SearchParams = Record<string, string | string[] | undefined>;
@@ -210,23 +211,24 @@ export default async function ProductsPage({
 
   return (
     <div className="min-h-screen bg-background text-foreground">
-      <div className="mx-auto w-full max-w-[1920px] px-3 sm:px-5 py-10 pb-28 lg:pb-12">
-        <div className="flex flex-wrap items-center justify-between gap-4">
+      <div className="mx-auto w-full max-w-[1920px] px-3 sm:px-5 py-10 lg:pb-12">
+        <div className="flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
           <h1 className="text-2xl font-semibold uppercase tracking-[0.12em] sm:text-3xl">
             Products
           </h1>
           <div className="hidden lg:flex lg:items-center lg:gap-3">
             <SortMenu />
+            <ViewToggle className="h-10" />
           </div>
-        </div>
 
-        {showFilters ? (
-          <MobileFilterSortBar
-            filters={filterData}
-            productCount={totalCount}
-            filterParams={filterParams}
-          />
-        ) : null}
+          {showFilters ? (
+            <MobileFilterSortBar
+              filters={filterData}
+              productCount={totalCount}
+              filterParams={filterParams}
+            />
+          ) : null}
+        </div>
 
         <div className={showFilters ? "mt-8 grid gap-8 lg:grid-cols-[220px_1fr]" : "mt-8 grid gap-8"}>
           {showFilters ? (

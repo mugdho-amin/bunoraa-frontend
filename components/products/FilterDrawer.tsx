@@ -108,10 +108,10 @@ export function FilterDrawer({
           />
           <div
             id="mobile-filter-drawer"
-            className="absolute inset-x-0 bottom-0 max-h-[92dvh] overflow-hidden rounded-t-[2.5rem] border-t border-border bg-background shadow-2xl animate-in slide-in-from-bottom duration-500 ease-out sm:inset-y-0 sm:left-0 sm:right-auto sm:h-full sm:max-h-none sm:w-full sm:max-w-md sm:rounded-none sm:border-r"
+            className="absolute inset-x-0 bottom-0 h-[92dvh] overflow-hidden rounded-t-[2.5rem] border-t border-border bg-background shadow-2xl animate-in slide-in-from-bottom duration-500 ease-out sm:inset-y-0 sm:left-0 sm:right-auto sm:h-full sm:max-h-none sm:w-full sm:max-w-md sm:rounded-none sm:border-r"
           >
             <div className="flex h-full flex-col">
-              <div className="sticky top-0 z-10 border-b border-border/50 bg-background/95 px-6 py-5 backdrop-blur-xl">
+              <div className="sticky top-0 z-10 flex-none border-b border-border/50 bg-background/95 px-6 py-5 backdrop-blur-xl">
                 <div className="flex items-center justify-between">
                   <div className="space-y-1">
                     <h2 id="mobile-filter-title" className="text-xl font-black tracking-tight">
@@ -143,7 +143,7 @@ export function FilterDrawer({
                 </div>
               </div>
 
-              <div className="min-h-0 flex-1 overflow-y-auto px-6 py-8">
+              <div className="min-h-0 flex-1 overflow-y-auto px-6 py-8 scrolling-touch">
                 <FilterPanel
                   filters={filters}
                   facets={facets}
@@ -155,7 +155,7 @@ export function FilterDrawer({
                 />
               </div>
 
-              <div className="sticky bottom-0 border-t border-border/50 bg-background/95 p-6 backdrop-blur-xl sm:hidden">
+              <div className="sticky bottom-0 flex-none border-t border-border/50 bg-background/95 p-6 backdrop-blur-xl sm:hidden">
                 <Button 
                   variant="primary" 
                   className="w-full h-14 rounded-2xl text-xs font-black uppercase tracking-[0.2em] shadow-xl shadow-primary/20" 

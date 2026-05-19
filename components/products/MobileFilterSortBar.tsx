@@ -5,54 +5,39 @@ import { FilterDrawer } from "./FilterDrawer";
 import { SortMenu } from "./SortMenu";
 import type { ProductFilterResponse } from "@/lib/types";
 import { cn } from "@/lib/utils";
+import { CategoryFacet, CategoryFilterItem } from "./FilterPanel";
+import { ViewToggle } from "./ViewToggle";
 
 interface MobileFilterSortBarProps {
   filters: ProductFilterResponse | null;
+  facets?: CategoryFacet[];
+  categories?: CategoryFilterItem[];
   productCount?: number;
   filterParams?: Record<string, string>;
+  currentCategoryPath?: string;
   className?: string;
 }
 
-import { ViewToggle } from "./ViewToggle";
-
 export function MobileFilterSortBar({
   filters,
+  facets,
+  categories,
   productCount,
   filterParams,
+  currentCategoryPath,
   className,
 }: MobileFilterSortBarProps) {
-  const [isVisible, setIsVisible] = React.useState(true);
-  const lastScrollY = React.useRef(0);
-
-  React.useEffect(() => {
-    const handleScroll = () => {
-      const currentScrollY = window.scrollY;
-      if (currentScrollY > lastScrollY.current && currentScrollY > 200) {
-        setIsVisible(false);
-      } else {
-        setIsVisible(true);
-      }
-      lastScrollY.current = currentScrollY;
-    };
-
-    window.addEventListener("scroll", handleScroll, { passive: true });
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
-
   return (
-    <div
-      className={cn(
-        "fixed bottom-6 left-1/2 z-40 -translate-x-1/2 w-[calc(100%-2.5rem)] max-w-md lg:hidden transition-all duration-500",
-        !isVisible ? "translate-y-24 opacity-0" : "translate-y-0 opacity-100",
-        className
-      )}
-    >
-      <div className="flex items-center gap-2 rounded-2xl border border-border/50 bg-background/80 p-2 shadow-2xl backdrop-blur-2xl ring-1 ring-black/5">
+    <div className={cn("w-full lg:hidden", className)}>
+      <div className="flex items-center gap-2 rounded-2xl border border-border/50 bg-card p-2 shadow-sm ring-1 ring-black/5">
         <div className="flex-1">
           <FilterDrawer
             filters={filters}
+            facets={facets}
+            categories={categories}
             productCount={productCount}
             filterParams={filterParams}
+            currentCategoryPath={currentCategoryPath}
             className="w-full"
             triggerLabel="Filter"
           />

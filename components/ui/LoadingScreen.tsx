@@ -26,10 +26,14 @@ export function LoadingScreen({
   fallbackLogoSrc,
   className,
 }: LoadingScreenProps) {
-  const [src, setSrc] = React.useState("/icon.png");
+  const [src, setSrc] = React.useState(logoSrc || "/icon.png");
 
   const handleImageError = () => {
-    if (src === "/icon.png" && fallbackLogoSrc) {
+    if (src !== "/icon.png" && !fallbackLogoSrc) {
+      setSrc("/icon.png");
+      return;
+    }
+    if (fallbackLogoSrc && src !== fallbackLogoSrc) {
       setSrc(fallbackLogoSrc);
     }
   };
@@ -86,6 +90,7 @@ export function LoadingScreen({
                 height={32}
                 className="object-contain"
                 onError={handleImageError}
+                unoptimized
                />
             </div>
           </div>

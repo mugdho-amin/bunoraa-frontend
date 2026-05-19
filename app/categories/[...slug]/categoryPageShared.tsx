@@ -1,13 +1,13 @@
 import type { Metadata } from "next";
 import { apiFetch, ApiError } from "@/lib/api";
 import type { ProductListItem, ProductFilterResponse } from "@/lib/types";
-import { FilterSidebar, FilterSidebarToggle, FilterSidebarProvider } from "@/components/products/FilterSidebar";
+import { FilterSidebar, FilterSidebarProvider } from "@/components/products/FilterSidebar";
 import { FilterPanel } from "@/components/products/FilterPanel";
-import { FilterDrawer } from "@/components/products/FilterDrawer";
 import { AppliedFilters } from "@/components/products/AppliedFilters";
 import { InfiniteProductGrid } from "@/components/products/InfiniteProductGrid";
 import { SortMenu } from "@/components/products/SortMenu";
 import { ViewToggle } from "@/components/products/ViewToggle";
+import { MobileFilterSortBar } from "@/components/products/MobileFilterSortBar";
 import { notFound } from "next/navigation";
 import type { CategoryFacet } from "@/components/products/FilterPanel";
 import { getServerLocaleHeaders } from "@/lib/serverLocale";
@@ -175,8 +175,6 @@ export async function buildCategoryMetadataForPath(
 
 import { Breadcrumbs } from "@/components/layout/Breadcrumbs";
 
-// ... (keep types and existing helper functions)
-
 export async function renderCategoryPageForPath(
   slugPath: string,
   resolvedSearchParams: CategorySearchParams
@@ -249,6 +247,19 @@ export async function renderCategoryPageForPath(
               </div>
             </div>
 
+            {/* Mobile Actions Bar - Now below heading */}
+            {showFilters && (
+              <MobileFilterSortBar
+                filters={filterData}
+                facets={facets}
+                categories={childCategories}
+                productCount={totalCount}
+                filterParams={filterParams}
+                currentCategoryPath={slugPath}
+                className="mt-6"
+              />
+            )}
+
             {/* Desktop Actions Bar */}
             <div className="hidden lg:flex lg:items-center lg:gap-3">
               <SortMenu className="h-11 min-w-[180px] rounded-xl border-border/50" />
@@ -256,14 +267,6 @@ export async function renderCategoryPageForPath(
             </div>
           </div>
         </div>
-
-        {showFilters && (
-          <MobileFilterSortBar
-            filters={filterData}
-            productCount={totalCount}
-            filterParams={filterParams}
-          />
-        )}
 
         {/* Content Section */}
         <div className={cn("grid gap-6", showFilters ? "lg:grid-cols-[auto_1fr]" : "grid-cols-1")}>
@@ -303,26 +306,6 @@ export async function renderCategoryPageForPath(
           <div className="mt-20 border-t border-border/40 pt-16 pb-8 bg-muted/30 -mx-4 px-4 sm:-mx-6 sm:px-6 rounded-3xl">
             <div className="mx-auto max-w-3xl space-y-8">
               <div className="text-center space-y-2">
-                <h2 className="text-2xl font-bold tracking-tight text-foreground sm:text-3xl">
-                  About the {category.name} Collection
-                </h2>
-                <div className="h-1 w-12 bg-primary mx-auto rounded-full" />
-              </div>
-              
-              <div className="text-sm sm:text-base max-w-none text-foreground/80 leading-relaxed font-serif text-center italic">
-                {category.description.split('\n').map((paragraph, i) => (
-                  <p key={i} className="mb-4">{paragraph}</p>
-                ))}
-              </div>
-            </div>
-          </div>
-        )}
-      </div>
-    </div>
-    </FilterSidebarProvider>
-  );
-}
-     <div className="text-center space-y-2">
                 <h2 className="text-2xl font-bold tracking-tight text-foreground sm:text-3xl">
                   About the {category.name} Collection
                 </h2>
