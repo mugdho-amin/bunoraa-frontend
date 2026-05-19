@@ -13,6 +13,7 @@ import { CheckoutShippingStep } from "@/components/checkout/CheckoutShippingStep
 import { CheckoutPaymentStep, CheckoutPaymentFormValues } from "@/components/checkout/CheckoutPaymentStep";
 import { CheckoutReviewStep } from "@/components/checkout/CheckoutReviewStep";
 import { CheckoutSummary } from "@/components/checkout/CheckoutSummary";
+import { OrderProcessingModal } from "@/components/checkout/OrderProcessingModal";
 import { useCheckoutData } from "@/components/checkout/useCheckoutData";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
@@ -555,21 +556,6 @@ export function CheckoutPage() {
     );
   }
 
-  if (isOrderTransitioning) {
-    return (
-      <AuthGate nextHref="/checkout" allowGuest={guestCheckoutEnabled}>
-        <div className="mx-auto w-full max-w-5xl px-3 sm:px-5 py-16">
-          <Card variant="bordered" className="space-y-3 text-center">
-            <h1 className="text-2xl font-semibold">Processing your order</h1>
-            <p className="text-sm text-foreground/60">
-              Please wait while we finalize your order and redirect you.
-            </p>
-          </Card>
-        </div>
-      </AuthGate>
-    );
-  }
-
   if (isLoading) {
     return (
       <AuthGate nextHref="/checkout" allowGuest={guestCheckoutEnabled}>
@@ -595,9 +581,14 @@ export function CheckoutPage() {
               <p className="text-sm text-foreground/60">
                 Add items to your bag before checking out.
               </p>
-              <Button asChild>
-                <Link href="/cart/">Go to bag</Link>
-              </Button>
+              <div className="flex flex-wrap justify-center gap-3">
+                <Button asChild>
+                  <Link href="/cart/">Go to bag</Link>
+                </Button>
+                <Button asChild variant="secondary">
+                  <Link href="/products/">Continue shopping</Link>
+                </Button>
+              </div>
             </Card>
           </div>
         </AuthGate>
@@ -629,9 +620,14 @@ export function CheckoutPage() {
             <p className="text-sm text-foreground/60">
               Add items to your bag before checking out.
             </p>
-            <Button asChild>
-              <Link href="/cart/">Go to bag</Link>
-            </Button>
+            <div className="flex flex-wrap justify-center gap-3">
+              <Button asChild>
+                <Link href="/cart/">Go to bag</Link>
+              </Button>
+              <Button asChild variant="secondary">
+                <Link href="/products/">Continue shopping</Link>
+              </Button>
+            </div>
           </Card>
         </div>
       </AuthGate>
@@ -646,6 +642,7 @@ export function CheckoutPage() {
       description="Please sign in to continue with checkout."
     >
       <div className="min-h-screen bg-background text-foreground">
+        <OrderProcessingModal isOpen={isOrderTransitioning} />
         <div className="mx-auto w-full max-w-[1920px] px-4 py-6 sm:px-6 sm:py-10 lg:py-12">
           <div className="mb-8">
             <p className="text-xs uppercase tracking-[0.3em] text-foreground/60">
