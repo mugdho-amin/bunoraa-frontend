@@ -128,7 +128,11 @@ export function CheckoutPage() {
       checkoutSession?.shipping_country
   );
   const shippingComplete = Boolean(checkoutSession?.shipping_method);
-  const paymentComplete = Boolean(checkoutSession?.payment_method);
+  const paymentComplete = Boolean(
+    checkoutSession?.payment_method &&
+    checkoutSession?.current_step &&
+    ['payment', 'review', 'processing', 'completed'].includes(checkoutSession.current_step)
+  );
 
   let maxStepIndex = 0;
   if (infoComplete) maxStepIndex = 1;

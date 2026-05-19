@@ -59,10 +59,6 @@ export function CheckoutInfoStep({
   const [selectedAddress, setSelectedAddress] = React.useState<string>("");
   const shouldPersistSelectedAddressRef = React.useRef(false);
 
-  React.useEffect(() => {
-    form.reset(defaultValues);
-  }, [defaultValues, form]);
-
   const resolveCountryName = React.useCallback(
     (value?: string | null) => {
       if (!value) return "";
