@@ -1,6 +1,9 @@
 import { describe, it, expect, vi } from 'vitest'
 import { render, screen } from '@testing-library/react'
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import type { ReactElement } from 'react'
 import { ProductCard } from './ProductCard'
+import { ToastProvider } from '@/components/ui/ToastProvider'
 import type { ProductListItem } from '@/lib/types'
 
 // Mock next/navigation (already in setup but ensuring here)
@@ -31,21 +34,36 @@ const mockProduct: ProductListItem = {
   primary_image: 'http://example.com/image.jpg',
 }
 
+function renderWithQueryClient(ui: ReactElement) {
+  const queryClient = new QueryClient({
+    defaultOptions: {
+      queries: { retry: false },
+      mutations: { retry: false },
+    },
+  })
+
+  return render(
+    <QueryClientProvider client={queryClient}>
+      <ToastProvider>{ui}</ToastProvider>
+    </QueryClientProvider>
+  )
+}
+
 describe('ProductCard', () => {
   it('renders product name and price', () => {
-    render(<ProductCard product={mockProduct} />)
-    expect(screen.getByText('Test Product')).toBeInTheDocument()
-    expect(screen.getByText('100.00')).toBeInTheDocument()
+    renderWithQueryClient(<ProductCard product={mockProduct} />)
+    expect(screen.getAllByText('Test Product').length).toBeGreaterThan(0)
+    expect(screen.getByText(/100\.00/)).toBeInTheDocument()
   })
 
   it('renders Sold Out when product is out of stock', () => {
     const outOfStockProduct = { ...mockProduct, is_in_stock: false }
-    render(<ProductCard product={outOfStockProduct} variant="minimal" />)
+    renderWithQueryClient(<ProductCard product={outOfStockProduct} variant="minimal" />)
     expect(screen.getByText('Sold Out')).toBeInTheDocument()
   })
 
   it('renders Add to bag button when in stock', () => {
-    render(<ProductCard product={mockProduct} />)
-    expect(screen.getByText('Add to bag')).toBeInTheDocument()
+    renderWithQueryClient(<ProductCard product={mockProduct} />)
+    expect(screen.getByRole('button', { name: /add to bag/i })).toBeInTheDocument()
   })
 })

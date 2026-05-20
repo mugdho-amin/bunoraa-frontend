@@ -16,9 +16,20 @@ vi.mock('next/navigation', () => ({
 }))
 
 // Mock next/image
+type MockImageProps = React.ImgHTMLAttributes<HTMLImageElement> & {
+  fill?: boolean;
+  priority?: boolean;
+  quality?: number | string;
+};
+
 vi.mock('next/image', () => ({
-  default: ({ src, alt, ...props }: React.ImgHTMLAttributes<HTMLImageElement>) => {
+  default: ({ src, alt, ...props }: MockImageProps) => {
+    const imgProps = { ...props };
+    delete imgProps.fill;
+    delete imgProps.priority;
+    delete imgProps.quality;
+
     // eslint-disable-next-line @next/next/no-img-element
-    return <img src={src} alt={alt} {...props} />
+    return <img src={src} alt={alt} {...imgProps} />
   },
 }))

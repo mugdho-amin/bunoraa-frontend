@@ -42,9 +42,42 @@ const remotePatterns: RemotePattern[] = [
 ];
 
 const shouldDisableImageOptimization = process.env.NODE_ENV !== "production";
+const isProduction = process.env.NODE_ENV === "production";
+
+const securityHeaders = [
+  {
+    key: "X-DNS-Prefetch-Control",
+    value: "on",
+  },
+  {
+    key: "X-Content-Type-Options",
+    value: "nosniff",
+  },
+  {
+    key: "X-Frame-Options",
+    value: "DENY",
+  },
+  {
+    key: "Referrer-Policy",
+    value: "strict-origin-when-cross-origin",
+  },
+  {
+    key: "Permissions-Policy",
+    value: "camera=(), microphone=(), geolocation=(), payment=(self), browsing-topics=()",
+  },
+  ...(isProduction
+    ? [
+        {
+          key: "Strict-Transport-Security",
+          value: "max-age=63072000; includeSubDomains; preload",
+        },
+      ]
+    : []),
+];
 
 const nextConfig: NextConfig = {
   trailingSlash: true,
+  poweredByHeader: false,
   images: {
     loader: 'custom',
     loaderFile: './lib/r2-loader.ts',
@@ -56,9 +89,10 @@ const nextConfig: NextConfig = {
     minimumCacheTTL: 31536000,
     qualities: [60, 64, 72, 75],
     dangerouslyAllowSVG: true,
+    contentDispositionType: "attachment",
     contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
   },
-  compress: false,
+  compress: true,
   output: 'standalone',
   reactCompiler: true,
   experimental: {
@@ -68,6 +102,14 @@ const nextConfig: NextConfig = {
     resolveAlias: {
       "@": path.resolve(__dirname),
     },
+  },
+  async headers() {
+    return [
+      {
+        source: "/:path*",
+        headers: securityHeaders,
+      },
+    ];
   },
   async redirects() {
     return [

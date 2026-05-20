@@ -24,15 +24,25 @@ function notify() {
   window.dispatchEvent(new CustomEvent("compare-updated"));
 }
 
+function getStorage() {
+  if (typeof window === "undefined") return null;
+  try {
+    return window.localStorage ?? null;
+  } catch {
+    return null;
+  }
+}
+
 export function getCompareItems(): CompareItem[] {
-  if (typeof window === "undefined") return [];
-  return safeParse(window.localStorage.getItem(KEY));
+  const storage = getStorage();
+  return safeParse(storage?.getItem(KEY) ?? null);
 }
 
 export function setCompareItems(items: CompareItem[]) {
-  if (typeof window === "undefined") return;
+  const storage = getStorage();
+  if (!storage) return;
   const next = items.slice(0, MAX_ITEMS);
-  window.localStorage.setItem(KEY, JSON.stringify(next));
+  storage.setItem(KEY, JSON.stringify(next));
   notify();
 }
 
@@ -62,7 +72,8 @@ export function isInCompare(id: string) {
 }
 
 export function clearCompareItems() {
-  if (typeof window === "undefined") return;
-  window.localStorage.removeItem(KEY);
+  const storage = getStorage();
+  if (!storage) return;
+  storage.removeItem(KEY);
   notify();
 }
