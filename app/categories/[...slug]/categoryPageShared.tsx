@@ -22,6 +22,7 @@ type Category = {
   description?: string | null;
   meta_title?: string | null;
   meta_description?: string | null;
+  meta_keywords?: string | null;
   children?: Array<{
     id: string;
     name: string;

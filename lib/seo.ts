@@ -215,6 +215,13 @@ export function buildSearchResultsPage({
 // Keyword engineering — entity-based keyword cluster extraction
 // =============================================================================
 
+const TYPO_KEYWORDS = [
+  "bunora",
+  "bunorah",
+  "bunoraa bd",
+  "bunora bangladesh",
+];
+
 const STOPWORDS = new Set([
   "the", "a", "an", "and", "or", "in", "on", "for", "with", "from", "by",
   "to", "of", "at", "is", "it", "this", "that", "these", "those",
@@ -265,6 +272,20 @@ function dedupPhrases(phrases: string[]): string[] {
     seen.add(key);
     return true;
   });
+}
+
+function parseBackendKeywords(raw: string | null | undefined): string[] {
+  if (!raw || typeof raw !== "string") return [];
+  return raw
+    .split(",")
+    .map((k) => k.trim())
+    .filter((k) => k.length > 0);
+}
+
+function mergeKeywords(backendRaw: string | null | undefined, frontendGenerated: string[]): string[] {
+  const backend = parseBackendKeywords(backendRaw);
+  const combined = [...backend, ...TYPO_KEYWORDS, ...frontendGenerated];
+  return dedupPhrases(combined);
 }
 
 const BANGLADESH_LOCATIONS = [
@@ -367,11 +388,11 @@ export function buildProductKeywords(product: ProductDetail): string[] {
   result.push("artisan made Bangladesh");
   result.push("traditional Bangladeshi craft");
 
-  return dedupPhrases(result).slice(0, 50);
+  return mergeKeywords(product.meta_keywords, result).slice(0, 50);
 }
 
 export function buildCategoryKeywords(
-  category: { name: string; description?: string | null; children?: Array<{ name: string }> },
+  category: { name: string; description?: string | null; children?: Array<{ name: string }>; meta_keywords?: string | null },
 ): string[] {
   const result: string[] = [];
 
@@ -416,10 +437,10 @@ export function buildCategoryKeywords(
   result.push(`artisan ${category.name.toLowerCase()}`);
   result.push(`${category.name.toLowerCase()} free delivery`);
 
-  return dedupPhrases(result).slice(0, 35);
+  return mergeKeywords(category.meta_keywords, result).slice(0, 35);
 }
 
-export function buildPageKeywords(title: string, excerpt?: string | null): string[] {
+export function buildPageKeywords(title: string, excerpt?: string | null, metaKeywords?: string | null): string[] {
   const result: string[] = [];
   if (title) {
     result.push(title);
@@ -434,7 +455,7 @@ export function buildPageKeywords(title: string, excerpt?: string | null): strin
   result.push("Bunoraa Bangladesh");
   result.push("artisan marketplace Bangladesh");
   result.push("handmade Bangladesh");
-  return dedupPhrases(result).slice(0, 20);
+  return mergeKeywords(metaKeywords, result).slice(0, 20);
 }
 
 export function buildProductSchema(product: ProductDetail) {

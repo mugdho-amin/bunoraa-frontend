@@ -32,7 +32,7 @@ export async function generateMetadata({
     title: page.meta_title || page.title,
     description: page.meta_description || page.excerpt || "Read this page on Bunoraa.",
     path: `/pages/${page.slug}/`,
-    keywords: buildPageKeywords(page.title, page.excerpt || page.meta_description),
+    keywords: buildPageKeywords(page.title, page.excerpt || page.meta_description, page.meta_keywords),
   });
 }
 

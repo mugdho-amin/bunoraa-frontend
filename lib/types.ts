@@ -98,6 +98,7 @@ export type ProductDetail = ProductListItem & {
   material_breakdown?: Record<string, number | string> | null;
   meta_title?: string | null;
   meta_description?: string | null;
+  meta_keywords?: string | null;
   schema_org?: Record<string, unknown> | null;
   breadcrumbs?: Array<{ id: string; name: string; slug: string }> | null;
   weight?: string | number | null;
@@ -341,6 +342,7 @@ export type PageDetail = {
   featured_image?: string | null;
   meta_title?: string | null;
   meta_description?: string | null;
+  meta_keywords?: string | null;
   created_at?: string;
   updated_at?: string;
 };
@@ -399,6 +401,7 @@ export type Category = {
   name: string;
   slug: string;
   slug_path?: string | null;
+  meta_keywords?: string | null;
 };
 
 export type FAQItem = {
