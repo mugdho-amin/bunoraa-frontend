@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/Button";
 import { notFound } from "next/navigation";
 import { getServerLocaleHeaders } from "@/lib/serverLocale";
 import { JsonLd } from "@/components/seo/JsonLd";
-import { buildBreadcrumbList, buildCollectionPage, buildItemList, buildPageMetadata } from "@/lib/seo";
+import { buildBreadcrumbList, buildCollectionPage, buildItemList, buildPageMetadata, buildPageKeywords } from "@/lib/seo";
 import { buildProductPath } from "@/lib/productPaths";
 
 const ProductGrid = dynamic(
@@ -50,6 +50,7 @@ export async function generateMetadata({
       collection.description || `Explore curated items in the ${collection.name} collection.`,
     path: `/collections/${collection.slug}/`,
     images: [collection.image],
+    keywords: buildPageKeywords(collection.name, collection.description),
   });
 }
 

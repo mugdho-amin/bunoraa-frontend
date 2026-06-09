@@ -284,6 +284,8 @@ function FashionVariant({
           <img
             src={primaryImage}
             alt={product.name}
+            loading="lazy"
+            decoding="async"
             className={cn(
               "h-full w-full object-cover transition-opacity duration-700 ease-in-out",
               secondaryImage && "group-hover:opacity-0"
@@ -295,6 +297,8 @@ function FashionVariant({
           <img
             src={secondaryImage}
             alt={`${product.name} secondary`}
+            loading="lazy"
+            decoding="async"
             className="absolute inset-0 h-full w-full object-cover opacity-0 transition-opacity duration-700 ease-in-out group-hover:opacity-100"
           />
         )}

@@ -48,12 +48,14 @@ export function buildPageMetadata({
   description,
   path,
   images,
+  keywords,
   type = "website",
 }: {
   title: string;
   description: string;
   path: string;
   images?: Array<string | null | undefined>;
+  keywords?: string | string[];
   type?: "website" | "article";
 }): Metadata {
   const canonicalPath = normalizePath(path);
@@ -61,9 +63,14 @@ export function buildPageMetadata({
   const imageUrls = (images || []).filter(Boolean).map((image) => absoluteUrl(image as string));
   const shareImages = imageUrls.length ? imageUrls : [absoluteUrl(DEFAULT_OG_IMAGE_PATH)];
 
+  const kw = keywords
+    ? (Array.isArray(keywords) ? keywords : keywords.split(",").map((k) => k.trim()).filter(Boolean))
+    : undefined;
+
   return {
     title,
     description,
+    keywords: kw,
     alternates: {
       canonical: canonicalPath,
     },
@@ -204,12 +211,238 @@ export function buildSearchResultsPage({
   });
 }
 
+// =============================================================================
+// Keyword engineering — entity-based keyword cluster extraction
+// =============================================================================
+
+const STOPWORDS = new Set([
+  "the", "a", "an", "and", "or", "in", "on", "for", "with", "from", "by",
+  "to", "of", "at", "is", "it", "this", "that", "these", "those",
+]);
+
+const ATTRIBUTE_KEYWORDS: Record<string, string[]> = {
+  color: ["color", "shade", "hue", "tone"],
+  size: ["size", "fit", "dimension"],
+  material: ["material", "fabric", "textile", "cloth"],
+  pattern: ["pattern", "design", "print", "motif"],
+  occasion: ["occasion", "event", "wear", "festive", "ceremony"],
+  style: ["style", "type", "category", "collection"],
+  neckline: ["neckline", "collar", "neck"],
+  sleeve: ["sleeve", "length"],
+  fabric: ["fabric", "textile", "cloth", "material", "weave"],
+  craft: ["craft", "technique", "handwork", "artisan", "embroidery"],
+  weave: ["weave", "texture", "thread", "stitch"],
+  closure: ["closure", "fastening", "zip", "button"],
+  festive: ["festive wear", "Eid collection", "celebrations", "occasion wear"],
+  craft_type: ["hand embroidery", "nakshi kantha", "traditional craft", "artisan technique"],
+  heritage: ["Bengali heritage", "Bangladeshi tradition", "cultural wear", "folk art"],
+  fit: ["fit", "silhouette", "cut", "shape"],
+};
+
+function tokenize(text: string): string[] {
+  return text
+    .toLowerCase()
+    .replace(/[^a-z0-9\s-]/g, " ")
+    .split(/\s+/)
+    .filter((t) => t.length > 1 && !STOPWORDS.has(t));
+}
+
+function extractNGrams(tokens: string[], minN = 2, maxN = 3): string[] {
+  const result: string[] = [];
+  for (let n = minN; n <= Math.min(maxN, tokens.length); n++) {
+    for (let i = 0; i <= tokens.length - n; i++) {
+      result.push(tokens.slice(i, i + n).join(" "));
+    }
+  }
+  return result;
+}
+
+function dedupPhrases(phrases: string[]): string[] {
+  const seen = new Set<string>();
+  return phrases.filter((p) => {
+    const key = p.toLowerCase().trim();
+    if (seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  });
+}
+
+const BANGLADESH_LOCATIONS = [
+  "Bangladesh", "Dhaka", "Chattogram", "Rangpur", "Kurigram", "Ulipur",
+  "Sylhet", "Khulna", "Rajshahi", "Barisal", "Mymensingh",
+];
+
+const FESTIVE_KEYWORDS = [
+  "Eid ul-Fitr", "Eid ul-Adha", "Pohela Boishakh", "Pahela Falgun",
+  "Durga Puja", "Bijoya Dashami", "wedding season", "festive collection",
+];
+
+export function buildProductKeywords(product: ProductDetail): string[] {
+  const result: string[] = [];
+
+  // Core identity
+  if (product.meta_title) result.push(product.meta_title);
+  if (product.name) {
+    result.push(product.name);
+    const tokens = tokenize(product.name);
+    result.push(...extractNGrams(tokens));
+  }
+
+  // Category hierarchy
+  const categoryName = product.primary_category?.name;
+  if (categoryName) {
+    result.push(categoryName);
+    result.push(`${categoryName} Bangladesh`);
+    result.push(`handmade ${categoryName.toLowerCase()}`);
+    result.push(`${categoryName} online`);
+  }
+
+  // Tags
+  (product.tags || []).forEach((tag) => {
+    if (typeof tag === "string") result.push(tag);
+    else if (tag && typeof tag === "object" && "name" in tag) result.push((tag as { name: string }).name);
+  });
+
+  // Attributes → long-tail clusters
+  (product.attributes || []).forEach((attr) => {
+    const slug = (attr.attribute?.slug || "").toLowerCase();
+    const value = attr.value || "";
+    if (!value) return;
+    result.push(value);
+    if (attr.attribute?.name) {
+      result.push(`${attr.attribute.name} ${value}`);
+      result.push(`${value} ${attr.attribute.name}`);
+    }
+    const kwGroup = ATTRIBUTE_KEYWORDS[slug];
+    if (kwGroup) {
+      kwGroup.forEach((ctx) => result.push(`${value} ${ctx}`));
+    }
+  });
+
+  // Material-based long-tail
+  const materialAttr = (product.attributes || []).find(
+    (a) => a.attribute?.slug === "material" || a.attribute?.slug === "fabric"
+  );
+  if (materialAttr?.value && categoryName) {
+    result.push(`${materialAttr.value} ${categoryName.toLowerCase()}`);
+    result.push(`${materialAttr.value} ${categoryName.toLowerCase()} Bangladesh`);
+  }
+
+  if (product.material_breakdown) {
+    Object.keys(product.material_breakdown).forEach((mat) => {
+      result.push(mat);
+      if (categoryName) result.push(`${mat.toLowerCase()} ${categoryName.toLowerCase()}`);
+    });
+  }
+
+  // Festive & occasion clusters
+  if (categoryName) {
+    FESTIVE_KEYWORDS.forEach((festival) => {
+      result.push(`${festival} ${categoryName.toLowerCase()}`);
+      result.push(`${festival} collection Bangladesh`);
+    });
+  }
+
+  // Location-based
+  BANGLADESH_LOCATIONS.forEach((loc) => {
+    if (categoryName) result.push(`${categoryName.toLowerCase()} ${loc}`);
+    if (product.name) {
+      const shortName = product.name.split(" ").slice(0, 3).join(" ").toLowerCase();
+      if (shortName.length > 5) result.push(`${shortName} ${loc}`);
+    }
+  });
+
+  // Transactional long-tail
+  result.push("buy online Bangladesh");
+  result.push("free delivery Bangladesh");
+  result.push("cash on delivery Bangladesh");
+  if (categoryName) {
+    result.push(`buy ${categoryName.toLowerCase()} online`);
+    result.push(`${categoryName.toLowerCase()} price Bangladesh`);
+    result.push(`best ${categoryName.toLowerCase()} Bangladesh`);
+  }
+
+  // Craft/heritage signals
+  result.push("hand embroidered Bangladesh");
+  result.push("artisan made Bangladesh");
+  result.push("traditional Bangladeshi craft");
+
+  return dedupPhrases(result).slice(0, 50);
+}
+
+export function buildCategoryKeywords(
+  category: { name: string; description?: string | null; children?: Array<{ name: string }> },
+): string[] {
+  const result: string[] = [];
+
+  if (category.name) {
+    result.push(category.name);
+    result.push(`${category.name} collection`);
+    result.push(`${category.name} Bangladesh`);
+    result.push(`handmade ${category.name.toLowerCase()}`);
+    result.push(`hand embroidered ${category.name.toLowerCase()}`);
+    result.push(`traditional ${category.name.toLowerCase()} Bangladesh`);
+    const tokens = tokenize(category.name);
+    result.push(...extractNGrams(tokens));
+  }
+
+  if (category.description) {
+    const descTokens = tokenize(category.description).slice(0, 8);
+    descTokens.forEach((t) => result.push(t));
+    result.push(...extractNGrams(descTokens, 2, 2));
+  }
+
+  (category.children || []).forEach((child) => {
+    if (child.name) {
+      result.push(child.name);
+      result.push(`${category.name.toLowerCase()} ${child.name.toLowerCase()}`);
+      result.push(`buy ${child.name.toLowerCase()} online`);
+      result.push(`${child.name.toLowerCase()} Bangladesh`);
+    }
+  });
+
+  FESTIVE_KEYWORDS.forEach((festival) => {
+    result.push(`${festival} ${category.name.toLowerCase()}`);
+    result.push(`${festival} collection`);
+  });
+
+  BANGLADESH_LOCATIONS.forEach((loc) => {
+    result.push(`${category.name.toLowerCase()} ${loc}`);
+  });
+
+  result.push(`buy ${category.name.toLowerCase()} online`);
+  result.push(`${category.name.toLowerCase()} price Bangladesh`);
+  result.push(`best ${category.name.toLowerCase()} Bangladesh`);
+  result.push(`artisan ${category.name.toLowerCase()}`);
+  result.push(`${category.name.toLowerCase()} free delivery`);
+
+  return dedupPhrases(result).slice(0, 35);
+}
+
+export function buildPageKeywords(title: string, excerpt?: string | null): string[] {
+  const result: string[] = [];
+  if (title) {
+    result.push(title);
+    result.push(...extractNGrams(tokenize(title)));
+    result.push(`${title} | Bunoraa`);
+  }
+  if (excerpt) {
+    const tokens = tokenize(excerpt).slice(0, 10);
+    tokens.forEach((t) => result.push(t));
+    result.push(...extractNGrams(tokens, 2, 2));
+  }
+  result.push("Bunoraa Bangladesh");
+  result.push("artisan marketplace Bangladesh");
+  result.push("handmade Bangladesh");
+  return dedupPhrases(result).slice(0, 20);
+}
+
 export function buildProductSchema(product: ProductDetail) {
   const url = absoluteUrl(buildProductPath(product));
   const images = [
     product.primary_image || undefined,
     ...(product.images?.map((image) => image.image) || []),
-  ].filter(Boolean) as string[];
+  ].filter((v, i, a) => Boolean(v) && a.indexOf(v) === i) as string[];
 
   const parsePrice = (value: string | number | null | undefined) => {
     if (value === null || value === undefined || value === "") return null;
@@ -369,4 +602,52 @@ export function buildProductSchema(product: ProductDetail) {
     aggregateRating,
     hasVariant,
   });
+}
+
+export function buildLocalBusinessSchema() {
+  return cleanObject({
+    "@context": "https://schema.org",
+    "@type": "LocalBusiness",
+    "@id": absoluteUrl("/#localbusiness"),
+    name: SITE_NAME,
+    url: absoluteUrl("/"),
+    address: cleanObject({
+      "@type": "PostalAddress",
+      streetAddress: "Ulipur",
+      addressLocality: "Kurigram",
+      addressRegion: "Rangpur",
+      addressCountry: "BD",
+    }),
+    telephone: "+8801701922629",
+    email: "support@bunoraa.com",
+    image: absoluteUrl("/icon.png"),
+    priceRange: "৳",
+    sameAs: [
+      "https://www.facebook.com/bunoraa",
+      "https://www.instagram.com/bunoraa_bd",
+      "https://www.youtube.com/@bunoraa",
+    ],
+    areaServed: "Bangladesh",
+    hasOfferCatalog: cleanObject({
+      "@type": "OfferCatalog",
+      name: "Bunoraa Products",
+      itemListElement: [
+        { "@type": "OfferCatalog", name: "Women's Fashion" },
+        { "@type": "OfferCatalog", name: "Kids' Clothing" },
+        { "@type": "OfferCatalog", name: "Home Decor" },
+      ],
+    }),
+  });
+}
+
+export function buildCombinedKeywords(primary: string, secondary: string[]): string[] {
+  const result: string[] = [primary];
+  secondary.forEach((s) => {
+    result.push(`${primary} ${s}`);
+    result.push(`${s} ${primary}`);
+  });
+  result.push(`${primary} Bangladesh`);
+  result.push(`buy ${primary.toLowerCase()} online Bangladesh`);
+  result.push(`best ${primary.toLowerCase()} Bangladesh`);
+  return dedupPhrases(result);
 }

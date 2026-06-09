@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/Button";
 import Link from "next/link";
 import { WishlistIconButton } from "@/components/wishlist/WishlistIconButton";
 import { JsonLd } from "@/components/seo/JsonLd";
-import { absoluteUrl, buildBreadcrumbList, buildItemList, buildPageMetadata, cleanObject } from "@/lib/seo";
+import { absoluteUrl, buildBreadcrumbList, buildItemList, buildPageKeywords, buildPageMetadata, cleanObject } from "@/lib/seo";
 import { buildProductPath } from "@/lib/productPaths";
 import { getLazyImageProps } from "@/lib/lazyImage";
 import { headers } from "next/headers";
@@ -47,6 +47,7 @@ export async function generateMetadata({
       artisan?.bio || "Meet Bunoraa artisans and explore their curated products.",
     path: `/artisans/${slug}/`,
     images: [artisan?.avatar],
+    keywords: buildPageKeywords(artisan?.name || "Artisan", artisan?.bio),
   });
 }
 

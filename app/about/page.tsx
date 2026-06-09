@@ -497,9 +497,9 @@ export default async function AboutPage() {
           </div>
         </Card>
 
-        <Card variant="bordered" className="p-6 sm:p-7">
-          <h2 className="text-xl font-semibold">Follow {brandName}</h2>
-          {socialLinks.length ? (
+        {socialLinks.length ? (
+          <Card variant="bordered" className="p-6 sm:p-7">
+            <h2 className="text-xl font-semibold">Follow {brandName}</h2>
             <ul className="mt-5 grid gap-2.5 sm:grid-cols-2 text-sm">
               {socialLinks.map((link) => (
                 <li key={`${link.label}-${link.href}`}>
@@ -515,12 +515,8 @@ export default async function AboutPage() {
                 </li>
               ))}
             </ul>
-          ) : (
-            <p className="mt-5 text-sm text-foreground/70">
-              Social profiles are not configured yet. Check back soon.
-            </p>
-          )}
-        </Card>
+          </Card>
+        ) : null}
       </section>
 
       <JsonLd data={[aboutPageSchema, organizationSchema]} />

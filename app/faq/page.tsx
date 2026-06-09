@@ -2,12 +2,29 @@ import type { Metadata } from "next";
 import { apiFetch, ApiError } from "@/lib/api";
 import { Card } from "@/components/ui/Card";
 import { JsonLd } from "@/components/seo/JsonLd";
-import { buildPageMetadata, cleanObject } from "@/lib/seo";
+import { buildPageKeywords, buildPageMetadata, cleanObject } from "@/lib/seo";
+
+const FAQ_KEYWORDS = buildPageKeywords("Frequently Asked Questions", "Get quick answers about Bunoraa orders, products, shipping, and support.");
 
 export const metadata: Metadata = buildPageMetadata({
   title: "Frequently Asked Questions",
-  description: "Get quick answers about Bunoraa orders, products, shipping, and support.",
+  description: "Get quick answers about Bunoraa orders, products, shipping, returns, and support.",
   path: "/faq/",
+  keywords: [
+    "Bunoraa FAQ",
+    "shipping Bangladesh",
+    "order help",
+    "returns policy",
+    "payment methods",
+    "cash on delivery Bangladesh",
+    "hand embroidered clothing care",
+    "artisan product questions",
+    "Eid delivery Bangladesh",
+    "custom order inquiry",
+    "nakshi kantha care instructions",
+    "Bangladesh online shopping help",
+    ...FAQ_KEYWORDS,
+  ],
 });
 
 type Faq = {

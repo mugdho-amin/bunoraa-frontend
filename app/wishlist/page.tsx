@@ -32,7 +32,11 @@ export default function WishlistPage() {
         </div>
 
         {wishlistQuery.isLoading ? (
-          <div className="text-sm text-foreground/60">Loading wishlist...</div>
+          !hasToken ? (
+            <div className="text-sm text-foreground/60">Sign in to see your saved items.</div>
+          ) : (
+            <div className="text-sm text-foreground/60">Loading wishlist...</div>
+          )
         ) : wishlistQuery.isError ? (
           <div className="text-sm text-foreground/60">
             Could not load wishlist.

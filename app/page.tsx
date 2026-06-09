@@ -12,7 +12,7 @@ import type {
 } from "@/lib/types";
 import { asArray } from "@/lib/array";
 import { JsonLd } from "@/components/seo/JsonLd";
-import { absoluteUrl, buildItemList, buildPageMetadata, cleanObject } from "@/lib/seo";
+import { absoluteUrl, buildItemList, buildLocalBusinessSchema, buildPageMetadata, cleanObject } from "@/lib/seo";
 import { buildProductPath } from "@/lib/productPaths";
 import { getSiteSettings } from "@/lib/siteSettings.server";
 import { SectionSkeleton } from "@/components/ui/Skeleton";
@@ -31,11 +31,45 @@ const HomeProductTabs = dynamicImport(
 
 import type { HeroBanner } from "@/components/promotions/HeroBannerSlider";
 
+const HOME_KEYWORDS = [
+  "Bunoraa",
+  "hand-embroidered fashion Bangladesh",
+  "artisan collections Bangladesh",
+  "ethically sourced clothing",
+  "Bangladeshi artisan market",
+  "handmade home decor Bangladesh",
+  "traditional embroidery Bangladesh",
+  "buy artisan products online Bangladesh",
+  "Bangladesh fashion marketplace",
+  "handcrafted gifts Bangladesh",
+  "embroidered cotton dresses Bangladesh",
+  "artisan home essentials Bangladesh",
+  "nakshi kantha embroidery",
+  "hand embroidered kurta Bangladesh",
+  "Eid clothing Bangladesh",
+  "Bangladeshi fashion online",
+  "handmade co-ord sets",
+  "artisan cushion covers Dhaka",
+  "traditional Bangladeshi clothing",
+  "hand embroidered shalwar kameez",
+  "buy nakshi kantha online",
+  "Bangladeshi artisan gifts",
+  "hand embroidered fatua",
+  "sustainable fashion Bangladesh",
+  "handmade kids clothing Bangladesh",
+  "Bangladeshi home decor online",
+  "custom embroidered clothing",
+  "festive wear Bangladesh",
+  "hand embroidered cotton dress",
+  "Bangladeshi women fashion online",
+];
+
 export const metadata: Metadata = buildPageMetadata({
   title: "Curated Products and Artisan Collections | Bunoraa",
   description:
     "Discover ethically sourced hand-embroidered fashion, home decor, and artisan collections. Delivered across Bangladesh.",
   path: "/",
+  keywords: HOME_KEYWORDS,
 });
 
 type FeaturedCategory = {
@@ -266,6 +300,7 @@ export default async function Home() {
 
   const jsonLd = [
     homePageSchema,
+    buildLocalBusinessSchema(),
     ...(filteredFeaturedProducts.length ? [featuredList] : []),
     ...(collections.length ? [collectionsList] : []),
   ];
@@ -301,6 +336,8 @@ export default async function Home() {
                         fill 
                         sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
                         className="object-cover transition-transform duration-300 group-hover:scale-[1.02]" 
+                        loading="lazy"
+                        decoding="async"
                       />
                     )}
                   </div>

@@ -11,7 +11,7 @@ import { MobileFilterSortBar } from "@/components/products/MobileFilterSortBar";
 import { notFound } from "next/navigation";
 import type { CategoryFacet } from "@/components/products/FilterPanel";
 import { getServerLocaleHeaders } from "@/lib/serverLocale";
-import { buildPageMetadata } from "@/lib/seo";
+import { buildPageMetadata, buildCategoryKeywords } from "@/lib/seo";
 import { buildCategoryPath } from "@/lib/categoryPaths";
 import { cn } from "@/lib/utils";
 
@@ -162,6 +162,7 @@ export async function buildCategoryMetadataForPath(
   const page = parsePageNumber(resolvedSearchParams);
   const hasFilters = hasIndexBustingFilters(resolvedSearchParams);
   const basePath = buildCategoryPath(slugPath);
+  const categoryKeywords = buildCategoryKeywords(category);
   const metadata = buildPageMetadata({
     title: category.meta_title || category.name,
     description:
@@ -169,6 +170,7 @@ export async function buildCategoryMetadataForPath(
       category.description ||
       `Browse ${category.name} products on Bunoraa.`,
     path: page > 1 && !hasFilters ? `${basePath}?page=${page}` : basePath,
+    keywords: categoryKeywords,
   });
 
   if (!hasFilters) {

@@ -29,7 +29,7 @@ const fontDM_Sans = DM_Sans({
 });
 
 const SITE_DESCRIPTION =
-  "Discover curated products, bundles, and artisan-made collections at Bunoraa.";
+  "Discover hand-embroidered fashion, artisan home decor, and curated collections at Bunoraa. Ethically sourced, delivered across Bangladesh.";
 const metadataBase = new URL(
   SITE_URL.startsWith("http://") || SITE_URL.startsWith("https://")
     ? SITE_URL
@@ -59,11 +59,17 @@ export const metadata: Metadata = {
   },
   keywords: [
     "Bunoraa",
-    "ecommerce",
-    "online shopping",
+    "Bangladesh artisan marketplace",
+    "hand embroidered fashion",
+    "online shopping Bangladesh",
     "artisan products",
-    "collections",
-    "bundles",
+    "handmade home decor",
+    "nakshi kantha",
+    "ethically sourced clothing",
+    "Bangladeshi fashion online",
+    "Eid collection Bangladesh",
+    "hand embroidered dresses",
+    "artisan gifts Bangladesh",
   ],
   openGraph: {
     type: "website",

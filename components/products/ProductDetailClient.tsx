@@ -262,6 +262,8 @@ function ProductGallery({
                   fill
                   sizes="96px"
                   className="object-cover"
+                  loading="lazy"
+                  decoding="async"
                 />
               </button>
             ))}
@@ -341,6 +343,8 @@ function ProductGallery({
                   fill
                   sizes="64px"
                   className="object-cover"
+                  loading="lazy"
+                  decoding="async"
                 />
               </button>
             ))}
@@ -363,6 +367,8 @@ function ProductGallery({
                 width={1200}
                 height={1500}
                 className="max-h-[85vh] object-contain shadow-2xl"
+                loading="lazy"
+                decoding="async"
               />
               {hasMultipleImages && (
                 <>

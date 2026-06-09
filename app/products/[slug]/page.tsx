@@ -5,7 +5,7 @@ import { notFound, redirect } from "next/navigation";
 import { ProductDetailClient } from "@/components/products/ProductDetailClient";
 import { getServerLocaleHeaders } from "@/lib/serverLocale";
 import { JsonLd } from "@/components/seo/JsonLd";
-import { buildBreadcrumbList, buildPageMetadata, buildProductSchema } from "@/lib/seo";
+import { buildBreadcrumbList, buildPageMetadata, buildProductSchema, buildProductKeywords } from "@/lib/seo";
 import { buildCategoryPath } from "@/lib/categoryPaths";
 import { buildProductCategoryTrail, buildProductPath, getProductCategoryPath } from "@/lib/productPaths";
 
@@ -34,6 +34,8 @@ export async function generateMetadata({
     product.primary_image || undefined,
     ...(product.images?.slice(0, 5).map((image) => image.image) || []),
   ];
+  const productKeywords = buildProductKeywords(product);
+
   return buildPageMetadata({
     title: product.meta_title || product.name,
     description:
@@ -43,6 +45,7 @@ export async function generateMetadata({
       "Explore product details on Bunoraa.",
     path: buildProductPath(product),
     images: metadataImages,
+    keywords: productKeywords,
   });
 }
 
