@@ -39,7 +39,12 @@ export function PriceSlider({ priceRange }: { priceRange: PriceRange }) {
   const [activeHandle, setActiveHandle] = React.useState<"min" | "max" | null>(null);
   const timeoutRef = React.useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  // Sync from URL when not dragging
+  React.useEffect(() => {
+    return () => {
+      if (timeoutRef.current) clearTimeout(timeoutRef.current);
+    };
+  }, []);
+
   React.useEffect(() => {
     if (isDragging) return;
     setLocalMin(urlMin);
@@ -92,7 +97,18 @@ export function PriceSlider({ priceRange }: { priceRange: PriceRange }) {
     [priceRange.min, priceRange.max, schedulePush]
   );
 
-  const disabled = !Number.isFinite(priceRange.min) || !Number.isFinite(priceRange.max);
+  const hasValidRange = Number.isFinite(priceRange.min) && Number.isFinite(priceRange.max) && priceRange.max > priceRange.min;
+  const disabled = !hasValidRange;
+
+  if (!hasValidRange) {
+    return (
+      <div className="h-24 flex items-center justify-center">
+        <div className="h-1 w-full max-w-[200px] bg-muted rounded-full overflow-hidden">
+          <div className="h-full w-1/3 bg-primary rounded-full animate-pulse" />
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6 px-1">

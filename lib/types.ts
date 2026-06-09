@@ -347,6 +347,28 @@ export type PageDetail = {
   updated_at?: string;
 };
 
+export type BlogPostListItem = {
+  id: string;
+  title: string;
+  slug: string;
+  excerpt?: string | null;
+  featured_image?: string | null;
+  author_name?: string | null;
+  category_name?: string | null;
+  tags?: string[];
+  published_at?: string | null;
+  reading_time_minutes?: number | null;
+  created_at?: string;
+};
+
+export type BlogPostDetail = BlogPostListItem & {
+  content?: string | null;
+  meta_title?: string | null;
+  meta_description?: string | null;
+  meta_keywords?: string | null;
+  updated_at?: string;
+};
+
 export type MenuPage = {
   id: string;
   title: string;

@@ -446,6 +446,7 @@ function BackInStockForm({
         <input
           type="email"
           placeholder="Email address"
+          aria-label="Email for back-in-stock notification"
           value={email}
           onChange={(event) => setEmail(event.target.value)}
           className="h-11 w-full rounded-xl border border-border bg-background px-4 text-sm focus:ring-2 focus:ring-primary/20 transition-all outline-none"
@@ -1031,7 +1032,7 @@ export function ProductDetailClient({
           {!inStock && <BackInStockForm product={product} variantId={variantId} />}
 
           <div className="pt-6 border-t border-border/60">
-            <CollapsibleSection id="description" title="The Detail" icon={Info} defaultExpanded>
+            <CollapsibleSection id="description" title="The Detail" icon={Info}>
                <div className="space-y-4">
                   <p className="text-sm leading-relaxed">{product.description || product.short_description}</p>
                   {(product.attributes?.length ?? 0) > 0 && (

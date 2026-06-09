@@ -24,6 +24,7 @@ export function AppliedFilters({ variant = "default" }: { variant?: "default" | 
           <button
             key={`${filter.key}-${filter.value || filter.label}`}
             type="button"
+            aria-label={`Remove filter: ${filter.label}`}
             onClick={() => {
               const params = removeAppliedFilter(searchParams, filter);
               router.push(`${pathname}?${params.toString()}`);
@@ -71,6 +72,7 @@ export function AppliedFilters({ variant = "default" }: { variant?: "default" | 
           <button
             key={`${filter.key}-${filter.value || filter.label}`}
             type="button"
+            aria-label={`Remove filter: ${filter.label}`}
             onClick={() => {
               const params = removeAppliedFilter(searchParams, filter);
               router.push(`${pathname}?${params.toString()}`);

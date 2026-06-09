@@ -35,6 +35,7 @@ export function ProductFilterBar() {
   return (
     <div className="flex flex-wrap items-center gap-3">
       <input
+        aria-label="Search products"
         className="w-full max-w-xs rounded-lg border border-border bg-card px-3 py-2 text-sm"
         placeholder="Search products"
         defaultValue={currentQuery}
