@@ -365,7 +365,7 @@ export function HeaderClient() {
 
                 {/* ── Notifications (mobile) ── */}
                 <Link
-                  href="/account/notifications/"
+                  href="/notifications/"
                   className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm text-foreground/80 transition hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 sm:hidden"
                   role="menuitem"
                   onClick={() => setMenuOpen(false)}

@@ -131,8 +131,8 @@ export function SortMenu({
 
   const selectClass =
     variant === "minimal"
-      ? "h-9 w-full bg-muted/20 px-2 text-xs uppercase tracking-[0.18em] text-foreground sm:w-[13rem] border-none outline-none"
-      : "h-10 min-h-10 w-full rounded-xl bg-transparent px-3 text-sm text-foreground sm:w-[12.5rem] border-none outline-none";
+      ? "h-9 w-full bg-muted/20 px-2 text-xs uppercase tracking-[0.18em] text-foreground sm:w-[13rem] border border-border/60 focus-visible:border-primary focus-visible:ring-2 focus-visible:ring-primary/30 rounded-md"
+      : "h-10 min-h-10 w-full rounded-xl border border-border/60 bg-transparent px-3 text-sm text-foreground sm:w-[12.5rem] focus-visible:border-primary focus-visible:ring-2 focus-visible:ring-primary/30";
 
   return (
     <select

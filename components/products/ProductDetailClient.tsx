@@ -150,6 +150,13 @@ function ReviewSkeleton() {
   );
 }
 
+function parseAspectRatio(value?: string | null) {
+  if (!value) return 4 / 5;
+  const parts = String(value).trim().split(/[/:]/).map(Number);
+  if (parts.length !== 2 || !parts.every((n) => Number.isFinite(n) && n > 0)) return 4 / 5;
+  return parts[0] / parts[1];
+}
+
 function ProductGallery({
   product,
   layout = "default",
@@ -157,6 +164,7 @@ function ProductGallery({
   product: ProductDetail;
   layout?: "default" | "minimal";
 }) {
+  const aspectRatio = React.useMemo(() => parseAspectRatio(product.aspect_ratio), [product.aspect_ratio]);
   const images = React.useMemo(() => {
     const next: Array<{ id: string; image: string; alt: string }> = [];
     const pushImage = (id: string, image: string | null | undefined, alt: string) => {
@@ -282,9 +290,10 @@ function ProductGallery({
       <div className="relative group">
         <div
           className={cn(
-            "relative aspect-[4/5] w-full overflow-hidden bg-muted transition-all duration-500",
+            "relative w-full overflow-hidden bg-muted transition-all duration-500",
             isMinimal ? "" : "lg:mx-auto lg:max-w-[500px]"
           )}
+          style={{ aspectRatio: `${aspectRatio}` }}
           onMouseEnter={() => setIsHovering(true)}
           onMouseLeave={() => {
             setIsHovering(false);

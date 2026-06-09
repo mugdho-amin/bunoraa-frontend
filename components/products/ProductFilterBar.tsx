@@ -45,7 +45,7 @@ export function ProductFilterBar() {
         }}
       />
       <select
-        className="rounded-lg border border-border bg-card px-3 py-2 text-sm"
+        className="rounded-lg border border-border bg-card px-3 py-2 text-sm focus-visible:border-primary focus-visible:ring-2 focus-visible:ring-primary/30 outline-none"
         value={currentOrdering}
         onChange={(event) => updateParam("ordering", event.target.value)}
       >
