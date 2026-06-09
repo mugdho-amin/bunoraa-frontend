@@ -3,7 +3,7 @@ import { apiFetch, ApiError } from "@/lib/api";
 import type { ProductDetail } from "@/lib/types";
 import { notFound, redirect } from "next/navigation";
 import { ProductDetailClient } from "@/components/products/ProductDetailClient";
-import { getServerLocaleHeaders } from "@/lib/serverLocale";
+import { getServerLocaleHeaders, getServerLang } from "@/lib/serverLocale";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { buildBreadcrumbList, buildPageMetadata, buildProductSchema, buildProductKeywords } from "@/lib/seo";
 import { buildCategoryPath } from "@/lib/categoryPaths";
@@ -29,12 +29,12 @@ export async function generateMetadata({
   params: Promise<{ slug: string }>;
 }): Promise<Metadata> {
   const { slug } = await params;
-  const product = await getProduct(slug);
+  const [product, lang] = await Promise.all([getProduct(slug), getServerLang()]);
   const metadataImages = [
     product.primary_image || undefined,
     ...(product.images?.slice(0, 5).map((image) => image.image) || []),
   ];
-  const productKeywords = buildProductKeywords(product);
+  const productKeywords = buildProductKeywords(product, lang);
 
   return buildPageMetadata({
     title: product.meta_title || product.name,
@@ -46,6 +46,7 @@ export async function generateMetadata({
     path: buildProductPath(product),
     images: metadataImages,
     keywords: productKeywords,
+    lang,
   });
 }
 

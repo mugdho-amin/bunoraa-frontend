@@ -16,3 +16,12 @@ export async function getServerLocaleHeaders(): Promise<Record<string, string>> 
 
   return headers;
 }
+
+export async function getServerLang(): Promise<string> {
+  try {
+    const cookieStore = await cookies();
+    return cookieStore.get("language")?.value || "en";
+  } catch {
+    return "en";
+  }
+}

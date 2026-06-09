@@ -4,6 +4,7 @@ import { apiFetch, ApiError } from "@/lib/api";
 import type { PageDetail } from "@/lib/types";
 import { notFound } from "next/navigation";
 import { JsonLd } from "@/components/seo/JsonLd";
+import { getServerLang } from "@/lib/serverLocale";
 import { absoluteUrl, buildBreadcrumbList, buildPageKeywords, buildPageMetadata, cleanObject } from "@/lib/seo";
 
 async function getPage(slug: string) {
@@ -27,12 +28,13 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { slug } = await params;
   headers(); // ensure request context before crypto.randomUUID
-  const page = await getPage(slug);
+  const [page, lang] = await Promise.all([getPage(slug), getServerLang()]);
   return buildPageMetadata({
     title: page.meta_title || page.title,
     description: page.meta_description || page.excerpt || "Read this page on Bunoraa.",
     path: `/pages/${page.slug}/`,
-    keywords: buildPageKeywords(page.title, page.excerpt || page.meta_description, page.meta_keywords),
+    keywords: buildPageKeywords(page.title, page.excerpt || page.meta_description, page.meta_keywords, lang),
+    lang,
   });
 }
 

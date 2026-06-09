@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/Button";
 import { notFound } from "next/navigation";
 import { getServerLocaleHeaders } from "@/lib/serverLocale";
 import { JsonLd } from "@/components/seo/JsonLd";
+import { getServerLang } from "@/lib/serverLocale";
 import { buildBreadcrumbList, buildCollectionPage, buildItemList, buildPageMetadata, buildPageKeywords } from "@/lib/seo";
 import { buildProductPath } from "@/lib/productPaths";
 
@@ -43,14 +44,15 @@ export async function generateMetadata({
   params: Promise<{ slug: string }>;
 }): Promise<Metadata> {
   const { slug } = await params;
-  const collection = await getCollection(slug);
+  const [collection, lang] = await Promise.all([getCollection(slug), getServerLang()]);
   return buildPageMetadata({
     title: collection.name,
     description:
       collection.description || `Explore curated items in the ${collection.name} collection.`,
     path: `/collections/${collection.slug}/`,
     images: [collection.image],
-    keywords: buildPageKeywords(collection.name, collection.description),
+    keywords: buildPageKeywords(collection.name, collection.description, undefined, lang),
+    lang,
   });
 }
 

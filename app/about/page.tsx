@@ -11,6 +11,7 @@ import type {
 import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
 import { JsonLd } from "@/components/seo/JsonLd";
+import { getServerLang } from "@/lib/serverLocale";
 import { absoluteUrl, buildPageMetadata, cleanObject } from "@/lib/seo";
 import { asArray } from "@/lib/array";
 import { buildCategoryPath } from "@/lib/categoryPaths";
@@ -192,7 +193,7 @@ function getSocialLinks(
 }
 
 export async function generateMetadata(): Promise<Metadata> {
-  const [page, siteSettings] = await Promise.all([getAboutPage(), getSiteSettings()]);
+  const [page, siteSettings, lang] = await Promise.all([getAboutPage(), getSiteSettings(), getServerLang()]);
   const brandName = pickText(siteSettings?.site_name) || "Bunoraa";
   const title = page?.meta_title || page?.title || `About ${brandName}`;
   const description =
@@ -206,6 +207,7 @@ export async function generateMetadata(): Promise<Metadata> {
     description,
     path: "/about/",
     images: page?.featured_image ? [page.featured_image] : undefined,
+    lang,
   });
 }
 

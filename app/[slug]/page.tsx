@@ -3,6 +3,7 @@ import { apiFetch, ApiError } from "@/lib/api";
 import type { PageDetail } from "@/lib/types";
 import { notFound } from "next/navigation";
 import { JsonLd } from "@/components/seo/JsonLd";
+import { getServerLang } from "@/lib/serverLocale";
 import { absoluteUrl, buildBreadcrumbList, buildPageMetadata, cleanObject } from "@/lib/seo";
 import {
   buildCategoryMetadataForPath,
@@ -35,6 +36,7 @@ export async function generateMetadata({
   searchParams: Promise<CategorySearchParams>;
 }): Promise<Metadata> {
   const [{ slug }, resolvedSearchParams] = await Promise.all([params, searchParams]);
+  const lang = await getServerLang();
   if (await categoryPathExists(slug)) {
     return buildCategoryMetadataForPath(slug, resolvedSearchParams);
   }
@@ -44,6 +46,7 @@ export async function generateMetadata({
       title: "Page",
       description: "Read this page on Bunoraa.",
       path: `/${slug}/`,
+      lang,
     });
   }
 
@@ -53,6 +56,7 @@ export async function generateMetadata({
       title: "Page",
       description: "Read this page on Bunoraa.",
       path: `/${slug}/`,
+      lang,
     });
   }
 
@@ -60,6 +64,7 @@ export async function generateMetadata({
     title: page.meta_title || page.title,
     description: page.meta_description || page.excerpt || "Read this page on Bunoraa.",
     path: `/${page.slug}/`,
+    lang,
   });
 }
 

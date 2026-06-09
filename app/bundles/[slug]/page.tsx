@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/Button";
 import { notFound } from "next/navigation";
 import { getServerLocaleHeaders } from "@/lib/serverLocale";
 import { JsonLd } from "@/components/seo/JsonLd";
+import { getServerLang } from "@/lib/serverLocale";
 import { buildBreadcrumbList, buildItemList, buildPageKeywords, buildPageMetadata } from "@/lib/seo";
 import { buildProductPath } from "@/lib/productPaths";
 
@@ -43,13 +44,14 @@ export async function generateMetadata({
   params: Promise<{ slug: string }>;
 }): Promise<Metadata> {
   const { slug } = await params;
-  const bundle = await getBundle(slug);
+  const [bundle, lang] = await Promise.all([getBundle(slug), getServerLang()]);
   return buildPageMetadata({
     title: bundle.name,
     description:
       bundle.description || `Explore products included in the ${bundle.name} bundle.`,
     path: `/bundles/${bundle.slug}/`,
-    keywords: buildPageKeywords(bundle.name, bundle.description),
+    keywords: buildPageKeywords(bundle.name, bundle.description, undefined, lang),
+    lang,
   });
 }
 

@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/Button";
 import Link from "next/link";
 import { WishlistIconButton } from "@/components/wishlist/WishlistIconButton";
 import { JsonLd } from "@/components/seo/JsonLd";
+import { getServerLang } from "@/lib/serverLocale";
 import { absoluteUrl, buildBreadcrumbList, buildItemList, buildPageKeywords, buildPageMetadata, cleanObject } from "@/lib/seo";
 import { buildProductPath } from "@/lib/productPaths";
 import { getLazyImageProps } from "@/lib/lazyImage";
@@ -40,14 +41,15 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { slug } = await params;
   headers(); // ensure request context before crypto.randomUUID
-  const artisan = await tryGetArtisan(slug);
+  const [artisan, lang] = await Promise.all([tryGetArtisan(slug), getServerLang()]);
   return buildPageMetadata({
     title: artisan?.name ? `${artisan.name} | Artisan` : "Artisan Profile",
     description:
       artisan?.bio || "Meet Bunoraa artisans and explore their curated products.",
     path: `/artisans/${slug}/`,
     images: [artisan?.avatar],
-    keywords: buildPageKeywords(artisan?.name || "Artisan", artisan?.bio),
+    keywords: buildPageKeywords(artisan?.name || "Artisan", artisan?.bio, undefined, lang),
+    lang,
   });
 }
 

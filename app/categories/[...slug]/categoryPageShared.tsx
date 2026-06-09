@@ -12,6 +12,7 @@ import { notFound } from "next/navigation";
 import type { CategoryFacet } from "@/components/products/FilterPanel";
 import { getServerLocaleHeaders } from "@/lib/serverLocale";
 import { buildPageMetadata, buildCategoryKeywords } from "@/lib/seo";
+import { getServerLang } from "@/lib/serverLocale";
 import { buildCategoryPath } from "@/lib/categoryPaths";
 import { cn } from "@/lib/utils";
 
@@ -159,11 +160,11 @@ export async function buildCategoryMetadataForPath(
   slugPath: string,
   resolvedSearchParams: CategorySearchParams
 ): Promise<Metadata> {
-  const category = await getCategory(slugPath);
+  const [category, lang] = await Promise.all([getCategory(slugPath), getServerLang()]);
   const page = parsePageNumber(resolvedSearchParams);
   const hasFilters = hasIndexBustingFilters(resolvedSearchParams);
   const basePath = buildCategoryPath(slugPath);
-  const categoryKeywords = buildCategoryKeywords(category);
+  const categoryKeywords = buildCategoryKeywords(category, lang);
   const metadata = buildPageMetadata({
     title: category.meta_title || category.name,
     description:
@@ -172,6 +173,7 @@ export async function buildCategoryMetadataForPath(
       `Browse ${category.name} products on Bunoraa.`,
     path: page > 1 && !hasFilters ? `${basePath}?page=${page}` : basePath,
     keywords: categoryKeywords,
+    lang,
   });
 
   if (!hasFilters) {

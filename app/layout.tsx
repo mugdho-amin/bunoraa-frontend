@@ -9,6 +9,7 @@ import { DEFAULT_OG_IMAGE_PATH, SITE_NAME, SITE_URL, absoluteUrl, cleanObject } 
 import Script from "next/script";
 import { DeferredClientEnhancements } from "@/components/layout/DeferredClientEnhancements";
 import { WebVitalsReporter } from "@/components/analytics/WebVitalsReporter";
+import { cookies } from "next/headers";
 import {
   DM_Sans,
   Poppins,
@@ -45,6 +46,11 @@ export const metadata: Metadata = {
   description: SITE_DESCRIPTION,
   alternates: {
     canonical: "/",
+    languages: {
+      "x-default": absoluteUrl("/"),
+      en: absoluteUrl("/"),
+      bn: absoluteUrl("/"),
+    },
   },
   applicationName: SITE_NAME,
   manifest: "/site.webmanifest",
@@ -150,11 +156,19 @@ const themeBootstrapScript = `
 })();
 `;
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  let htmlLang = "en";
+  try {
+    const cookieStore = await cookies();
+    htmlLang = cookieStore.get("language")?.value || "en";
+  } catch {
+    // Fallback to English during static generation
+  }
+
   const organizationSchema = cleanObject({
     "@context": "https://schema.org",
     "@type": "Organization",
@@ -186,7 +200,7 @@ export default function RootLayout({
 
   return (
     <html
-      lang="en"
+      lang={htmlLang}
       className={`system ${fontPoppins.variable} ${fontDM_Sans.variable}`}
       suppressHydrationWarning
       data-scroll-behavior="smooth"

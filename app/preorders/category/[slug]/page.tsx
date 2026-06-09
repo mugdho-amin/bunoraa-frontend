@@ -7,6 +7,7 @@ import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
 import { formatMoney } from "@/lib/checkout";
 import { notFound } from "next/navigation";
+import { getServerLang } from "@/lib/serverLocale";
 import { buildPageMetadata } from "@/lib/seo";
 
 async function getCategory(slug: string) {
@@ -29,7 +30,7 @@ export async function generateMetadata({
   params: Promise<{ slug: string }>;
 }): Promise<Metadata> {
   const { slug } = await params;
-  const category = await getCategory(slug);
+  const [category, lang] = await Promise.all([getCategory(slug), getServerLang()]);
   return buildPageMetadata({
     title: `${category.name} Preorders`,
     description:
@@ -37,6 +38,7 @@ export async function generateMetadata({
       `Configure custom preorders for ${category.name} at Bunoraa.`,
     path: `/preorders/category/${category.slug}/`,
     images: [category.image],
+    lang,
   });
 }
 

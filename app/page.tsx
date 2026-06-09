@@ -5,7 +5,7 @@ import Image from "next/image";
 import { Suspense } from "react";
 
 import { apiFetch, ApiError } from "@/lib/api";
-import { getServerLocaleHeaders } from "@/lib/serverLocale";
+import { getServerLocaleHeaders, getServerLang } from "@/lib/serverLocale";
 import type {
   Collection,
   ProductListItem,
@@ -64,13 +64,17 @@ const HOME_KEYWORDS = [
   "Bangladeshi women fashion online",
 ];
 
-export const metadata: Metadata = buildPageMetadata({
-  title: "Curated Products and Artisan Collections | Bunoraa",
-  description:
-    "Discover ethically sourced hand-embroidered fashion, home decor, and artisan collections. Delivered across Bangladesh.",
-  path: "/",
-  keywords: HOME_KEYWORDS,
-});
+export async function generateMetadata(): Promise<Metadata> {
+  const lang = await getServerLang();
+  return buildPageMetadata({
+    title: "Curated Products and Artisan Collections | Bunoraa",
+    description:
+      "Discover ethically sourced hand-embroidered fashion, home decor, and artisan collections. Delivered across Bangladesh.",
+    path: "/",
+    keywords: HOME_KEYWORDS,
+    lang,
+  });
+}
 
 type FeaturedCategory = {
 id: string;

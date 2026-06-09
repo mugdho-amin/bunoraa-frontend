@@ -50,6 +50,7 @@ export function buildPageMetadata({
   images,
   keywords,
   type = "website",
+  lang,
 }: {
   title: string;
   description: string;
@@ -57,6 +58,7 @@ export function buildPageMetadata({
   images?: Array<string | null | undefined>;
   keywords?: string | string[];
   type?: "website" | "article";
+  lang?: string;
 }): Metadata {
   const canonicalPath = normalizePath(path);
   const canonicalUrl = absoluteUrl(canonicalPath);
@@ -67,13 +69,33 @@ export function buildPageMetadata({
     ? (Array.isArray(keywords) ? keywords : keywords.split(",").map((k) => k.trim()).filter(Boolean))
     : undefined;
 
+  // Enrich keywords with language-specific clusters
+  let enrichedKeywords = kw;
+  const langKW = getLanguageKeywords(lang);
+  if (langKW.length) {
+    enrichedKeywords = kw ? [...kw, ...langKW] : langKW;
+  }
+
+  const alternates: Metadata["alternates"] = {
+    canonical: canonicalPath,
+  };
+
+  if (lang) {
+    const langAlternates: Record<string, string> = {
+      "x-default": canonicalUrl,
+      en: canonicalUrl,
+    };
+    if (lang !== "en") {
+      langAlternates[lang] = canonicalUrl;
+    }
+    alternates.languages = langAlternates;
+  }
+
   return {
     title,
     description,
-    keywords: kw,
-    alternates: {
-      canonical: canonicalPath,
-    },
+    keywords: enrichedKeywords,
+    alternates,
     openGraph: {
       type,
       url: canonicalUrl,
@@ -222,6 +244,59 @@ const TYPO_KEYWORDS = [
   "bunora bangladesh",
 ];
 
+const BENGALI_KEYWORDS = [
+  "বুনোরা",
+  "নকশি কাঁথা",
+  "হাতে তৈরি ফ্যাশন",
+  "বাংলাদেশি আর্টিজান মার্কেটপ্লেস",
+  "হাতে এমব্রয়ডারি পোশাক",
+  "ইদ কালেকশন",
+  "পহেলা বৈশাখ",
+  "পহেলা ফাল্গুন",
+  "বাংলাদেশি ফ্যাশন অনলাইন",
+  "ক্যাশ অন ডেলিভারি",
+  "ফ্রি ডেলিভারি বাংলাদেশ",
+  "হোম ডেকোর বাংলাদেশ",
+  "হাতে এমব্রয়ডারি শাড়ি",
+  "হাতে এমব্রয়ডারি কুর্তা",
+  "আর্টিজান পণ্য বাংলাদেশ",
+  "টেকসই ফ্যাশন",
+  "বিয়ের কালেকশন",
+  "হাতে তৈরি উপহার",
+  "নৈতিক ফ্যাশন",
+  "বাংলাদেশি হস্তশিল্প",
+];
+
+const BENGALI_FESTIVE_KEYWORDS = [
+  "ইদুল ফিতর",
+  "ইদুল আযহা",
+  "পহেলা বৈশাখ",
+  "পহেলা ফাল্গুন",
+  "দুর্গাপূজা",
+  "বিয়ে উপলক্ষে",
+];
+
+const BENGALI_CRAFT_KEYWORDS = [
+  "হাতে এমব্রয়ডারি",
+  "নকশি কাঁথার কাজ",
+  "বাংলাদেশি হস্তশিল্প",
+  "আর্টিজান পণ্য",
+  "ঐতিহ্যবাহী কারুশিল্প",
+];
+
+const BENGALI_LOCATIONS = [
+  "বাংলাদেশ",
+  "ঢাকা",
+  "চট্টগ্রাম",
+  "রংপুর",
+  "কুড়িগ্রাম",
+  "সিলেট",
+  "খুলনা",
+  "রাজশাহী",
+  "বরিশাল",
+  "ময়মনসিংহ",
+];
+
 const STOPWORDS = new Set([
   "the", "a", "an", "and", "or", "in", "on", "for", "with", "from", "by",
   "to", "of", "at", "is", "it", "this", "that", "these", "those",
@@ -288,6 +363,20 @@ function mergeKeywords(backendRaw: string | null | undefined, frontendGenerated:
   return dedupPhrases(combined);
 }
 
+function getBengaliKeywords(): string[] {
+  return [
+    ...BENGALI_KEYWORDS,
+    ...BENGALI_FESTIVE_KEYWORDS,
+    ...BENGALI_CRAFT_KEYWORDS,
+    ...BENGALI_LOCATIONS,
+  ];
+}
+
+function getLanguageKeywords(lang?: string): string[] {
+  if (lang?.toLowerCase() === "bn") return getBengaliKeywords();
+  return [];
+}
+
 const BANGLADESH_LOCATIONS = [
   "Bangladesh", "Dhaka", "Chattogram", "Rangpur", "Kurigram", "Ulipur",
   "Sylhet", "Khulna", "Rajshahi", "Barisal", "Mymensingh",
@@ -298,7 +387,7 @@ const FESTIVE_KEYWORDS = [
   "Durga Puja", "Bijoya Dashami", "wedding season", "festive collection",
 ];
 
-export function buildProductKeywords(product: ProductDetail): string[] {
+export function buildProductKeywords(product: ProductDetail, lang?: string): string[] {
   const result: string[] = [];
 
   // Core identity
@@ -388,11 +477,16 @@ export function buildProductKeywords(product: ProductDetail): string[] {
   result.push("artisan made Bangladesh");
   result.push("traditional Bangladeshi craft");
 
+  // Language-specific keywords
+  const langKW = getLanguageKeywords(lang);
+  if (langKW.length) result.push(...langKW);
+
   return mergeKeywords(product.meta_keywords, result).slice(0, 50);
 }
 
 export function buildCategoryKeywords(
   category: { name: string; description?: string | null; children?: Array<{ name: string }>; meta_keywords?: string | null },
+  lang?: string,
 ): string[] {
   const result: string[] = [];
 
@@ -437,10 +531,14 @@ export function buildCategoryKeywords(
   result.push(`artisan ${category.name.toLowerCase()}`);
   result.push(`${category.name.toLowerCase()} free delivery`);
 
+  // Language-specific keywords
+  const langKW = getLanguageKeywords(lang);
+  if (langKW.length) result.push(...langKW);
+
   return mergeKeywords(category.meta_keywords, result).slice(0, 35);
 }
 
-export function buildPageKeywords(title: string, excerpt?: string | null, metaKeywords?: string | null): string[] {
+export function buildPageKeywords(title: string, excerpt?: string | null, metaKeywords?: string | null, lang?: string): string[] {
   const result: string[] = [];
   if (title) {
     result.push(title);
@@ -455,6 +553,11 @@ export function buildPageKeywords(title: string, excerpt?: string | null, metaKe
   result.push("Bunoraa Bangladesh");
   result.push("artisan marketplace Bangladesh");
   result.push("handmade Bangladesh");
+
+  // Language-specific keywords
+  const langKW = getLanguageKeywords(lang);
+  if (langKW.length) result.push(...langKW);
+
   return mergeKeywords(metaKeywords, result).slice(0, 20);
 }
 
@@ -572,6 +675,7 @@ export function buildProductSchema(product: ProductDetail) {
           "@type": "AggregateRating",
           ratingValue: product.average_rating,
           reviewCount: product.reviews_count,
+          bestRating: 5,
         })
       : undefined;
 
