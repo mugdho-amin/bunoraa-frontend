@@ -86,7 +86,8 @@ function buildCategoryProductsParams(
 async function getCategory(slug: string) {
   try {
     const response = await apiFetch<Category>(`/catalog/categories/${slug}/`, {
-      headers: await getServerLocaleHeaders()
+      headers: await getServerLocaleHeaders(),
+      next: { revalidate: 300 }
     });
     return response.data;
   } catch (error) {
@@ -106,21 +107,36 @@ async function getCategoryProducts(slug: string, searchParams: CategorySearchPar
         parsePageNumber(searchParams)
       ),
       headers: await getServerLocaleHeaders(),
-      cache: "no-store"
+      next: { revalidate: 300 }
     }
   );
   return response;
 }
 
-async function getFilters(slug: string, searchParams: CategorySearchParams) {
-  const params: Record<string, string> = { category: slug };
-  if (searchParams.q && typeof searchParams.q === "string") {
-    params.q = searchParams.q;
+function buildFilterScopeParams(
+  searchParams: CategorySearchParams
+): Record<string, string> {
+  const params: Record<string, string> = {};
+  // Non-price filter params that scope the available options
+  for (const key of ["q", "in_stock", "on_sale", "min_rating", "new_arrivals"]) {
+    const val = firstValue(searchParams[key]);
+    if (val) params[key] = val;
   }
+  Object.entries(searchParams).forEach(([key, value]) => {
+    if (key.startsWith("attr_")) {
+      const val = firstValue(value);
+      if (val) params[key] = val;
+    }
+  });
+  return params;
+}
+
+async function getFilters(slug: string, searchParams: CategorySearchParams) {
+  const params: Record<string, string> = { category: slug, ...buildFilterScopeParams(searchParams) };
   const response = await apiFetch<ProductFilterResponse>("/catalog/products/filters/", {
     params,
     headers: await getServerLocaleHeaders(),
-    cache: "no-store",
+    next: { revalidate: 300 },
   });
   return response.data;
 }
@@ -132,7 +148,7 @@ async function getCategoryFacets(slug: string, searchParams: CategorySearchParam
     { 
       params,
       headers: await getServerLocaleHeaders(),
-      cache: "no-store"
+      next: { revalidate: 300 }
     }
   );
   return response.data;
@@ -187,10 +203,7 @@ export async function renderCategoryPageForPath(
   const page = Number(resolvedSearchParams.page || 1) || 1;
   const rawCols = resolvedSearchParams.cols;
   const cols: number = (rawCols === "1" || rawCols === "2" || rawCols === "4" || rawCols === "6") ? Number(rawCols) : 4;
-  const filterParams: Record<string, string> = { category: slugPath };
-  if (resolvedSearchParams.q && typeof resolvedSearchParams.q === "string") {
-    filterParams.q = resolvedSearchParams.q;
-  }
+  const filterParams: Record<string, string> = { category: slugPath, ...buildFilterScopeParams(resolvedSearchParams) };
 
   const [category, productsResponse, filterData, facets] = await Promise.all([
     getCategory(slugPath),
@@ -259,7 +272,6 @@ export async function renderCategoryPageForPath(
                 facets={facets}
                 categories={childCategories}
                 productCount={totalCount}
-                filterParams={filterParams}
                 currentCategoryPath={slugPath}
                 className="mt-6"
               />
@@ -286,7 +298,6 @@ export async function renderCategoryPageForPath(
                 categories={childCategories}
                 productCount={totalCount}
                 currentCategoryPath={slugPath}
-                filterParams={filterParams}
               />
             </FilterSidebar>
           )}

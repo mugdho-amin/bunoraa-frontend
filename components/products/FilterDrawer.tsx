@@ -20,7 +20,6 @@ export function FilterDrawer({
   productCount,
   className,
   currentCategoryPath,
-  filterParams,
   variant = "default",
 }: {
   filters: ProductFilterResponse | null;
@@ -29,7 +28,6 @@ export function FilterDrawer({
   productCount?: number;
   className?: string;
   currentCategoryPath?: string;
-  filterParams?: Record<string, string>;
   variant?: "default" | "minimal";
 }) {
   const [open, setOpen] = React.useState(false);
@@ -145,7 +143,6 @@ export function FilterDrawer({
                   categories={categories}
                   productCount={productCount}
                   currentCategoryPath={currentCategoryPath}
-                  filterParams={filterParams}
                   variant={variant}
                 />
               </div>

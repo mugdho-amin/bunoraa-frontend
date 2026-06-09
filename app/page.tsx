@@ -17,6 +17,7 @@ import { buildProductPath } from "@/lib/productPaths";
 import { getSiteSettings } from "@/lib/siteSettings.server";
 import { SectionSkeleton } from "@/components/ui/Skeleton";
 import { CategoryBand } from "@/components/products/CategoryBand";
+import { HeroBannerSlider } from "@/components/promotions/HeroBannerSlider";
 
 const ProductGrid = dynamicImport(
   () => import("@/components/products/ProductGrid").then((mod) => mod.ProductGrid)
@@ -27,15 +28,13 @@ const RecentlyViewedSection = dynamicImport(
 const HomeProductTabs = dynamicImport(
   () => import("@/components/products/HomeProductTabs").then((mod) => mod.HomeProductTabs)
 );
-const HeroBannerSlider = dynamicImport(
-  () => import("@/components/promotions/HeroBannerSlider").then((mod) => mod.HeroBannerSlider)
-);
+
 import type { HeroBanner } from "@/components/promotions/HeroBannerSlider";
 
 export const metadata: Metadata = buildPageMetadata({
-  title: "Curated Products and Artisan Collections",
+  title: "Curated Products and Artisan Collections | Bunoraa",
   description:
-    "Shop curated products, themed collections, bundles, and custom preorder programs at Bunoraa.",
+    "Discover ethically sourced hand-embroidered fashion, home decor, and artisan collections. Delivered across Bangladesh.",
   path: "/",
 });
 
@@ -185,17 +184,19 @@ async function CategoryBandsLoader({
 
 export default async function Home() {
   const [heroBanners, siteSettings, homepageData] = await Promise.all([
-    getBanners("home_hero"),
-    getSiteSettings(),
-    getHomepageData(),
+    getBanners("home_hero").catch(() => [] as Banner[]),
+    getSiteSettings().catch(() => null),
+    getHomepageData().catch(() => null),
   ]);
 
-  const featuredProducts = asArray<ProductListItem>(homepageData.featured_products);
-  const newArrivals = asArray<ProductListItem>(homepageData.new_arrivals);
-  const bestsellers = asArray<ProductListItem>(homepageData.bestsellers);
-  const onSale = asArray<ProductListItem>(homepageData.on_sale);
-  const featuredCategories = asArray<FeaturedCategory>(homepageData.featured_categories);
-  const spotlights = asArray<Spotlight>(homepageData.spotlights);
+  const hd = homepageData ?? { featured_products: [], new_arrivals: [], bestsellers: [], on_sale: [], featured_categories: [], spotlights: [], collections: [], category_bands: [] } as HomepageData;
+
+  const featuredProducts = asArray<ProductListItem>(hd.featured_products);
+  const newArrivals = asArray<ProductListItem>(hd.new_arrivals);
+  const bestsellers = asArray<ProductListItem>(hd.bestsellers);
+  const onSale = asArray<ProductListItem>(hd.on_sale);
+  const featuredCategories = asArray<FeaturedCategory>(hd.featured_categories);
+  const spotlights = asArray<Spotlight>(hd.spotlights);
   const featuredCategoryIds = new Set(featuredCategories.map((c) => c.id));
   
   const resolveCategoryId = (p: ProductListItem) => {
@@ -210,7 +211,7 @@ export default async function Home() {
   const filteredNewArrivals = filterProducts(newArrivals);
   const filteredBestsellers = filterProducts(bestsellers);
   const filteredOnSale = filterProducts(onSale);
-  const categoryBands = asArray<CategoryBandData>(homepageData.category_bands);
+  const categoryBands = asArray<CategoryBandData>(hd.category_bands);
 
   const seenIds = new Set<string>();
   const categoryBandsWithProducts = categoryBands
@@ -224,7 +225,7 @@ export default async function Home() {
     }))
     .filter((b) => b.products.length > 0);
 
-  const collections = asArray<Collection>(homepageData.collections);
+  const collections = asArray<Collection>(hd.collections);
   const brandName = pickText(siteSettings?.site_name);
   const heroDescription = pickText(
     siteSettings?.site_tagline,
@@ -273,6 +274,7 @@ export default async function Home() {
 
   return (
     <div className="bg-background text-foreground">
+      <h1 className="sr-only">Bunoraa: Ethically Sourced Artisan Fashion & Home Decor</h1>
       <section>
         <div className="w-full pb-6">
           {heroBanners.length ? (
@@ -338,9 +340,8 @@ export default async function Home() {
       </Suspense>
 
       <section className={`${sectionWrapperClass} py-8`}>
-        <h2 className="text-sm font-semibold uppercase tracking-[0.2em] text-foreground/70 mb-4">Recently viewed</h2>
         <div className="-mx-3 sm:-mx-5 lg:mx-0">
-          <RecentlyViewedSection hideTitle />
+          <RecentlyViewedSection />
         </div>
       </section>
 

@@ -2,6 +2,7 @@ import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { SearchBar } from "./SearchBar";
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import type { ProductListItem } from "@/lib/types";
 
 // Mock next/navigation
 vi.mock("next/navigation", () => ({

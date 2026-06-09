@@ -100,6 +100,7 @@ export function HeroBannerSlider({
   const primary = banners[0];
   const containerStyle: React.CSSProperties = {
     height: toCssValue(primary.style_height) || defaultHeight,
+    minHeight: toCssValue(primary.style_height) || defaultHeight,
     width: toCssValue(primary.style_width),
     maxWidth: toCssValue(primary.style_max_width),
   };

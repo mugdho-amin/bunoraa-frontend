@@ -26,11 +26,11 @@ export function LoadingScreen({
   fallbackLogoSrc,
   className,
 }: LoadingScreenProps) {
-  const [src, setSrc] = React.useState(logoSrc || "/icon.png");
+  const [src, setSrc] = React.useState(logoSrc || "/icon.svg");
 
   const handleImageError = () => {
-    if (src !== "/icon.png" && !fallbackLogoSrc) {
-      setSrc("/icon.png");
+    if (src !== "/icon.svg" && !fallbackLogoSrc) {
+      setSrc("/icon.svg");
       return;
     }
     if (fallbackLogoSrc && src !== fallbackLogoSrc) {

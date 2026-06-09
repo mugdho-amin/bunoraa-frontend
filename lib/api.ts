@@ -23,7 +23,7 @@ type ApiFetchOptions = {
 const PUBLIC_API_BASE_URL = (process.env.NEXT_PUBLIC_API_BASE_URL || "").replace(/\/$/, "");
 const INTERNAL_API_BASE_URL = (process.env.NEXT_INTERNAL_API_BASE_URL || "").replace(/\/$/, "");
 const FALLBACK_SITE_URL =
-  (process.env.NEXT_PUBLIC_SITE_URL || "").replace(/\/$/, "") || "http://localhost:3000";
+  (process.env.NEXT_PUBLIC_SITE_URL || "").replace(/\/$/, "") || "https://bunoraa.com";
 
 let refreshPromise: Promise<string | null> | null = null;
 

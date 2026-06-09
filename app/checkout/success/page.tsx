@@ -1,6 +1,7 @@
 "use client";
 import * as React from "react";
 import Link from "next/link";
+import { Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
 import { AuthGate } from "@/components/auth/AuthGate";
@@ -21,7 +22,7 @@ async function fetchOrder(orderId: string, accessToken?: string | null) {
   return response.data;
 }
 
-export default function CheckoutSuccessPage() {
+function SuccessContent() {
   const { hasToken } = useAuthContext();
   const searchParams = useSearchParams();
   const { push } = useToast();
@@ -173,5 +174,13 @@ export default function CheckoutSuccessPage() {
         </div>
       </div>
     </AuthGate>
+  );
+}
+
+export default function CheckoutSuccessPage() {
+  return (
+    <Suspense fallback={null}>
+      <SuccessContent />
+    </Suspense>
   );
 }

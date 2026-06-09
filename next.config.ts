@@ -44,6 +44,19 @@ const remotePatterns: RemotePattern[] = [
 const shouldDisableImageOptimization = process.env.NODE_ENV !== "production";
 const isProduction = process.env.NODE_ENV === "production";
 
+const cspHeader = `
+  default-src 'self';
+  script-src 'self' 'unsafe-eval' 'unsafe-inline' https://accounts.google.com https://www.googletagmanager.com https://cdn.cloudflare.com;
+  style-src 'self' 'unsafe-inline' https://accounts.google.com;
+  img-src 'self' blob: data: https: http:;
+  font-src 'self' data:;
+  connect-src 'self' https: http: ws: wss: https://accounts.google.com https://www.google-analytics.com;
+  frame-src 'self' https://accounts.google.com;
+  object-src 'none';
+  base-uri 'self';
+  form-action 'self';
+`;
+
 const securityHeaders = [
   {
     key: "X-DNS-Prefetch-Control",
@@ -75,26 +88,34 @@ const securityHeaders = [
     : []),
 ];
 
+if (isProduction) {
+  securityHeaders.push({
+    key: "Content-Security-Policy",
+    value: cspHeader.replace(/\s{2,}/g, " ").trim(),
+  });
+}
+
 const nextConfig: NextConfig = {
   trailingSlash: true,
   poweredByHeader: false,
   images: {
-    loader: 'custom',
-    loaderFile: './lib/r2-loader.ts',
+    loader: "custom",
+    loaderFile: "./lib/r2-loader.ts",
     remotePatterns,
     unoptimized: shouldDisableImageOptimization,
     formats: ["image/avif", "image/webp"],
     deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048, 3840],
     imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
     minimumCacheTTL: 31536000,
-    qualities: [60, 64, 72, 75],
+    qualities: [60, 64, 70, 72, 75],
     dangerouslyAllowSVG: true,
     contentDispositionType: "attachment",
     contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
   },
   compress: true,
-  output: 'standalone',
+  output: "standalone",
   reactCompiler: true,
+  productionBrowserSourceMaps: false,
   experimental: {
     turbopackFileSystemCacheForBuild: true,
   },
@@ -117,7 +138,6 @@ const nextConfig: NextConfig = {
       { source: "/catalog/", destination: "/", permanent: true },
       { source: "/catalog/products/:path*", destination: "/products/:path*", permanent: true },
 
-      // Direct Taxonomy Mapping: Resolves /catalog/category/ and /categories/ legacy paths straight to flat root folders
       { source: "/catalog/category/women/:path*", destination: "/women/:path*", permanent: true },
       { source: "/catalog/category/men/:path*", destination: "/men/:path*", permanent: true },
       { source: "/catalog/category/kids/:path*", destination: "/kids/:path*", permanent: true },
@@ -128,7 +148,6 @@ const nextConfig: NextConfig = {
       { source: "/products/category/:path*", destination: "/categories/:path*", permanent: true },
       { source: "/categories/category/:path*", destination: "/categories/:path*", permanent: true },
 
-      // Clean, unnested redirects for absolute paths
       { source: "/categories/women/:path*", destination: "/women/:path*", permanent: true },
       { source: "/categories/women/", destination: "/women/", permanent: true },
       { source: "/categories/men/:path*", destination: "/men/:path*", permanent: true },
@@ -142,7 +161,6 @@ const nextConfig: NextConfig = {
       { source: "/categories/collections/:path*", destination: "/collections/:path*", permanent: true },
       { source: "/categories/collections/", destination: "/collections/", permanent: true },
 
-      // Client Dashboard Management Accounts
       { source: "/account/", destination: "/account/profile/", permanent: false },
       { source: "/account/dashboard/", destination: "/account/profile/", permanent: false },
       {

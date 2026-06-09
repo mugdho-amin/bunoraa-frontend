@@ -3,6 +3,7 @@
 import * as React from "react";
 import Image from "next/image";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { logger } from "@/lib/logger";
 import { Paperclip, X } from "lucide-react";
 import { AuthGate } from "@/components/auth/AuthGate";
 import { useAuthContext } from "@/components/providers/AuthProvider";
@@ -203,7 +204,9 @@ function AgentChatConsole() {
       try {
         const payload = JSON.parse(event.data);
         if (payload.type === "typing") setTypingUsers((prev) => ({ ...prev, [String(payload.user_id)]: Boolean(payload.is_typing) }));
-      } catch {}
+      } catch (err) {
+        logger.warn("Agent chat WS: malformed payload", err);
+      }
       queryClient.invalidateQueries({ queryKey: ["agent", "conversation", selectedId] });
       queryClient.invalidateQueries({ queryKey: ["agent", "conversations"] });
       queryClient.invalidateQueries({ queryKey: ["agent", "queue"] });

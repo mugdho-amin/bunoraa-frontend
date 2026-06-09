@@ -45,7 +45,8 @@ type SearchResponse = {
 async function getSearchMeta(query: string) {
   const response = await apiFetch<SearchResponse>("/catalog/search/", {
     params: { q: query },
-    headers: await getServerLocaleHeaders()
+    headers: await getServerLocaleHeaders(),
+    next: { revalidate: 300 }
   });
   return response.data;
 }
@@ -88,7 +89,7 @@ async function getFilters(query: string) {
   const response = await apiFetch<ProductFilterResponse>("/catalog/products/filters/", {
     params: query ? { q: query } : undefined,
     headers: await getServerLocaleHeaders(),
-    cache: "no-store",
+    next: { revalidate: 300 },
   });
   return response.data;
 }
@@ -251,7 +252,6 @@ export default async function SearchPage({
                 facets={facets}
                 productCount={totalCount}
                 className="lg:hidden"
-                filterParams={filterParams}
               />
             ) : null}
             <SortMenu />
@@ -280,7 +280,6 @@ export default async function SearchPage({
                 filters={filterData}
                 facets={facets}
                 productCount={totalCount}
-                filterParams={filterParams}
               />
             </aside>
           ) : null}

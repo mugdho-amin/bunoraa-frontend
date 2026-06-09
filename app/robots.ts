@@ -11,6 +11,11 @@ export default function robots(): MetadataRoute.Robots {
       disallow: [
         "/api/",
         "/admin/",
+        "/cart/",
+        "/checkout/",
+        "/account/",
+        "/wishlist/",
+        "/search/",
         "/oauth/",
         "/email/",
         "/health/",

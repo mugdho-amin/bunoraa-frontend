@@ -42,6 +42,23 @@ function firstValue(value: string | string[] | undefined): string | undefined {
   return value;
 }
 
+function buildFilterScopeParams(
+  searchParams: SearchParams
+): Record<string, string> {
+  const params: Record<string, string> = {};
+  for (const key of ["q", "in_stock", "on_sale", "min_rating", "new_arrivals"]) {
+    const val = firstValue(searchParams[key]);
+    if (val) params[key] = val;
+  }
+  Object.entries(searchParams).forEach(([key, value]) => {
+    if (key.startsWith("attr_")) {
+      const val = firstValue(value);
+      if (val) params[key] = val;
+    }
+  });
+  return params;
+}
+
 function hasIndexBustingFilters(searchParams: SearchParams): boolean {
   return Object.entries(searchParams).some(([key, value]) => {
     if (key === "page" || key === "view" || key === "cols") return false;
@@ -122,19 +139,17 @@ export async function generateMetadata({
 async function getProducts(searchParams: SearchParams) {
   return apiFetch<ProductListItem[]>("/catalog/products/", {
     params: buildProductRequestParams(searchParams, parsePageNumber(searchParams)),
-    headers: await getServerLocaleHeaders()
+    headers: await getServerLocaleHeaders(),
+    next: { revalidate: 300 }
   });
 }
 
 async function getFilters(searchParams: SearchParams) {
-  const params: Record<string, string> = {};
-  if (searchParams.q && typeof searchParams.q === "string") {
-    params.q = searchParams.q;
-  }
+  const params: Record<string, string> = buildFilterScopeParams(searchParams);
   const response = await apiFetch<ProductFilterResponse>("/catalog/products/filters/", {
     params,
     headers: await getServerLocaleHeaders(),
-    cache: "no-store",
+    next: { revalidate: 300 },
   });
   return response.data;
 }
@@ -148,10 +163,8 @@ export default async function ProductsPage({
   const currentPage = Number(resolved.page || 1) || 1;
   const rawCols = resolved.cols;
   const cols = (rawCols === "1" || rawCols === "2" || rawCols === "4" || rawCols === "6") ? Number(rawCols) : 4;
-  const filterParams =
-    resolved.q && typeof resolved.q === "string" && resolved.q.trim()
-      ? { q: resolved.q }
-      : undefined;
+  const scoped = buildFilterScopeParams(resolved);
+  const filterParams = Object.keys(scoped).length ? scoped : undefined;
 
   const [productsResponse, filterData] = await Promise.all([
     getProducts(resolved),
@@ -225,7 +238,6 @@ export default async function ProductsPage({
             <MobileFilterSortBar
               filters={filterData}
               productCount={totalCount}
-              filterParams={filterParams}
             />
           ) : null}
         </div>
@@ -236,7 +248,6 @@ export default async function ProductsPage({
               <FilterPanel
                 filters={filterData}
                 productCount={totalCount}
-                filterParams={filterParams}
               />
             </aside>
           ) : null}

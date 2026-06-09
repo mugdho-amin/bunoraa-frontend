@@ -13,38 +13,6 @@
     -moz-appearance: textfield;
   }
 
-  .range-handle-line::-webkit-slider-thumb {
-    appearance: none;
-    height: 16px;
-    width: 2px;
-    background: hsl(var(--primary));
-    cursor: pointer;
-    pointer-events: auto;
-    border-radius: 99px;
-    box-shadow: 0 0 0 4px hsl(var(--background) / 0.8);
-    transition: transform 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
-  }
-
-  .range-handle-line::-webkit-slider-thumb:active {
-    transform: scaleY(1.2);
-    box-shadow: 0 0 0 6px hsl(var(--primary) / 0.1);
-  }
-
-  .range-handle-line::-moz-range-thumb {
-    appearance: none;
-    height: 16px;
-    width: 2px;
-    background: hsl(var(--primary));
-    cursor: pointer;
-    pointer-events: auto;
-    border: none;
-    border-radius: 99px;
-    box-shadow: 0 0 0 4px hsl(var(--background) / 0.8);
-  }
-
-  .range-slider {
-    @apply pointer-events-none absolute h-1 w-full outline-none;
-  }
 }
 
 @layer base {
@@ -85,7 +53,7 @@
     --card: 0 0% 100%;
     --border: 20 6% 88%;
     --muted: 20 6% 96%;
-    --theme-font: var(--font-poppins), "DM Sans", system-ui, sans-serif;
+    --theme-font: var(--font-poppins), system-ui, sans-serif;
   }
 
   .dark {
@@ -98,7 +66,7 @@
     --border: 20 6% 20%;
     --muted: 20 6% 15%;
     --color-text-inverse: 0 0% 0%;
-    --theme-font: var(--font-manrope), "DM Sans", system-ui, sans-serif;
+    --theme-font: var(--font-poppins), system-ui, sans-serif;
   }
 
   .moonlight {
@@ -110,7 +78,7 @@
     --card: 222 30% 14%;
     --border: 220 20% 25%;
     --muted: 220 20% 18%;
-    --theme-font: var(--font-sora), "DM Sans", system-ui, sans-serif;
+    --theme-font: var(--font-poppins), system-ui, sans-serif;
   }
 
   .gray {
@@ -122,7 +90,7 @@
     --card: 0 0% 100%;
     --border: 0 0% 86%;
     --muted: 0 0% 96%;
-    --theme-font: var(--font-plus-jakarta-sans), "DM Sans", system-ui, sans-serif;
+    --theme-font: var(--font-dm-sans), system-ui, sans-serif;
   }
 
   .modern {
@@ -134,7 +102,7 @@
     --card: 0 0% 100%;
     --border: 220 15% 85%;
     --muted: 220 15% 94%;
-    --theme-font: var(--font-space-grotesk), "DM Sans", system-ui, sans-serif;
+    --theme-font: var(--font-dm-sans), system-ui, sans-serif;
   }
 
   .system {
@@ -240,6 +208,16 @@
     outline: none;
   }
 
+  .range-slider:focus-visible::-webkit-slider-thumb {
+    outline: 2px solid hsl(var(--primary));
+    outline-offset: 3px;
+  }
+
+  .range-slider:focus-visible::-moz-range-thumb {
+    outline: 2px solid hsl(var(--primary));
+    outline-offset: 3px;
+  }
+
   .range-slider:disabled {
     opacity: 0.5;
     pointer-events: none;
@@ -258,6 +236,9 @@
     cursor: pointer;
     pointer-events: auto;
     transition: all 0.15s ease;
+    /* 44px invisible touch target for mobile */
+    --thumb-touch-extend: 12px;
+    background-clip: padding-box;
   }
 
   .range-slider::-webkit-slider-thumb:hover {
@@ -319,6 +300,16 @@
 
   .range-slider-max {
     z-index: var(--slider-max-z, 20);
+  }
+
+  /* Respect reduced motion preference */
+  @media (prefers-reduced-motion: reduce) {
+    .range-slider::-webkit-slider-thumb {
+      transition: none;
+    }
+    .range-slider::-moz-range-thumb {
+      transition: none;
+    }
   }
 
   html.cart-drawer-open body > :not([data-cart-drawer-root]):not([data-toast-root]):not(script) {

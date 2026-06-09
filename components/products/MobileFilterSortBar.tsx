@@ -13,7 +13,6 @@ interface MobileFilterSortBarProps {
   facets?: CategoryFacet[];
   categories?: CategoryFilterItem[];
   productCount?: number;
-  filterParams?: Record<string, string>;
   currentCategoryPath?: string;
   className?: string;
 }
@@ -23,7 +22,6 @@ export function MobileFilterSortBar({
   facets,
   categories,
   productCount,
-  filterParams,
   currentCategoryPath,
   className,
 }: MobileFilterSortBarProps) {
@@ -36,7 +34,6 @@ export function MobileFilterSortBar({
             facets={facets}
             categories={categories}
             productCount={productCount}
-            filterParams={filterParams}
             currentCategoryPath={currentCategoryPath}
             className="w-full sm:w-auto"
           />

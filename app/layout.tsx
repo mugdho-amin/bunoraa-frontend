@@ -11,11 +11,7 @@ import { DeferredClientEnhancements } from "@/components/layout/DeferredClientEn
 import { WebVitalsReporter } from "@/components/analytics/WebVitalsReporter";
 import {
   DM_Sans,
-  Manrope,
-  Plus_Jakarta_Sans,
   Poppins,
-  Space_Grotesk,
-  Sora,
 } from "next/font/google";
 
 const fontPoppins = Poppins({
@@ -32,34 +28,6 @@ const fontDM_Sans = DM_Sans({
   display: "swap",
 });
 
-const fontManrope = Manrope({
-  subsets: ["latin"],
-  weight: ["300", "400", "500", "600", "700"],
-  variable: "--font-manrope",
-  display: "swap",
-});
-
-const fontPlusJakartaSans = Plus_Jakarta_Sans({
-  subsets: ["latin"],
-  weight: ["300", "400", "500", "600", "700"],
-  variable: "--font-plus-jakarta-sans",
-  display: "swap",
-});
-
-const fontSpaceGrotesk = Space_Grotesk({
-  subsets: ["latin"],
-  weight: ["300", "400", "500", "600", "700"],
-  variable: "--font-space-grotesk",
-  display: "swap",
-});
-
-const fontSora = Sora({
-  subsets: ["latin"],
-  weight: ["300", "400", "500", "600", "700"],
-  variable: "--font-sora",
-  display: "swap",
-});
-
 const SITE_DESCRIPTION =
   "Discover curated products, bundles, and artisan-made collections at Bunoraa.";
 const metadataBase = new URL(
@@ -67,8 +35,6 @@ const metadataBase = new URL(
     ? SITE_URL
     : `https://${SITE_URL}`
 );
-
-export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
   metadataBase,
@@ -215,8 +181,9 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`system ${fontPoppins.variable} ${fontDM_Sans.variable} ${fontManrope.variable} ${fontPlusJakartaSans.variable} ${fontSpaceGrotesk.variable} ${fontSora.variable}`}
+      className={`system ${fontPoppins.variable} ${fontDM_Sans.variable}`}
       suppressHydrationWarning
+      data-scroll-behavior="smooth"
     >
       <head>
         <link rel="preconnect" href="https://accounts.google.com" crossOrigin="anonymous" />

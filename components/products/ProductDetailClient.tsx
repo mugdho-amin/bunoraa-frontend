@@ -2,6 +2,7 @@
 
 import * as React from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { apiFetch, ApiError } from "@/lib/api";
 import type {
@@ -26,7 +27,6 @@ import { ProductGrid } from "@/components/products/ProductGrid";
 import { buildProductCategoryTrail, buildProductPath } from "@/lib/productPaths";
 import { buildCategoryPath } from "@/lib/categoryPaths";
 import { ChevronLeft, ChevronRight, ChevronUp, ChevronDown, X, Info, Truck, RefreshCw } from "lucide-react";
-import { getLazyImageProps } from "@/lib/lazyImage";
 import { getColorSwatch } from "@/lib/colors";
 
 type Variant = NonNullable<ProductDetail["variants"]>[number];
@@ -256,11 +256,12 @@ function ProductGallery({
                 )}
                 aria-label={`Show image ${index + 1}`}
               >
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  {...getLazyImageProps(image.image, image.alt)}
+                <Image
+                  src={image.image}
                   alt={image.alt}
-                  className="h-full w-full object-cover"
+                  fill
+                  sizes="96px"
+                  className="object-cover"
                 />
               </button>
             ))}
@@ -291,10 +292,12 @@ function ProductGallery({
           onClick={() => setIsZoomed((prev) => !prev)}
         >
           {activeImage ? (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img
-              {...getLazyImageProps(activeImage.image, activeImage.alt)}
+            <Image
+              src={activeImage.image}
               alt={activeImage.alt}
+              fill
+              priority={active === 0}
+              sizes="(max-width: 768px) 100vw, 800px"
               className={cn(
                 "h-full w-full object-cover transition-transform duration-700 ease-out",
                 zoomActive ? "scale-110" : "scale-100",
@@ -332,11 +335,12 @@ function ProductGallery({
                   index === active ? "border-primary" : "border-transparent"
                 )}
               >
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  {...getLazyImageProps(image.image, image.alt)}
+                <Image
+                  src={image.image}
                   alt={image.alt}
-                  className="h-full w-full object-cover"
+                  fill
+                  sizes="64px"
+                  className="object-cover"
                 />
               </button>
             ))}
@@ -353,10 +357,11 @@ function ProductGallery({
               <X size={24} />
             </button>
             <div className="relative max-h-[85vh] max-w-[95vw]">
-               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
+              <Image
                 src={activeImage.image}
                 alt={activeImage.alt}
+                width={1200}
+                height={1500}
                 className="max-h-[85vh] object-contain shadow-2xl"
               />
               {hasMultipleImages && (
