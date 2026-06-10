@@ -331,22 +331,22 @@ export async function Footer() {
     {
       key: "terms",
       label: "Terms of Use",
-      href: resolveFooterPageHref(["terms-of-use", "terms", "terms-and-conditions"]),
+      href: resolveFooterPageHref(["terms-of-use", "terms", "terms-and-conditions"]) || "/pages/terms/",
     },
     {
       key: "privacy",
       label: "Privacy",
-      href: resolveFooterPageHref(["privacy", "privacy-policy"]),
+      href: resolveFooterPageHref(["privacy", "privacy-policy"]) || "/pages/privacy/",
     },
     {
       key: "shipping",
       label: "Shipping",
-      href: resolveFooterPageHref(["shipping", "shipping-policy"]),
+      href: resolveFooterPageHref(["shipping", "shipping-policy"]) || "/pages/shipping/",
     },
     {
       key: "returns",
       label: "Returns",
-      href: resolveFooterPageHref(["returns", "returns-policy", "refund-policy"]),
+      href: resolveFooterPageHref(["returns", "returns-policy", "refund-policy"]) || "/pages/returns/",
     },
   ]
     .filter(hasHref));

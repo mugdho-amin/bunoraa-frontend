@@ -28,17 +28,23 @@ export default function ResetPasswordPage() {
   const params = useParams();
   const token = params?.token as string;
   const [complete, setComplete] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const form = useForm<FormValues>({
     resolver: zodResolver(schema),
   });
 
   const onSubmit = async (values: FormValues) => {
-    await apiFetch("/accounts/password/reset/", {
-      method: "POST",
-      body: { token, ...values },
-    });
-    setComplete(true);
-    setTimeout(() => router.push("/account/login/"), 1500);
+    setErrorMessage(null);
+    try {
+      await apiFetch("/accounts/password/reset/", {
+        method: "POST",
+        body: { token, ...values },
+      });
+      setComplete(true);
+      setTimeout(() => router.push("/account/login/"), 1500);
+    } catch {
+      setErrorMessage("Unable to reset password. The link may have expired.");
+    }
   };
 
   return (
@@ -54,6 +60,9 @@ export default function ResetPasswordPage() {
           <p className="text-sm text-foreground/70">Password updated. Redirecting...</p>
         ) : (
           <form className="space-y-4" onSubmit={form.handleSubmit(onSubmit)}>
+            {errorMessage ? (
+              <p className="text-sm text-error-500" role="alert">{errorMessage}</p>
+            ) : null}
             <label className="block text-sm">
               New password
               <input

@@ -16,16 +16,22 @@ type FormValues = z.infer<typeof schema>;
 
 export default function ForgotPasswordPage() {
   const [sent, setSent] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const form = useForm<FormValues>({
     resolver: zodResolver(schema),
   });
 
   const onSubmit = async (values: FormValues) => {
-    await apiFetch("/accounts/password/reset/request/", {
-      method: "POST",
-      body: values,
-    });
-    setSent(true);
+    setErrorMessage(null);
+    try {
+      await apiFetch("/accounts/password/reset/request/", {
+        method: "POST",
+        body: values,
+      });
+      setSent(true);
+    } catch {
+      setErrorMessage("Unable to send reset link. Please try again later.");
+    }
   };
 
   return (
@@ -39,11 +45,14 @@ export default function ForgotPasswordPage() {
         </div>
 
         {sent ? (
-          <p className="text-sm text-foreground/70">
+          <p className="text-sm text-foreground/70" aria-live="polite">
             If an account exists with that email, a reset link has been sent.
           </p>
         ) : (
           <form className="space-y-4" onSubmit={form.handleSubmit(onSubmit)}>
+            {errorMessage ? (
+              <p className="text-sm text-error-500" role="alert">{errorMessage}</p>
+            ) : null}
             <label className="block text-sm">
               Email
               <input

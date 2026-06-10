@@ -20,9 +20,7 @@ export default function robots(): MetadataRoute.Robots {
         "/email/",
         "/health/",
         "/status/",
-        "/api/schema/",
-        "/api/schema/swagger-ui/",
-        "/api/schema/redoc/",
+        // API schema paths intentionally omitted to avoid exposing internal structure
       ],
     },
     sitemap: sitemapUrl,
