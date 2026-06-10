@@ -176,11 +176,7 @@ export function InfiniteProductGrid({
               >
                 {isLoadingMore ? "Loading..." : "Load more"}
               </Button>
-            ) : (
-              <p className="text-xs uppercase tracking-[0.16em] text-foreground/45">
-                End of results
-              </p>
-            )}
+            ) : null}
             {loadMoreError ? (
               <p className="text-sm text-error">{loadMoreError}</p>
             ) : null}

@@ -11,10 +11,11 @@ import type {
 import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
 import { JsonLd } from "@/components/seo/JsonLd";
-import { getServerLang } from "@/lib/serverLocale";
+import { getServerLang, getServerLocaleHeaders } from "@/lib/serverLocale";
 import { absoluteUrl, buildPageMetadata, cleanObject } from "@/lib/seo";
 import { asArray } from "@/lib/array";
 import { buildCategoryPath } from "@/lib/categoryPaths";
+import { getSiteSettings } from "@/lib/siteSettings.server";
 
 
 type CategoryPreview = {
@@ -101,21 +102,11 @@ const getAboutPage = cache(async (): Promise<PageDetail | null> => {
   }
 });
 
-const getSiteSettings = cache(async (): Promise<SiteSettings | null> => {
-  try {
-    const response = await apiFetch<SiteSettings>("/pages/settings/", {
-      
-    });
-    return response.data;
-  } catch {
-    return null;
-  }
-});
-
 const getContactSettings = cache(async (): Promise<ContactSettings | null> => {
   try {
     const response = await apiFetch<ContactSettings>("/contacts/settings/", {
-      
+      headers: await getServerLocaleHeaders(),
+      next: { revalidate: 300 },
     });
     return response.data;
   } catch {
@@ -245,7 +236,7 @@ export default async function AboutPage() {
     siteSettings?.contact_email
   );
   const salesEmail = pickText(contactSettings?.sales_email);
-  const phone = pickText(contactSettings?.phone, siteSettings?.contact_phone);
+  const phone = pickText(siteSettings?.contact_phone, contactSettings?.phone);
   const address = pickText(siteSettings?.contact_address, siteSettings?.address);
   const businessHours = pickText(contactSettings?.business_hours_note);
   const responseTime = pickText(siteSettings?.support_reply_time_note);

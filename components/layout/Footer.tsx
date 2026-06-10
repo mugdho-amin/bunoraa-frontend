@@ -159,10 +159,12 @@ const dedupeSocialLinks = (items: FooterSocialLink[]) => {
 
 function SocialIcon({ platform, iconUrl }: { platform: string; iconUrl?: string | null }) {
   const iconClass = "h-4 w-4 object-contain";
-  if (iconUrl) {
+  const normalizedPlatform = normalizeSocialPlatform(platform);
+  const knownPlatforms = ["facebook", "instagram", "twitter", "linkedin", "youtube", "tiktok", "pinterest"];
+  if (!knownPlatforms.includes(normalizedPlatform) && iconUrl) {
     return <Image src={iconUrl} alt={`${platform} icon`} width={16} height={16} className={iconClass} loading="lazy" decoding="async" />;
   }
-  switch (normalizeSocialPlatform(platform)) {
+  switch (normalizedPlatform) {
     case "facebook":
       return (
         <svg viewBox="0 0 24 24" className={iconClass} fill="currentColor" aria-hidden="true">

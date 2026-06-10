@@ -29,9 +29,10 @@ export async function generateMetadata({
   const { slug } = await params;
   headers(); // ensure request context before crypto.randomUUID
   const [page, lang] = await Promise.all([getPage(slug), getServerLang()]);
+  const pageTitle = (page.meta_title || page.title).replace(/\s*\|\s*Bunoraa(?:\s+Bangladesh)?\s*$/i, '');
   return buildPageMetadata({
-    title: page.meta_title || page.title,
-    description: page.meta_description || page.excerpt || "Read this page on Bunoraa.",
+    title: pageTitle,
+    description: page.meta_description || page.excerpt || undefined,
     path: `/pages/${page.slug}/`,
     keywords: buildPageKeywords(page.title, page.excerpt || page.meta_description, page.meta_keywords, lang),
     lang,
