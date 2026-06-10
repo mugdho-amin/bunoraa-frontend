@@ -262,6 +262,17 @@ function SharedTitle({
   );
 }
 
+const FASHION_DEFAULT_ASPECT = 3 / 4;
+
+function parseFashionAspectRatio(value?: string | null) {
+  if (!value) return FASHION_DEFAULT_ASPECT;
+  const parts = String(value).trim().split(/[/:]/).map(Number);
+  if (parts.length !== 2) return FASHION_DEFAULT_ASPECT;
+  const [w, h] = parts;
+  if (!Number.isFinite(w) || !Number.isFinite(h) || w <= 0 || h <= 0) return FASHION_DEFAULT_ASPECT;
+  return w / h;
+}
+
 function FashionVariant({
   product,
   onQuickView,
@@ -270,10 +281,14 @@ function FashionVariant({
   const primaryImage = resolveImage(product);
   const secondaryImage = product.secondary_image;
   const productHref = buildProductPath(product);
+  const aspectRatioValue = parseFashionAspectRatio(product.aspect_ratio);
 
   return (
     <div className={cn("group flex flex-col", className)}>
-      <div className="relative aspect-[3/4] overflow-hidden bg-muted rounded-none transition-all duration-500">
+      <div
+        className="relative overflow-hidden bg-muted rounded-none transition-all duration-500"
+        style={{ aspectRatio: aspectRatioValue }}
+      >
         <Link href={productHref} className="absolute inset-0 z-10">
           <span className="sr-only">{product.name}</span>
         </Link>

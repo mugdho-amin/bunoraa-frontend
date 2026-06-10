@@ -3,7 +3,7 @@
 import * as React from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
-import { ArrowUpRight } from "lucide-react";
+import { ArrowUpRight, Star } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { apiFetch } from "@/lib/api";
 import type { ProductListItem } from "@/lib/types";
@@ -219,15 +219,12 @@ export function SearchBar({ hideSubmitButtonOnDesktop = false }: SearchBarProps)
       {showSuggestions ? (
         <div
           id={listboxId}
-          className="absolute inset-x-0 top-full z-50 mt-2 w-auto sm:w-128 max-w-128 rounded-xl border border-border bg-card p-4"
+          className="absolute inset-x-0 top-full z-50 mt-2 w-auto sm:w-128 max-w-128 max-h-[70vh] overflow-y-auto rounded-xl border border-border bg-card p-4"
           role="listbox"
           aria-label="Search suggestions"
         >
           <div className="mb-4 flex items-center justify-between text-xs text-foreground/60">
-            <p className="uppercase tracking-[0.18em]">Live results</p>
-            <p>
-              {productSuggestions.length} products | {categorySuggestions.length} categories
-            </p>
+            <p>{productSuggestions.length} products | {categorySuggestions.length} categories</p>
           </div>
 
           {suggestions.isFetching ? (
@@ -277,14 +274,15 @@ export function SearchBar({ hideSubmitButtonOnDesktop = false }: SearchBarProps)
                             <p className="text-sm font-semibold">{getProductPrice(item)} {item.currency}</p>
                             {hasRating && item.average_rating && (
                               <div className="flex items-center gap-1">
+                                <Star className="h-3 w-3 fill-amber-400 text-amber-400" />
                                 <span className="text-xs font-medium text-foreground/70">
-                                  * {item.average_rating.toFixed(1)}
+                                  {item.average_rating.toFixed(1)}
                                 </span>
-                                {item.reviews_count && (
+                                {item.reviews_count ? (
                                   <span className="text-xs text-foreground/60">
                                     ({item.reviews_count})
                                   </span>
-                                )}
+                                ) : null}
                               </div>
                             )}
                           </div>
