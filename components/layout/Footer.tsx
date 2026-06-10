@@ -405,7 +405,12 @@ export async function Footer() {
       : []),
     { key: "collections-artisans", label: "Artisans", href: "/artisans/" },
     { key: "collections-preorders", label: "Preorders", href: "/preorders/" },
-  ]).filter((item) => !shopHrefSet.has(normalizeHref(item.href)));
+  ])
+    .filter((item) => !shopHrefSet.has(normalizeHref(item.href)))
+    .filter((item) => {
+      if (item.key.startsWith("category-")) return true;
+      return true;
+    });
   const collectionHrefSet = new Set(collectionLinks.map((item) => normalizeHref(item.href)));
   const blockedCompanyHrefSet = new Set([
     ...footerLegalHrefSet,

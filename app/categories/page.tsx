@@ -27,7 +27,7 @@ type Category = {
 
 async function getCategories() {
   const response = await apiFetch<Category[]>("/catalog/categories/", {
-    params: { parent_id: "null" }
+    params: { parent_id: "null", has_products: true }
   });
   return response.data;
 }

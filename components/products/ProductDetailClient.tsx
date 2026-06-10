@@ -1016,17 +1016,44 @@ export function ProductDetailClient({
                 <div className={cn("h-2 w-2 rounded-full", inStock ? "bg-success-500 animate-pulse" : "bg-destructive")} />
                 <span className={cn(inStock ? "text-success-700" : "text-destructive")}>{stockLabel}</span>
              </div>
-             
-             <AddToCartButton
-                productId={product.id}
-                variantId={variantId}
-                quantity={quantity}
-                size="lg"
-                variant="primary"
-                className="w-full h-14 text-base font-bold shadow-2xl shadow-primary/20 hover:scale-[1.01] active:scale-95 transition-all"
-                disabled={!inStock}
-                label={inStock ? "Add to Shopping Bag" : "Currently Unavailable"}
-              />
+
+             <div className="flex items-center gap-3">
+               <div className="flex items-center border border-border/60 rounded-xl">
+                 <button
+                   type="button"
+                   onClick={() => setQuantity((q) => Math.max(1, q - 1))}
+                   className="flex h-11 w-11 items-center justify-center text-foreground/60 hover:text-foreground hover:bg-muted/50 transition-colors rounded-l-xl"
+                   aria-label="Decrease quantity"
+                   disabled={quantity <= 1}
+                 >
+                   <ChevronDown size={16} className="rotate-180" />
+                 </button>
+                 <span className="flex h-11 min-w-[3rem] items-center justify-center border-x border-border/60 px-3 text-sm font-semibold tabular-nums" aria-live="polite">
+                   {quantity}
+                 </span>
+                 <button
+                   type="button"
+                   onClick={() => setQuantity((q) => Math.min(99, q + 1))}
+                   className="flex h-11 w-11 items-center justify-center text-foreground/60 hover:text-foreground hover:bg-muted/50 transition-colors rounded-r-xl"
+                   aria-label="Increase quantity"
+                   disabled={quantity >= 99}
+                 >
+                   <ChevronUp size={16} />
+                 </button>
+               </div>
+               <div className="flex-1">
+                 <AddToCartButton
+                   productId={product.id}
+                   variantId={variantId}
+                   quantity={quantity}
+                   size="lg"
+                   variant="primary"
+                   className="w-full h-14 text-base font-bold shadow-2xl shadow-primary/20 hover:scale-[1.01] active:scale-95 transition-all"
+                   disabled={!inStock}
+                   label={inStock ? "Add to Shopping Bag" : "Currently Unavailable"}
+                 />
+               </div>
+             </div>
           </div>
 
           {!inStock && <BackInStockForm product={product} variantId={variantId} />}

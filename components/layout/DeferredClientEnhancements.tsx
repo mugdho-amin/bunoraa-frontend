@@ -15,6 +15,10 @@ const ChatWidget = dynamic(
   () => import("@/components/chat/ChatWidget").then((mod) => mod.ChatWidget),
   { ssr: false }
 );
+const ServiceWorkerRegister = dynamic(
+  () => import("@/components/common/ServiceWorkerRegister").then((mod) => mod.ServiceWorkerRegister),
+  { ssr: false }
+);
 
 export function DeferredClientEnhancements() {
   const [isReady, setIsReady] = React.useState(false);
@@ -53,6 +57,7 @@ export function DeferredClientEnhancements() {
       <PageViewTracker />
       <CompareTray />
       <ChatWidget />
+      <ServiceWorkerRegister />
     </>
   );
 }

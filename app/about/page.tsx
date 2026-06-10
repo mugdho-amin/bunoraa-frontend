@@ -254,18 +254,18 @@ export default async function AboutPage() {
   const updatedAtLabel = formatDate(page?.updated_at || page?.created_at);
 
   const stats = [
-    { key: "products", label: "Products", value: productCount, href: "/products/" },
+    { key: "products", label: "Products", value: productCount, href: productCount > 0 ? "/products/" : "" },
     {
       key: "categories",
       label: "Categories",
       value: categorySnapshot.count,
-      href: "/categories/",
+      href: categorySnapshot.count > 0 ? "/categories/" : "",
     },
     {
       key: "collections",
       label: "Collections",
       value: collectionSnapshot.count,
-      href: "/collections/",
+      href: collectionSnapshot.count > 0 ? "/collections/" : "",
     },
     {
       key: "bundles",
@@ -273,7 +273,7 @@ export default async function AboutPage() {
       value: bundleCount,
       href: bundleCount > 0 ? "/bundles/" : "",
     },
-    { key: "artisans", label: "Artisans", value: artisanCount, href: "/artisans/" },
+    { key: "artisans", label: "Artisans", value: artisanCount, href: artisanCount > 0 ? "/artisans/" : "" },
   ];
 
   const aboutPageSchema = cleanObject({
