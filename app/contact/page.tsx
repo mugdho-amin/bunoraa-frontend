@@ -1,11 +1,7 @@
 import type { Metadata } from "next";
-import dynamic from "next/dynamic";
 import { getServerLang } from "@/lib/serverLocale";
 import { buildPageKeywords, buildPageMetadata } from "@/lib/seo";
-
-const ContactPageClient = dynamic(
-  () => import("@/components/contact/ContactPageClient").then((mod) => mod.ContactPageClient)
-);
+import { ContactPageClient } from "@/components/contact/ContactPageClient";
 
 export async function generateMetadata(): Promise<Metadata> {
   const lang = await getServerLang();

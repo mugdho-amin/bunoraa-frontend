@@ -194,13 +194,13 @@ function getSocialLinks(
 
 export async function generateMetadata(): Promise<Metadata> {
   const [page, siteSettings, lang] = await Promise.all([getAboutPage(), getSiteSettings(), getServerLang()]);
-  const brandName = pickText(siteSettings?.site_name) || "Bunoraa";
-  const title = page?.meta_title || page?.title || `About ${brandName}`;
+  const brandName = pickText(siteSettings?.site_name);
+  const rawTitle = page?.meta_title || page?.title || (brandName ? `About ${brandName}` : `About`);
+  const title = rawTitle.replace(/\s*\|\s*Bunoraa(?:\s+Bangladesh)?\s*$/i, '');
   const description =
     page?.meta_description ||
     page?.excerpt ||
-    pickText(siteSettings?.site_description, siteSettings?.site_tagline, siteSettings?.tagline) ||
-    `Learn how ${brandName} curates products, collections, and artisan stories.`;
+    pickText(siteSettings?.site_description, siteSettings?.site_tagline, siteSettings?.tagline);
 
   return buildPageMetadata({
     title,
@@ -232,12 +232,11 @@ export default async function AboutPage() {
     getEndpointCount("/artisans/"),
   ]);
 
-  const brandName = pickText(siteSettings?.site_name) || "Bunoraa";
-  const title = page?.title || `About ${brandName}`;
+  const brandName = pickText(siteSettings?.site_name);
+  const title = page?.title || (brandName ? `About ${brandName}` : `About`);
   const heroSummary =
     page?.excerpt ||
-    pickText(siteSettings?.site_description, siteSettings?.site_tagline, siteSettings?.tagline) ||
-    `${brandName} curates thoughtful products and collections for everyday life.`;
+    pickText(siteSettings?.site_description, siteSettings?.site_tagline, siteSettings?.tagline);
 
   const supportEmail = pickText(
     contactSettings?.support_email,
@@ -308,9 +307,11 @@ export default async function AboutPage() {
       <section className="overflow-hidden rounded-3xl border border-border bg-gradient-to-br from-primary/15 via-background to-accent/10 px-5 sm:px-8 py-8 sm:py-10">
         <p className="text-sm uppercase tracking-[0.2em] text-foreground/60">About</p>
         <h1 className="mt-2 text-3xl sm:text-4xl font-semibold tracking-tight">{title}</h1>
+        {heroSummary ? (
         <p className="mt-4 max-w-3xl text-sm sm:text-base text-foreground/75">
           {stripHtml(heroSummary)}
         </p>
+        ) : null}
         <div className="mt-6 flex flex-wrap items-center gap-3">
           <Button asChild variant="primary-gradient">
             <Link href="/products/">Explore products</Link>
@@ -337,35 +338,28 @@ export default async function AboutPage() {
         ))}
       </section>
 
+      {page?.content || brandName || updatedAtLabel || supportEmail || phone || businessHours || responseTime ? (
       <section className="grid gap-6 lg:grid-cols-3">
+        {page?.content ? (
         <Card variant="bordered" className="lg:col-span-2 p-6 sm:p-7">
           <h2 className="text-xl font-semibold">Our story</h2>
-          {page?.content ? (
             <div
               className="prose prose-slate mt-5 max-w-none"
               dangerouslySetInnerHTML={{ __html: page.content }}
             />
-          ) : (
-            <div className="mt-5 space-y-3 text-sm text-foreground/75">
-              <p>
-                {brandName} exists to make discovering quality products simple, thoughtful, and
-                inspiring.
-              </p>
-              <p>
-                We continuously refine our catalog, collaborate with makers, and design better
-                shopping experiences across products, collections, and preorders.
-              </p>
-            </div>
-          )}
         </Card>
+        ) : null}
 
+        {brandName || updatedAtLabel || supportEmail || phone || businessHours || responseTime ? (
         <Card variant="bordered" className="p-6 sm:p-7">
           <h2 className="text-xl font-semibold">Quick facts</h2>
           <dl className="mt-5 space-y-3 text-sm">
+            {brandName ? (
             <div>
               <dt className="text-foreground/60">Brand</dt>
               <dd className="font-medium">{brandName}</dd>
             </div>
+            ) : null}
             {updatedAtLabel ? (
               <div>
                 <dt className="text-foreground/60">Page updated</dt>
@@ -406,7 +400,9 @@ export default async function AboutPage() {
             ) : null}
           </dl>
         </Card>
+        ) : null}
       </section>
+      ) : null}
 
       {categorySnapshot.items.length || collectionSnapshot.items.length ? (
         <section className="grid gap-6 lg:grid-cols-2">
@@ -453,7 +449,9 @@ export default async function AboutPage() {
         </section>
       ) : null}
 
+      {supportEmail || salesEmail || phone || address || socialLinks.length ? (
       <section className="grid gap-6 lg:grid-cols-2">
+        {supportEmail || salesEmail || phone || address ? (
         <Card variant="bordered" className="p-6 sm:p-7">
           <h2 className="text-xl font-semibold">Contact & support</h2>
           <div className="mt-5 space-y-3 text-sm">
@@ -486,22 +484,13 @@ export default async function AboutPage() {
                 <span className="text-foreground/60">Address:</span> {address}
               </p>
             ) : null}
-            {!supportEmail && !salesEmail && !phone && !address ? (
-              <p className="text-foreground/70">
-                Contact details are being updated. Visit our contact page for the latest options.
-              </p>
-            ) : null}
-          </div>
-          <div className="mt-6">
-            <Button asChild variant="secondary">
-              <Link href="/contact/">Open contact page</Link>
-            </Button>
           </div>
         </Card>
+        ) : null}
 
         {socialLinks.length ? (
           <Card variant="bordered" className="p-6 sm:p-7">
-            <h2 className="text-xl font-semibold">Follow {brandName}</h2>
+            <h2 className="text-xl font-semibold">Follow {brandName || "us"}</h2>
             <ul className="mt-5 grid gap-2.5 sm:grid-cols-2 text-sm">
               {socialLinks.map((link) => (
                 <li key={`${link.label}-${link.href}`}>
@@ -520,6 +509,7 @@ export default async function AboutPage() {
           </Card>
         ) : null}
       </section>
+      ) : null}
 
       <JsonLd data={[aboutPageSchema, organizationSchema]} />
     </div>

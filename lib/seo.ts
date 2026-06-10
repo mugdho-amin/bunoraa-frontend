@@ -53,7 +53,7 @@ export function buildPageMetadata({
   lang,
 }: {
   title: string;
-  description: string;
+  description?: string;
   path: string;
   images?: Array<string | null | undefined>;
   keywords?: string | string[];
@@ -93,7 +93,7 @@ export function buildPageMetadata({
 
   return {
     title,
-    description,
+    ...(description ? { description } : {}),
     keywords: enrichedKeywords,
     alternates,
     openGraph: {
@@ -101,13 +101,13 @@ export function buildPageMetadata({
       url: canonicalUrl,
       siteName: SITE_NAME,
       title,
-      description,
+      ...(description ? { description } : {}),
       images: shareImages,
     },
     twitter: {
       card: "summary_large_image",
       title,
-      description,
+      ...(description ? { description } : {}),
       images: shareImages,
     },
   };
