@@ -183,6 +183,30 @@ const nextConfig: NextConfig = {
         source: "/sitemap-:section.xml",
         destination: `${apiBaseUrl}/sitemap-:section.xml`,
       },
+      {
+        source: "/admin/:path*/",
+        destination: `${apiBaseUrl}/admin/:path*/`,
+      },
+      {
+        source: "/health/:path*/",
+        destination: `${apiBaseUrl}/health/:path*/`,
+      },
+      {
+        source: "/status",
+        destination: `${apiBaseUrl}/status`,
+      },
+      {
+        source: "/oauth/:path*/",
+        destination: `${apiBaseUrl}/oauth/:path*/`,
+      },
+      {
+        source: "/email/:path*/",
+        destination: `${apiBaseUrl}/email/:path*/`,
+      },
+      {
+        source: "/api/schema/:path*/",
+        destination: `${apiBaseUrl}/api/schema/:path*/`,
+      },
     ];
   },
 };
