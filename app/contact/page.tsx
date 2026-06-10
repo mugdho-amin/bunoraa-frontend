@@ -6,10 +6,10 @@ import { ContactPageClient } from "@/components/contact/ContactPageClient";
 export async function generateMetadata(): Promise<Metadata> {
   const lang = await getServerLang();
   return buildPageMetadata({
-    title: "Contact Bunoraa",
-    description: "Contact Bunoraa for support, sales, and partnership inquiries.",
+    title: "Contact",
+    description: "Get in touch with support, sales, and partnership inquiries.",
     path: "/contact/",
-    keywords: buildPageKeywords("Contact Bunoraa", "Contact Bunoraa for support, sales, and partnership inquiries.", undefined, lang),
+    keywords: buildPageKeywords("Contact", "Get in touch with support, sales, and partnership inquiries.", undefined, lang),
     lang,
   });
 }

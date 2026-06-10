@@ -38,7 +38,7 @@ export default async function CollectionsPage() {
           <p className="text-sm uppercase tracking-[0.2em] text-foreground/60">Collections</p>
           <h1 className="text-3xl font-semibold">Curated sets</h1>
         </div>
-        <p className="text-foreground/60 mb-6">No collections are available yet. Check back soon.</p>
+        <p className="text-foreground/60 mb-6">Collections are being curated. Check back soon.</p>
         <Link href="/products/" className="inline-flex items-center rounded-xl bg-primary px-6 py-3 text-sm font-semibold text-primary-foreground transition hover:bg-primary/90">
           Browse products
         </Link>

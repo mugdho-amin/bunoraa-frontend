@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { notFound } from "next/navigation";
 import { apiFetch, ApiError } from "@/lib/api";
 import type { Artisan } from "@/lib/types";
 import { Card } from "@/components/ui/Card";
@@ -33,7 +32,18 @@ async function getArtisans() {
 export default async function ArtisansPage() {
   const artisans = await getArtisans();
   if (!artisans.length) {
-    notFound();
+    return (
+      <div className="mx-auto w-full max-w-6xl px-3 sm:px-5 py-12 text-center">
+        <div className="mb-8">
+          <p className="text-sm uppercase tracking-[0.2em] text-foreground/60">Artisans</p>
+          <h1 className="text-3xl font-semibold">Meet the makers</h1>
+        </div>
+        <p className="text-foreground/60 mb-6">Artisans are being onboarded. Check back soon.</p>
+        <Link href="/products/" className="inline-flex items-center rounded-xl bg-primary px-6 py-3 text-sm font-semibold text-primary-foreground transition hover:bg-primary/90">
+          Browse products
+        </Link>
+      </div>
+    );
   }
 
   const list = buildItemList(

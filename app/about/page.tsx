@@ -322,9 +322,7 @@ export default async function AboutPage() {
               <Link href={item.href} className="mt-3 inline-flex text-sm text-primary">
                 View {item.label.toLowerCase()}
               </Link>
-            ) : (
-              <p className="mt-3 text-sm text-foreground/60">Currently unavailable</p>
-            )}
+            ) : null}
           </Card>
         ))}
       </section>
