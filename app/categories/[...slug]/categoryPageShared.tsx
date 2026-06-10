@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { apiFetch, ApiError } from "@/lib/api";
 import type { ProductListItem, ProductFilterResponse } from "@/lib/types";
 import { FilterSidebar, FilterSidebarToggle, FilterSidebarProvider } from "@/components/products/FilterSidebar";
@@ -311,6 +312,19 @@ export async function renderCategoryPageForPath(
             <AppliedFilters />
             
             <div className="relative -mx-4 sm:-mx-6 lg:mx-0">
+              {totalCount === 0 && !hasIndexBustingFilters(resolvedSearchParams) ? (
+                <div className="flex flex-col items-center justify-center py-20 text-center">
+                  <p className="text-lg font-semibold text-foreground/80">Coming soon</p>
+                  <p className="mt-2 text-sm text-foreground/60">This category has no products yet. Check back later or browse other categories.</p>
+                  <Link href="/products/" className="mt-6 inline-flex items-center rounded-xl bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground transition hover:bg-primary/90">
+                    Browse all products
+                  </Link>
+                </div>
+              ) : totalCount === 0 ? (
+                <div className="flex flex-col items-center justify-center py-20 text-center">
+                  <p className="text-sm text-foreground/60">No products match your filters.</p>
+                </div>
+              ) : (
               <InfiniteProductGrid
                 endpoint={`/catalog/categories/${slugPath}/products/`}
                 requestParams={requestParams}
@@ -321,6 +335,7 @@ export async function renderCategoryPageForPath(
                 cardStyle="fashion"
                 className="min-h-[400px]"
               />
+              )}
             </div>
 
           </main>

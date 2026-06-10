@@ -33,7 +33,12 @@ export default function WishlistPage() {
 
         {wishlistQuery.isLoading ? (
           !hasToken ? (
-            <div className="text-sm text-foreground/60">Sign in to see your saved items.</div>
+            <div className="space-y-4">
+              <div className="text-sm text-foreground/60">Sign in to see your saved items.</div>
+              <Link href="/products/" className="inline-flex items-center rounded-xl bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground transition hover:bg-primary/90">
+                Browse products
+              </Link>
+            </div>
           ) : (
             <div className="text-sm text-foreground/60">Loading wishlist...</div>
           )

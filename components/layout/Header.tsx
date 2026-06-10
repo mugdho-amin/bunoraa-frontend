@@ -12,7 +12,7 @@ import { buildCategoryPath } from "@/lib/categoryPaths";
 import { hasPublishedBundles } from "@/lib/bundles";
 import { getSiteSettings } from "@/lib/siteSettings.server";
 
-type Category = { id: string; name: string; slug: string; slug_path?: string | null };
+type Category = { id: string; name: string; slug: string; slug_path?: string | null; product_count?: number | null };
 
 async function getMenuPages() {
   try {
@@ -46,7 +46,9 @@ export async function Header() {
     getSiteSettings(),
   ]);
   const menuPages = menuResult.status === "fulfilled" ? menuResult.value : [];
-  const categories = categoryResult.status === "fulfilled" ? categoryResult.value : [];
+  const categories = categoryResult.status === "fulfilled"
+    ? categoryResult.value.filter(c => (c.product_count ?? 1) > 0)
+    : [];
   const hasBundles =
     bundleAvailabilityResult.status === "fulfilled"
       ? bundleAvailabilityResult.value
