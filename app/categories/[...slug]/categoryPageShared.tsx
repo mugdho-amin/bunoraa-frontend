@@ -54,21 +54,13 @@ function hasIndexBustingFilters(searchParams: CategorySearchParams): boolean {
   });
 }
 
-function parsePageNumber(searchParams: CategorySearchParams): number {
-  const rawPage = firstValue(searchParams.page);
-  const page = Number(rawPage || 1);
-  return Number.isFinite(page) && page > 1 ? Math.floor(page) : 1;
-}
-
 function buildCategoryProductsParams(
-  searchParams: CategorySearchParams,
-  page?: number
+  searchParams: CategorySearchParams
 ): Record<string, RequestParamValue> {
   const params: Record<string, RequestParamValue> = {};
 
   Object.entries(searchParams).forEach(([key, value]) => {
-    if (key === "view") return;
-    if (key === "page") return;
+    if (key === "view" || key === "page") return;
     if (value === undefined) return;
     if (Array.isArray(value)) {
       params[key] = value.filter((item) => item.trim() !== "");
@@ -78,10 +70,6 @@ function buildCategoryProductsParams(
       params[key] = value;
     }
   });
-
-  if (page && page > 1) {
-    params.page = page;
-  }
 
   return params;
 }
@@ -105,10 +93,7 @@ async function getCategoryProducts(slug: string, searchParams: CategorySearchPar
   const response = await apiFetch<ProductListItem[]>(
     `/catalog/categories/${slug}/products/`,
     {
-      params: buildCategoryProductsParams(
-        searchParams,
-        parsePageNumber(searchParams)
-      ),
+      params: buildCategoryProductsParams(searchParams),
       headers: await getServerLocaleHeaders(),
       next: { revalidate: 300 }
     }
@@ -162,7 +147,6 @@ export async function buildCategoryMetadataForPath(
   resolvedSearchParams: CategorySearchParams
 ): Promise<Metadata> {
   const [category, lang] = await Promise.all([getCategory(slugPath), getServerLang()]);
-  const page = parsePageNumber(resolvedSearchParams);
   const hasFilters = hasIndexBustingFilters(resolvedSearchParams);
   const basePath = buildCategoryPath(slugPath);
   const categoryKeywords = buildCategoryKeywords(category, lang);
@@ -172,7 +156,7 @@ export async function buildCategoryMetadataForPath(
       category.meta_description ||
       category.description ||
       `Browse ${category.name} products on Bunoraa.`,
-    path: page > 1 && !hasFilters ? `${basePath}?page=${page}` : basePath,
+    path: basePath,
     keywords: categoryKeywords,
     lang,
   });
@@ -206,7 +190,6 @@ export async function renderCategoryPageForPath(
   slugPath: string,
   resolvedSearchParams: CategorySearchParams
 ) {
-  const page = Number(resolvedSearchParams.page || 1) || 1;
   const rawCols = resolvedSearchParams.cols;
   const cols: number = (rawCols === "1" || rawCols === "2" || rawCols === "4" || rawCols === "6") ? Number(rawCols) : 4;
   const filterParams: Record<string, string> = { category: slugPath, ...buildFilterScopeParams(resolvedSearchParams) };
@@ -228,9 +211,11 @@ export async function renderCategoryPageForPath(
     count: ((rawData as Record<string, unknown>).count as number) ?? products.length,
     next: ((rawData as Record<string, unknown>).next as string | null) ?? null,
     previous: ((rawData as Record<string, unknown>).previous as string | null) ?? null,
-    page,
+    page: 1,
     page_size: products.length,
-    total_pages: Math.ceil((((rawData as Record<string, unknown>).count as number) || 0) / (products.length || 1))
+    total_pages: rawData && (rawData as Record<string, unknown>).count
+      ? Math.max(1, Math.ceil(((rawData as Record<string, unknown>).count as number) / Math.max(products.length, 1)))
+      : 1,
   } : undefined);
 
   const totalCount = pagination?.count ?? products.length;

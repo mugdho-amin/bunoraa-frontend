@@ -16,6 +16,15 @@ type ListingParamValue =
 
 type ListingRequestParams = Record<string, ListingParamValue>;
 
+function extractCursorFromUrl(urlString: string | null): string | undefined {
+  if (!urlString) return undefined;
+  try {
+    return new URL(urlString).searchParams.get("cursor") || undefined;
+  } catch {
+    return undefined;
+  }
+}
+
 function mergeProducts(
   currentProducts: ProductListItem[],
   incomingProducts: ProductListItem[]
@@ -60,6 +69,7 @@ export function InfiniteProductGrid({
   const [isLoadingMore, setIsLoadingMore] = React.useState(false);
   const [loadMoreError, setLoadMoreError] = React.useState<string | null>(null);
   const sentinelRef = React.useRef<HTMLDivElement | null>(null);
+  const abortRef = React.useRef<AbortController | null>(null);
 
   React.useEffect(() => {
     setProducts(initialProducts);
@@ -68,13 +78,18 @@ export function InfiniteProductGrid({
     setLoadMoreError(null);
   }, [resetKey, initialProducts, initialPagination]);
 
-  const hasMore =
-    Boolean(pagination?.next) ||
-    Boolean((pagination?.page || 1) < (pagination?.total_pages || 1));
+  const hasMore = Boolean(pagination?.next);
   const totalCount = pagination?.count ?? products.length;
 
   const loadMore = React.useCallback(async () => {
     if (isLoadingMore || !hasMore || !pagination) return;
+
+    const cursor = extractCursorFromUrl(pagination.next);
+    if (!cursor) return;
+
+    abortRef.current?.abort();
+    const controller = new AbortController();
+    abortRef.current = controller;
 
     setIsLoadingMore(true);
     setLoadMoreError(null);
@@ -83,25 +98,35 @@ export function InfiniteProductGrid({
       const response = await apiFetch<ProductListItem[]>(endpoint, {
         params: {
           ...requestParams,
-          page: (pagination.page || 1) + 1,
+          cursor,
         },
         cache: "no-store",
+        signal: controller.signal,
       });
+
+      if (controller.signal.aborted) return;
 
       const nextProducts = Array.isArray(response.data) ? response.data : [];
       setProducts((currentProducts) => mergeProducts(currentProducts, nextProducts));
       setPagination(response.meta?.pagination ?? pagination);
     } catch (error) {
+      if (controller.signal.aborted) return;
       setLoadMoreError(
         error instanceof Error ? error.message : "Could not load more products."
       );
     } finally {
-      setIsLoadingMore(false);
+      if (!controller.signal.aborted) {
+        setIsLoadingMore(false);
+      }
+      if (abortRef.current === controller) {
+        abortRef.current = null;
+      }
     }
   }, [endpoint, hasMore, isLoadingMore, pagination, requestParams]);
 
   React.useEffect(() => {
-    if (!hasMore || isLoadingMore || !sentinelRef.current) return;
+    const sentinel = sentinelRef.current;
+    if (!hasMore || isLoadingMore || !sentinel) return;
 
     const observer = new IntersectionObserver(
       (entries) => {
@@ -112,12 +137,19 @@ export function InfiniteProductGrid({
       { rootMargin: "280px 0px" }
     );
 
-    observer.observe(sentinelRef.current);
+    observer.observe(sentinel);
 
     return () => {
       observer.disconnect();
     };
-  }, [hasMore, isLoadingMore, loadMore, products.length]);
+  }, [hasMore, isLoadingMore, loadMore]);
+
+  React.useEffect(() => {
+    return () => {
+      abortRef.current?.abort();
+      abortRef.current = null;
+    };
+  }, []);
 
   return (
     <div className={cn("space-y-6", className)}>

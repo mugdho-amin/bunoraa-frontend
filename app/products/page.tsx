@@ -61,40 +61,29 @@ function buildFilterScopeParams(
 
 function hasIndexBustingFilters(searchParams: SearchParams): boolean {
   return Object.entries(searchParams).some(([key, value]) => {
-    if (key === "page" || key === "view" || key === "cols") return false;
+    if (key === "view" || key === "cols") return false;
     if (Array.isArray(value)) return value.some((entry) => entry.trim() !== "");
     return Boolean(value && value.trim() !== "");
   });
 }
 
-function parsePageNumber(searchParams: SearchParams): number {
-  const rawPage = firstValue(searchParams.page);
-  const page = Number(rawPage || 1);
-  return Number.isFinite(page) && page > 1 ? Math.floor(page) : 1;
-}
-
 function buildProductRequestParams(
-  searchParams: SearchParams,
-  page?: number
+  searchParams: SearchParams
 ): Record<string, RequestParamValue> {
   const params: Record<string, RequestParamValue> = {};
 
   Object.entries(searchParams).forEach(([key, value]) => {
-    if (key === "view" || key === "cols") return;
-    if (key === "page") return;
+    if (key === "view" || key === "cols" || key === "page") return;
     if (value === undefined) return;
     if (Array.isArray(value)) {
-      params[key] = value.filter((item) => item.trim() !== "");
+      const filtered = value.filter((item) => item.trim() !== "");
+      if (filtered.length) params[key] = filtered;
       return;
     }
     if (value !== "") {
       params[key] = value;
     }
   });
-
-  if (page && page > 1) {
-    params.page = page;
-  }
 
   return params;
 }
@@ -105,12 +94,11 @@ export async function generateMetadata({
   searchParams: Promise<SearchParams>;
 }): Promise<Metadata> {
   const resolved = await searchParams;
-  const page = parsePageNumber(resolved);
   const hasFilters = hasIndexBustingFilters(resolved);
   const base = buildPageMetadata({
     title: "Shop Products",
     description: "Browse all Bunoraa products, new arrivals, and best-value picks.",
-    path: page > 1 && !hasFilters ? `/products/?page=${page}` : "/products/",
+    path: "/products/",
   });
 
   if (!hasFilters) {
@@ -138,7 +126,7 @@ export async function generateMetadata({
 
 async function getProducts(searchParams: SearchParams) {
   return apiFetch<ProductListItem[]>("/catalog/products/", {
-    params: buildProductRequestParams(searchParams, parsePageNumber(searchParams)),
+    params: buildProductRequestParams(searchParams),
     headers: await getServerLocaleHeaders(),
     next: { revalidate: 300 }
   });
@@ -160,7 +148,6 @@ export default async function ProductsPage({
   searchParams: Promise<SearchParams>;
 }) {
   const resolved = await searchParams;
-  const currentPage = Number(resolved.page || 1) || 1;
   const rawCols = resolved.cols;
   const cols = (rawCols === "1" || rawCols === "2" || rawCols === "4" || rawCols === "6") ? Number(rawCols) : 4;
   const scoped = buildFilterScopeParams(resolved);
@@ -193,7 +180,7 @@ export default async function ProductsPage({
           count: rawData.count ?? products.length,
           next: rawData.next ?? null,
           previous: rawData.previous ?? null,
-          page: currentPage,
+          page: 1,
           page_size: products.length,
           total_pages: rawData.count
             ? Math.max(1, Math.ceil(rawData.count / Math.max(products.length, 1)))
