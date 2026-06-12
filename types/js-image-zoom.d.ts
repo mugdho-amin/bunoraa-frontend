@@ -12,7 +12,10 @@ declare module "js-image-zoom" {
     zoomLensStyle?: string;
   }
 
-  interface ImageZoomInstance {}
+  interface ImageZoomInstance {
+    setup(): void;
+    kill(): void;
+  }
 
   interface ImageZoomConstructor {
     new (container: HTMLElement, options: ImageZoomOptions): ImageZoomInstance;
