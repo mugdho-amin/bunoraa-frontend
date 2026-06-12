@@ -26,7 +26,7 @@ import { RecentlyViewedSection } from "@/components/products/RecentlyViewedSecti
 import { ProductGrid } from "@/components/products/ProductGrid";
 import { buildProductCategoryTrail, buildProductPath } from "@/lib/productPaths";
 import { buildCategoryPath } from "@/lib/categoryPaths";
-import { ChevronLeft, ChevronRight, ChevronUp, ChevronDown, X, Info, Truck, RefreshCw, Expand } from "lucide-react";
+import { ChevronLeft, ChevronRight, ChevronUp, ChevronDown, X, Info, Truck, RefreshCw, Ruler } from "lucide-react";
 import { getColorSwatch } from "@/lib/colors";
 import { ProductImageZoom } from "@/components/products/ProductImageZoom";
 import { TransformWrapper, TransformComponent } from "react-zoom-pan-pinch";
@@ -948,7 +948,9 @@ export function ProductDetailClient({
                 priceClassName="text-3xl font-black tracking-tight"
                 salePriceClassName="text-lg text-foreground/30 line-through font-medium"
               />
-              <p className="text-[10px] font-bold text-foreground/30 uppercase tracking-widest">Prices include all taxes</p>
+              {product.tax_info && (
+                <p className="text-[10px] font-bold text-foreground/30 uppercase tracking-widest">{product.tax_info}</p>
+              )}
           </div>
 
           <div className="space-y-6 pt-2">
@@ -1062,7 +1064,7 @@ export function ProductDetailClient({
             </CollapsibleSection>
             
             {hasSizeChartContent && (
-               <CollapsibleSection id="size-chart" title="Size & Fit" icon={ChevronUp}>
+               <CollapsibleSection id="size-chart" title="Size & Fit" icon={Ruler}>
                   <div className="space-y-4">
                      {product.size_charts?.map(link => (
                         <div key={link.size_chart.id} className="space-y-3">
@@ -1107,7 +1109,7 @@ export function ProductDetailClient({
 
       {relatedProducts && relatedProducts.length > 0 && (
         <section className="space-y-8 pt-12 border-t border-border/60">
-          <h2 className="text-xl font-bold tracking-tight uppercase tracking-[0.2em] text-foreground/30 text-center">You May Also Like</h2>
+          <h2 className="text-xl font-bold uppercase tracking-[0.2em] text-foreground/30 text-center">You May Also Like</h2>
           <ProductGrid products={relatedProducts} cardStyle="minimal" />
         </section>
       )}
