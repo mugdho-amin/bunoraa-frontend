@@ -14,10 +14,8 @@ type Props = {
 
 const ZOOM = 4;
 
-export function ProductImageZoom({ src, alt, priority = false, onZoomClick }: Props) {
+export function ProductImageZoom({ src, alt, priority = false, aspectRatio, onZoomClick }: Props) {
   const containerRef = React.useRef<HTMLDivElement>(null);
-  const imgRef = React.useRef<HTMLImageElement>(null);
-  const dims = React.useRef({ iw: 0, ih: 0 });
   const [isMobile, setIsMobile] = React.useState(false);
   const [isHovering, setIsHovering] = React.useState(false);
   const [shade, setShade] = React.useState({ x: 0, y: 0, w: 0, h: 0 });
@@ -32,55 +30,36 @@ export function ProductImageZoom({ src, alt, priority = false, onZoomClick }: Pr
     return () => window.removeEventListener("resize", check);
   }, []);
 
-  // Track actual img rendered dimensions for magnifier mapping
-  React.useEffect(() => {
-    const img = imgRef.current;
-    if (!img) return;
-    const sync = () =>
-      requestAnimationFrame(() => {
-        const ir = img.getBoundingClientRect();
-        if (ir.width > 0 && ir.height > 0) {
-          dims.current = { iw: ir.width, ih: ir.height };
-        }
-      });
-    if (img.complete && img.naturalWidth > 0) sync();
-    else img.addEventListener("load", sync, { once: true });
-    const ro = new ResizeObserver(sync);
-    ro.observe(img);
-    return () => ro.disconnect();
-  }, [src]);
-
   const handleMouseMove = React.useCallback(
     (e: React.MouseEvent<HTMLDivElement>) => {
       if (isMobile) return;
-      const img = imgRef.current;
-      if (!img) return;
-      const ir = img.getBoundingClientRect();
-      const { iw, ih } = dims.current;
-      if (!iw || !ih) return;
+      const container = containerRef.current;
+      if (!container) return;
 
-      const mx = e.clientX - ir.left;
-      const my = e.clientY - ir.top;
+      const r = container.getBoundingClientRect();
+      const cw = r.width;
+      const ch = r.height;
+      if (!cw || !ch) return;
 
-      const sw = iw / ZOOM;
-      const sh = ih / ZOOM;
+      const mx = e.clientX - r.left;
+      const my = e.clientY - r.top;
 
-      const sx = Math.max(0, Math.min(iw - sw, mx - sw / 2));
-      const sy = Math.max(0, Math.min(ih - sh, my - sh / 2));
+      const sw = cw / ZOOM;
+      const sh = ch / ZOOM;
+
+      const sx = Math.max(0, Math.min(cw - sw, mx - sw / 2));
+      const sy = Math.max(0, Math.min(ch - sh, my - sh / 2));
 
       setShade({ x: sx, y: sy, w: sw, h: sh });
 
-      const bgW = ZOOM * iw;
-      const bgX = (sx / iw) * bgW;
-      const bgY = (sy / ih) * bgW;
-
+      const bgW = ZOOM * cw;
       setMag({
-        x: ir.right + 15,
-        y: ir.top,
-        w: iw,
-        h: ih,
-        bgX,
-        bgY,
+        x: r.right + 15,
+        y: r.top,
+        w: cw,
+        h: ch,
+        bgX: (sx / cw) * bgW,
+        bgY: (sy / ch) * bgW,
         bgW,
       });
     },
@@ -92,9 +71,10 @@ export function ProductImageZoom({ src, alt, priority = false, onZoomClick }: Pr
       <div
         ref={containerRef}
         className={cn(
-          "relative w-full bg-muted select-none",
+          "relative w-full bg-muted select-none overflow-hidden",
           isMobile ? "cursor-pointer" : "cursor-crosshair"
         )}
+        style={{ aspectRatio: `${aspectRatio}` }}
         onMouseEnter={() => setIsHovering(true)}
         onMouseLeave={() => {
           setIsHovering(false);
@@ -104,17 +84,17 @@ export function ProductImageZoom({ src, alt, priority = false, onZoomClick }: Pr
         onMouseMove={handleMouseMove}
         onClick={() => onZoomClick?.()}
       >
-        <Image
-          ref={imgRef}
-          src={src}
-          alt={alt}
-          width={800}
-          height={1000}
-          priority={priority}
-          sizes="(max-width: 768px) 100vw, 800px"
-          className="w-full h-auto"
-          draggable={false}
-        />
+        <div className="relative w-full h-full">
+          <Image
+            src={src}
+            alt={alt}
+            fill
+            priority={priority}
+            sizes="(max-width: 768px) 100vw, 800px"
+            className="object-contain"
+            draggable={false}
+          />
+        </div>
 
         {!isMobile && isHovering && (
           <div
