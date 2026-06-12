@@ -215,7 +215,7 @@ export default async function RootLayout({
         <WebVitalsReporter />
         <Providers>
           <Header />
-          <main id="main-content" className="min-h-[70vh]" role="main" aria-label="Main content">
+          <main id="main-content" className="min-h-[70vh] bg-background" role="main" aria-label="Main content">
             {children}
           </main>
           <Footer />

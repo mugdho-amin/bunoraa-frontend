@@ -19,6 +19,12 @@ export function FooterNewsletter() {
       setMessage("Please enter a valid email address.");
       return;
     }
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(trimmed)) {
+      setStatus("error");
+      setMessage("Please enter a valid email address (e.g., name@example.com).");
+      return;
+    }
     setStatus("loading");
     setMessage(null);
     try {

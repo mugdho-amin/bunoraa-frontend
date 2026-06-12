@@ -314,7 +314,7 @@ export default async function AboutPage() {
       </section>
 
       <section className="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
-        {stats.map((item) => (
+        {stats.filter((item) => item.value > 0).map((item) => (
           <Card key={item.key} variant="bordered" className="rounded-2xl p-4">
             <p className="text-xs uppercase tracking-[0.2em] text-foreground/60">{item.label}</p>
             <p className="mt-2 text-2xl font-semibold">{formatCount(item.value)}</p>
