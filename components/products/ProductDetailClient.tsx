@@ -259,9 +259,10 @@ function ProductGallery({
                 type="button"
                 onClick={() => setActive(index)}
                 className={cn(
-                  "relative aspect-square w-20 flex-shrink-0 overflow-hidden border-2 transition-all duration-300",
+                  "relative w-20 flex-shrink-0 overflow-hidden border-2 transition-all duration-300",
                   index === active ? "border-primary shadow-md" : "border-transparent hover:border-primary/40"
                 )}
+                style={{ aspectRatio: `${aspectRatio}` }}
                 aria-label={`Show image ${index + 1}`}
               >
                 <Image
@@ -342,9 +343,10 @@ function ProductGallery({
                 type="button"
                 onClick={() => setActive(index)}
                 className={cn(
-                  "relative aspect-square w-16 flex-shrink-0 overflow-hidden border-2 transition-all",
+                  "relative w-16 flex-shrink-0 overflow-hidden border-2 transition-all",
                   index === active ? "border-primary" : "border-transparent"
                 )}
+                style={{ aspectRatio: `${aspectRatio}` }}
               >
                 <Image
                   src={image.image}
