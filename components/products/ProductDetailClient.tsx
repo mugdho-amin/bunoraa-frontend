@@ -26,8 +26,9 @@ import { RecentlyViewedSection } from "@/components/products/RecentlyViewedSecti
 import { ProductGrid } from "@/components/products/ProductGrid";
 import { buildProductCategoryTrail, buildProductPath } from "@/lib/productPaths";
 import { buildCategoryPath } from "@/lib/categoryPaths";
-import { ChevronLeft, ChevronRight, ChevronUp, ChevronDown, X, Info, Truck, RefreshCw } from "lucide-react";
+import { ChevronLeft, ChevronRight, ChevronUp, ChevronDown, X, Info, Truck, RefreshCw, Expand } from "lucide-react";
 import { getColorSwatch } from "@/lib/colors";
+import { ProductImageZoom } from "@/components/products/ProductImageZoom";
 
 type Variant = NonNullable<ProductDetail["variants"]>[number];
 type VariantOptionMap = Record<string, string>;
@@ -186,27 +187,14 @@ function ProductGallery({
   }, [product]);
   const [active, setActive] = React.useState(0);
   const activeImage = images[active] || images[0] || null;
-  const [isZoomed, setIsZoomed] = React.useState(false);
-  const [isHovering, setIsHovering] = React.useState(false);
-  const [zoomOrigin, setZoomOrigin] = React.useState("center");
   const [lightboxOpen, setLightboxOpen] = React.useState(false);
   const thumbsRef = React.useRef<HTMLDivElement | null>(null);
 
   React.useEffect(() => {
     setActive(0);
-    setIsZoomed(false);
     setLightboxOpen(false);
   }, [product.id]);
 
-  const handleMouseMove = (event: React.MouseEvent<HTMLDivElement>) => {
-    if (!activeImage) return;
-    const bounds = event.currentTarget.getBoundingClientRect();
-    const x = ((event.clientX - bounds.left) / bounds.width) * 100;
-    const y = ((event.clientY - bounds.top) / bounds.height) * 100;
-    setZoomOrigin(`${x.toFixed(2)}% ${y.toFixed(2)}%`);
-  };
-
-  const zoomActive = isZoomed || isHovering;
   const hasMultipleImages = images.length > 1;
   const isMinimal = layout === "minimal";
 
@@ -289,37 +277,16 @@ function ProductGallery({
       ) : null}
 
       <div className="relative group">
-        <div
-          className={cn(
-            "relative w-full overflow-hidden bg-muted transition-all duration-500",
-            isMinimal ? "" : "lg:mx-auto lg:max-w-[500px]"
-          )}
-          style={{ aspectRatio: `${aspectRatio}` }}
-          onMouseEnter={() => setIsHovering(true)}
-          onMouseLeave={() => {
-            setIsHovering(false);
-            if (!isZoomed) setZoomOrigin("center");
-          }}
-          onMouseMove={handleMouseMove}
-          onClick={() => setIsZoomed((prev) => !prev)}
-        >
-          {activeImage ? (
-            <Image
-              src={activeImage.image}
-              alt={activeImage.alt}
-              fill
-              priority={active === 0}
-              sizes="(max-width: 768px) 100vw, 800px"
-              className={cn(
-                "h-full w-full object-cover transition-transform duration-700 ease-out",
-                zoomActive ? "scale-110" : "scale-100",
-                isZoomed ? "cursor-zoom-out" : "cursor-zoom-in"
-              )}
-              style={{ transformOrigin: zoomOrigin }}
-            />
-          ) : null}
-          
-          {/* Gallery Overlay Controls */}
+        {activeImage ? (
+          <ProductImageZoom
+            src={activeImage.image}
+            alt={activeImage.alt}
+            priority={active === 0}
+            aspectRatio={aspectRatio}
+          />
+        ) : null}
+
+        {/* Gallery Overlay Controls */}
           <div className="absolute inset-x-4 bottom-4 flex items-center justify-between pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-300">
              <div className="pointer-events-auto rounded-full bg-background/90 backdrop-blur-md px-3 py-1.5 text-[10px] font-bold uppercase tracking-widest text-foreground/70 shadow-sm border border-border/40">
                 {images.length ? `${active + 1} / ${images.length}` : "1 / 1"}
@@ -395,7 +362,6 @@ function ProductGallery({
           </div>
         )}
       </div>
-    </div>
   );
 }
 
