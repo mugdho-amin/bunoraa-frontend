@@ -29,6 +29,7 @@ import { buildCategoryPath } from "@/lib/categoryPaths";
 import { ChevronLeft, ChevronRight, ChevronUp, ChevronDown, X, Info, Truck, RefreshCw, Expand } from "lucide-react";
 import { getColorSwatch } from "@/lib/colors";
 import { ProductImageZoom } from "@/components/products/ProductImageZoom";
+import { TransformWrapper, TransformComponent } from "react-zoom-pan-pinch";
 
 type Variant = NonNullable<ProductDetail["variants"]>[number];
 type VariantOptionMap = Record<string, string>;
@@ -283,6 +284,7 @@ function ProductGallery({
             alt={activeImage.alt}
             priority={active === 0}
             aspectRatio={aspectRatio}
+            onZoomClick={() => setLightboxOpen(true)}
           />
         ) : null}
 
@@ -333,27 +335,43 @@ function ProductGallery({
           <div className="fixed inset-0 z-[100] flex items-center justify-center bg-background/98 backdrop-blur-xl animate-in fade-in duration-300">
             <button
               type="button"
-              className="absolute right-6 top-6 rounded-full bg-muted/80 p-3 text-foreground/60 transition hover:text-foreground"
+              className="absolute right-6 top-6 z-10 rounded-full bg-muted/80 p-3 text-foreground/60 transition hover:text-foreground"
               onClick={() => setLightboxOpen(false)}
             >
               <X size={24} />
             </button>
             <div className="relative max-h-[85vh] max-w-[95vw]">
-              <Image
-                src={activeImage.image}
-                alt={activeImage.alt}
-                width={1200}
-                height={1500}
-                className="max-h-[85vh] object-contain shadow-2xl"
-                loading="lazy"
-                decoding="async"
-              />
+              <TransformWrapper
+                initialScale={1}
+                minScale={1}
+                maxScale={8}
+                centerOnInit
+                wheel={{ wheelDisabled: false }}
+                pinch={{ disabled: false }}
+                doubleClick={{ disabled: false, mode: "zoomIn" }}
+              >
+                <TransformComponent
+                  wrapperClass="!w-full !h-full"
+                  contentClass="!w-full !h-full"
+                >
+                  <Image
+                    src={activeImage.image}
+                    alt={activeImage.alt}
+                    width={1200}
+                    height={1500}
+                    className="max-h-[85vh] object-contain shadow-2xl"
+                    loading="lazy"
+                    decoding="async"
+                    draggable={false}
+                  />
+                </TransformComponent>
+              </TransformWrapper>
               {hasMultipleImages && (
                 <>
-                  <button onClick={goPrev} className="absolute -left-12 top-1/2 -translate-y-1/2 p-3 text-foreground/40 hover:text-primary transition-colors hidden sm:block">
+                  <button onClick={goPrev} className="absolute -left-12 top-1/2 -translate-y-1/2 p-3 text-foreground/40 hover:text-primary transition-colors hidden sm:block z-10">
                     <ChevronLeft size={48} strokeWidth={1} />
                   </button>
-                  <button onClick={goNext} className="absolute -right-12 top-1/2 -translate-y-1/2 p-3 text-foreground/40 hover:text-primary transition-colors hidden sm:block">
+                  <button onClick={goNext} className="absolute -right-12 top-1/2 -translate-y-1/2 p-3 text-foreground/40 hover:text-primary transition-colors hidden sm:block z-10">
                     <ChevronRight size={48} strokeWidth={1} />
                   </button>
                 </>
