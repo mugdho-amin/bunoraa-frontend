@@ -14,9 +14,10 @@ type Props = {
 
 const ZOOM = 4;
 
-export function ProductImageZoom({ src, alt, priority = false, aspectRatio, onZoomClick }: Props) {
+export function ProductImageZoom({ src, alt, priority = false, onZoomClick }: Props) {
   const containerRef = React.useRef<HTMLDivElement>(null);
-  const dims = React.useRef({ cw: 0, ch: 0 });
+  const imgRef = React.useRef<HTMLImageElement>(null);
+  const dims = React.useRef({ iw: 0, ih: 0 });
   const [isMobile, setIsMobile] = React.useState(false);
   const [isHovering, setIsHovering] = React.useState(false);
   const [shade, setShade] = React.useState({ x: 0, y: 0, w: 0, h: 0 });
@@ -31,51 +32,53 @@ export function ProductImageZoom({ src, alt, priority = false, aspectRatio, onZo
     return () => window.removeEventListener("resize", check);
   }, []);
 
+  // Track actual img rendered dimensions for magnifier mapping
   React.useEffect(() => {
-    const container = containerRef.current;
-    if (!container) return;
-
+    const img = imgRef.current;
+    if (!img) return;
     const sync = () =>
       requestAnimationFrame(() => {
-        dims.current = { cw: container.clientWidth, ch: container.clientHeight };
+        const ir = img.getBoundingClientRect();
+        if (ir.width > 0 && ir.height > 0) {
+          dims.current = { iw: ir.width, ih: ir.height };
+        }
       });
-
-    sync();
+    if (img.complete && img.naturalWidth > 0) sync();
+    else img.addEventListener("load", sync, { once: true });
     const ro = new ResizeObserver(sync);
-    ro.observe(container);
+    ro.observe(img);
     return () => ro.disconnect();
   }, [src]);
 
   const handleMouseMove = React.useCallback(
     (e: React.MouseEvent<HTMLDivElement>) => {
       if (isMobile) return;
-      const container = containerRef.current;
-      if (!container) return;
+      const img = imgRef.current;
+      if (!img) return;
+      const ir = img.getBoundingClientRect();
+      const { iw, ih } = dims.current;
+      if (!iw || !ih) return;
 
-      const rect = container.getBoundingClientRect();
-      const { cw, ch } = dims.current;
-      if (!cw || !ch) return;
+      const mx = e.clientX - ir.left;
+      const my = e.clientY - ir.top;
 
-      const mx = e.clientX - rect.left;
-      const my = e.clientY - rect.top;
+      const sw = iw / ZOOM;
+      const sh = ih / ZOOM;
 
-      const sw = cw / ZOOM;
-      const sh = ch / ZOOM;
-
-      const sx = Math.max(0, Math.min(cw - sw, mx - sw / 2));
-      const sy = Math.max(0, Math.min(ch - sh, my - sh / 2));
+      const sx = Math.max(0, Math.min(iw - sw, mx - sw / 2));
+      const sy = Math.max(0, Math.min(ih - sh, my - sh / 2));
 
       setShade({ x: sx, y: sy, w: sw, h: sh });
 
-      const bgW = ZOOM * cw;
-      const bgX = (sx / cw) * bgW;
-      const bgY = (sy / ch) * bgW;
+      const bgW = ZOOM * iw;
+      const bgX = (sx / iw) * bgW;
+      const bgY = (sy / ih) * bgW;
 
       setMag({
-        x: rect.right + 15,
-        y: rect.top,
-        w: cw,
-        h: ch,
+        x: ir.right + 15,
+        y: ir.top,
+        w: iw,
+        h: ih,
         bgX,
         bgY,
         bgW,
@@ -89,10 +92,9 @@ export function ProductImageZoom({ src, alt, priority = false, aspectRatio, onZo
       <div
         ref={containerRef}
         className={cn(
-          "relative w-full bg-muted select-none overflow-hidden",
+          "relative w-full bg-muted select-none",
           isMobile ? "cursor-pointer" : "cursor-crosshair"
         )}
-        style={{ aspectRatio: `${aspectRatio}` }}
         onMouseEnter={() => setIsHovering(true)}
         onMouseLeave={() => {
           setIsHovering(false);
@@ -102,17 +104,17 @@ export function ProductImageZoom({ src, alt, priority = false, aspectRatio, onZo
         onMouseMove={handleMouseMove}
         onClick={() => onZoomClick?.()}
       >
-        <div className="relative w-full h-full">
-          <Image
-            src={src}
-            alt={alt}
-            fill
-            priority={priority}
-            sizes="(max-width: 768px) 100vw, 800px"
-            className="object-cover"
-            draggable={false}
-          />
-        </div>
+        <Image
+          ref={imgRef}
+          src={src}
+          alt={alt}
+          width={800}
+          height={1000}
+          priority={priority}
+          sizes="(max-width: 768px) 100vw, 800px"
+          className="w-full h-auto"
+          draggable={false}
+        />
 
         {!isMobile && isHovering && (
           <div
