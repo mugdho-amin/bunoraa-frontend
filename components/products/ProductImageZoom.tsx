@@ -2,7 +2,6 @@
 
 import * as React from "react";
 import Image from "next/image";
-import ImageZoom from "js-image-zoom";
 import { cn } from "@/lib/utils";
 
 type Props = {
@@ -12,11 +11,14 @@ type Props = {
   aspectRatio: number;
 };
 
+const LENS = 160;
+
 export function ProductImageZoom({ src, alt, priority = false, aspectRatio }: Props) {
   const containerRef = React.useRef<HTMLDivElement>(null);
-  const wrapperRef = React.useRef<HTMLDivElement>(null);
+  const lensRef = React.useRef<HTMLDivElement>(null);
+  const infoRef = React.useRef({ nw: 0, nh: 0, cw: 0, ch: 0 });
   const [isMobile, setIsMobile] = React.useState(false);
-  const instanceRef = React.useRef<ReturnType<typeof ImageZoom> | null>(null);
+  const [isHovering, setIsHovering] = React.useState(false);
 
   React.useEffect(() => {
     const check = () => setIsMobile(window.innerWidth < 992);
@@ -25,81 +27,76 @@ export function ProductImageZoom({ src, alt, priority = false, aspectRatio }: Pr
     return () => window.removeEventListener("resize", check);
   }, []);
 
-  // Desktop magnifier zoom
+  // Track natural image + container dimensions
   React.useEffect(() => {
-    if (isMobile) return;
-    const container = containerRef.current!;
-    const wrapper = wrapperRef.current!;
+    const container = containerRef.current;
+    if (!container) return;
+    const img = container.querySelector<HTMLImageElement>("img");
+    if (!img) return;
 
-    let inst: ReturnType<typeof ImageZoom> | null = null;
-
-    function init() {
-      if (inst) return;
-      const cw = container.clientWidth;
-      const ch = container.clientHeight;
-      if (cw === 0 || ch === 0) return;
-
-      const imgEl = container.querySelector<HTMLImageElement>("img");
-      if (!imgEl) return;
-
-      const nw = imgEl.naturalWidth || cw;
-      const nh = imgEl.naturalHeight || ch;
-      const scale = Math.min((nw / cw) * 0.5, (nh / ch) * 0.5, 6);
-
-      inst = new ImageZoom(container, {
-        width: cw,
-        height: ch,
-        scale,
-        offset: { vertical: 0, horizontal: 10 },
-        zoomContainer: wrapper,
-        zoomStyle:
-          "opacity: 0.95; border-radius: 8px; box-shadow: 0 8px 32px rgba(0,0,0,0.12);",
-        zoomLensStyle:
-          "opacity: 0.15; background-color: #000; border: 2px solid rgba(255,255,255,0.3); border-radius: 4px;",
+    const sync = () =>
+      requestAnimationFrame(() => {
+        infoRef.current = {
+          nw: img.naturalWidth || container.clientWidth,
+          nh: img.naturalHeight || container.clientHeight,
+          cw: container.clientWidth,
+          ch: container.clientHeight,
+        };
       });
-      instanceRef.current = inst;
+
+    if (img.complete && img.naturalWidth > 0) {
+      sync();
+    } else {
+      img.addEventListener("load", sync, { once: true });
     }
 
-    // Retry once layout is settled
-    const ro = new ResizeObserver(() => {
-      if (!inst && container.clientWidth > 0 && container.clientHeight > 0) {
-        init();
-      }
-    });
+    const ro = new ResizeObserver(sync);
     ro.observe(container);
+    return () => ro.disconnect();
+  }, [src]);
 
-    const imgEl = container.querySelector<HTMLImageElement>("img");
-    if (imgEl) {
-      if (imgEl.complete && imgEl.naturalWidth > 0) {
-        init();
-      } else {
-        imgEl.addEventListener("load", init, { once: true });
-      }
-    }
+  const handleMouseMove = React.useCallback(
+    (e: React.MouseEvent<HTMLDivElement>) => {
+      if (!isHovering) return;
+      const rect = containerRef.current?.getBoundingClientRect();
+      const lens = lensRef.current;
+      if (!rect || !lens) return;
 
-    return () => {
-      ro.disconnect();
-      if (inst) {
-        inst.kill();
-        inst = null;
-      }
-      instanceRef.current = null;
-    };
-  }, [src, isMobile]);
+      const { nw, nh, cw, ch } = infoRef.current;
+      if (!cw || !ch) return;
+
+      const mx = e.clientX - rect.left;
+      const my = e.clientY - rect.top;
+      const half = LENS / 2;
+
+      // Clamp lens within container
+      const cx = Math.max(half, Math.min(rect.width - half, mx));
+      const cy = Math.max(half, Math.min(rect.height - half, my));
+
+      lens.style.left = cx - half + "px";
+      lens.style.top = cy - half + "px";
+
+      // Map cursor → natural-image pixel, then center lens on that pixel
+      const imgX = (cx / cw) * nw;
+      const imgY = (cy / ch) * nh;
+      lens.style.backgroundPosition = `-${imgX - half}px -${imgY - half}px`;
+    },
+    [isHovering]
+  );
 
   return (
     <div
-      ref={wrapperRef}
-      className="relative"
+      ref={containerRef}
+      className={cn(
+        "relative w-full bg-muted select-none",
+        isMobile ? "" : "cursor-none"
+      )}
       style={{ aspectRatio: `${aspectRatio}` }}
+      onMouseEnter={() => setIsHovering(true)}
+      onMouseLeave={() => setIsHovering(false)}
+      onMouseMove={isMobile ? undefined : handleMouseMove}
     >
-      <div
-        ref={containerRef}
-        className={cn(
-          "relative w-full h-full overflow-hidden bg-muted",
-          isMobile ? "" : "cursor-crosshair"
-        )}
-      >
+      <div className="relative w-full h-full overflow-hidden">
         <Image
           src={src}
           alt={alt}
@@ -107,12 +104,30 @@ export function ProductImageZoom({ src, alt, priority = false, aspectRatio }: Pr
           priority={priority}
           sizes="(max-width: 768px) 100vw, 800px"
           className={cn(
-            "object-cover select-none",
+            "object-cover",
             isMobile && "transition-transform duration-300 hover:scale-110"
           )}
           draggable={false}
         />
       </div>
+
+      {!isMobile && (
+        <div
+          ref={lensRef}
+          className={cn(
+            "absolute pointer-events-none z-10 overflow-hidden rounded-full shadow-2xl ring-2 ring-white/30 transition-opacity duration-150",
+            isHovering ? "opacity-100" : "opacity-0"
+          )}
+          style={{
+            width: LENS,
+            height: LENS,
+            backgroundImage: `url(${src})`,
+            backgroundRepeat: "no-repeat",
+            backgroundSize: "auto",
+          }}
+        />
+      )}
+
       {isMobile && (
         <div className="absolute bottom-3 right-3 rounded-full bg-background/80 backdrop-blur px-2.5 py-1 text-[10px] font-bold text-foreground/50 border border-border/40 pointer-events-none">
           Tap to zoom
