@@ -14,13 +14,29 @@ type Props = {
 
 const ZOOM = 4;
 
+function getVisibleImageRect(
+  cw: number,
+  ch: number,
+  naturalAR: number,
+): { x: number; y: number; w: number; h: number } {
+  const containerAR = cw / ch;
+  if (containerAR > naturalAR) {
+    const h = ch;
+    const w = h * naturalAR;
+    return { x: (cw - w) / 2, y: 0, w, h };
+  }
+  const w = cw;
+  const h = w / naturalAR;
+  return { x: 0, y: (ch - h) / 2, w, h };
+}
+
 export function ProductImageZoom({ src, alt, priority = false, aspectRatio, onZoomClick }: Props) {
   const containerRef = React.useRef<HTMLDivElement>(null);
   const [isMobile, setIsMobile] = React.useState(false);
   const [isHovering, setIsHovering] = React.useState(false);
   const [shade, setShade] = React.useState({ x: 0, y: 0, w: 0, h: 0 });
   const [mag, setMag] = React.useState({
-    x: -9999, y: -9999, w: 0, h: 0, bgX: 0, bgY: 0, bgW: 0,
+    x: -9999, y: -9999, w: 0, h: 0, bgX: 0, bgY: 0, bgW: 0, bgH: 0,
   });
 
   React.useEffect(() => {
@@ -36,34 +52,37 @@ export function ProductImageZoom({ src, alt, priority = false, aspectRatio, onZo
       const container = containerRef.current;
       if (!container) return;
 
-      const r = container.getBoundingClientRect();
-      const cw = r.width;
-      const ch = r.height;
+      const cr = container.getBoundingClientRect();
+      const cw = cr.width;
+      const ch = cr.height;
       if (!cw || !ch) return;
 
-      const mx = e.clientX - r.left;
-      const my = e.clientY - r.top;
+      const vi = getVisibleImageRect(cw, ch, aspectRatio);
+      const mx = e.clientX - (cr.left + vi.x);
+      const my = e.clientY - (cr.top + vi.y);
 
-      const sw = cw / ZOOM;
-      const sh = ch / ZOOM;
+      const sw = vi.w / ZOOM;
+      const sh = vi.h / ZOOM;
 
-      const sx = Math.max(0, Math.min(cw - sw, mx - sw / 2));
-      const sy = Math.max(0, Math.min(ch - sh, my - sh / 2));
+      const sx = Math.max(0, Math.min(vi.w - sw, mx - sw / 2));
+      const sy = Math.max(0, Math.min(vi.h - sh, my - sh / 2));
 
-      setShade({ x: sx, y: sy, w: sw, h: sh });
+      setShade({ x: vi.x + sx, y: vi.y + sy, w: sw, h: sh });
 
-      const bgW = ZOOM * cw;
+      const bgW = ZOOM * vi.w;
+      const bgH = ZOOM * vi.h;
       setMag({
-        x: r.right + 15,
-        y: r.top,
-        w: cw,
-        h: ch,
-        bgX: (sx / cw) * bgW,
-        bgY: (sy / ch) * bgW,
+        x: cr.left + vi.x + vi.w + 15,
+        y: cr.top + vi.y,
+        w: vi.w,
+        h: vi.h,
+        bgX: (sx / vi.w) * bgW,
+        bgY: (sy / vi.h) * bgH,
         bgW,
+        bgH,
       });
     },
-    [isMobile]
+    [isMobile, aspectRatio],
   );
 
   return (
@@ -71,7 +90,7 @@ export function ProductImageZoom({ src, alt, priority = false, aspectRatio, onZo
       <div
         ref={containerRef}
         className={cn(
-          "relative w-full bg-muted select-none overflow-hidden",
+          "relative w-full bg-muted select-none overflow-hidden max-h-[80vh]",
           isMobile ? "cursor-pointer" : "cursor-crosshair"
         )}
         style={{ aspectRatio: `${aspectRatio}` }}
@@ -79,7 +98,7 @@ export function ProductImageZoom({ src, alt, priority = false, aspectRatio, onZo
         onMouseLeave={() => {
           setIsHovering(false);
           setShade({ x: 0, y: 0, w: 0, h: 0 });
-          setMag({ x: -9999, y: -9999, w: 0, h: 0, bgX: 0, bgY: 0, bgW: 0 });
+          setMag({ x: -9999, y: -9999, w: 0, h: 0, bgX: 0, bgY: 0, bgW: 0, bgH: 0 });
         }}
         onMouseMove={handleMouseMove}
         onClick={() => onZoomClick?.()}
@@ -132,7 +151,7 @@ export function ProductImageZoom({ src, alt, priority = false, aspectRatio, onZo
             height: mag.h,
             backgroundImage: `url(${src})`,
             backgroundRepeat: "no-repeat",
-            backgroundSize: `${mag.bgW}px auto`,
+            backgroundSize: `${mag.bgW}px ${mag.bgH}px`,
             backgroundPosition: `-${mag.bgX}px -${mag.bgY}px`,
           }}
         />
