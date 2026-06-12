@@ -69,12 +69,21 @@ export function ProductImageZoom({ src, alt, priority = false, aspectRatio, onZo
 
       setShade({ x: vi.x + sx, y: vi.y + sy, w: sw, h: sh });
 
+      const gap = 24;
+      const magX = cr.left + vi.x + vi.w + gap;
+      const magW = vi.w;
+      const magRight = magX + magW;
+      const clampedX =
+        magRight > window.innerWidth
+          ? cr.left + vi.x - gap - magW
+          : magX;
+
       const bgW = ZOOM * vi.w;
       const bgH = ZOOM * vi.h;
       setMag({
-        x: cr.left + vi.x + vi.w + 15,
+        x: clampedX,
         y: cr.top + vi.y,
-        w: vi.w,
+        w: magW,
         h: vi.h,
         bgX: (sx / vi.w) * bgW,
         bgY: (sy / vi.h) * bgH,
@@ -90,7 +99,7 @@ export function ProductImageZoom({ src, alt, priority = false, aspectRatio, onZo
       <div
         ref={containerRef}
         className={cn(
-          "relative w-full bg-muted select-none overflow-hidden max-h-[80vh]",
+          "relative w-full select-none overflow-hidden max-h-[80vh]",
           isMobile ? "cursor-pointer" : "cursor-crosshair"
         )}
         style={{ aspectRatio: `${aspectRatio}` }}
