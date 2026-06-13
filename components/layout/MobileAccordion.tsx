@@ -2,7 +2,13 @@
 
 import * as React from "react";
 import Link from "next/link";
-import { ChevronDown, ChevronRight } from "lucide-react";
+import { ChevronDown, ChevronRight, Mail, PhoneCall, MapPinHouse } from "lucide-react";
+
+const CONTACT_ICON_MAP = {
+  email: Mail,
+  phone: PhoneCall,
+  address: MapPinHouse,
+} as const;
 
 function SocialIcon({ platform, iconUrl }: { platform: string; iconUrl?: string | null }) {
   if (iconUrl) {
@@ -50,7 +56,6 @@ type MobileAccordionProps = {
   companySupportLinks: LinkItem[];
   contactItems: ContactItem[];
   socialLinks: SocialLink[];
-  contactIconMap: Record<string, React.ComponentType<{ size: number; strokeWidth: number }>>;
   contactIconSize: number;
   contactIconStroke: number;
   contactIconContainerClass?: string;
@@ -68,7 +73,6 @@ export function MobileAccordion({
   companySupportLinks,
   contactItems,
   socialLinks,
-  contactIconMap,
   contactIconSize,
   contactIconStroke,
   contactIconContainerClass = "mt-0.5 inline-flex h-5 w-5 shrink-0 items-center justify-center text-foreground/60",
@@ -189,7 +193,7 @@ export function MobileAccordion({
         </summary>
         <ul className={footerListClass}>
           {contactItems.map((item) => {
-            const Icon = contactIconMap[item.kind];
+            const Icon = CONTACT_ICON_MAP[item.kind as keyof typeof CONTACT_ICON_MAP] || Mail;
             return (
               <li key={item.key} className="flex items-start gap-2">
                 <span
@@ -236,3 +240,4 @@ export function MobileAccordion({
     </div>
   );
 }
+

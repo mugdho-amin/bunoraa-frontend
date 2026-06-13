@@ -548,7 +548,6 @@ export async function Footer() {
             companySupportLinks={companySupportLinks}
             contactItems={contactItems}
             socialLinks={socialLinks}
-            contactIconMap={contactIconMap}
             contactIconSize={contactIconSize}
             contactIconStroke={contactIconStroke}
             contactIconContainerClass={contactIconContainerClass}
