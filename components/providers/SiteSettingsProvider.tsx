@@ -19,8 +19,11 @@ export function useMediaUrl() {
 export function SiteSettingsProvider({ children }: { children: ReactNode }) {
   const [settings, setSettings] = useState<SiteSettings | null>(null);
   const [mediaUrl, setMediaUrl] = useState("/media/");
+  const [hasFailed, setHasFailed] = useState(false);
 
   useEffect(() => {
+    if (hasFailed) return;
+
     apiFetch<SiteSettings>("/pages/settings/")
       .then((response) => {
         setSettings(response.data);
@@ -29,10 +32,12 @@ export function SiteSettingsProvider({ children }: { children: ReactNode }) {
         }
       })
       .catch((e) => {
+        // Prevent repeated error reports in infinite loop
+        setHasFailed(true);
         logger.error("SiteSettingsProvider fetch failed", e);
         setMediaUrl("/media/");
       });
-  }, []);
+  }, [hasFailed]);
 
   return (
     <SiteSettingsContext.Provider value={settings}>
