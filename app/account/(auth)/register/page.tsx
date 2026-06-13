@@ -1,4 +1,4 @@
-import { RegisterClient } from "./RegisterClient";
+import { RegisterClient } from "@/components/auth/RegisterClient";
 
 export const dynamic = "force-dynamic";
 

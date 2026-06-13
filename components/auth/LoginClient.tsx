@@ -11,7 +11,7 @@ import { Card } from "@/components/ui/Card";
 import { useAuth } from "@/components/auth/useAuth";
 import { apiFetch } from "@/lib/api";
 import { setTokens } from "@/lib/auth";
-import { decodeRequestOptions, encodeCredential } from "../../../../lib/webauthn";
+import { decodeRequestOptions, encodeCredential } from "@/lib/webauthn";
 import { GoogleLoginButton } from "@/components/auth/GoogleLoginButton";
 import { useTranslation } from "@/lib/i18n";
 

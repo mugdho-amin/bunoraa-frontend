@@ -1,4 +1,4 @@
-import { LoginClient } from "./LoginClient";
+import { LoginClient } from "@/components/auth/LoginClient";
 
 export const dynamic = "force-dynamic";
 
