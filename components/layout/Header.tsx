@@ -54,7 +54,7 @@ export async function Header() {
       ? bundleAvailabilityResult.value
       : false;
   const siteSettings = siteSettingsResult.status === "fulfilled" ? siteSettingsResult.value : null;
-  const brandName = siteSettings?.site_name?.trim() || "Bunoraa";
+  const brandName = siteSettings?.company_name?.trim() || siteSettings?.site_name?.trim() || "Bunoraa";
   const faviconUrl = siteSettings?.favicon?.trim() || "/icon.png";
 
   return (

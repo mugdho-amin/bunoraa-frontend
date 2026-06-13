@@ -1,5 +1,3 @@
-"use client";
-
 /**
  * Cloudflare R2 / Custom Image Loader for Next.js.
  * Optimizes image delivery by appending transformation parameters
@@ -22,8 +20,11 @@ export default function r2Loader({
   // Ensure src doesn't start with a slash if it's a relative path
   const relativePath = src.startsWith('/') ? src.slice(1) : src;
   
-  // Base media URL from environment or fallback
-  const baseUrl = process.env.NEXT_PUBLIC_MEDIA_URL || 'https://media.bunoraa.com';
+  // Base media URL from environment
+  const baseUrl = process.env.NEXT_PUBLIC_MEDIA_URL;
+  if (!baseUrl) {
+    throw new Error("NEXT_PUBLIC_MEDIA_URL is not set. Required for image loading.");
+  }
   
   // Construct URL with optimization parameters (if supported by the edge/proxy)
   // Cloudflare Images / Polish often use query params or path segments

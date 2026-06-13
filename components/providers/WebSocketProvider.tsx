@@ -32,6 +32,8 @@ function buildWsUrl(path: string) {
 export function WebSocketProvider({ children }: { children: React.ReactNode }) {
   const { hasToken, profileQuery } = useAuthContext();
   const queryClient = useQueryClient();
+  const queryClientRef = React.useRef(queryClient);
+  queryClientRef.current = queryClient;
   const socketsRef = React.useRef<Record<string, WebSocket | null>>({});
   const reconnectTimers = React.useRef<Record<string, ReturnType<typeof setTimeout> | null>>({});
   const reconnectAttempts = React.useRef<Record<string, number>>({});
@@ -49,6 +51,7 @@ export function WebSocketProvider({ children }: { children: React.ReactNode }) {
 
   const connect = React.useCallback(
     (channel: string) => {
+      if (!isMountedRef.current) return;
       if (typeof navigator !== "undefined" && !navigator.onLine) return;
       const path = CHANNELS[channel];
       if (!path) return;
@@ -101,22 +104,22 @@ export function WebSocketProvider({ children }: { children: React.ReactNode }) {
         setLastMessage((prev) => ({ ...prev, [channel]: payloadObj }));
 
         if (channel === "cart") {
-          queryClient.invalidateQueries({ queryKey: ["cart"] });
-          queryClient.invalidateQueries({ queryKey: ["cart", "summary"] });
+          queryClientRef.current.invalidateQueries({ queryKey: ["cart"] });
+          queryClientRef.current.invalidateQueries({ queryKey: ["cart", "summary"] });
         }
         if (channel === "notifications") {
-          queryClient.invalidateQueries({ queryKey: ["notifications"] });
-          queryClient.invalidateQueries({ queryKey: ["notifications", "unread"] });
+          queryClientRef.current.invalidateQueries({ queryKey: ["notifications"] });
+          queryClientRef.current.invalidateQueries({ queryKey: ["notifications", "unread"] });
         }
         if (channel === "search") {
           if ("suggestions" in payloadObj) {
-            queryClient.setQueryData(["search", "suggestions"], payloadObj);
+            queryClientRef.current.setQueryData(["search", "suggestions"], payloadObj);
           } else {
-            queryClient.invalidateQueries({ queryKey: ["search", "suggestions"] });
+            queryClientRef.current.invalidateQueries({ queryKey: ["search", "suggestions"] });
           }
         }
         if (channel === "analytics") {
-          queryClient.invalidateQueries({ queryKey: ["analytics"] });
+          queryClientRef.current.invalidateQueries({ queryKey: ["analytics"] });
         }
       };
 
@@ -131,6 +134,7 @@ export function WebSocketProvider({ children }: { children: React.ReactNode }) {
         setStatus((prev) => ({ ...prev, [channel]: "closed" }));
         if (!isMountedRef.current) return;
         if (!activeChannelsRef.current.includes(channel)) return;
+        if (!isMountedRef.current) return;
         if (reconnectTimers.current[channel]) {
           clearTimeout(reconnectTimers.current[channel] as ReturnType<typeof setTimeout>);
         }
@@ -145,7 +149,7 @@ export function WebSocketProvider({ children }: { children: React.ReactNode }) {
         );
       };
     },
-    [queryClient]
+    []
   );
 
   React.useEffect(() => {
@@ -154,7 +158,13 @@ export function WebSocketProvider({ children }: { children: React.ReactNode }) {
 
   React.useEffect(() => {
     activeChannelsRef.current = activeChannels;
-    activeChannels.forEach((channel) => connect(channel));
+    activeChannels.forEach((channel) => {
+      if (reconnectTimers.current[channel]) {
+        clearTimeout(reconnectTimers.current[channel] as ReturnType<typeof setTimeout>);
+        reconnectTimers.current[channel] = null;
+      }
+      connect(channel);
+    });
     Object.keys(CHANNELS).forEach((channel) => {
       if (activeChannels.includes(channel)) return;
       if (reconnectTimers.current[channel]) {

@@ -1,3 +1,4 @@
+import { safeGetItem, safeSetItem, safeRemoveItem } from "@/lib/storage";
 import type { ProductListItem } from "@/lib/types";
 
 export type CompareItem = Pick<
@@ -24,25 +25,13 @@ function notify() {
   window.dispatchEvent(new CustomEvent("compare-updated"));
 }
 
-function getStorage() {
-  if (typeof window === "undefined") return null;
-  try {
-    return window.localStorage ?? null;
-  } catch {
-    return null;
-  }
-}
-
 export function getCompareItems(): CompareItem[] {
-  const storage = getStorage();
-  return safeParse(storage?.getItem(KEY) ?? null);
+  return safeParse(safeGetItem(KEY));
 }
 
 export function setCompareItems(items: CompareItem[]) {
-  const storage = getStorage();
-  if (!storage) return;
   const next = items.slice(0, MAX_ITEMS);
-  storage.setItem(KEY, JSON.stringify(next));
+  safeSetItem(KEY, JSON.stringify(next));
   notify();
 }
 
@@ -72,8 +61,6 @@ export function isInCompare(id: string) {
 }
 
 export function clearCompareItems() {
-  const storage = getStorage();
-  if (!storage) return;
-  storage.removeItem(KEY);
+  safeRemoveItem(KEY);
   notify();
 }

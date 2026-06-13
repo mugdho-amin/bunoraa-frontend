@@ -1,3 +1,5 @@
+import { safeGetItem, safeSetItem } from "@/lib/storage";
+
 export type LocaleState = {
   language?: string;
   currency?: string;
@@ -9,7 +11,7 @@ const LOCALE_KEY = "bunoraa-locale";
 
 export function getStoredLocale(): LocaleState {
   if (typeof window === "undefined") return {};
-  const raw = window.localStorage.getItem(LOCALE_KEY);
+  const raw = safeGetItem(LOCALE_KEY);
   if (!raw) return {};
   try {
     const parsed = JSON.parse(raw) as LocaleState;
@@ -21,7 +23,7 @@ export function getStoredLocale(): LocaleState {
 
 export function setStoredLocale(next: LocaleState) {
   if (typeof window === "undefined") return;
-  window.localStorage.setItem(LOCALE_KEY, JSON.stringify(next));
+  safeSetItem(LOCALE_KEY, JSON.stringify(next));
 
   const setCookie = (name: string, value?: string) => {
     if (!value) return;

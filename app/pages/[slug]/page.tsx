@@ -4,6 +4,7 @@ import { apiFetch, ApiError } from "@/lib/api";
 import type { PageDetail } from "@/lib/types";
 import { notFound } from "next/navigation";
 import { JsonLd } from "@/components/seo/JsonLd";
+import { sanitizeHtml } from "@/lib/sanitize";
 import { getServerLang } from "@/lib/serverLocale";
 import { absoluteUrl, buildBreadcrumbList, buildPageKeywords, buildPageMetadata, cleanObject } from "@/lib/seo";
 
@@ -67,7 +68,7 @@ export default async function PageDetail({
         <h1 className="text-3xl font-semibold text-foreground">{page.title}</h1>
         <div
           className="prose mt-6 max-w-none text-foreground prose-headings:text-foreground prose-p:text-foreground/80 prose-li:text-foreground/80 prose-strong:text-foreground prose-a:text-primary prose-a:underline prose-a:underline-offset-4 prose-hr:border-border"
-          dangerouslySetInnerHTML={{ __html: page.content || "" }}
+          dangerouslySetInnerHTML={{ __html: sanitizeHtml(page.content || "") }}
         />
       </div>
       <JsonLd data={[pageSchema, breadcrumbs]} />

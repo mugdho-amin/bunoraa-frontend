@@ -131,11 +131,15 @@ export function GoogleLoginButton({
       script.src = "https://accounts.google.com/gsi/client";
       script.async = true;
       script.defer = true;
+      script.crossOrigin = "anonymous";
       document.head.appendChild(script);
     }
 
+    let attempts = 0;
+    const MAX_ATTEMPTS = 50;
     const interval = setInterval(() => {
-      if (init()) {
+      attempts++;
+      if (init() || attempts >= MAX_ATTEMPTS) {
         clearInterval(interval);
       }
     }, 100);

@@ -17,27 +17,40 @@ type CachedTranslationEntry = {
 // Cache for keys reported in the current session to avoid duplicates
 const reportedKeys = new Set<string>();
 let reportQueue: string[] = [];
-let reportTimeout: NodeJS.Timeout | null = null;
+let reportTimeout: ReturnType<typeof setTimeout> | null = null;
+let refCount = 0;
 const translationCache = new Map<string, CachedTranslationEntry>();
 const translationRequestCache = new Map<string, Promise<TranslationBundle>>();
 
-const flushReportQueue = async () => {
+function flushReportQueue() {
+  refCount = 0;
   if (reportQueue.length === 0) return;
   
   const keysToSend = [...reportQueue];
   reportQueue = [];
   reportTimeout = null;
 
-  try {
-    await apiFetch(`/i18n/messages/report-missing/`, {
-      method: "POST",
-      body: { keys: keysToSend },
-    });
-  } catch (error) {
+  apiFetch(`/i18n/messages/report-missing/`, {
+    method: "POST",
+    body: { keys: keysToSend },
+  }).catch((error) => {
     console.error("Failed to report missing keys:", error);
-    // If it failed (e.g. 429), we don't retry immediately to avoid further load
+  });
+}
+
+function reportMissingKeySingleton(key: string) {
+  if (reportedKeys.has(key)) return;
+  
+  reportedKeys.add(key);
+  reportQueue.push(key);
+  refCount++;
+
+  if (reportTimeout) {
+    clearTimeout(reportTimeout);
   }
-};
+  
+  reportTimeout = setTimeout(flushReportQueue, 1000);
+}
 
 function getCachedTranslation(requestKey: string) {
   const cachedEntry = translationCache.get(requestKey);
@@ -104,10 +117,19 @@ async function fetchTranslationBundle(currentLang: string, namespaceKey: string)
 export function useTranslation(namespaces: string[] = DEFAULT_NAMESPACES, lang?: string) {
   const [translations, setTranslations] = useState<TranslationBundle>({});
   const [isLoading, setIsLoading] = useState(true);
+  const [currentLang, setCurrentLang] = useState(lang || 'en');
 
   // Use the lang from prop or detected from browser/cookie
-  const currentLang = lang || (typeof document !== 'undefined' ? 
-    (document.cookie.match(/language=([^;]+)/)?.[1] || 'en') : 'en');
+  useEffect(() => {
+    if (lang) {
+      setCurrentLang(lang);
+      return;
+    }
+    const cookieLang = document.cookie.match(/language=([^;]+)/)?.[1];
+    if (cookieLang) {
+      setCurrentLang(cookieLang);
+    }
+  }, [lang]);
   const namespaceList = Array.from(
     new Set(
       (namespaces.length ? namespaces : DEFAULT_NAMESPACES)
@@ -140,19 +162,6 @@ export function useTranslation(namespaces: string[] = DEFAULT_NAMESPACES, lang?:
   useEffect(() => {
     fetchTranslations();
   }, [fetchTranslations]);
-
-  const reportMissingKey = useCallback((key: string) => {
-    if (reportedKeys.has(key)) return;
-    
-    reportedKeys.add(key);
-    reportQueue.push(key);
-
-    if (reportTimeout) {
-      clearTimeout(reportTimeout);
-    }
-    
-    reportTimeout = setTimeout(flushReportQueue, 1000);
-  }, []);
 
   const t = useCallback(
     (key: string, params?: Record<string, string | number>) => {
@@ -196,20 +205,23 @@ export function useTranslation(namespaces: string[] = DEFAULT_NAMESPACES, lang?:
 
       // If we're on the client and the key is missing, report it
       if (typeof window !== 'undefined' && !isLoading && isMissing) {
-        reportMissingKey(key);
+        reportMissingKeySingleton(key);
       }
 
       // Interpolation: replace {key} with params[key]
       if (params) {
         return Object.entries(params).reduce(
-          (message, [k, v]) => message.replace(new RegExp(`\\{${k}\\}`, "g"), String(v)),
+          (message, [k, v]) => {
+            const escapedKey = k.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+            return message.replace(new RegExp(`\\{${escapedKey}\\}`, "g"), String(v));
+          },
           resolved
         );
       }
 
       return resolved;
     },
-    [translations, isLoading, reportMissingKey]
+    [translations, isLoading]
   );
 
   return { t, isLoading, language: currentLang };

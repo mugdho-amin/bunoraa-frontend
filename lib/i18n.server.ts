@@ -66,7 +66,10 @@ export async function getTranslations(lang?: string, namespaces: string[] = ['co
       // Interpolation: replace {key} with params[key]
       if (params) {
         return Object.entries(params).reduce(
-          (message, [k, v]) => message.replace(new RegExp(`\\{${k}\\}`, "g"), String(v)),
+          (message, [k, v]) => {
+            const escapedKey = k.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+            return message.replace(new RegExp(`\\{${escapedKey}\\}`, "g"), String(v));
+          },
           resolved
         );
       }

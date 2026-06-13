@@ -194,7 +194,8 @@ export function CheckoutPage() {
 
   React.useEffect(() => {
     const params = new URLSearchParams(searchParams.toString());
-    if (params.get("step") !== currentStep) {
+    const currentParam = params.get("step");
+    if (currentParam !== currentStep) {
       params.set("step", currentStep);
       router.replace(`${pathname}?${params.toString()}`, { scroll: false });
     }
@@ -517,7 +518,9 @@ export function CheckoutPage() {
         if (guestAccessToken) params.set("access_token", guestAccessToken);
         router.replace(`/checkout/success?${params.toString()}`);
       } else {
-        router.replace("/orders/");
+        const isGuest = !hasToken;
+        const fallbackPath = isGuest ? `/checkout/success?order=${orderNumber || orderId}` : "/orders/";
+        router.replace(fallbackPath);
       }
     } catch (error) {
       setIsRedirectingAfterOrder(false);

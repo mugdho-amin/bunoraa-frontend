@@ -5,6 +5,7 @@ import { useQuery } from "@tanstack/react-query";
 import { Loader2 } from "lucide-react";
 import { apiFetch } from "@/lib/api";
 import type { ProductBadge, ProductListItem } from "@/lib/types";
+import Image from "next/image";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { cn } from "@/lib/utils";
@@ -103,15 +104,14 @@ export function QuickViewModal({
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-[1fr_1.1fr]">
-              <div className="aspect-[3/4] overflow-hidden bg-muted">
+              <div className="relative aspect-[3/4] overflow-hidden bg-muted">
                 {data.primary_image ? (
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img
+                  <Image
                     src={data.primary_image}
                     alt={data.name}
-                    loading="lazy"
-                    decoding="async"
-                    className="h-full w-full object-cover transition-transform duration-700 hover:scale-105"
+                    fill
+                    className="object-cover transition-transform duration-700 hover:scale-105"
+                    sizes="(max-width: 768px) 100vw, 50vw"
                   />
                 ) : (
                   <div className="flex h-full w-full items-center justify-center text-sm text-foreground/40">

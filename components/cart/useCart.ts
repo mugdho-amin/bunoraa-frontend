@@ -1,6 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { apiFetch } from "@/lib/api";
 import type { Cart, CartSummary } from "@/lib/types";
+import { parseMoney } from "@/lib/money";
 
 type AddItemInput = {
   productId: string;
@@ -79,21 +80,6 @@ function mergeSummaryWithCart(previous: CartSummary | undefined, cart: Cart): Ca
     currency: base.currency || cart.currency,
     currency_code: base.currency_code || cart.currency,
   };
-}
-
-function parseMoney(value: string | number | null | undefined) {
-  if (value === null || value === undefined) return null;
-  if (typeof value === "number") return Number.isFinite(value) ? value : null;
-  const trimmed = value.trim();
-  if (!trimmed) return null;
-  if (/[^0-9.,-]/.test(trimmed)) return null;
-  const normalized = trimmed.replace(/,/g, "");
-  const parsed = Number(normalized);
-  return Number.isFinite(parsed) ? parsed : null;
-}
-
-function formatMoney(value: number) {
-  return value.toFixed(2);
 }
 
 async function fetchCart() {
@@ -180,14 +166,7 @@ export function useCart(options?: UseCartOptions) {
 
       const nextItems = previous.items.map((item) => {
         if (item.id !== itemId) return item;
-        const unitPrice = parseMoney(item.unit_price);
-        const nextTotal =
-          unitPrice !== null ? formatMoney(unitPrice * quantity) : item.total;
-        return {
-          ...item,
-          quantity,
-          total: nextTotal,
-        };
+        return { ...item, quantity };
       });
 
       const nextItemCount = nextItems.reduce(
@@ -195,25 +174,10 @@ export function useCart(options?: UseCartOptions) {
         0
       );
 
-      const lineTotals = nextItems.map((item) => parseMoney(item.total));
-      const canSum = lineTotals.every((value) => value !== null);
-      const subtotal = canSum
-        ? formatMoney(
-            lineTotals.reduce((sum, value) => sum + (value ?? 0), 0)
-          )
-        : previous.subtotal;
-      const discount = parseMoney(previous.discount_amount);
-      const total =
-        canSum && discount !== null
-          ? formatMoney(Math.max(0, parseMoney(subtotal) ?? 0) - discount)
-          : previous.total;
-
       queryClient.setQueryData<Cart>(cartKey, {
         ...previous,
         items: nextItems,
         item_count: nextItemCount,
-        subtotal,
-        total,
       });
 
       return { previous };
@@ -261,9 +225,7 @@ export function useCart(options?: UseCartOptions) {
       const lineTotals = nextItems.map((item) => parseMoney(item.total));
       const canSum = lineTotals.every((value) => value !== null);
       const subtotal = canSum
-        ? formatMoney(
-            lineTotals.reduce((sum, value) => sum + (value ?? 0), 0)
-          )
+        ? (lineTotals.reduce((sum, value) => sum + (value ?? 0), 0)).toFixed(2)
         : previous.subtotal;
       
       queryClient.setQueryData<Cart>(cartKey, {
@@ -271,7 +233,7 @@ export function useCart(options?: UseCartOptions) {
         items: nextItems,
         item_count: nextItemCount,
         subtotal,
-        total: subtotal,
+        total: (Math.max(0, (parseMoney(subtotal) ?? 0) - (parseMoney(previous.discount_amount) ?? 0))).toFixed(2),
       });
 
       return { previous };

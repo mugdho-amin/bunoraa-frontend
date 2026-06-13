@@ -1,21 +1,49 @@
 export type MoneyInput = string | number | null | undefined;
 
-export function formatMoney(amount: MoneyInput, currency = "USD") {
+export function parseMoney(value: string | number | null | undefined): number | null {
+  if (value === null || value === undefined) return null;
+  if (typeof value === "number") return Number.isFinite(value) ? value : null;
+  const trimmed = value.trim();
+  if (!trimmed) return null;
+
+  const normalized = trimmed
+    .replace(/[\u00A0\u202F\s]/g, "")
+    .replace(/[−–—]/g, "-")
+    .replace(/[^\d,.-]/g, "");
+
+  const parsed = Number(normalized);
+  return Number.isFinite(parsed) ? parsed : null;
+}
+
+export type FormatMoneyConfig = {
+  symbol?: string;
+  position?: "before" | "after";
+  currency?: string;
+};
+
+export function formatMoney(
+  amount: MoneyInput,
+  config?: string | FormatMoneyConfig | null
+) {
   if (amount === null || amount === undefined) return "";
-  if (typeof amount === "string") {
+
+  const currency = config && typeof config === "string" ? config : config && typeof config === "object" ? config.currency || "BDT" : "BDT";
+  const symbol = config && typeof config === "object" ? config.symbol : undefined;
+  const position = config && typeof config === "object" ? config.position : undefined;
+
+  const parsed = parseMoney(amount);
+  let numeric: number;
+
+  if (parsed !== null) {
+    numeric = parsed;
+  } else if (typeof amount === "string") {
     const trimmed = amount.trim();
     if (!trimmed) return "";
-    if (/[^0-9.,-]/.test(trimmed)) {
-      return trimmed;
-    }
-    const normalized = trimmed.replace(/,/g, "");
-    const parsed = Number(normalized);
-    if (Number.isFinite(parsed)) {
-      amount = parsed;
-    }
+    return trimmed;
+  } else {
+    numeric = Number(amount);
   }
 
-  const numeric = typeof amount === "number" ? amount : Number(amount);
   if (!Number.isFinite(numeric)) {
     return String(amount ?? "");
   }
@@ -25,7 +53,6 @@ export function formatMoney(amount: MoneyInput, currency = "USD") {
       style: "currency",
       currency,
       currencyDisplay: "narrowSymbol",
-      maximumFractionDigits: 2,
     }).format(numeric);
   } catch {
     return `${numeric.toFixed(2)} ${currency}`;

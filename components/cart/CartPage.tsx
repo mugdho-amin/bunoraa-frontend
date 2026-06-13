@@ -16,6 +16,7 @@ import { cn } from "@/lib/utils";
 import { buildProductPath } from "@/lib/productPaths";
 import { ShareModal } from "@/components/cart/ShareModal";
 import { useUiMessages } from "@/components/i18n/useUiMessages";
+import { formatMoney, parseMoney } from "@/lib/money";
 
 type ValidationIssue = {
   type?: string;
@@ -78,44 +79,7 @@ async function fetchRelatedProducts(slug: string) {
   return response.data;
 }
 
-function formatMoney(amount: string | number, currency: string) {
-  if (typeof amount === "string") {
-    const trimmed = amount.trim();
-    if (!trimmed) return "";
-    if (/[^0-9.,-]/.test(trimmed)) {
-      return trimmed;
-    }
-    const normalized = trimmed.replace(/,/g, "");
-    const parsed = Number(normalized);
-    if (Number.isFinite(parsed)) {
-      amount = parsed;
-    }
-  }
-  const numeric = Number(amount);
-  if (!Number.isFinite(numeric)) {
-    return String(amount);
-  }
-  try {
-    return new Intl.NumberFormat(undefined, {
-      style: "currency",
-      currency,
-      maximumFractionDigits: 2,
-    }).format(numeric);
-  } catch {
-    return `${numeric.toFixed(2)} ${currency}`;
-  }
-}
 
-function parseMoney(value: string | number | null | undefined) {
-  if (value === null || value === undefined) return null;
-  if (typeof value === "number") return Number.isFinite(value) ? value : null;
-  const trimmed = value.trim();
-  if (!trimmed) return null;
-  if (/[^0-9.,-]/.test(trimmed)) return null;
-  const normalized = trimmed.replace(/,/g, "");
-  const parsed = Number(normalized);
-  return Number.isFinite(parsed) ? parsed : null;
-}
 
 function isSameGiftState(a: GiftState, b: GiftState) {
   return (
@@ -126,10 +90,8 @@ function isSameGiftState(a: GiftState, b: GiftState) {
 }
 
 function getProductImage(product: ProductListItem) {
-  const primary = product.primary_image as unknown as
-    | string
-    | { image?: string | null }
-    | null;
+  // TODO: Normalize API response, primary_image can be string or {image: string}
+  const primary = product.primary_image as unknown as string | { image?: string | null } | null;
   if (!primary) return null;
   if (typeof primary === "string") return primary;
   return primary.image || null;
@@ -311,7 +273,7 @@ function CartItemRow({
             <p className="text-xs text-foreground/60">{item.variant_name}</p>
           ) : null}
           {!item.in_stock ? (
-            <p className="mt-1 text-xs font-semibold text-error-500">{t("common.cart.out_of_stock")}</p>
+            <p className="mt-1 text-xs font-semibold text-error-500">{t("out_of_stock", "Out of Stock")}</p>
           ) : null}
         </div>
       </div>
@@ -320,7 +282,7 @@ function CartItemRow({
         <div className="grid w-full grid-cols-2 gap-2 sm:w-auto sm:grid-cols-[auto_auto] sm:gap-4">
           <div className="rounded-xl border border-border/70 bg-muted/20 px-3 py-2 sm:border-0 sm:bg-transparent sm:px-0 sm:py-0">
             <p className="text-[10px] uppercase tracking-[0.15em] text-foreground/50 sm:hidden">
-              {t("common.cart.unit_price")}
+              {t("unit_price", "Unit Price")}
             </p>
             <p className="text-sm text-foreground/70">
               {formatMoney(item.unit_price, currency)}
@@ -328,7 +290,7 @@ function CartItemRow({
           </div>
           <div className="rounded-xl border border-border/70 bg-muted/20 px-3 py-2 text-right sm:min-w-[120px] sm:border-0 sm:bg-transparent sm:px-0 sm:py-0">
             <p className="text-[10px] uppercase tracking-[0.15em] text-foreground/50 sm:hidden">
-              {t("common.cart.line_total")}
+              {t("line_total", "Line Total")}
             </p>
             <p className="text-sm font-semibold">{formatMoney(item.total, currency)}</p>
           </div>
@@ -477,6 +439,7 @@ export function CartPage() {
   const lastSubmittedGiftStateRef = React.useRef<GiftState>(DEFAULT_GIFT_STATE);
   const updateGiftMutateRef = React.useRef(updateGiftOptions.mutateAsync);
   const pushRef = React.useRef(push);
+  const isSavingGiftRef = React.useRef(false);
 
   const cart = cartQuery.data;
   const summary = cartSummaryQuery.data;
@@ -686,6 +649,8 @@ export function CartPage() {
 
   React.useEffect(() => {
     if (!hasGiftInteraction) return;
+    if (isSavingGiftRef.current) return;
+    isSavingGiftRef.current = true;
     const normalizedGiftState: GiftState = giftState.is_gift
       ? {
           ...giftState,
@@ -725,12 +690,17 @@ export function CartPage() {
         })
         .catch((error) => {
           pushRef.current(getApiErrorMessage(error, "Could not update gift options."), "error");
+        })
+        .finally(() => {
+          isSavingGiftRef.current = false;
         });
     }, GIFT_AUTOSAVE_DEBOUNCE_MS);
 
     return () => {
+      isSavingGiftRef.current = false;
       if (giftSaveTimerRef.current) {
         window.clearTimeout(giftSaveTimerRef.current);
+        giftSaveTimerRef.current = null;
       }
     };
   }, [giftState, hasGiftInteraction]);
@@ -1072,7 +1042,7 @@ export function CartPage() {
                     <input
                       type="text"
                       value={couponCode}
-                      onChange={(event) => setCouponCode(event.target.value)}
+                      onChange={(event) => setCouponCode(event.target.value.replace(/[^a-zA-Z0-9_-]/g, '').slice(0, 50))}
                       placeholder="Enter coupon code"
                       className="h-11 rounded-xl border border-border bg-transparent px-3 text-sm sm:flex-1"
                     />

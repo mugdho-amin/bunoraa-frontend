@@ -1,3 +1,4 @@
+import { safeGetItem, safeSetItem, safeRemoveItem } from "@/lib/storage";
 import type { ProductListItem } from "@/lib/types";
 
 export type RecentlyViewedItem = Pick<
@@ -54,7 +55,7 @@ function notify() {
 
 export function getRecentlyViewed(): RecentlyViewedItem[] {
   if (typeof window === "undefined") return [];
-  return safeParse(window.localStorage.getItem(KEY));
+  return safeParse(safeGetItem(KEY));
 }
 
 export function addRecentlyViewed(item: Omit<RecentlyViewedItem, "viewed_at">) {
@@ -74,12 +75,12 @@ export function addRecentlyViewed(item: Omit<RecentlyViewedItem, "viewed_at">) {
 export function setRecentlyViewed(items: RecentlyViewedItem[]) {
   if (typeof window === "undefined") return;
   const normalized = normalizeItems(items).slice(0, MAX_ITEMS);
-  window.localStorage.setItem(KEY, JSON.stringify(normalized));
+  safeSetItem(KEY, JSON.stringify(normalized));
   notify();
 }
 
 export function clearRecentlyViewed() {
   if (typeof window === "undefined") return;
-  window.localStorage.removeItem(KEY);
+  safeRemoveItem(KEY);
   notify();
 }

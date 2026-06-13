@@ -136,10 +136,8 @@ const pickText = (...values: Array<string | null | undefined>) => {
 
 const getImage = (product: ProductListItem | null | undefined) => {
   if (!product) return null;
-  const primary = product.primary_image as unknown as
-    | string
-    | { image?: string | null }
-    | null;
+  // TODO: Normalize API response type instead of casting
+  const primary = product.primary_image as unknown as string | { image?: string | null } | null;
   if (!primary) return null;
   if (typeof primary === "string") return primary;
   return primary.image || null;

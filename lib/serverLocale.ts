@@ -9,7 +9,10 @@ export async function getServerLocaleHeaders(): Promise<Record<string, string>> 
   const timezone = cookieStore.get("timezone")?.value;
   const country = cookieStore.get("country")?.value;
 
-  if (language) headers["Accept-Language"] = language;
+  if (language) {
+    headers["Accept-Language"] = language;
+    headers["X-User-Language"] = language;
+  }
   if (currency) headers["X-User-Currency"] = currency;
   if (timezone) headers["X-User-Timezone"] = timezone;
   if (country) headers["X-User-Country"] = country;

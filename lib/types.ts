@@ -403,6 +403,15 @@ export type SiteSettings = {
   tiktok_url?: string | null;
   social_links?: Array<{ name?: string | null; label?: string | null; url?: string | null; icon?: string | null }> | null;
   media_url?: string | null;
+  google_analytics_id?: string | null;
+  maintenance_mode?: boolean;
+  company_name?: string | null;
+  free_shipping_threshold?: number;
+  max_upload_size_mb?: number;
+  address_locality?: string | null;
+  address_region?: string | null;
+  currency?: string | null;
+  currency_symbol?: string | null;
 };
 
 export type ContactSettings = {

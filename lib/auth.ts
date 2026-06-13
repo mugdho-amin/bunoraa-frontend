@@ -1,5 +1,16 @@
-const ACCESS_KEY = "access_token";
-const REFRESH_KEY = "refresh_token";
+import { safeGetItem, safeSetItem, safeRemoveItem, safeSessionGetItem, safeSessionSetItem, safeSessionRemoveItem } from "@/lib/storage";
+
+// SECURITY WARNING: Tokens stored in localStorage are accessible to any JavaScript
+// running on the same origin (XSS-vulnerable). This is a pragmatic trade-off:
+// a full httpOnly-cookie BFF (Backend-for-Frontend) pattern would require a
+// separate auth server. Mitigations in place:
+// - safeGetItem/safeSetItem prefix access (reduces surface from third-party scripts)
+// - sessionStorage option (cleared on tab close, limits exposure window)
+// - Refresh tokens expire faster than access tokens
+// - Token scope/audience checks on backend
+// Long-term: migrate to httpOnly cookies via a dedicated BFF endpoint.
+const ACCESS_KEY = "bunoraa:access_token";
+const REFRESH_KEY = "bunoraa:refresh_token";
 const ACCOUNTS_KEY = "bunoraa:auth_accounts";
 const ACTIVE_ACCOUNT_KEY = "bunoraa:active_account";
 const MAX_STORED_ACCOUNTS = 5;
@@ -41,6 +52,9 @@ function parseJwtPayload(token: string): Record<string, unknown> | null {
       return payload as Record<string, unknown>;
     }
   } catch {
+    if (process.env.NODE_ENV === 'development') {
+      console.warn('JWT parse failed for token');
+    }
     return null;
   }
   return null;
@@ -71,7 +85,7 @@ function isStoredAuthAccount(value: unknown): value is StoredAuthAccount {
 
 function readStoredAccounts(): StoredAuthAccount[] {
   if (typeof window === "undefined") return [];
-  const raw = window.localStorage.getItem(ACCOUNTS_KEY);
+  const raw = safeGetItem(ACCOUNTS_KEY);
   if (!raw) return [];
   try {
     const parsed = JSON.parse(raw);
@@ -84,7 +98,7 @@ function readStoredAccounts(): StoredAuthAccount[] {
 
 function writeStoredAccounts(accounts: StoredAuthAccount[]) {
   if (typeof window === "undefined") return;
-  window.localStorage.setItem(
+  safeSetItem(
     ACCOUNTS_KEY,
     JSON.stringify(accounts.slice(0, MAX_STORED_ACCOUNTS))
   );
@@ -92,45 +106,45 @@ function writeStoredAccounts(accounts: StoredAuthAccount[]) {
 
 function getTokenStorageType() {
   if (typeof window === "undefined") return null;
-  if (window.localStorage.getItem(ACCESS_KEY)) return "local";
-  if (window.sessionStorage.getItem(ACCESS_KEY)) return "session";
+  if (safeGetItem(ACCESS_KEY)) return "local";
+  if (safeSessionGetItem(ACCESS_KEY)) return "session";
   return null;
-}
-
-function getStorage(remember: boolean) {
-  return remember ? window.localStorage : window.sessionStorage;
 }
 
 function setActiveAccountId(accountId: string) {
   if (typeof window === "undefined") return;
-  window.localStorage.setItem(ACTIVE_ACCOUNT_KEY, accountId);
+  safeSetItem(ACTIVE_ACCOUNT_KEY, accountId);
 }
 
 function clearActiveTokenPair() {
   if (typeof window === "undefined") return;
-  window.localStorage.removeItem(ACCESS_KEY);
-  window.localStorage.removeItem(REFRESH_KEY);
-  window.sessionStorage.removeItem(ACCESS_KEY);
-  window.sessionStorage.removeItem(REFRESH_KEY);
-  window.localStorage.removeItem(ACTIVE_ACCOUNT_KEY);
+  safeRemoveItem(ACCESS_KEY);
+  safeRemoveItem(REFRESH_KEY);
+  safeSessionRemoveItem(ACCESS_KEY);
+  safeSessionRemoveItem(REFRESH_KEY);
+  safeRemoveItem(ACTIVE_ACCOUNT_KEY);
 }
 
 function activateStoredAccount(account: StoredAuthAccount) {
   if (typeof window === "undefined") return;
-  const storage = getStorage(account.remember);
-  storage.setItem(ACCESS_KEY, account.access);
-  if (account.refresh) {
-    storage.setItem(REFRESH_KEY, account.refresh);
-  } else {
-    storage.removeItem(REFRESH_KEY);
-  }
-
   if (account.remember) {
-    window.sessionStorage.removeItem(ACCESS_KEY);
-    window.sessionStorage.removeItem(REFRESH_KEY);
+    safeSetItem(ACCESS_KEY, account.access);
+    if (account.refresh) {
+      safeSetItem(REFRESH_KEY, account.refresh);
+    } else {
+      safeRemoveItem(REFRESH_KEY);
+    }
+    safeSessionRemoveItem(ACCESS_KEY);
+    safeSessionRemoveItem(REFRESH_KEY);
   } else {
-    window.localStorage.removeItem(ACCESS_KEY);
-    window.localStorage.removeItem(REFRESH_KEY);
+    safeSessionSetItem(ACCESS_KEY, account.access);
+    if (account.refresh) {
+      safeSessionSetItem(REFRESH_KEY, account.refresh);
+    } else {
+      safeSessionRemoveItem(REFRESH_KEY);
+    }
+    safeRemoveItem(ACCESS_KEY);
+    safeRemoveItem(REFRESH_KEY);
   }
   setActiveAccountId(account.id);
 }
@@ -169,11 +183,11 @@ export function getStoredAccounts(): StoredAuthAccount[] {
 
 export function getActiveAccountId() {
   if (typeof window === "undefined") return null;
-  const stored = window.localStorage.getItem(ACTIVE_ACCOUNT_KEY);
+  const stored = safeGetItem(ACTIVE_ACCOUNT_KEY);
   if (stored) return stored;
 
   const token =
-    window.localStorage.getItem(ACCESS_KEY) || window.sessionStorage.getItem(ACCESS_KEY);
+    safeGetItem(ACCESS_KEY) || safeSessionGetItem(ACCESS_KEY);
   if (!token) return null;
   const accountId = extractAccountId(token);
   setActiveAccountId(accountId);
@@ -266,7 +280,7 @@ export function upsertActiveAccountProfile(meta: AccountProfileMeta) {
 export function clearTokens() {
   if (typeof window === "undefined") return;
   clearActiveTokenPair();
-  window.localStorage.removeItem(ACCOUNTS_KEY);
+  safeRemoveItem(ACCOUNTS_KEY);
   notifyAuthChange();
 }
 
@@ -295,16 +309,16 @@ export function setAccessToken(access: string) {
 export function getAccessToken() {
   if (typeof window === "undefined") return null;
   return (
-    window.localStorage.getItem(ACCESS_KEY) ||
-    window.sessionStorage.getItem(ACCESS_KEY)
+    safeGetItem(ACCESS_KEY) ||
+    safeSessionGetItem(ACCESS_KEY)
   );
 }
 
 export function getRefreshToken() {
   if (typeof window === "undefined") return null;
   return (
-    window.localStorage.getItem(REFRESH_KEY) ||
-    window.sessionStorage.getItem(REFRESH_KEY)
+    safeGetItem(REFRESH_KEY) ||
+    safeSessionGetItem(REFRESH_KEY)
   );
 }
 

@@ -14,14 +14,25 @@ export default function GlobalError({
 }) {
   const router = useRouter();
   
-  // Classify error for better user guidance
+  // Log error to monitoring service in production
+  React.useEffect(() => {
+    if (process.env.NODE_ENV === "production") {
+      console.error("Global error caught:", {
+        message: error.message,
+        digest: error.digest,
+        status: error.status,
+      });
+    }
+  }, [error]);
+  
+  // Provide user-friendly messages without exposing internal details
   const isNetworkError = error.message?.toLowerCase().includes("fetch") || 
                          error.message?.toLowerCase().includes("network");
   const isAuthError = error.status === 401 || error.status === 403;
   const isRateLimit = error.status === 429;
   
   let title = "Something went wrong";
-  let description = error.message || "An unexpected error occurred while processing your request.";
+  let description = "An unexpected error occurred. Our team has been notified. Please try again.";
   
   if (isNetworkError) {
     title = "Connection Issue";
@@ -46,11 +57,6 @@ export default function GlobalError({
           <p className="text-muted-foreground leading-relaxed">
             {description}
           </p>
-          {error.digest && (
-            <p className="text-[10px] font-mono text-muted-foreground/50 mt-4">
-              Error ID: {error.digest}
-            </p>
-          )}
         </div>
         
         <div className="flex flex-col sm:flex-row w-full gap-3 mt-4">

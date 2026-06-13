@@ -140,7 +140,7 @@ async function fetchAndCache(request, cache) {
   try {
     const response = await fetch(request);
     if (response.ok) {
-      cache.put(request, response);
+      cache.put(request, response.clone());
     }
   } catch {
     // Silently fail background updates

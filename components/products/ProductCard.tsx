@@ -46,6 +46,7 @@ function MinimalProductCard({
   const image =
     typeof product.primary_image === "string"
       ? product.primary_image
+      // TODO: Normalize API response, primary_image can be string or {image: string}
       : (product.primary_image as unknown as { image?: string | null })?.image || null;
   // Only prepend mediaUrl if image is relative (doesn't start with http/https or /)
   const fullImageUrl = image && !image.startsWith('http') && !image.startsWith('/') ? `${mediaUrl}${image}` : image;
@@ -149,6 +150,7 @@ function InteractiveProductCard({
   const primaryImageUrl = getFullUrl(
     typeof product.primary_image === "string"
       ? product.primary_image
+      // TODO: Normalize API response, primary_image can be string or {image: string}
       : (product.primary_image as unknown as { image?: string | null })?.image
   );
   const secondaryImageUrl = getFullUrl(product.secondary_image);

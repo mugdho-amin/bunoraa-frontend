@@ -46,10 +46,27 @@ export async function subscribeToBrowserPush(): Promise<PushSubscriptionResult> 
     }
 
     const registration = await navigator.serviceWorker.register("/notifications-sw.js");
+
+    // Send VAPID public key to service worker for pushsubscriptionchange handling
+    const vapidPublicKey = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY || "";
+    if (registration.active) {
+      registration.active.postMessage({ type: "SET_VAPID_KEY", key: vapidPublicKey });
+    } else {
+      registration.addEventListener("activate", () => {
+        registration.active?.postMessage({ type: "SET_VAPID_KEY", key: vapidPublicKey });
+      });
+    }
+
+    // Also respond to service worker's REQUEST_VAPID_KEY messages
+    navigator.serviceWorker.addEventListener("message", (event) => {
+      if (event.data?.type === "REQUEST_VAPID_KEY") {
+        registration.active?.postMessage({ type: "SET_VAPID_KEY", key: vapidPublicKey });
+      }
+    });
+
     let subscription = await registration.pushManager.getSubscription();
 
     if (!subscription) {
-      const vapidPublicKey = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY || "";
       if (!vapidPublicKey) {
         return {
           status: "unsupported",

@@ -23,8 +23,8 @@ export function NotificationBell({
       <Bell aria-hidden="true" className="h-5 w-5" strokeWidth={1.8} />
       <span className="sr-only">Notifications</span>
       {count > 0 ? (
-        <span className="absolute -right-2 -top-2 rounded-full bg-accent px-2 py-0.5 text-xs text-white">
-          {count}
+        <span className="absolute -right-2 -top-2 rounded-full bg-accent px-2 py-0.5 text-xs text-accent-foreground max-w-[3rem] truncate">
+          {count > 99 ? "99+" : count}
         </span>
       ) : null}
     </Link>

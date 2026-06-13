@@ -5,6 +5,7 @@ import Link from "next/link";
 import { apiFetch, ApiError } from "@/lib/api";
 import type { BlogPostDetail } from "@/lib/types";
 import { notFound } from "next/navigation";
+import { sanitizeHtml } from "@/lib/sanitize";
 import { getServerLocaleHeaders, getServerLang } from "@/lib/serverLocale";
 import { JsonLd } from "@/components/seo/JsonLd";
 import {
@@ -129,7 +130,7 @@ export default async function BlogPostPage({
       {post.content ? (
         <article
           className="prose prose-stone max-w-none"
-          dangerouslySetInnerHTML={{ __html: post.content }}
+          dangerouslySetInnerHTML={{ __html: sanitizeHtml(post.content) }}
         />
       ) : null}
 

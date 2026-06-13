@@ -355,9 +355,6 @@ export function useCheckoutData(options?: {
           mergeSummaryWithCart(previous, nextCart)
         );
       }
-      queryClient.invalidateQueries({ queryKey: ["cart"] });
-      queryClient.invalidateQueries({ queryKey: ["cart", "summary"] });
-      queryClient.invalidateQueries({ queryKey: ["checkout", "session"] });
     },
   });
 
@@ -376,9 +373,6 @@ export function useCheckoutData(options?: {
           mergeSummaryWithCart(previous, nextCart)
         );
       }
-      queryClient.invalidateQueries({ queryKey: ["cart"] });
-      queryClient.invalidateQueries({ queryKey: ["cart", "summary"] });
-      queryClient.invalidateQueries({ queryKey: ["checkout", "session"] });
     },
   });
 

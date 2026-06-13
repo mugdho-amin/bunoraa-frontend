@@ -2,6 +2,7 @@ import { cache } from "react";
 import { apiFetch } from "@/lib/api";
 import type { Bundle } from "@/lib/types";
 import { asArray } from "@/lib/array";
+import { logger } from "@/lib/logger";
 
 export const hasPublishedBundles = cache(async (): Promise<boolean> => {
   try {
@@ -26,7 +27,8 @@ export const hasPublishedBundles = cache(async (): Promise<boolean> => {
       return ((payload as { count: number }).count || 0) > 0;
     }
     return asArray<Bundle>(payload).length > 0;
-  } catch {
+  } catch (e) {
+    logger.error("hasPublishedBundles fetch failed", e);
     return false;
   }
 });

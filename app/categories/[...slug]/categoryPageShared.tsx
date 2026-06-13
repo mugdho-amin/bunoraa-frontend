@@ -16,6 +16,7 @@ import { buildPageMetadata, buildCategoryKeywords } from "@/lib/seo";
 import { getServerLang } from "@/lib/serverLocale";
 import { buildCategoryPath } from "@/lib/categoryPaths";
 import { cn } from "@/lib/utils";
+import { Breadcrumbs } from "@/components/layout/Breadcrumbs";
 
 type Category = {
   id: string;
@@ -183,8 +184,6 @@ export async function buildCategoryMetadataForPath(
     },
   };
 }
-
-import { Breadcrumbs } from "@/components/layout/Breadcrumbs";
 
 export async function renderCategoryPageForPath(
   slugPath: string,

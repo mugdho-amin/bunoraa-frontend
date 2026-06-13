@@ -3,6 +3,7 @@
 import React, { createContext, useContext, useEffect, useState, ReactNode } from "react";
 import { apiFetch } from "@/lib/api";
 import type { SiteSettings } from "@/lib/types";
+import { logger } from "@/lib/logger";
 
 const SiteSettingsContext = createContext<SiteSettings | null>(null);
 const MediaUrlContext = createContext<string>("/media/");
@@ -27,8 +28,8 @@ export function SiteSettingsProvider({ children }: { children: ReactNode }) {
           setMediaUrl(response.data.media_url);
         }
       })
-      .catch(() => {
-        // Fallback to default media URL
+      .catch((e) => {
+        logger.error("SiteSettingsProvider fetch failed", e);
         setMediaUrl("/media/");
       });
   }, []);

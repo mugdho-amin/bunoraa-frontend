@@ -44,10 +44,8 @@ type SuggestionOption = {
 };
 
 function getProductImage(product: ProductListItem) {
-  const primary = product.primary_image as unknown as
-    | string
-    | { image?: string | null }
-    | null;
+  // TODO: Normalize API response, primary_image can be string or {image: string}
+  const primary = product.primary_image as unknown as string | { image?: string | null } | null;
   if (!primary) return null;
   if (typeof primary === "string") return primary;
   return primary.image || null;
@@ -58,8 +56,11 @@ function getProductPrice(product: ProductListItem) {
 }
 
 function replaceQuotes(str: string) {
-  // Replace straight double quotes with curly double quotes, and single quotes with curly single quotes
-  return str.replace(/["']/g, (m) => m === '"' ? '\u201C' : '\u2018');
+  let openDouble = true;
+  let openSingle = true;
+  return str
+    .replace(/"/g, () => { openDouble = !openDouble; return openDouble ? '\u201C' : '\u201D'; })
+    .replace(/'/g, () => { openSingle = !openSingle; return openSingle ? '\u2018' : '\u2019'; });
 }
 
 export function SearchBar({ hideSubmitButtonOnDesktop = false }: SearchBarProps) {

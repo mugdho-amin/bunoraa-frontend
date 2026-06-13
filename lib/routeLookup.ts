@@ -3,6 +3,7 @@ import "server-only";
 import { cache } from "react";
 import { apiFetch } from "@/lib/api";
 import { normalizeCategorySlugPath } from "@/lib/categoryPaths";
+import { logger } from "@/lib/logger";
 
 type CategoryTreeNode = {
   slug?: string | null;
@@ -21,7 +22,8 @@ const getCategoryTree = cache(async (): Promise<CategoryTreeNode[]> => {
       suppressErrorStatus: [404],
     });
     return Array.isArray(response.data) ? response.data : [];
-  } catch {
+  } catch (e) {
+    logger.error("getCategoryTree fetch failed", e);
     return [];
   }
 });
@@ -62,7 +64,8 @@ const getPublishedPageSlugs = cache(async (): Promise<Set<string>> => {
         .map((page) => String(page?.slug || "").trim())
         .filter(Boolean)
     );
-  } catch {
+  } catch (e) {
+    logger.error("getPublishedPageSlugs fetch failed", e);
     return new Set<string>();
   }
 });

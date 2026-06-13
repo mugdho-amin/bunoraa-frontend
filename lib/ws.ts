@@ -41,7 +41,7 @@ export function getWsBaseUrl(): string | null {
 export function buildWsUrl(path: string, token?: string | null): string | null {
   const base = getWsBaseUrl();
   if (!base) return null;
-  const normalizedPath = base.endsWith("/ws") ? path.replace(/^\/ws/, "") : path;
+  const normalizedPath = new URL(base).pathname.endsWith("/ws") ? path.replace(/^\/ws/, "") : path;
   const url = `${base}${normalizedPath}`;
   if (!token) return url;
   const separator = url.includes("?") ? "&" : "?";

@@ -20,6 +20,7 @@ import { RatingStars } from "@/components/products/RatingStars";
 import { ProductPrice } from "@/components/products/ProductPrice";
 import { useToast } from "@/components/ui/ToastProvider";
 import { useAuthContext } from "@/components/providers/AuthProvider";
+import { useSiteSettings } from "@/components/providers/SiteSettingsProvider";
 import { addRecentlyViewed } from "@/lib/recentlyViewed";
 import { cn } from "@/lib/utils";
 import { RecentlyViewedSection } from "@/components/products/RecentlyViewedSection";
@@ -434,7 +435,7 @@ function BackInStockForm({
           placeholder="Email address"
           aria-label="Email for back-in-stock notification"
           value={email}
-          onChange={(event) => setEmail(event.target.value)}
+          onChange={(event) => { const val = event.target.value; if (val.length < 254) setEmail(val); }}
           className="h-11 w-full rounded-xl border border-border bg-background px-4 text-sm focus:ring-2 focus:ring-primary/20 transition-all outline-none"
         />
       ) : null}
@@ -443,7 +444,7 @@ function BackInStockForm({
         variant="primary"
         className="w-full h-11 shadow-sm"
         onClick={() => requestNotification.mutate()}
-        disabled={requestNotification.isPending || (!hasToken && !email)}
+        disabled={requestNotification.isPending || (!hasToken && (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)))}
       >
         {requestNotification.isPending ? "Processing..." : "Notify Me"}
       </Button>
@@ -814,6 +815,13 @@ export function ProductDetailClient({
   
   const hasSizeChartContent = Boolean(product.size_charts?.length || sizeAttributeFallback.length);
 
+  const siteSettings = useSiteSettings();
+  const currencySymbol = siteSettings?.currency_symbol || "৳";
+  const freeShippingThreshold = siteSettings?.free_shipping_threshold || 5000;
+  const shippingText = freeShippingThreshold > 0
+    ? `Free standard delivery on orders over ${currencySymbol}${freeShippingThreshold.toLocaleString()}. Express options available at checkout.`
+    : "Express delivery options available at checkout.";
+
   const reviewStatsQuery = useQuery({
     queryKey: ["product", product.id, "review-stats"],
     queryFn: async () => {
@@ -876,6 +884,7 @@ export function ProductDetailClient({
   };
 
   React.useEffect(() => {
+    // TODO: Normalize API response, primary_image can be string or {image: string}
     const image = typeof product.primary_image === "string" ? product.primary_image : (product.primary_image as unknown as { image?: string | null })?.image;
     addRecentlyViewed({
       id: product.id,
@@ -1091,7 +1100,7 @@ export function ProductDetailClient({
                <div className="space-y-4">
                   <div className="flex gap-3">
                      <Truck size={18} className="text-primary shrink-0" />
-                     <p className="text-sm">Free standard delivery on orders over BDT 5,000. Express options available at checkout.</p>
+                      <p className="text-sm">{shippingText}</p>
                   </div>
                   <div className="flex gap-3">
                      <RefreshCw size={18} className="text-primary shrink-0" />

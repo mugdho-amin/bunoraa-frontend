@@ -44,9 +44,18 @@ const remotePatterns: RemotePattern[] = [
 const shouldDisableImageOptimization = process.env.NODE_ENV !== "production";
 const isProduction = process.env.NODE_ENV === "production";
 
+// NOTE: CSP is applied only in production (see below).
+// TODO: Migrate to nonce-based CSP for stronger protection.
+// Implementation plan:
+//   1. Add middleware.ts (or proxy.ts for Next.js 16+)
+//   2. Generate a unique nonce per request: Buffer.from(crypto.randomUUID()).toString('base64')
+//   3. Set nonce in CSP header: script-src 'self' 'nonce-{nonce}' 'strict-dynamic'
+//   4. Pass nonce via x-nonce header and use <Script nonce={nonce}> in layout
+//   5. Pages must use dynamic rendering: export const dynamic = 'force-dynamic'
+const isDev = process.env.NODE_ENV === 'development';
 const cspHeader = `
   default-src 'self';
-  script-src 'self' 'unsafe-eval' 'unsafe-inline' https://accounts.google.com https://www.googletagmanager.com https://cdn.cloudflare.com;
+  script-src 'self' 'strict-dynamic' https://accounts.google.com https://www.googletagmanager.com https://cdn.cloudflare.com${isDev ? " 'unsafe-eval'" : ''};
   style-src 'self' 'unsafe-inline' https://accounts.google.com;
   img-src 'self' blob: data: https: http:;
   font-src 'self' data:;
@@ -108,6 +117,12 @@ const nextConfig: NextConfig = {
     imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
     minimumCacheTTL: 31536000,
     qualities: [60, 64, 70, 72, 75],
+    // WARNING: SVG uploads can contain embedded scripts (XSS vector).
+    // Server-side SVG sanitization is REQUIRED before upload:
+    //   - Use a library like 'sanitize-svg' or DOMPurify with SVG profile on the backend
+    //   - Strip <script>, on*, data:, and javascript: URIs
+    //   - The contentSecurityPolicy below provides a defense-in-depth layer
+    //     by blocking script execution in image contexts.
     dangerouslyAllowSVG: true,
     contentDispositionType: "attachment",
     contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
@@ -171,7 +186,10 @@ const nextConfig: NextConfig = {
     ];
   },
   async rewrites() {
-    const backendBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || "https://api.bunoraa.com";
+    const backendBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
+    if (!backendBaseUrl) {
+      throw new Error("NEXT_PUBLIC_API_BASE_URL environment variable is required for rewrites. Set it to your backend API URL.");
+    }
     const apiBaseUrl = backendBaseUrl.replace(/\/api\/v\d+\/?$/, "");
 
     return [

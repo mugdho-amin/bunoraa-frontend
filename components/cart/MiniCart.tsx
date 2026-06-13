@@ -6,31 +6,10 @@ import Image from "next/image";
 import { Button } from "@/components/ui/Button";
 import { useCart } from "@/components/cart/useCart";
 import { useUiMessages } from "@/components/i18n/useUiMessages";
+import { useSiteSettings } from "@/components/providers/SiteSettingsProvider";
 import { cn } from "@/lib/utils";
 import { apiFetch } from "@/lib/api";
-
-function formatMoney(amount: string | number, config: { symbol: string, position: string }) {
-  const numeric = typeof amount === "string" ? parseMoney(amount) ?? 0 : amount;
-  const formatted = numeric.toFixed(2);
-  return config.position === 'before' 
-    ? `${config.symbol}${formatted}` 
-    : `${formatted} ${config.symbol}`;
-}
-
-function parseMoney(value: string | number | null | undefined) {
-  if (value === null || value === undefined) return null;
-  if (typeof value === "number") return Number.isFinite(value) ? value : null;
-  const trimmed = value.trim();
-  if (!trimmed) return null;
-
-  const normalized = trimmed
-    .replace(/[\u00A0\u202F\s]/g, "")
-    .replace(/[−–—]/g, "-")
-    .replace(/[^\d,.-]/g, "");
-
-  const parsed = Number(normalized);
-  return Number.isFinite(parsed) ? parsed : null;
-}
+import { formatMoney, parseMoney } from "@/lib/money";
 
 export function MiniCart({
   title,
@@ -43,16 +22,14 @@ export function MiniCart({
 }) {
   const { cartQuery, cartSummaryQuery, removeItem, updateItem } = useCart();
   const { t } = useUiMessages("cart");
+  const siteSettings = useSiteSettings();
   const handleClose = () => onClose?.();
-  const [currencyConfig, setCurrencyConfig] = React.useState({ symbol: 'BDT', position: 'after' });
+  const defaultSymbol = siteSettings?.currency_symbol || "৳";
+  const [currencyConfig, setCurrencyConfig] = React.useState({ symbol: defaultSymbol, position: 'after' as const });
 
   React.useEffect(() => {
-    apiFetch<{symbol: string, position: string}>("/commerce/cart/currency-config/")
-      .then((res) => {
-          if (res.data) setCurrencyConfig(res.data);
-      })
-      .catch(() => {});
-  }, []);
+    setCurrencyConfig(prev => ({ ...prev, symbol: siteSettings?.currency_symbol || prev.symbol }));
+  }, [siteSettings?.currency_symbol]);
 
   if (cartQuery.isLoading) {
     return <div className="p-6 text-sm text-foreground/60">Loading your bag...</div>;

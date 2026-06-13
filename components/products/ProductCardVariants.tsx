@@ -116,6 +116,7 @@ export const PRODUCT_CARD_VARIANTS: Array<{
 
 function resolveImage(product: ProductListItem): string | null {
   if (typeof product.primary_image === "string") return product.primary_image;
+  // TODO: Normalize API response, primary_image can be string or {image: string}
   return (product.primary_image as unknown as { image?: string | null })?.image || null;
 }
 

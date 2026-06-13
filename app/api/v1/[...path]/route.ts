@@ -30,17 +30,36 @@ function buildTargetUrl(request: NextRequest) {
   return `${apiBaseUrl}${suffix}${request.nextUrl.search}`;
 }
 
-function buildProxyHeaders(request: NextRequest) {
-  const headers = new Headers(request.headers);
+const ALLOWED_FORWARD_HEADERS = [
+  "content-type",
+  "accept",
+  "accept-language",
+  "x-csrftoken",
+  "x-language-code",
+];
 
-  headers.delete("host");
-  headers.delete("content-length");
-  headers.delete("accept-encoding");
-  headers.delete("origin");
-  headers.delete("referer");
-  headers.delete("connection");
-
+function buildProxyHeaders(request: NextRequest): HeadersInit {
+  const headers: HeadersInit = {};
+  for (const key of ALLOWED_FORWARD_HEADERS) {
+    const value = request.headers.get(key);
+    if (value) headers[key] = value;
+  }
   return headers;
+}
+
+const ALLOWED_PATH_PREFIXES = ["/api/v1/auth", "/api/v1/account", "/api/v1/products", "/api/v1/categories", "/api/v1/checkout", "/api/v1/orders", "/api/v1/cart", "/api/v1/wishlist", "/api/v1/search"];
+
+function validateProxyPath(pathname: string): void {
+  const decoded = decodeURIComponent(pathname);
+  if (decoded.includes("..") || decoded.includes("//")) {
+    throw new Error("Invalid path: path traversal detected");
+  }
+  if (process.env.NODE_ENV === "production") {
+    const matchesAllowed = ALLOWED_PATH_PREFIXES.some((prefix) => pathname.startsWith(prefix));
+    if (!matchesAllowed) {
+      throw new Error("Invalid path: prefix not allowed");
+    }
+  }
 }
 
 function sanitizeResponseHeaders(headers: Headers) {
@@ -62,6 +81,7 @@ async function proxyRequest(request: NextRequest) {
   let backendResponse: Response;
 
   try {
+    validateProxyPath(request.nextUrl.pathname);
     backendResponse = await fetch(buildTargetUrl(request), {
       method: request.method,
       headers: buildProxyHeaders(request),
@@ -73,12 +93,21 @@ async function proxyRequest(request: NextRequest) {
       redirect: "manual",
     });
   } catch (error) {
+    // Log full error details server-side, but never expose internal details to client
+    console.error("API proxy request failed:", error);
+
     return NextResponse.json(
       {
         success: false,
-        message: "API proxy request failed",
-        error: error instanceof Error ? error.message : "Unknown proxy error",
+        message: "The upstream service is temporarily unavailable. Please try again later.",
       },
+      { status: 502 }
+    );
+  }
+
+  if (backendResponse.redirected) {
+    return NextResponse.json(
+      { error: "Unexpected redirect", message: "The upstream service returned a redirect." },
       { status: 502 }
     );
   }

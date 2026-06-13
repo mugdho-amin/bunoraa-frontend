@@ -1,14 +1,19 @@
-import type { ProductDetail } from "@/lib/types";
+import type { ProductDetail, SiteSettings } from "@/lib/types";
 import type { Metadata } from "next";
 import { buildProductPath } from "@/lib/productPaths";
 
 type UrlLike = string | null | undefined;
 
-export const SITE_URL = (process.env.NEXT_PUBLIC_SITE_URL || "https://bunoraa.com").replace(
-  /\/$/,
-  ""
-);
-export const SITE_NAME = "Bunoraa";
+function requireEnv(name: string): string {
+  const value = process.env[name];
+  if (!value) {
+    throw new Error(`${name} environment variable is not set. This is required for SEO metadata generation.`);
+  }
+  return value.replace(/\/$/, "");
+}
+
+export const SITE_URL = requireEnv("NEXT_PUBLIC_SITE_URL");
+export const SITE_NAME = process.env.NEXT_PUBLIC_SITE_NAME || "Bunoraa";
 export const DEFAULT_OG_IMAGE_PATH = "/opengraph-image";
 
 /**
@@ -17,9 +22,12 @@ export const DEFAULT_OG_IMAGE_PATH = "/opengraph-image";
  * @returns Backend base URL (e.g., https://api.bunoraa.com or https://backend.hf.space)
  */
 export function getBackendBaseUrl(): string {
-  const apiUrl = process.env.NEXT_PUBLIC_API_BASE_URL || "https://api.bunoraa.com";
+  const apiUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
+  if (!apiUrl) {
+    throw new Error("NEXT_PUBLIC_API_BASE_URL is not set. Required for backend URL construction.");
+  }
   // Remove /api/v* suffix if present to get base backend URL
-  return apiUrl.replace(/\/api\/v\d+\/?$/, "") || "https://api.bunoraa.com";
+  return apiUrl.replace(/\/api\/v\d+\/?$/, "") || apiUrl;
 }
 
 export function absoluteUrl(path: UrlLike): string {
@@ -729,33 +737,36 @@ export function buildProductSchema(product: ProductDetail) {
   });
 }
 
-export function buildLocalBusinessSchema() {
+export function buildLocalBusinessSchema(settings?: SiteSettings | null) {
+  const name = settings?.company_name || settings?.site_name || SITE_NAME;
+  const sameAs = [
+    settings?.facebook_url,
+    settings?.instagram_url,
+    settings?.youtube_url,
+    settings?.twitter_url,
+  ].filter(Boolean) as string[];
   return cleanObject({
     "@context": "https://schema.org",
     "@type": "LocalBusiness",
     "@id": absoluteUrl("/#localbusiness"),
-    name: SITE_NAME,
+    name,
     url: absoluteUrl("/"),
     address: cleanObject({
       "@type": "PostalAddress",
-      streetAddress: "Ulipur",
-      addressLocality: "Kurigram",
-      addressRegion: "Rangpur",
+      streetAddress: settings?.contact_address || undefined,
+      addressLocality: settings?.address_locality || undefined,
+      addressRegion: settings?.address_region || undefined,
       addressCountry: "BD",
     }),
-    telephone: "+8801701922629",
-    email: "support@bunoraa.com",
+    telephone: settings?.contact_phone || undefined,
+    email: settings?.contact_email || undefined,
     image: absoluteUrl("/icon.png"),
-    priceRange: "৳",
-    sameAs: [
-      "https://www.facebook.com/bunoraa",
-      "https://www.instagram.com/bunoraa_bd",
-      "https://www.youtube.com/@bunoraa",
-    ],
+    priceRange: settings?.currency_symbol || "৳",
+    sameAs: sameAs.length ? sameAs : undefined,
     areaServed: "Bangladesh",
     hasOfferCatalog: cleanObject({
       "@type": "OfferCatalog",
-      name: "Bunoraa Products",
+      name: `${name} Products`,
       itemListElement: [
         { "@type": "OfferCatalog", name: "Women's Fashion" },
         { "@type": "OfferCatalog", name: "Kids' Clothing" },

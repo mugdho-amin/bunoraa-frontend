@@ -3,7 +3,8 @@
  * Tracks Core Web Vitals, errors, and API performance
  */
 
-import { onCLS, onFCP, onFCP as onFID, onLCP, onTTFB, type Metric } from "web-vitals";
+import { useEffect } from "react";
+import { onCLS, onFCP, onINP, onLCP, onTTFB, type Metric } from "web-vitals";
 
 // Performance metrics config
 const CONFIG = {
@@ -16,7 +17,7 @@ const CONFIG = {
   // Metrics threshold for warnings (in ms)
   thresholds: {
     LCP: 2500,
-    FID: 100,
+    INP: 200,
     CLS: 0.1,
     FCP: 1800,
     TTFB: 800,
@@ -54,15 +55,19 @@ const sessionErrors: PerformanceError[] = [];
 /**
  * Initialize performance monitoring
  */
+let performanceMonitoringInitialized = false;
+
 export function initPerformanceMonitoring() {
   if (typeof window === "undefined") return;
+  if (performanceMonitoringInitialized) return;
+  performanceMonitoringInitialized = true;
 
   // Sample users to prevent overwhelming analytics
   if (Math.random() > CONFIG.sampleRate) return;
 
   // Report Core Web Vitals
   onLCP((metric) => reportMetric("LCP", metric));
-  onFID((metric) => reportMetric("FID", metric));
+  onINP((metric) => reportMetric("INP", metric));
   onCLS((metric) => reportMetric("CLS", metric));
   onFCP((metric) => reportMetric("FCP", metric));
   onTTFB((metric) => reportMetric("TTFB", metric));
@@ -281,14 +286,14 @@ export function measure<T extends (...args: any[]) => any>(
  * Hook for tracking react component render performance
  */
 export function usePerformanceMark(componentName: string) {
-  if (typeof window === "undefined") return;
-
-  const start = performance.now();
-  
-  return () => {
-    const duration = performance.now() - start;
-    if (CONFIG.debug && duration > 16) {
-      console.warn(`[Performance] ${componentName} render took ${duration.toFixed(2)}ms`);
-    }
-  };
+  const start = typeof window !== "undefined" ? performance.now() : 0;
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    return () => {
+      const duration = performance.now() - start;
+      if (CONFIG.debug && duration > 16) {
+        console.warn(`[Performance] ${componentName} render took ${duration.toFixed(2)}ms`);
+      }
+    };
+  }, [componentName, start]);
 }

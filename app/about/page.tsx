@@ -14,6 +14,7 @@ import { JsonLd } from "@/components/seo/JsonLd";
 import { getServerLang, getServerLocaleHeaders } from "@/lib/serverLocale";
 import { absoluteUrl, buildPageMetadata, cleanObject } from "@/lib/seo";
 import { asArray } from "@/lib/array";
+import { sanitizeHtml } from "@/lib/sanitize";
 import { buildCategoryPath } from "@/lib/categoryPaths";
 import { getSiteSettings } from "@/lib/siteSettings.server";
 
@@ -334,7 +335,7 @@ export default async function AboutPage() {
           <h2 className="text-xl font-semibold">Our story</h2>
             <div
               className="mt-5 max-w-none space-y-4 text-sm leading-relaxed text-foreground/70 [&_h3]:text-base [&_h3]:font-semibold [&_h3]:text-foreground [&_p]:text-foreground/70 [&_ul]:list-disc [&_ul]:space-y-1 [&_ul]:pl-5 [&_li]:text-foreground/70 [&_a]:text-primary [&_a]:underline [&_a]:underline-offset-2 [&_a:hover]:text-primary/80 [&_.lead]:text-base [&_.lead]:font-medium [&_.lead]:text-foreground/80"
-              dangerouslySetInnerHTML={{ __html: page.content }}
+              dangerouslySetInnerHTML={{ __html: sanitizeHtml(page.content) }}
             />
         </Card>
         ) : null}

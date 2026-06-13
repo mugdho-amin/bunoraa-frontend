@@ -9,6 +9,7 @@ export function compareItemFromProduct(product: ProductListItem): CompareItem {
   const image =
     typeof product.primary_image === "string"
       ? product.primary_image
+      // TODO: Normalize API response, primary_image can be string or {image: string}
       : (product.primary_image as unknown as { image?: string | null })?.image || null;
   const fallbackImage =
     (product as { images?: Array<{ image?: string | null }> }).images?.[0]?.image || null;

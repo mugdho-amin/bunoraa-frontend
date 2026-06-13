@@ -209,13 +209,6 @@ export function ChatWidget() {
       return;
     }
 
-    const token = getAccessToken();
-    const url = buildChatWsUrl(conversationId, token);
-    if (!url) {
-      setWsState("error");
-      return;
-    }
-
     let socket: WebSocket | null = null;
     let reconnectTimer: ReturnType<typeof setTimeout> | null = null;
     let pingTimer: ReturnType<typeof setInterval> | null = null;
@@ -223,6 +216,12 @@ export function ChatWidget() {
     let attempt = 0;
 
     const connect = () => {
+      const token = getAccessToken();
+      const url = buildChatWsUrl(conversationId, token);
+      if (!url) {
+        setWsState("error");
+        return;
+      }
       setWsState("connecting");
       socket = new WebSocket(url);
 

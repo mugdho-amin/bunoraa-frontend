@@ -4,6 +4,7 @@ import type { PageDetail } from "@/lib/types";
 import { notFound } from "next/navigation";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { getServerLang } from "@/lib/serverLocale";
+import { sanitizeHtml } from "@/lib/sanitize";
 import { absoluteUrl, buildBreadcrumbList, buildPageMetadata, cleanObject } from "@/lib/seo";
 import {
   buildCategoryMetadataForPath,
@@ -108,7 +109,7 @@ export default async function PageDetail({
         <h1 className="text-3xl font-semibold">{page.title}</h1>
         <div
           className="prose prose-stone mt-6 max-w-none"
-          dangerouslySetInnerHTML={{ __html: page.content || "" }}
+          dangerouslySetInnerHTML={{ __html: sanitizeHtml(page.content || "") }}
         />
       </div>
       <JsonLd data={[pageSchema, breadcrumbs]} />

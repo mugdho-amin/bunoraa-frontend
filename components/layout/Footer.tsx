@@ -11,6 +11,7 @@ import type {
 } from "@/lib/types";
 import { FooterNewsletter } from "@/components/layout/FooterNewsletter";
 import { FooterPreferencesDialog } from "@/components/layout/FooterPreferencesDialog";
+import { MobileAccordion } from "@/components/layout/MobileAccordion";
 import { asArray } from "@/lib/array";
 import { buildCategoryPath } from "@/lib/categoryPaths";
 import { hasPublishedBundles } from "@/lib/bundles";
@@ -245,7 +246,7 @@ export async function Footer() {
       ? bundleAvailabilityResult.value
       : false;
 
-  const brandName = pickText(siteSettings?.site_name) || "Bunoraa";
+  const brandName = pickText(siteSettings?.company_name, siteSettings?.site_name) || "Bunoraa";
   const brandDescription =
     pickText(
       siteSettings?.footer_text,
@@ -535,135 +536,23 @@ export async function Footer() {
             <FooterNewsletter />
           </div>
 
-          <div className="space-y-3">
-            <details className={footerAccordionClass} name="footer-sections" open>
-              <summary className={footerSummaryClass}>
-                <span>Shop</span>
-                <ChevronDown
-                  aria-hidden="true"
-                  className="h-4 w-4 shrink-0 text-foreground/60 transition group-open:rotate-180"
-                  strokeWidth={1.8}
-                />
-              </summary>
-              <ul className={footerListClass}>
-                {shopLinks.map((item) => (
-                  <li key={item.key}>
-                    <Link
-                      href={item.href}
-                      className={
-                        item.isCta ? `${shopBrowseAllCtaClass} group` : footerListLinkClass
-                      }
-                    >
-                      <span>{item.label}</span>
-                      {item.isCta ? (
-                        <ChevronRight
-                          aria-hidden="true"
-                          className="h-3.5 w-3.5 transition-transform duration-200 group-hover:translate-x-0.5"
-                          strokeWidth={1.8}
-                        />
-                      ) : null}
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            </details>
-
-            <details className={footerAccordionClass} name="footer-sections">
-              <summary className={footerSummaryClass}>
-                <span>Collections</span>
-                <ChevronDown
-                  aria-hidden="true"
-                  className="h-4 w-4 shrink-0 text-foreground/60 transition group-open:rotate-180"
-                  strokeWidth={1.8}
-                />
-              </summary>
-              <ul className={footerListClass}>
-                {collectionLinks.map((item) => (
-                  <li key={item.key}>
-                    <Link href={item.href} className={footerListLinkClass}>
-                      {item.label}
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            </details>
-
-            <details className={footerAccordionClass} name="footer-sections">
-              <summary className={footerSummaryClass}>
-                <span>Company & Support</span>
-                <ChevronDown
-                  aria-hidden="true"
-                  className="h-4 w-4 shrink-0 text-foreground/60 transition group-open:rotate-180"
-                  strokeWidth={1.8}
-                />
-              </summary>
-              <ul className={footerListClass}>
-                {companySupportLinks.map((item) => (
-                  <li key={item.href}>
-                    <Link href={item.href} className={footerListLinkClass}>
-                      {item.label}
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            </details>
-
-            <details className={footerAccordionClass} name="footer-sections">
-              <summary className={footerSummaryClass}>
-                <span>Contact & Location</span>
-                <ChevronDown
-                  aria-hidden="true"
-                  className="h-4 w-4 shrink-0 text-foreground/60 transition group-open:rotate-180"
-                  strokeWidth={1.8}
-                />
-              </summary>
-              <ul className={footerListClass}>
-                {contactItems.map((item) => {
-                  const Icon = contactIconMap[item.kind];
-                  return (
-                    <li key={item.key} className="flex items-start gap-2">
-                      <span
-                        className={contactIconContainerClass}
-                        aria-hidden="true"
-                      >
-                        <Icon
-                          size={contactIconSize}
-                          strokeWidth={contactIconStroke}
-                        />
-                      </span>
-                      <span className="sr-only">
-                        {item.label || item.kind}
-                      </span>
-                      {item.href ? (
-                        <Link href={item.href}>{item.value}</Link>
-                      ) : (
-                        <span>{item.value}</span>
-                      )}
-                    </li>
-                  );
-                })}
-                {socialLinks.length ? (
-                  <li className="pt-1">
-                    <div className="flex items-center gap-2">
-                      {socialLinks.map((link) => (
-                        <Link
-                          key={`mobile-social-${link.platform}-${link.url}`}
-                          href={link.url}
-                          className={socialIconLinkClass}
-                          aria-label={link.label}
-                          title={link.label}
-                          target="_blank"
-                          rel="noreferrer"
-                        >
-                          <SocialIcon platform={link.platform} iconUrl={link.icon} />
-                        </Link>
-                      ))}
-                    </div>
-                  </li>
-                ) : null}
-              </ul>
-            </details>
-          </div>
+          <MobileAccordion
+            footerAccordionClass={footerAccordionClass}
+            footerSummaryClass={footerSummaryClass}
+            footerListClass={footerListClass}
+            footerListLinkClass={footerListLinkClass}
+            shopBrowseAllCtaClass={shopBrowseAllCtaClass}
+            socialIconLinkClass={socialIconLinkClass}
+            shopLinks={shopLinks}
+            collectionLinks={collectionLinks}
+            companySupportLinks={companySupportLinks}
+            contactItems={contactItems}
+            socialLinks={socialLinks}
+            contactIconMap={contactIconMap}
+            contactIconSize={contactIconSize}
+            contactIconStroke={contactIconStroke}
+            contactIconContainerClass={contactIconContainerClass}
+          />
         </div>
 
         <div className="hidden gap-8 sm:grid-cols-2 lg:grid lg:grid-cols-6">

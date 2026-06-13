@@ -1,6 +1,7 @@
 import type { ApiResponse } from "@/lib/types";
 import { clearTokens, getRefreshToken, setAccessToken } from "@/lib/auth";
 import { getLocaleHeaders } from "@/lib/locale";
+import { safeGetItem, safeSessionGetItem } from "@/lib/storage";
 
 type ApiFetchOptions = {
   method?: "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
@@ -18,14 +19,15 @@ type ApiFetchOptions = {
   suppressErrorStatus?: number[];
   retries?: number;
   retryDelay?: number;
+  timeout?: number;
 };
 
 const PUBLIC_API_BASE_URL = (process.env.NEXT_PUBLIC_API_BASE_URL || "").replace(/\/$/, "");
 const INTERNAL_API_BASE_URL = (process.env.NEXT_INTERNAL_API_BASE_URL || "").replace(/\/$/, "");
 const FALLBACK_SITE_URL =
-  (process.env.NEXT_PUBLIC_SITE_URL || "").replace(/\/$/, "") || "https://bunoraa.com";
+  (process.env.NEXT_PUBLIC_SITE_URL || "").replace(/\/$/, "") || null;
 
-let refreshPromise: Promise<string | null> | null = null;
+let pendingRefresh: Promise<string | null> | null = null;
 
 function ensureTrailingSlash(path: string) {
   if (!path.endsWith("/")) {
@@ -116,11 +118,17 @@ function buildUrl(path: string, params?: ApiFetchOptions["params"]) {
   if (!base) {
     throw new Error("NEXT_PUBLIC_API_BASE_URL is not set");
   }
+  if (base.startsWith("/") && typeof window === "undefined" && !FALLBACK_SITE_URL) {
+    throw new Error(
+      "NEXT_PUBLIC_SITE_URL must be set when using relative API base URLs on the server. " +
+      "Set it to your deployment's origin (e.g., https://example.com)."
+    );
+  }
   const url =
     base.startsWith("/")
       ? new URL(
           `${base}${normalizedPath}`,
-          typeof window !== "undefined" ? window.location.origin : FALLBACK_SITE_URL
+          typeof window !== "undefined" ? window.location.origin : FALLBACK_SITE_URL!
         )
       : new URL(`${base}${normalizedPath}`);
   if (params) {
@@ -165,8 +173,8 @@ function isAccessTokenExpired(token: string, skewSeconds = 15) {
 function getAccessToken() {
   if (typeof window === "undefined") return null;
   return (
-    window.localStorage.getItem("access_token") ||
-    window.sessionStorage.getItem("access_token")
+    safeGetItem("bunoraa:access_token") ||
+    safeSessionGetItem("bunoraa:access_token")
   );
 }
 
@@ -182,7 +190,7 @@ function getCookie(name: string) {
 function setCookie(name: string, value: string) {
   if (typeof document === "undefined") return;
   const secure = window.location.protocol === "https:" ? "; secure" : "";
-  document.cookie = `${name}=${encodeURIComponent(value)}; path=/; samesite=Lax${secure}`;
+  document.cookie = `${name}=${encodeURIComponent(value)}; path=/; samesite=Strict; HttpOnly${secure}`;
 }
 
 function extractErrorMessage(json: unknown): string | null {
@@ -269,19 +277,23 @@ async function refreshAccessToken() {
   if (typeof window === "undefined") return null;
   const refresh = getRefreshToken();
   if (!refresh || !getApiBaseUrl()) return null;
-  if (refreshPromise) return refreshPromise;
 
-  refreshPromise = fetch(buildUrl("/auth/token/refresh/"), {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      "X-Requested-With": "XMLHttpRequest",
-    },
-    credentials: "include",
-    body: JSON.stringify({ refresh }),
-  })
-    .then(async (response) => {
+  if (pendingRefresh) return pendingRefresh;
+
+  pendingRefresh = (async () => {
+    try {
+      const response = await fetch(buildUrl("/auth/token/refresh/"), {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "X-Requested-With": "XMLHttpRequest",
+        },
+        credentials: "include",
+        body: JSON.stringify({ refresh }),
+      });
+
       if (!response.ok) return null;
+
       const json = await parseJsonSafe(response);
       const access =
         json?.access ||
@@ -291,13 +303,14 @@ async function refreshAccessToken() {
         return access as string;
       }
       return null;
-    })
-    .catch(() => null)
-    .finally(() => {
-      refreshPromise = null;
-    });
+    } catch {
+      return null;
+    } finally {
+      pendingRefresh = null;
+    }
+  })();
 
-  return refreshPromise;
+  return pendingRefresh;
 }
 
 let _defaultReqCounter = 0;
@@ -321,9 +334,18 @@ export async function apiFetch<T>(path: string, options: ApiFetchOptions = {}): 
     allowGuest = false,
     suppressError = false,
     suppressErrorStatus = [],
+    timeout = 30000,
   } = options;
 
   const url = buildUrl(path, params);
+
+  // Apply request timeout via AbortSignal
+  const timeoutSignal = typeof AbortSignal !== "undefined" && AbortSignal.timeout
+    ? AbortSignal.timeout(timeout)
+    : null;
+  const combinedSignal = signal && timeoutSignal
+    ? AbortSignal.any([signal, timeoutSignal])
+    : (signal || timeoutSignal);
   let token = skipAuth ? null : getAccessToken();
   if (!skipAuth && token && typeof window !== "undefined" && isAccessTokenExpired(token)) {
     const refreshed = await refreshAccessToken();
@@ -345,7 +367,6 @@ export async function apiFetch<T>(path: string, options: ApiFetchOptions = {}): 
     method,
     headers: {
       ...(isFormData ? {} : { "Content-Type": "application/json" }),
-      "X-Requested-With": "XMLHttpRequest",
       "X-Request-ID": requestId,
       ...(csrfToken ? { "X-CSRFToken": csrfToken } : {}),
       ...(token ? { Authorization: `Bearer ${token}` } : {}),
@@ -360,7 +381,7 @@ export async function apiFetch<T>(path: string, options: ApiFetchOptions = {}): 
           : JSON.stringify(body)
         : undefined,
     cache,
-    signal,
+    signal: combinedSignal,
   };
 
   if (next) {
