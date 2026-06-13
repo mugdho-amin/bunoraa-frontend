@@ -18,6 +18,8 @@ import { sanitizeHtml } from "@/lib/sanitize";
 import { buildCategoryPath } from "@/lib/categoryPaths";
 import { getSiteSettings } from "@/lib/siteSettings.server";
 
+export const revalidate = 300; // ISR: Revalidate every 5 minutes
+
 
 type CategoryPreview = {
   id: string;
