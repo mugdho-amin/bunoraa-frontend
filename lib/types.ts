@@ -26,6 +26,7 @@ export type UserProfile = {
   full_name?: string | null;
   phone?: string | null;
   avatar?: string | null;
+  avatar_url?: string | null;
   date_of_birth?: string | null;
   is_verified?: boolean;
   newsletter_subscribed?: boolean;

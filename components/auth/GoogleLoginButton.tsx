@@ -4,6 +4,7 @@ import { useEffect, useRef, useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { apiFetch } from "@/lib/api";
 import { setTokens } from "@/lib/auth";
+import { useTheme } from "@/components/theme/ThemeProvider";
 
 interface GoogleLoginButtonProps {
   nextUrl?: string;
@@ -54,6 +55,7 @@ export function GoogleLoginButton({
   onError 
 }: GoogleLoginButtonProps) {
   const router = useRouter();
+  const { theme } = useTheme();
   const containerRef = useRef<HTMLDivElement>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -101,8 +103,12 @@ export function GoogleLoginButton({
         initializedRef.current = true;
       }
 
+      // Determine Google button theme based on app theme
+      const isDark = theme === "dark" || theme === "moonlight" || 
+        (theme === "system" && window.matchMedia("(prefers-color-scheme: dark)").matches);
+
       google.accounts.id.renderButton(containerRef.current, {
-        theme: "outline",
+        theme: isDark ? "filled_black" : "outline",
         size: "large",
         width: "100%", 
         text: "continue_with",
@@ -115,7 +121,7 @@ export function GoogleLoginButton({
       console.error("Failed to initialize Google login:", err);
       setError("Failed to initialize Google login.");
     }
-  }, [handleCredentialResponse, clientId]);
+  }, [handleCredentialResponse, clientId, theme]);
 
   useEffect(() => {
     if (!clientId) return;
@@ -155,3 +161,4 @@ export function GoogleLoginButton({
     </div>
   );
 }
+
