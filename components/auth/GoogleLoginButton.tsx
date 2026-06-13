@@ -89,7 +89,7 @@ export function GoogleLoginButton({
     }
   }, [nextUrl, router, onError]);
 
-  const initGoogle = useCallback(() => {
+  const renderGoogleButton = useCallback((width: number) => {
     const google = window.google;
     if (!google?.accounts?.id || !containerRef.current || !clientId) return;
 
@@ -107,10 +107,15 @@ export function GoogleLoginButton({
       const isDark = theme === "dark" || theme === "moonlight" || 
         (theme === "system" && window.matchMedia("(prefers-color-scheme: dark)").matches);
 
+      // Google SDK requires numeric width in pixels as a string (max 400, min 200)
+      // or we can just pass the number. SDK documentation says string pixels.
+      // But percentage is definitely not allowed.
+      const buttonWidth = Math.min(400, Math.max(200, width));
+
       google.accounts.id.renderButton(containerRef.current, {
         theme: isDark ? "filled_black" : "outline",
         size: "large",
-        width: "100%", 
+        width: `${buttonWidth}`, 
         text: "continue_with",
         shape: "rectangular",
       });
@@ -127,16 +132,39 @@ export function GoogleLoginButton({
     if (!clientId) return;
 
     if (window.google?.accounts?.id) {
-      initGoogle();
+      // Initial render
+      if (containerRef.current) {
+        renderGoogleButton(containerRef.current.offsetWidth);
+      }
     } else {
       const script = document.createElement("script");
       script.src = "https://accounts.google.com/gsi/client";
       script.async = true;
       script.defer = true;
-      script.onload = initGoogle;
+      script.onload = () => {
+        if (containerRef.current) {
+          renderGoogleButton(containerRef.current.offsetWidth);
+        }
+      };
       document.head.appendChild(script);
     }
-  }, [initGoogle, clientId]);
+  }, [renderGoogleButton, clientId]);
+
+  // Handle Resizing
+  useEffect(() => {
+    if (!containerRef.current) return;
+
+    const observer = new ResizeObserver((entries) => {
+      for (const entry of entries) {
+        if (entry.contentRect.width > 0) {
+          renderGoogleButton(entry.contentRect.width);
+        }
+      }
+    });
+
+    observer.observe(containerRef.current);
+    return () => observer.disconnect();
+  }, [renderGoogleButton]);
 
   if (!clientId) {
     return null;
