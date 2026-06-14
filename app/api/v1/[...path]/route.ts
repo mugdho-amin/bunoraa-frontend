@@ -47,7 +47,7 @@ function buildProxyHeaders(request: NextRequest): HeadersInit {
   return headers;
 }
 
-const ALLOWED_PATH_PREFIXES = ["/api/v1/auth", "/api/v1/account", "/api/v1/products", "/api/v1/categories", "/api/v1/checkout", "/api/v1/orders", "/api/v1/cart", "/api/v1/wishlist", "/api/v1/search"];
+const ALLOWED_PATH_PREFIXES = ["/api/v1/auth", "/api/v1/account", "/api/v1/products", "/api/v1/categories", "/api/v1/checkout", "/api/v1/orders", "/api/v1/cart", "/api/v1/wishlist", "/api/v1/search", "/api/v1/catalog", "/api/v1/pages", "/api/v1/promotions", "/api/v1/i18n"];
 
 function validateProxyPath(pathname: string): void {
   const decoded = decodeURIComponent(pathname);
@@ -149,3 +149,4 @@ export async function HEAD(request: NextRequest) {
 export async function OPTIONS(request: NextRequest) {
   return proxyRequest(request);
 }
+

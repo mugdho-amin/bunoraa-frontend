@@ -52,10 +52,9 @@ const isProduction = process.env.NODE_ENV === "production";
 //   3. Set nonce in CSP header: script-src 'self' 'nonce-{nonce}' 'strict-dynamic'
 //   4. Pass nonce via x-nonce header and use <Script nonce={nonce}> in layout
 //   5. Pages must use dynamic rendering: export const dynamic = 'force-dynamic'
-const isDev = process.env.NODE_ENV === 'development';
 const cspHeader = `
   default-src 'self';
-  script-src 'self' 'strict-dynamic' https://accounts.google.com https://www.googletagmanager.com https://cdn.cloudflare.com${isDev ? " 'unsafe-eval'" : ''};
+  script-src 'self' 'unsafe-inline' 'unsafe-eval' https://accounts.google.com https://www.googletagmanager.com https://cdn.cloudflare.com;
   style-src 'self' 'unsafe-inline' https://accounts.google.com;
   img-src 'self' blob: data: https: http:;
   font-src 'self' data:;
@@ -107,6 +106,7 @@ if (isProduction) {
 const nextConfig: NextConfig = {
   trailingSlash: true,
   poweredByHeader: false,
+  serverExternalPackages: ["isomorphic-dompurify"],
   images: {
     loader: "custom",
     loaderFile: "./lib/r2-loader.ts",
@@ -224,13 +224,6 @@ const nextConfig: NextConfig = {
       {
         source: "/api/schema/:path*/",
         destination: `${apiBaseUrl}/api/schema/:path*/`,
-      },
-    ];
-  },
-};
-
-export default nextConfig;
-destination: `${apiBaseUrl}/api/schema/:path*/`,
       },
     ];
   },
