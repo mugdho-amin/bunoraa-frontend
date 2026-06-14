@@ -11,7 +11,11 @@ export const getSiteSettings = cache(async (): Promise<SiteSettings | null> => {
       next: { revalidate: 300 },
     });
     return response.data;
-  } catch (e) {
+  } catch (e: any) {
+    if (e?.message?.includes("Dynamic server usage") || e?.isDynamicError) {
+      // Expected during static generation if cookies() are used
+      return null;
+    }
     logger.error("getSiteSettings fetch failed", e);
     return null;
   }

@@ -388,7 +388,11 @@ export async function apiFetch<T>(path: string, options: ApiFetchOptions = {}): 
     init.next = next;
   }
 
+  const controller = new AbortController();
+  const timeoutTimer = setTimeout(() => controller.abort(), timeout);
+  
   const response = await fetch(url, init);
+  clearTimeout(timeoutTimer);
 
   const json = await parseJsonSafe(response);
 
@@ -424,11 +428,20 @@ export async function apiFetch<T>(path: string, options: ApiFetchOptions = {}): 
     const message = extracted || safeText || response.statusText || "Request failed";
     const shouldSuppress =
       suppressError || (suppressErrorStatus && suppressErrorStatus.includes(response.status));
+    
     if (typeof window !== "undefined" && !shouldSuppress) {
       const path = url.toString();
       console.error("API error", path, response.status, message, json);
     }
-    throw new ApiError(message, response.status, json, url.toString());
+
+    const error = new ApiError(message, response.status, json, url.toString());
+    
+    // Check for Next.js dynamic usage error to avoid build noise
+    if (message.includes("Dynamic server usage")) {
+      (error as any).isDynamicError = true;
+    }
+    
+    throw error;
   }
 
   if (json && typeof json === "object" && "data" in json) {
