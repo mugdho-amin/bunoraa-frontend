@@ -230,3 +230,10 @@ const nextConfig: NextConfig = {
 };
 
 export default nextConfig;
+destination: `${apiBaseUrl}/api/schema/:path*/`,
+      },
+    ];
+  },
+};
+
+export default nextConfig;

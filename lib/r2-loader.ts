@@ -21,9 +21,9 @@ export default function r2Loader({
   const relativePath = src.startsWith('/') ? src.slice(1) : src;
   
   // Base media URL from environment
-  const baseUrl = process.env.NEXT_PUBLIC_MEDIA_URL;
+  const baseUrl = process.env.NEXT_PUBLIC_MEDIA_BASE_URL;
   if (!baseUrl) {
-    throw new Error("NEXT_PUBLIC_MEDIA_URL is not set. Required for image loading.");
+    throw new Error("NEXT_PUBLIC_MEDIA_BASE_URL is not set. Required for image loading.");
   }
   
   // Construct URL with optimization parameters (if supported by the edge/proxy)
