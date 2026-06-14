@@ -4,6 +4,7 @@ import React, { Component, ErrorInfo, ReactNode } from "react";
 import { Button } from "@/components/ui/Button";
 import { AlertTriangle, RefreshCw, Home } from "lucide-react";
 import { logger } from "@/lib/logger";
+import Link from "next/link";
 
 interface Props {
   children: ReactNode;
@@ -62,10 +63,10 @@ export class ErrorBoundary extends Component<Props, State> {
               Try again
             </Button>
             <Button variant="outline" asChild>
-              <a href="/" className="gap-2">
+              <Link href="/" className="gap-2">
                 <Home size={18} />
                 Go Home
-              </a>
+              </Link>
             </Button>
           </div>
           {process.env.NODE_ENV === "development" && this.state.error && (
@@ -78,6 +79,6 @@ export class ErrorBoundary extends Component<Props, State> {
       );
     }
 
-    return this.children;
+    return this.props.children;
   }
 }
