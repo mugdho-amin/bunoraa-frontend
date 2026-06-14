@@ -44,6 +44,7 @@ declare global {
             }
           ) => void;
           prompt: (notification?: (obj: { isDisplayMoment: () => boolean; isSkippedMoment: () => boolean; getSkippedReason: () => string }) => void) => void;
+          cancel: () => void;
         };
       };
     };
@@ -60,6 +61,8 @@ export function GoogleLoginButton({
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const initializedRef = useRef(false);
+  const promptFiredRef = useRef(false);
+  const lastWidthRef = useRef(0);
 
   const clientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID;
 
@@ -93,35 +96,38 @@ export function GoogleLoginButton({
     const google = window.google;
     if (!google?.accounts?.id || !containerRef.current || !clientId) return;
 
+    const roundedWidth = Math.round(width);
+    if (Math.abs(roundedWidth - lastWidthRef.current) < 10) return;
+    lastWidthRef.current = roundedWidth;
+
     try {
       if (!initializedRef.current) {
         google.accounts.id.initialize({
           client_id: clientId,
           callback: handleCredentialResponse,
           auto_select: false,
+          cancel_on_tap_outside: false,
         });
         initializedRef.current = true;
       }
 
-      // Determine Google button theme based on app theme
       const isDark = theme === "dark" || theme === "moonlight" || 
         (theme === "system" && window.matchMedia("(prefers-color-scheme: dark)").matches);
 
-      // Google SDK requires numeric width in pixels as a string (max 400, min 200)
-      // or we can just pass the number. SDK documentation says string pixels.
-      // But percentage is definitely not allowed.
       const buttonWidth = Math.min(400, Math.max(200, width));
 
       google.accounts.id.renderButton(containerRef.current, {
         theme: isDark ? "filled_black" : "outline",
         size: "large",
-        width: `${buttonWidth}`, 
+        width: `${buttonWidth}`,
         text: "continue_with",
         shape: "rectangular",
       });
 
-      // Also try One Tap
-      google.accounts.id.prompt();
+      if (!promptFiredRef.current) {
+        google.accounts.id.prompt();
+        promptFiredRef.current = true;
+      }
     } catch (err) {
       console.error("Failed to initialize Google login:", err);
       setError("Failed to initialize Google login.");
@@ -132,7 +138,6 @@ export function GoogleLoginButton({
     if (!clientId) return;
 
     if (window.google?.accounts?.id) {
-      // Initial render
       if (containerRef.current) {
         renderGoogleButton(containerRef.current.offsetWidth);
       }
@@ -150,9 +155,9 @@ export function GoogleLoginButton({
     }
   }, [renderGoogleButton, clientId]);
 
-  // Handle Resizing
   useEffect(() => {
-    if (!containerRef.current) return;
+    const el = containerRef.current;
+    if (!el) return;
 
     const observer = new ResizeObserver((entries) => {
       for (const entry of entries) {
@@ -162,9 +167,17 @@ export function GoogleLoginButton({
       }
     });
 
-    observer.observe(containerRef.current);
+    observer.observe(el);
     return () => observer.disconnect();
   }, [renderGoogleButton]);
+
+  useEffect(() => {
+    return () => {
+      if (window.google?.accounts?.id) {
+        try { window.google.accounts.id.cancel(); } catch {}
+      }
+    };
+  }, []);
 
   if (!clientId) {
     return null;
