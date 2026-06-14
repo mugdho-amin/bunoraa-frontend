@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useRef, useState, useCallback } from "react";
-import { useRouter } from "next/navigation";
 import { apiFetch } from "@/lib/api";
 import { setTokens } from "@/lib/auth";
 import { useTheme } from "@/components/theme/ThemeProvider";
@@ -55,7 +54,6 @@ export function GoogleLoginButton({
   nextUrl = "/account/profile/",
   onError 
 }: GoogleLoginButtonProps) {
-  const router = useRouter();
   const { theme } = useTheme();
   const containerRef = useRef<HTMLDivElement>(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -77,8 +75,7 @@ export function GoogleLoginButton({
 
       if (res.data?.access && res.data?.refresh) {
         setTokens(res.data.access, res.data.refresh, true);
-        router.push(nextUrl);
-        router.refresh();
+        window.location.href = nextUrl;
       } else {
         throw new Error("Invalid response from server");
       }
@@ -90,7 +87,7 @@ export function GoogleLoginButton({
     } finally {
       setIsLoading(false);
     }
-  }, [nextUrl, router, onError]);
+  }, [nextUrl, onError]);
 
   const renderGoogleButton = useCallback((width: number) => {
     const google = window.google;
