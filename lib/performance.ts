@@ -286,14 +286,14 @@ export function measure<T extends (...args: any[]) => any>(
  * Hook for tracking react component render performance
  */
 export function usePerformanceMark(componentName: string) {
-  const start = typeof window !== "undefined" ? performance.now() : 0;
   useEffect(() => {
     if (typeof window === "undefined") return;
+    const start = performance.now();
     return () => {
       const duration = performance.now() - start;
       if (CONFIG.debug && duration > 16) {
         console.warn(`[Performance] ${componentName} render took ${duration.toFixed(2)}ms`);
       }
     };
-  }, [componentName, start]);
+  }, [componentName]);
 }

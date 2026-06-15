@@ -12,7 +12,6 @@ import { SiteSettingsProvider } from "@/components/providers/SiteSettingsProvide
 import { ToastProvider } from "@/components/ui/ToastProvider";
 import { LanguageSynchronizer } from "@/components/providers/LanguageSynchronizer";
 import { initPerformanceMonitoring } from "@/lib/performance";
-import { logger } from "@/lib/logger";
 
 // Initialize performance monitoring
 function PerformanceMonitoring() {

@@ -2,6 +2,7 @@
 
 import * as React from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { ChevronDown, ChevronRight, Mail, PhoneCall, MapPinHouse } from "lucide-react";
 
 const CONTACT_ICON_MAP = {
@@ -12,7 +13,7 @@ const CONTACT_ICON_MAP = {
 
 function SocialIcon({ platform, iconUrl }: { platform: string; iconUrl?: string | null }) {
   if (iconUrl) {
-    return <img src={iconUrl} alt={platform} className="h-4 w-4" />;
+    return <Image src={iconUrl} alt={platform} width={16} height={16} unoptimized className="h-4 w-4" />;
   }
   const initials = platform.slice(0, 2).toUpperCase();
   return (

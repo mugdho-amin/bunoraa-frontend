@@ -1,42 +1,11 @@
 import type { Metadata } from "next";
-import { cache } from "react";
 import dynamic from "next/dynamic";
-import Link from "next/link";
-import { apiFetch, ApiError } from "@/lib/api";
-import type { Bundle, ProductListItem } from "@/lib/types";
-import { Button } from "@/components/ui/Button";
-import { notFound } from "next/navigation";
-import { getServerLocaleHeaders } from "@/lib/serverLocale";
-import { JsonLd } from "@/components/seo/JsonLd";
-import { getServerLang } from "@/lib/serverLocale";
-import { buildBreadcrumbList, buildItemList, buildPageKeywords, buildPageMetadata } from "@/lib/seo";
-import { buildProductPath } from "@/lib/productPaths";
+import { generateBundleMetadata } from "@/components/bundles/BundleDetailPageContent";
 
-const ProductGrid = dynamic(
-  () => import("@/components/products/ProductGrid").then((mod) => mod.ProductGrid)
+const BundleDetailPageContent = dynamic(
+  () => import("@/components/bundles/BundleDetailPageContent").then((mod) => mod.BundleDetailPageContent),
+  { loading: () => <div className="p-8 text-center text-sm text-foreground/60">Loading bundle...</div> }
 );
-
-const getBundle = cache(async (slug: string) => {
-  try {
-    const response = await apiFetch<Bundle>(`/catalog/bundles/${slug}/`, {
-      headers: await getServerLocaleHeaders()
-    });
-    return response.data;
-  } catch (error) {
-    if (error instanceof ApiError && error.status === 404) {
-      notFound();
-    }
-    throw error;
-  }
-});
-
-const getBundleProducts = cache(async (slug: string) => {
-  const response = await apiFetch<ProductListItem[]>(
-    `/catalog/bundles/${slug}/products/`,
-    { headers: await getServerLocaleHeaders()}
-  );
-  return response.data;
-});
 
 export async function generateMetadata({
   params,
@@ -44,15 +13,7 @@ export async function generateMetadata({
   params: Promise<{ slug: string }>;
 }): Promise<Metadata> {
   const { slug } = await params;
-  const [bundle, lang] = await Promise.all([getBundle(slug), getServerLang()]);
-  return buildPageMetadata({
-    title: bundle.name,
-    description:
-      bundle.description || `Explore products included in the ${bundle.name} bundle.`,
-    path: `/bundles/${bundle.slug}/`,
-    keywords: buildPageKeywords(bundle.name, bundle.description, undefined, lang),
-    lang,
-  });
+  return generateBundleMetadata(slug);
 }
 
 export default async function BundleDetailPage({
@@ -61,51 +22,5 @@ export default async function BundleDetailPage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const [bundle, products] = await Promise.all([
-    getBundle(slug),
-    getBundleProducts(slug),
-  ]);
-  const bundleUrl = `/bundles/${bundle.slug}/`;
-  const breadcrumbs = buildBreadcrumbList([
-    { name: "Home", url: "/" },
-    { name: "Bundles", url: "/bundles/" },
-    { name: bundle.name, url: bundleUrl },
-  ]);
-  const productList = buildItemList(
-    products.slice(0, 50).map((product) => ({
-      name: product.name,
-      url: buildProductPath(product),
-      image: (product.primary_image as string | undefined) || undefined,
-      description: product.short_description || undefined,
-    })),
-    `${bundle.name} items`
-  );
-
-  return (
-    <div className="min-h-screen bg-background text-foreground">
-      <div className="mx-auto w-full max-w-[1920px] px-3 sm:px-5 py-12">
-        <div className="mb-8 flex flex-wrap items-center justify-between gap-4">
-          <div>
-            <p className="text-sm uppercase tracking-[0.2em] text-foreground/60">
-              Bundle
-            </p>
-            <h1 className="text-3xl font-semibold">{bundle.name}</h1>
-            <p className="mt-2 text-foreground/70">{bundle.description}</p>
-          </div>
-          <Button asChild variant="secondary">
-            <Link href="/products/">Shop all products</Link>
-          </Button>
-        </div>
-
-        {products.length ? (
-          <ProductGrid products={products} />
-        ) : (
-          <p className="text-sm text-foreground/60">
-            Bundle details are available, but product list is not exposed via API yet.
-          </p>
-        )}
-      </div>
-      <JsonLd data={[breadcrumbs, ...(products.length ? [productList] : [])]} />
-    </div>
-  );
+  return <BundleDetailPageContent slug={slug} />;
 }

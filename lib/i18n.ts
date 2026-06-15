@@ -18,12 +18,10 @@ type CachedTranslationEntry = {
 const reportedKeys = new Set<string>();
 let reportQueue: string[] = [];
 let reportTimeout: ReturnType<typeof setTimeout> | null = null;
-let refCount = 0;
 const translationCache = new Map<string, CachedTranslationEntry>();
 const translationRequestCache = new Map<string, Promise<TranslationBundle>>();
 
 function flushReportQueue() {
-  refCount = 0;
   if (reportQueue.length === 0) return;
   
   const keysToSend = [...reportQueue];
@@ -43,7 +41,6 @@ function reportMissingKeySingleton(key: string) {
   
   reportedKeys.add(key);
   reportQueue.push(key);
-  refCount++;
 
   if (reportTimeout) {
     clearTimeout(reportTimeout);

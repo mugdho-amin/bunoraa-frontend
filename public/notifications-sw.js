@@ -26,8 +26,6 @@ self.addEventListener("notificationclick", (event) => {
   event.waitUntil(clients.openWindow(targetUrl));
 });
 
-const VAPID_PUBLIC_KEY = self.__VAPID_PUBLIC_KEY || null;
-
 self.addEventListener("message", (event) => {
   if (event.data && event.data.type === "SET_VAPID_KEY") {
     self.__VAPID_PUBLIC_KEY = event.data.key;

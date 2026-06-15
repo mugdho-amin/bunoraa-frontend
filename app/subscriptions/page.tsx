@@ -1,10 +1,5 @@
-
 import type { Metadata } from "next";
-import Link from "next/link";
-import { apiFetch, ApiError } from "@/lib/api";
-import type { SubscriptionPlan } from "@/lib/types";
-import { Card } from "@/components/ui/Card";
-import { Button } from "@/components/ui/Button";
+import dynamic from "next/dynamic";
 import { buildPageMetadata } from "@/lib/seo";
 
 export const metadata: Metadata = buildPageMetadata({
@@ -13,43 +8,11 @@ export const metadata: Metadata = buildPageMetadata({
   path: "/subscriptions/",
 });
 
-async function getPlans() {
-  try {
-    const response = await apiFetch<SubscriptionPlan[]>("/subscriptions/plans/");
-    return response.data;
-  } catch (error) {
-    if (error instanceof ApiError && (error.status === 404 || error.status === 503)) {
-      return [];
-    }
-    throw error;
-  }
-}
+const SubscriptionPlansPageContent = dynamic(
+  () => import("@/components/subscriptions/SubscriptionPlansPageContent").then((mod) => mod.SubscriptionPlansPageContent),
+  { loading: () => <div className="p-8 text-center text-sm text-foreground/60">Loading plans...</div> }
+);
 
-export default async function SubscriptionsLandingPage() {
-  const plans = await getPlans();
-
-  return (
-    <div className="mx-auto w-full max-w-5xl px-3 sm:px-5 py-12">
-      <div className="mb-8">
-        <p className="text-sm uppercase tracking-[0.2em] text-foreground/60">
-          Subscriptions
-        </p>
-        <h1 className="text-3xl font-semibold">Choose a plan</h1>
-      </div>
-      <div className="grid gap-6 md:grid-cols-2">
-        {plans.map((plan) => (
-          <Card key={plan.id} variant="bordered" className="space-y-4 p-6">
-            <h2 className="text-xl font-semibold">{plan.name}</h2>
-            <p className="text-sm text-foreground/70">{plan.description}</p>
-            <p className="text-lg font-semibold">
-              {plan.price_amount} {plan.currency} / {plan.interval}
-            </p>
-            <Button asChild variant="primary-gradient">
-              <Link href={`/subscriptions/plans/${plan.id}/`}>View plan</Link>
-            </Button>
-          </Card>
-        ))}
-      </div>
-    </div>
-  );
+export default function SubscriptionsLandingPage() {
+  return <SubscriptionPlansPageContent />;
 }

@@ -249,6 +249,7 @@ export class ApiError extends Error {
   status: number;
   data?: unknown;
   path?: string;
+  isDynamicError?: boolean;
 
   constructor(message: string, status: number, data?: unknown, path?: string) {
     super(message);
@@ -438,7 +439,7 @@ export async function apiFetch<T>(path: string, options: ApiFetchOptions = {}): 
     
     // Check for Next.js dynamic usage error to avoid build noise
     if (message.includes("Dynamic server usage")) {
-      (error as any).isDynamicError = true;
+      error.isDynamicError = true;
     }
     
     throw error;

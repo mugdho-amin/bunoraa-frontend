@@ -1,6 +1,6 @@
 import Link from "next/link";
 import Image from "next/image";
-import { ChevronDown, ChevronRight, CircleMinus, Mail, MapPinHouse, PhoneCall } from "lucide-react";
+import { ChevronRight, CircleMinus, Mail, MapPinHouse, PhoneCall } from "lucide-react";
 import { apiFetch } from "@/lib/api";
 import type {
   Category,

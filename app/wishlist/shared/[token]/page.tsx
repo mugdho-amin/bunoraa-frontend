@@ -1,29 +1,9 @@
-import { apiFetch, ApiError } from "@/lib/api";
-import type { WishlistItem } from "@/lib/types";
-import Image from "next/image";
-import { Card } from "@/components/ui/Card";
-import { Button } from "@/components/ui/Button";
-import Link from "next/link";
-import { notFound } from "next/navigation";
+import dynamic from "next/dynamic";
 
-type SharedWishlistResponse = {
-  wishlist: { items: WishlistItem[] };
-};
-
-async function getSharedWishlist(token: string) {
-  try {
-    const response = await apiFetch<SharedWishlistResponse>(
-      `/commerce/wishlist/shared/${token}/`,
-      { }
-    );
-    return response.data.wishlist.items || [];
-  } catch (error) {
-    if (error instanceof ApiError && error.status === 404) {
-      notFound();
-    }
-    throw error;
-  }
-}
+const SharedWishlistPageContent = dynamic(
+  () => import("@/components/wishlist/SharedWishlistPageContent").then((mod) => mod.SharedWishlistPageContent),
+  { loading: () => <div className="p-8 text-center text-sm text-foreground/60">Loading wishlist...</div> }
+);
 
 export default async function SharedWishlistPage({
   params,
@@ -31,50 +11,5 @@ export default async function SharedWishlistPage({
   params: Promise<{ token: string }>;
 }) {
   const { token } = await params;
-  const items = await getSharedWishlist(token);
-
-  return (
-    <div className="mx-auto w-full max-w-5xl px-3 sm:px-5 py-12">
-      <div className="mb-8">
-        <p className="text-sm uppercase tracking-[0.2em] text-foreground/60">
-          Shared wishlist
-        </p>
-        <h1 className="text-3xl font-semibold">Wishlist items</h1>
-      </div>
-      {items.length === 0 ? (
-        <Card variant="bordered" className="p-6 text-sm text-foreground/70">
-          This wishlist is empty.
-        </Card>
-      ) : (
-        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {items.map((item) => (
-            <Card key={item.id} variant="bordered" className="flex flex-col gap-4">
-              <div className="aspect-[4/5] overflow-hidden rounded-xl bg-muted relative">
-                {item.product_image ? (
-                  <Image
-                    src={item.product_image}
-                    alt={item.product_name}
-                    fill
-                    sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                    className="object-cover"
-                    loading="lazy"
-                    decoding="async"
-                  />
-                ) : null}
-              </div>
-              <div className="flex flex-1 flex-col gap-2">
-                <h2 className="text-lg font-semibold">{item.product_name}</h2>
-                <p className="text-sm text-foreground/70">
-                  {item.current_price}
-                </p>
-              </div>
-              <Button asChild size="sm" variant="secondary">
-                <Link href={`/products/${item.product_slug}/`}>View product</Link>
-              </Button>
-            </Card>
-          ))}
-        </div>
-      )}
-    </div>
-  );
+  return <SharedWishlistPageContent token={token} />;
 }

@@ -33,13 +33,16 @@ export function WebSocketProvider({ children }: { children: React.ReactNode }) {
   const { hasToken, profileQuery } = useAuthContext();
   const queryClient = useQueryClient();
   const queryClientRef = React.useRef(queryClient);
-  queryClientRef.current = queryClient;
   const socketsRef = React.useRef<Record<string, WebSocket | null>>({});
   const reconnectTimers = React.useRef<Record<string, ReturnType<typeof setTimeout> | null>>({});
   const reconnectAttempts = React.useRef<Record<string, number>>({});
   const activeChannelsRef = React.useRef<string[]>([]);
   const isMountedRef = React.useRef(true);
   const connectRef = React.useRef<(channel: string) => void>(() => {});
+
+  React.useEffect(() => {
+    queryClientRef.current = queryClient;
+  }, [queryClient]);
   const [status, setStatus] = React.useState<Record<string, "connecting" | "open" | "closed" | "error">>({});
   const [lastMessage, setLastMessage] = React.useState<Record<string, unknown>>({});
   const isAdmin = Boolean(profileQuery.data?.is_staff || profileQuery.data?.is_superuser);

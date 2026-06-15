@@ -8,7 +8,6 @@ import { useCart } from "@/components/cart/useCart";
 import { useUiMessages } from "@/components/i18n/useUiMessages";
 import { useSiteSettings } from "@/components/providers/SiteSettingsProvider";
 import { cn } from "@/lib/utils";
-import { apiFetch } from "@/lib/api";
 import { formatMoney, parseMoney } from "@/lib/money";
 
 export function MiniCart({

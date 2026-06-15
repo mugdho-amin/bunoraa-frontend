@@ -1,5 +1,5 @@
 import { cache } from "react";
-import { apiFetch } from "@/lib/api";
+import { apiFetch, ApiError } from "@/lib/api";
 import { getServerLocaleHeaders } from "@/lib/serverLocale";
 import type { SiteSettings } from "@/lib/types";
 import { logger } from "@/lib/logger";
@@ -11,8 +11,8 @@ export const getSiteSettings = cache(async (): Promise<SiteSettings | null> => {
       next: { revalidate: 300 },
     });
     return response.data;
-  } catch (e: any) {
-    if (e?.message?.includes("Dynamic server usage") || e?.isDynamicError) {
+  } catch (e: unknown) {
+    if (e instanceof ApiError && (e.message.includes("Dynamic server usage") || e.isDynamicError)) {
       // Expected during static generation if cookies() are used
       return null;
     }

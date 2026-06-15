@@ -9,7 +9,6 @@ import { DEFAULT_OG_IMAGE_PATH, SITE_NAME, SITE_URL, absoluteUrl, cleanObject } 
 import Script from "next/script";
 import { DeferredClientEnhancements } from "@/components/layout/DeferredClientEnhancements";
 import { WebVitalsReporter } from "@/components/analytics/WebVitalsReporter";
-import { ErrorBoundary } from "@/components/common/ErrorBoundary";
 import { cookies } from "next/headers";
 import {
   DM_Sans,

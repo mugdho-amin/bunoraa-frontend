@@ -191,7 +191,6 @@ export async function renderCategoryPageForPath(
 ) {
   const rawCols = resolvedSearchParams.cols;
   const cols: number = (rawCols === "1" || rawCols === "2" || rawCols === "4" || rawCols === "6") ? Number(rawCols) : 4;
-  const filterParams: Record<string, string> = { category: slugPath, ...buildFilterScopeParams(resolvedSearchParams) };
 
   const [category, productsResponse, filterData, facets] = await Promise.all([
     getCategory(slugPath),

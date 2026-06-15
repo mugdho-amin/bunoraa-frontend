@@ -28,8 +28,6 @@ export function formatMoney(
   if (amount === null || amount === undefined) return "";
 
   const currency = config && typeof config === "string" ? config : config && typeof config === "object" ? config.currency || "BDT" : "BDT";
-  const symbol = config && typeof config === "object" ? config.symbol : undefined;
-  const position = config && typeof config === "object" ? config.position : undefined;
 
   const parsed = parseMoney(amount);
   let numeric: number;
