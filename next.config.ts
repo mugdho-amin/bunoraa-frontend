@@ -106,7 +106,7 @@ if (isProduction) {
 const nextConfig: NextConfig = {
   trailingSlash: true,
   poweredByHeader: false,
-  serverExternalPackages: ["isomorphic-dompurify"],
+  serverExternalPackages: [],
   images: {
     loader: "custom",
     loaderFile: "./lib/r2-loader.ts",
