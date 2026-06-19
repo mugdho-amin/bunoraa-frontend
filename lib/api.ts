@@ -1,5 +1,5 @@
 import type { ApiResponse } from "@/lib/types";
-import { clearTokens, getRefreshToken, setAccessToken } from "@/lib/auth";
+import { clearTokens, getRefreshToken, setAccessToken, setTokens } from "@/lib/auth";
 import { getLocaleHeaders } from "@/lib/locale";
 import { safeGetItem, safeSessionGetItem } from "@/lib/storage";
 
@@ -296,12 +296,16 @@ async function refreshAccessToken() {
       if (!response.ok) return null;
 
       const json = await parseJsonSafe(response);
-      const access =
-        json?.access ||
-        (json && typeof json === "object" && "data" in json ? json.data?.access : null);
+      const jsonData = json && typeof json === "object" && "data" in json ? json.data : json;
+      const access = jsonData?.access || null;
+      const refresh = jsonData?.refresh || null;
       if (access) {
-        setAccessToken(access);
-        return access as string;
+        if (refresh) {
+          setTokens(access, refresh);
+        } else {
+          setAccessToken(access);
+        }
+        return access;
       }
       return null;
     } catch {
