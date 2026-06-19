@@ -16,7 +16,7 @@ import {
 } from "next/font/google";
 
 const fontPoppins = Poppins({
-  subsets: ["latin"],
+  subsets: ["latin", "devanagari"],
   weight: ["300", "400", "500", "600", "700"],
   variable: "--font-poppins",
   display: "swap",
@@ -49,6 +49,7 @@ export const metadata: Metadata = {
     languages: {
       "x-default": absoluteUrl("/"),
       en: absoluteUrl("/"),
+      bn: absoluteUrl("/"),
     },
   },
   applicationName: SITE_NAME,

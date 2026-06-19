@@ -2,6 +2,18 @@ import type { NextConfig } from "next";
 import type { RemotePattern } from "next/dist/shared/lib/image-config";
 import path from "path";
 
+// next.config.ts is processed by Next.js, not compiled by standard tsc.
+// The @next/bundle-analyzer import is only resolved at build time when ANALYZE=true.
+let withBundleAnalyzer: (config: NextConfig) => NextConfig = (c) => c;
+if (process.env.ANALYZE === "true") {
+  try {
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    withBundleAnalyzer = require("@next/bundle-analyzer")();
+  } catch {
+    console.warn("⚠ @next/bundle-analyzer not installed. Run: npm install -D @next/bundle-analyzer");
+  }
+}
+
 const remotePatterns: RemotePattern[] = [
   {
     protocol: "http",
@@ -229,4 +241,4 @@ const nextConfig: NextConfig = {
   },
 };
 
-export default nextConfig;
+export default withBundleAnalyzer(nextConfig);
