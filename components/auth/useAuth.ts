@@ -38,6 +38,7 @@ type LoginResponse = {
   mfa_required?: boolean;
   mfa_token?: string;
   methods?: string[];
+  user?: UserProfile;
 };
 
 async function fetchProfile() {
@@ -115,6 +116,13 @@ export function useAuth() {
       );
       if (!response.data.mfa_required) {
         setTokens(response.data.access || "", response.data.refresh, remember);
+        if (response.data.user?.email) {
+          upsertActiveAccountProfile({
+            email: response.data.user.email,
+            first_name: response.data.user.first_name ?? null,
+            full_name: response.data.user.full_name ?? null,
+          });
+        }
       }
       return response.data;
     },

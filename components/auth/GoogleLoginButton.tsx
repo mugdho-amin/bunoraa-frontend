@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState, useCallback } from "react";
 import { apiFetch } from "@/lib/api";
-import { setTokens } from "@/lib/auth";
+import { setTokens, upsertActiveAccountProfile } from "@/lib/auth";
 import { useTheme } from "@/components/theme/ThemeProvider";
 
 interface GoogleLoginButtonProps {
@@ -18,6 +18,15 @@ interface GoogleCredentialResponse {
 interface LoginResponseData {
   access: string;
   refresh: string;
+  user?: {
+    id?: string;
+    email?: string;
+    first_name?: string | null;
+    last_name?: string | null;
+    full_name?: string | null;
+    avatar?: string | null;
+    avatar_url?: string | null;
+  };
 }
 
 declare global {
@@ -75,6 +84,13 @@ export function GoogleLoginButton({
 
       if (res.data?.access && res.data?.refresh) {
         setTokens(res.data.access, res.data.refresh, true);
+        if (res.data.user?.email) {
+          upsertActiveAccountProfile({
+            email: res.data.user.email,
+            first_name: res.data.user.first_name ?? null,
+            full_name: res.data.user.full_name ?? null,
+          });
+        }
         window.location.href = nextUrl;
       } else {
         throw new Error("Invalid response from server");

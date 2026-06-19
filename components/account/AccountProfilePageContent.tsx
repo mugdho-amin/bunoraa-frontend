@@ -11,6 +11,35 @@ export function AccountProfilePageContent() {
   const { profileQuery, updateProfile, logout } = useAuth();
   const profile = profileQuery.data;
   const [form, setForm] = React.useState({ first_name: "", last_name: "", phone: "", date_of_birth: "", newsletter_subscribed: false });
+
+  if (profileQuery.isLoading) {
+    return (
+      <div className="space-y-6">
+        <div className="flex items-start justify-between gap-3">
+          <div><p className="text-sm uppercase tracking-[0.2em] text-foreground/60">Account</p><h1 className="text-2xl font-semibold">Profile</h1></div>
+        </div>
+        <Card variant="bordered" className="flex items-center justify-center py-12">
+          <p className="text-sm text-foreground/50 animate-pulse">Loading profile...</p>
+        </Card>
+      </div>
+    );
+  }
+
+  if (profileQuery.isError) {
+    return (
+      <div className="space-y-6">
+        <div className="flex items-start justify-between gap-3">
+          <div><p className="text-sm uppercase tracking-[0.2em] text-foreground/60">Account</p><h1 className="text-2xl font-semibold">Profile</h1></div>
+        </div>
+        <Card variant="bordered" className="flex items-center justify-center py-12">
+          <div className="text-center space-y-2">
+            <p className="text-sm text-red-500">Failed to load profile.</p>
+            <Button type="button" size="sm" variant="secondary" onClick={() => profileQuery.refetch()}>Retry</Button>
+          </div>
+        </Card>
+      </div>
+    );
+  }
   const [avatarUploading, setAvatarUploading] = React.useState(false);
   const [verificationMessage, setVerificationMessage] = React.useState<string | null>(null);
   const [verificationSending, setVerificationSending] = React.useState(false);
