@@ -274,14 +274,14 @@ async function parseJsonSafe(response: Response) {
   }
 }
 
-async function refreshAccessToken() {
+async function refreshAccessToken(): Promise<string | null> {
   if (typeof window === "undefined") return null;
   const refresh = getRefreshToken();
   if (!refresh || !getApiBaseUrl()) return null;
 
   if (pendingRefresh) return pendingRefresh;
 
-  pendingRefresh = (async () => {
+  pendingRefresh = (async (originalRefresh: string) => {
     try {
       const response = await fetch(buildUrl("/auth/token/refresh/"), {
         method: "POST",
@@ -290,10 +290,17 @@ async function refreshAccessToken() {
           "X-Requested-With": "XMLHttpRequest",
         },
         credentials: "include",
-        body: JSON.stringify({ refresh }),
+        body: JSON.stringify({ refresh: originalRefresh }),
       });
 
-      if (!response.ok) return null;
+      if (!response.ok) {
+        const currentRefresh = getRefreshToken();
+        if (currentRefresh && currentRefresh !== originalRefresh) {
+          pendingRefresh = null;
+          return refreshAccessToken();
+        }
+        return null;
+      }
 
       const json = await parseJsonSafe(response);
       const jsonData = json && typeof json === "object" && "data" in json ? json.data : json;
@@ -309,11 +316,16 @@ async function refreshAccessToken() {
       }
       return null;
     } catch {
+      const currentRefresh = getRefreshToken();
+      if (currentRefresh && currentRefresh !== originalRefresh) {
+        pendingRefresh = null;
+        return refreshAccessToken();
+      }
       return null;
     } finally {
       pendingRefresh = null;
     }
-  })();
+  })(refresh);
 
   return pendingRefresh;
 }
@@ -357,7 +369,6 @@ export async function apiFetch<T>(path: string, options: ApiFetchOptions = {}): 
     if (refreshed) {
       token = refreshed;
     } else {
-      clearTokens();
       token = null;
     }
   }
