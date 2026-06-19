@@ -298,10 +298,10 @@ async function refreshAccessToken() {
       const json = await parseJsonSafe(response);
       const jsonData = json && typeof json === "object" && "data" in json ? json.data : json;
       const access = jsonData?.access || null;
-      const refresh = jsonData?.refresh || null;
+      const newRefresh = jsonData?.refresh || null;
       if (access) {
-        if (refresh) {
-          setTokens(access, refresh);
+        if (newRefresh) {
+          setTokens(access, newRefresh);
         } else {
           setAccessToken(access);
         }
