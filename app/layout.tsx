@@ -49,7 +49,6 @@ export const metadata: Metadata = {
     languages: {
       "x-default": absoluteUrl("/"),
       en: absoluteUrl("/"),
-      bn: absoluteUrl("/"),
     },
   },
   applicationName: SITE_NAME,
