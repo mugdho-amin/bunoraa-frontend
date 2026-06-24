@@ -10,10 +10,11 @@ import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { useAuth } from "@/components/auth/useAuth";
 import { apiFetch } from "@/lib/api";
-import { setTokens } from "@/lib/auth";
+import { setTokens, upsertActiveAccountProfile } from "@/lib/auth";
 import { decodeRequestOptions, encodeCredential } from "@/lib/webauthn";
 import { GoogleLoginButton } from "@/components/auth/GoogleLoginButton";
 import { useTranslation } from "@/lib/i18n";
+import type { UserProfile } from "@/lib/types";
 
 const schema = z.object({
   email: z.string().email("Enter a valid email"),
@@ -96,7 +97,12 @@ export function LoginClient() {
     try {
       const optionsResponse = await apiFetch<PublicKeyCredentialRequestOptions>(
         "/accounts/webauthn/login/options/",
-        { method: "POST", body: { email } }
+        {
+          method: "POST",
+          body: { email },
+          skipAuth: true,
+          retryOnAuth: false,
+        }
       );
       const options = decodeRequestOptions(optionsResponse.data);
       const credential = (await navigator.credentials.get({
@@ -106,15 +112,25 @@ export function LoginClient() {
       const verifyResponse = await apiFetch<{
         access: string;
         refresh: string;
+        user?: UserProfile;
       }>("/accounts/webauthn/login/verify/", {
         method: "POST",
         body: { email, credential: encodeCredential(credential) },
+        skipAuth: true,
+        retryOnAuth: false,
       });
       setTokens(
         verifyResponse.data.access,
         verifyResponse.data.refresh,
         Boolean(form.getValues("remember"))
       );
+      if (verifyResponse.data.user?.email) {
+        upsertActiveAccountProfile({
+          email: verifyResponse.data.user.email,
+          first_name: verifyResponse.data.user.first_name ?? null,
+          full_name: verifyResponse.data.user.full_name ?? null,
+        });
+      }
       router.push(nextUrl);
     } catch (err) {
       setMfaError(err instanceof Error ? err.message : "Passkey sign-in failed.");
@@ -134,7 +150,12 @@ export function LoginClient() {
     try {
       const optionsResponse = await apiFetch<PublicKeyCredentialRequestOptions>(
         "/accounts/webauthn/login/options/",
-        { method: "POST", body: { mfa_token: mfaToken } }
+        {
+          method: "POST",
+          body: { mfa_token: mfaToken },
+          skipAuth: true,
+          retryOnAuth: false,
+        }
       );
       const options = decodeRequestOptions(optionsResponse.data);
       const credential = (await navigator.credentials.get({

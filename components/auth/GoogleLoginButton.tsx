@@ -67,11 +67,24 @@ export function GoogleLoginButton({
   const containerRef = useRef<HTMLDivElement>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [prefersDark, setPrefersDark] = useState(() =>
+    typeof window !== "undefined" &&
+    typeof window.matchMedia === "function" &&
+    window.matchMedia("(prefers-color-scheme: dark)").matches
+  );
   const initializedRef = useRef(false);
   const promptFiredRef = useRef(false);
-  const lastWidthRef = useRef(0);
+  const lastRenderRef = useRef<{
+    width: number;
+    theme: "outline" | "filled_black" | "filled_blue";
+  } | null>(null);
 
   const clientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID;
+  const isDark =
+    theme === "dark" ||
+    theme === "moonlight" ||
+    (theme === "system" && prefersDark);
+  const googleButtonTheme = isDark ? "filled_black" : "outline";
 
   const handleCredentialResponse = useCallback(async (response: GoogleCredentialResponse) => {
     setIsLoading(true);
@@ -80,6 +93,8 @@ export function GoogleLoginButton({
       const res = await apiFetch<LoginResponseData>("/accounts/google/login/", {
         method: "POST",
         body: { credential: response.credential },
+        skipAuth: true,
+        retryOnAuth: false,
       });
 
       if (res.data?.access && res.data?.refresh) {
@@ -110,8 +125,18 @@ export function GoogleLoginButton({
     if (!google?.accounts?.id || !containerRef.current || !clientId) return;
 
     const roundedWidth = Math.round(width);
-    if (Math.abs(roundedWidth - lastWidthRef.current) < 10) return;
-    lastWidthRef.current = roundedWidth;
+    const lastRender = lastRenderRef.current;
+    if (
+      lastRender &&
+      Math.abs(roundedWidth - lastRender.width) < 10 &&
+      lastRender.theme === googleButtonTheme
+    ) {
+      return;
+    }
+    lastRenderRef.current = {
+      width: roundedWidth,
+      theme: googleButtonTheme,
+    };
 
     try {
       if (!initializedRef.current) {
@@ -124,13 +149,11 @@ export function GoogleLoginButton({
         initializedRef.current = true;
       }
 
-      const isDark = theme === "dark" || theme === "moonlight" || 
-        (theme === "system" && window.matchMedia("(prefers-color-scheme: dark)").matches);
-
       const buttonWidth = Math.min(400, Math.max(200, width));
+      containerRef.current.replaceChildren();
 
       google.accounts.id.renderButton(containerRef.current, {
-        theme: isDark ? "filled_black" : "outline",
+        theme: googleButtonTheme,
         size: "large",
         width: `${buttonWidth}`,
         text: "continue_with",
@@ -145,7 +168,16 @@ export function GoogleLoginButton({
       console.error("Failed to initialize Google login:", err);
       setError("Failed to initialize Google login.");
     }
-  }, [handleCredentialResponse, clientId, theme]);
+  }, [handleCredentialResponse, clientId, googleButtonTheme]);
+
+  useEffect(() => {
+    if (typeof window === "undefined" || !window.matchMedia) return;
+    const media = window.matchMedia("(prefers-color-scheme: dark)");
+    const syncPreference = () => setPrefersDark(media.matches);
+    syncPreference();
+    media.addEventListener("change", syncPreference);
+    return () => media.removeEventListener("change", syncPreference);
+  }, []);
 
   useEffect(() => {
     if (!clientId) return;
@@ -200,7 +232,7 @@ export function GoogleLoginButton({
     <div className="w-full space-y-2">
       <div 
         ref={containerRef} 
-        className="min-h-[44px] w-full flex justify-center"
+        className="flex min-h-[44px] w-full justify-center overflow-hidden rounded-lg bg-card"
       />
       {isLoading && (
         <p className="text-center text-xs text-foreground/50 animate-pulse">

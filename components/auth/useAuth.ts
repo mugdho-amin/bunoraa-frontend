@@ -112,10 +112,15 @@ export function useAuth() {
         {
           method: "POST",
           body: { email, password },
+          skipAuth: true,
+          retryOnAuth: false,
         }
       );
       if (!response.data.mfa_required) {
-        setTokens(response.data.access || "", response.data.refresh, remember);
+        if (!response.data.access || !response.data.refresh) {
+          throw new Error("Login did not return valid session tokens.");
+        }
+        setTokens(response.data.access, response.data.refresh, remember);
         if (response.data.user?.email) {
           upsertActiveAccountProfile({
             email: response.data.user.email,
@@ -142,13 +147,25 @@ export function useAuth() {
       const response = await apiFetch<LoginResponse>("/accounts/mfa/verify/", {
         method: "POST",
         body: payload,
+        skipAuth: true,
+        retryOnAuth: false,
       });
       if (!response.data.mfa_required) {
+        if (!response.data.access || !response.data.refresh) {
+          throw new Error("MFA verification did not return valid session tokens.");
+        }
         setTokens(
-          response.data.access || "",
+          response.data.access,
           response.data.refresh,
           Boolean(payload.remember)
         );
+        if (response.data.user?.email) {
+          upsertActiveAccountProfile({
+            email: response.data.user.email,
+            first_name: response.data.user.first_name ?? null,
+            full_name: response.data.user.full_name ?? null,
+          });
+        }
       }
       return response.data;
     },
