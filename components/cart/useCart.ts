@@ -138,6 +138,21 @@ export function useCart(options?: UseCartOptions) {
       }
       return { previousCart };
     },
+    onSuccess: (response) => {
+      const data = response && typeof response === "object" && "data" in response
+        ? (response as { data: unknown }).data
+        : null;
+      if (data && typeof data === "object" && "cart" in (data as Record<string, unknown>)) {
+        const nextCart = (data as { cart: Cart }).cart;
+        if (nextCart) {
+          queryClient.setQueryData(cartKey, nextCart);
+          queryClient.invalidateQueries({ queryKey: cartSummaryKey });
+          return;
+        }
+      }
+      queryClient.invalidateQueries({ queryKey: cartKey });
+      queryClient.invalidateQueries({ queryKey: cartSummaryKey });
+    },
     onError: (_err, _vars, context) => {
       if (context?.previousCart) {
         queryClient.setQueryData(cartKey, context.previousCart);
@@ -188,8 +203,11 @@ export function useCart(options?: UseCartOptions) {
       }
     },
     onSuccess: (response) => {
-      if (response && typeof response === "object" && "cart" in response) {
-        const nextCart = (response as { cart?: Cart }).cart;
+      const data = response && typeof response === "object" && "data" in response
+        ? (response as { data: unknown }).data
+        : null;
+      if (data && typeof data === "object" && "cart" in (data as Record<string, unknown>)) {
+        const nextCart = (data as { cart: Cart }).cart;
         if (nextCart) {
           queryClient.setQueryData(cartKey, nextCart);
           queryClient.invalidateQueries({ queryKey: cartSummaryKey });
