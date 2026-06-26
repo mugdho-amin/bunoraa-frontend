@@ -319,6 +319,11 @@ export type WishlistItem = {
   product_name: string;
   product_slug: string;
   product_image?: string | null;
+  variant?: {
+    id: string;
+    name?: string | null;
+    sku?: string | null;
+  } | null;
   current_price?: string | null;
   price_at_add?: string | null;
   in_stock?: boolean;

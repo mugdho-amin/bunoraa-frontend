@@ -26,7 +26,9 @@ export function WishlistIconButton({
   const { push } = useToast();
 
   const wishlistItems = asArray<WishlistItem>(wishlistQuery.data?.data);
-  const existingItem = wishlistItems.find((item) => item.product_id === productId);
+  const existingItem = wishlistItems.find(
+    (item) => item.product_id === productId && (item.variant?.id || null) === (variantId || null)
+  );
   const isInWishlist = Boolean(existingItem);
   const isBusy = addItem.isPending || removeItem.isPending;
 

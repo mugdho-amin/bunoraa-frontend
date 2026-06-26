@@ -34,8 +34,19 @@ const ALLOWED_FORWARD_HEADERS = [
   "content-type",
   "accept",
   "accept-language",
+  "authorization",
+  "cookie",
+  "origin",
+  "referer",
+  "user-agent",
   "x-csrftoken",
+  "x-forwarded-for",
+  "x-forwarded-host",
+  "x-forwarded-proto",
   "x-language-code",
+  "x-real-ip",
+  "x-request-id",
+  "x-requested-with",
 ];
 
 function buildProxyHeaders(request: NextRequest): HeadersInit {

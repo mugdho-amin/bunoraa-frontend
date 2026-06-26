@@ -190,7 +190,7 @@ function getCookie(name: string) {
 function setCookie(name: string, value: string) {
   if (typeof document === "undefined") return;
   const secure = window.location.protocol === "https:" ? "; secure" : "";
-  document.cookie = `${name}=${encodeURIComponent(value)}; path=/; samesite=Strict; HttpOnly${secure}`;
+  document.cookie = `${name}=${encodeURIComponent(value)}; path=/; samesite=Lax${secure}`;
 }
 
 function extractErrorMessage(json: unknown): string | null {

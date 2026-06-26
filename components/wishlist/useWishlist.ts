@@ -1,21 +1,102 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { apiFetch, ApiError } from "@/lib/api";
-import type { WishlistItem } from "@/lib/types";
+import type { ApiMeta, WishlistItem } from "@/lib/types";
 
 type WishlistResponse = {
   data?: WishlistItem[];
   results?: WishlistItem[];
   items?: WishlistItem[];
-  meta?: {
-    pagination?: {
-      count?: number;
+  meta?: ApiMeta;
+};
+
+const wishlistKey = ["wishlist"] as const;
+
+type WishlistQueryData = {
+  data: WishlistItem[];
+  meta: ApiMeta;
+};
+
+type WishlistMutationPayload = {
+  item?: WishlistItem;
+  wishlist?: {
+    item_count?: number;
+    [key: string]: unknown;
+  };
+  data?: {
+    item?: WishlistItem;
+    wishlist?: {
+      item_count?: number;
       [key: string]: unknown;
     };
     [key: string]: unknown;
   };
+  [key: string]: unknown;
 };
 
-const wishlistKey = ["wishlist"] as const;
+function buildPagination(count: number) {
+  return {
+    count,
+    next: null,
+    previous: null,
+    page: 1,
+    page_size: count,
+    total_pages: count > 0 ? 1 : 0,
+  };
+}
+
+function normalizeMeta(meta: ApiMeta | undefined, count: number): ApiMeta {
+  return {
+    ...(meta || {}),
+    pagination: {
+      ...(meta?.pagination || buildPagination(count)),
+      count,
+    },
+  };
+}
+
+function normalizeWishlistResponse(
+  payload: WishlistItem[] | WishlistResponse | null | undefined,
+  meta?: ApiMeta
+): WishlistQueryData {
+  if (Array.isArray(payload)) {
+    const count = meta?.pagination?.count ?? payload.length;
+    return {
+      data: payload,
+      meta: normalizeMeta(meta, count),
+    };
+  }
+
+  if (payload && typeof payload === "object") {
+    const items = payload.data || payload.results || payload.items || [];
+    const count = payload.meta?.pagination?.count ?? meta?.pagination?.count ?? items.length;
+    return {
+      data: items,
+      meta: normalizeMeta(payload.meta || meta, count),
+    };
+  }
+
+  return {
+    data: [],
+    meta: normalizeMeta(meta, 0),
+  };
+}
+
+function getMutationPayload(response: unknown): WishlistMutationPayload | null {
+  if (!response || typeof response !== "object") return null;
+  const root = response as WishlistMutationPayload;
+  if (root.item || root.wishlist) return root;
+  if (root.data && typeof root.data === "object") return root.data;
+  return null;
+}
+
+function getVariantId(item: WishlistItem) {
+  const variant = (item as WishlistItem & { variant?: { id?: string | null } | null }).variant;
+  return variant?.id || null;
+}
+
+function isSameWishlistItem(item: WishlistItem, productId: string, variantId?: string | null) {
+  return item.product_id === productId && getVariantId(item) === (variantId || null);
+}
 
 async function fetchWishlist() {
   const response = await apiFetch<WishlistItem[] | WishlistResponse>(
@@ -24,25 +105,8 @@ async function fetchWishlist() {
       allowGuest: true,
     }
   );
-  
-  // Normalize response to always have data and meta structure
-  if (Array.isArray(response.data)) {
-    return {
-      data: response.data,
-      meta: { pagination: { count: response.data.length } },
-    };
-  } else if (response.data && typeof response.data === "object") {
-    const data = response.data as WishlistResponse;
-    return {
-      data: data.data || data.results || data.items || [],
-      meta: data.meta || { pagination: { count: (data.data || data.results || data.items || []).length } },
-    };
-  }
 
-  return {
-    data: [],
-    meta: { pagination: { count: 0 } },
-  };
+  return normalizeWishlistResponse(response.data, response.meta);
 }
 
 export function useWishlist(options?: { enabled?: boolean }) {
@@ -106,7 +170,28 @@ export function useWishlist(options?: { enabled?: boolean }) {
         allowGuest: true,
       });
     },
-    onSuccess: () => {
+    onSuccess: (response, variables) => {
+      const payload = getMutationPayload(response);
+      if (payload?.item) {
+        queryClient.setQueryData<WishlistQueryData>(wishlistKey, (previous) => {
+          const current = previous || normalizeWishlistResponse([]);
+          const nextItems = current.data.some((item) =>
+            isSameWishlistItem(item, variables.productId, variables.variantId)
+          )
+            ? current.data.map((item) =>
+                isSameWishlistItem(item, variables.productId, variables.variantId)
+                  ? payload.item as WishlistItem
+                  : item
+              )
+            : [payload.item as WishlistItem, ...current.data];
+          const nextCount = payload.wishlist?.item_count ?? nextItems.length;
+
+          return {
+            data: nextItems,
+            meta: normalizeMeta(current.meta, nextCount),
+          };
+        });
+      }
       queryClient.invalidateQueries({ queryKey: wishlistKey });
     },
   });
