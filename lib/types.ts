@@ -1151,6 +1151,22 @@ export type GiftOptionsResponse = {
   gift_wrap_enabled?: boolean;
 };
 
+export type ReferralInfo = {
+  referral_code?: string;
+  referral_url?: string;
+  total_referrals?: number;
+  active_referrals?: number;
+  credits_earned?: string;
+  credits_currency?: string;
+  recent_referrals?: {
+    id: string;
+    email?: string | null;
+    status: string;
+    created_at: string;
+    reward?: string | null;
+  }[];
+};
+
 export type StoreLocation = {
   id: string;
   name: string;

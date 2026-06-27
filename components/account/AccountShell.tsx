@@ -18,6 +18,7 @@ const NAV_ITEMS = [
   { href: "/account/preferences/", label: "Preferences" },
   { href: "/account/security/", label: "Security" },
   { href: "/account/privacy/", label: "Privacy" },
+  { href: "/account/referrals/", label: "Referrals" },
 ];
 
 export function AccountShell({ children }: { children: React.ReactNode }) {
