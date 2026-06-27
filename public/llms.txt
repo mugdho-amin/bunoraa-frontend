@@ -1,0 +1,35 @@
+# Bunoraa
+
+> Bunoraa is a Bangladeshi marketplace for hand-embroidered fashion, home decor, and artisan-crafted products, connecting customers with ethically sourced, traditionally embroidered clothing and home essentials.
+
+Bunoraa works with local Bangladeshi artisans to preserve traditional embroidery techniques including nakshi kantha. Products are made from natural-fiber cotton and hand-embroidered. The site serves customers across Bangladesh with delivery to all districts. Prices are in Bangladeshi Taka (BDT, ৳).
+
+## Products
+
+- [Women's Collection](https://bunoraa.com/women/): Hand-embroidered shalwar kameez, co-ord sets, and kurtis with floral and geometric patterns
+- [Kids' Collection](https://bunoraa.com/kids/): Girls' frocks, button-down dresses, and co-ord sets with vibrant hand-embroidered designs
+- [Home Decor](https://bunoraa.com/home-decor/): Embroidered cotton cushion covers and artisan home essentials
+- [All Products](https://bunoraa.com/products/): Complete product catalog across all categories
+
+## Featured Products
+
+- [Ivory Blossom Hand-Embroidered Cotton Co-ord Set](https://bunoraa.com/women/co-ord-sets/ivory-blossom-hand-embroidered-cotton-co-ord-set/): Ivory white co-ord set with multicolor floral embroidery and magenta pants. Breathable cotton, suitable for Eid and festive occasions
+- [Petite Noir Hand-Embroidered Cotton Dress](https://bunoraa.com/kids/girls-frocks-outfits/petite-noir-hand-embroidered-cotton-dress/): Jet black girls' dress with red and orange hand-embroidered floral motifs. Cotton, available in multiple sizes
+- [The Enchanted Meadow Hand-Embroidered Cotton Cushion Cover](https://bunoraa.com/home-decor/cushion-covers/the-enchanted-meadow-hand-embroidered-cotton-cushion-cover/): Premium off-white slub cotton cushion cover with asymmetrical hand-embroidered bouquet of blue delphiniums
+- [Ivory Garden Hand-Embroidered Cotton Button-Down Dress](https://bunoraa.com/kids/girls-frocks-outfits/ivory-garden-hand-embroidered-cotton-button-down-dress/): Ivory white girls' dress with multicolor floral hand embroidery and button-down front
+
+## Policies
+
+- [FAQ](https://bunoraa.com/faq/): Shipping times, care instructions for hand-embroidered garments, sizing guide, and order information
+- [Contact](https://bunoraa.com/contact/): Email and phone for customer support, located in Ulipur, Kurigram, Bangladesh
+
+## Company
+
+- [About Bunoraa](https://bunoraa.com/about/): Brand story, artisan partnerships, and commitment to preserving traditional Bangladeshi embroidery
+- [Blog](https://bunoraa.com/blog/): Styling guides, embroidery technique articles, and brand updates
+
+## Optional
+
+- [Pre-Orders](https://bunoraa.com/preorders/): Upcoming collection availability and estimated delivery dates
+- [Collections](https://bunoraa.com/collections/): Curated product collections grouped by theme and occasion
+- [Design & Techniques](https://bunoraa.com/design/): Embroidery techniques and design inspiration articles
