@@ -9,7 +9,7 @@ import { DEFAULT_OG_IMAGE_PATH, SITE_NAME, SITE_URL, absoluteUrl, cleanObject } 
 import Script from "next/script";
 import { DeferredClientEnhancements } from "@/components/layout/DeferredClientEnhancements";
 import { WebVitalsReporter } from "@/components/analytics/WebVitalsReporter";
-import { cookies } from "next/headers";
+import { HtmlLangSetter } from "@/components/layout/HtmlLangSetter";
 import {
   DM_Sans,
   Poppins,
@@ -155,19 +155,11 @@ const themeBootstrapScript = `
 })();
 `;
 
-export default async function RootLayout({
+export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  let htmlLang = "en";
-  try {
-    const cookieStore = await cookies();
-    htmlLang = cookieStore.get("language")?.value || "en";
-  } catch {
-    // Fallback to English during static generation
-  }
-
   const organizationSchema = cleanObject({
     "@context": "https://schema.org",
     "@type": "Organization",
@@ -199,7 +191,7 @@ export default async function RootLayout({
 
   return (
     <html
-      lang={htmlLang}
+      lang="en"
       className={`system ${fontPoppins.variable} ${fontDM_Sans.variable}`}
       suppressHydrationWarning
       data-scroll-behavior="smooth"
@@ -208,6 +200,7 @@ export default async function RootLayout({
         <link rel="preconnect" href="https://accounts.google.com" crossOrigin="anonymous" />
       </head>
       <body className="min-h-screen bg-background text-foreground antialiased">
+        <HtmlLangSetter />
         <Script id="theme-bootstrap" strategy="beforeInteractive">
           {themeBootstrapScript}
         </Script>

@@ -1,6 +1,8 @@
 "use client";
 
 import * as React from "react";
+import Link from "next/link";
+import { Bell } from "lucide-react";
 import { useNotifications } from "@/components/notifications/useNotifications";
 import { AuthGate } from "@/components/auth/AuthGate";
 import { Card } from "@/components/ui/Card";
@@ -82,13 +84,24 @@ export function NotificationsPageContent() {
       </div>
 
       {notificationsQuery.isLoading ? (
-        <Card variant="bordered" className="p-6 text-sm text-foreground/70">
-          Loading notifications...
-        </Card>
+        <div className="flex flex-col items-center justify-center py-20 text-center" role="status">
+          <div className="h-8 w-8 animate-spin rounded-full border-2 border-foreground/20 border-t-foreground/60" aria-hidden />
+          <p className="mt-4 text-sm text-foreground/60">Loading notifications...</p>
+        </div>
       ) : notifications.length === 0 ? (
-        <Card variant="bordered" className="p-6 text-sm text-foreground/70">
-          You are all caught up.
-        </Card>
+        <section className="flex flex-col items-center justify-center py-20 text-center">
+          <Bell className="h-14 w-14 text-foreground/20 mb-4" aria-hidden />
+          <h2 className="text-xl font-semibold">No notifications yet</h2>
+          <p className="mt-2 max-w-sm text-sm text-foreground/60">
+            We'll let you know when there are updates on your orders, preorders, or artisan collections.
+          </p>
+          <Link
+            href="/products/"
+            className="mt-6 inline-flex items-center rounded-lg bg-primary px-5 py-2.5 text-sm font-medium text-primary-foreground hover:bg-primary/90 transition-colors"
+          >
+            Browse products
+          </Link>
+        </section>
       ) : (
         <div className="space-y-4">
           {notifications.map((note) => (

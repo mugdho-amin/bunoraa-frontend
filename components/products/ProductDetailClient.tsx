@@ -902,7 +902,7 @@ export function ProductDetailClient({
   
   const categoryTrail = buildProductCategoryTrail(product);
   const breadcrumbLinks = [
-    { label: "home", href: "/" },
+    { label: "Home", href: "/" },
     ...categoryTrail.map(crumb => ({ label: crumb.name.toLowerCase(), href: buildCategoryPath(crumb.slugPath) })),
     { label: product.name.toLowerCase(), href: buildProductPath(product) },
   ];
