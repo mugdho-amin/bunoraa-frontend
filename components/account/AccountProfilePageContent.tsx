@@ -11,6 +11,13 @@ export function AccountProfilePageContent() {
   const { profileQuery, updateProfile, logout } = useAuth();
   const profile = profileQuery.data;
   const [form, setForm] = React.useState({ first_name: "", last_name: "", phone: "", date_of_birth: "", newsletter_subscribed: false });
+  const [avatarUploading, setAvatarUploading] = React.useState(false);
+  const [verificationMessage, setVerificationMessage] = React.useState<string | null>(null);
+  const [verificationSending, setVerificationSending] = React.useState(false);
+
+  React.useEffect(() => {
+    if (profile) setForm({ first_name: profile.first_name || "", last_name: profile.last_name || "", phone: profile.phone || "", date_of_birth: profile.date_of_birth || "", newsletter_subscribed: Boolean(profile.newsletter_subscribed) });
+  }, [profile]);
 
   if (profileQuery.isLoading) {
     return (
@@ -40,13 +47,6 @@ export function AccountProfilePageContent() {
       </div>
     );
   }
-  const [avatarUploading, setAvatarUploading] = React.useState(false);
-  const [verificationMessage, setVerificationMessage] = React.useState<string | null>(null);
-  const [verificationSending, setVerificationSending] = React.useState(false);
-
-  React.useEffect(() => {
-    if (profile) setForm({ first_name: profile.first_name || "", last_name: profile.last_name || "", phone: profile.phone || "", date_of_birth: profile.date_of_birth || "", newsletter_subscribed: Boolean(profile.newsletter_subscribed) });
-  }, [profile]);
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value, type, checked } = event.target;

@@ -3,7 +3,7 @@
 import * as React from "react";
 import { useQuery } from "@tanstack/react-query";
 import { apiFetch } from "@/lib/api";
-import { Gift, Copy, Check, Share2, Users, Coins, ExternalLink } from "lucide-react";
+import { Gift, Copy, Check, Share2, Users, Coins } from "lucide-react";
 import type { ReferralInfo } from "@/lib/types";
 import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";

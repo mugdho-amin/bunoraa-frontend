@@ -93,7 +93,7 @@ export function NotificationsPageContent() {
           <Bell className="h-14 w-14 text-foreground/20 mb-4" aria-hidden />
           <h2 className="text-xl font-semibold">No notifications yet</h2>
           <p className="mt-2 max-w-sm text-sm text-foreground/60">
-            We'll let you know when there are updates on your orders, preorders, or artisan collections.
+            We&apos;ll let you know when there are updates on your orders, preorders, or artisan collections.
           </p>
           <Link
             href="/products/"

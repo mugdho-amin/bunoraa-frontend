@@ -39,13 +39,15 @@ describe("API proxy route", () => {
     });
 
     const response = await POST(request);
-    const [, init] = fetchMock.mock.calls[0];
+    const calls = fetchMock.mock.calls as unknown as Array<[RequestInfo | URL, RequestInit | undefined]>;
+    const init = calls[0]?.[1];
 
     expect(fetchMock).toHaveBeenCalledWith(
       "https://api.example.test/api/v1/commerce/cart/add/",
       expect.objectContaining({ method: "POST" })
     );
-    expect(init.headers).toMatchObject({
+    expect(init).toBeDefined();
+    expect(init!.headers).toMatchObject({
       authorization: "Bearer access-token",
       cookie: "sessionid=django-session; csrftoken=csrf-token",
       "content-type": "application/json",
