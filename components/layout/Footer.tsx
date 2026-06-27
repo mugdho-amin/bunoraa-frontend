@@ -422,6 +422,11 @@ export async function Footer() {
   ]);
   const companyPrimaryLinks = dedupeLinks([
     {
+      key: "blog",
+      label: "Blog",
+      href: "/blog/",
+    },
+    {
       key: "about",
       label: "About us",
       href: resolveFooterPageHref(["about-bunoraa", "about"], "/about/"),
@@ -467,7 +472,7 @@ export async function Footer() {
     const hrefKey = normalizeHref(item.href);
     return !blockedCompanyHrefSet.has(hrefKey) && !companyPrimaryHrefSet.has(hrefKey);
   });
-  const companySupportLinks = [...companyPrimaryLinks, ...companySupplementalLinks].slice(0, 5);
+  const companySupportLinks = [...companyPrimaryLinks, ...companySupplementalLinks].slice(0, 6);
 
   const contactItems = [
     ...emailItems.map((item) => ({
