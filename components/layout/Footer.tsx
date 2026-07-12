@@ -528,15 +528,15 @@ export async function Footer() {
     "inline-flex h-8 w-8 items-center justify-center rounded-full border border-border bg-background text-foreground/75 transition hover:border-foreground/40 hover:text-foreground";
 
   return (
-    <footer id="footer" className="border-t border-border bg-card">
-      <div className="mx-auto w-full max-w-[1920px] px-3 pb-4 pt-12 sm:px-5">
-        <div className="space-y-8 lg:hidden">
-          <div className="space-y-4">
+    <footer id="footer" className="mt-auto border-t border-border/80 bg-card pb-[max(1rem,env(safe-area-inset-bottom))]">
+      <div className="mx-auto w-full max-w-[1920px] px-3 pb-6 pt-10 sm:px-5 sm:pb-8 sm:pt-14">
+        <div className="space-y-6 lg:hidden">
+          <div className="space-y-4 rounded-2xl border border-border/60 bg-muted/20 p-4 sm:p-5">
             <div>
-              <p className="text-sm uppercase tracking-[0.2em] text-foreground/60">
+              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-foreground/55">
                 {brandName}
               </p>
-              <p className="mt-2 text-sm text-foreground/70">{brandDescription}</p>
+              <p className="mt-2 text-sm leading-relaxed text-foreground/70 text-pretty">{brandDescription}</p>
             </div>
             <FooterNewsletter />
           </div>

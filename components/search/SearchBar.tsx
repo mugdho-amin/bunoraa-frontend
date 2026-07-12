@@ -170,8 +170,8 @@ export function SearchBar({ hideSubmitButtonOnDesktop = false }: SearchBarProps)
         <input
           id={inputId}
           className={`${
-            hideSubmitButtonOnDesktop ? "h-10 min-h-10 lg:h-9 lg:min-h-9" : "h-10 min-h-10"
-          } w-full rounded-full border border-border bg-card px-4 py-1 text-sm shadow-sm transition focus-visible:border-primary/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 ${
+            hideSubmitButtonOnDesktop ? "h-11 min-h-11 lg:h-10 lg:min-h-10" : "h-11 min-h-11"
+          } w-full rounded-full border border-border/80 bg-card/95 px-4 py-1 text-base shadow-xs transition placeholder:text-foreground/40 focus-visible:border-primary/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 sm:text-sm ${
             hideSubmitButtonOnDesktop ? "pr-24 lg:pr-4" : "pr-24"
           }`}
           placeholder="Search products"
@@ -208,7 +208,7 @@ export function SearchBar({ hideSubmitButtonOnDesktop = false }: SearchBarProps)
         />
         <button
           type="submit"
-          className={`absolute right-1 top-1/2 inline-flex h-8 min-h-8 -translate-y-1/2 items-center justify-center rounded-full bg-primary px-3 text-xs font-semibold text-white transition hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 ${
+          className={`absolute right-1.5 top-1/2 inline-flex h-9 min-h-9 min-w-[4.5rem] -translate-y-1/2 items-center justify-center rounded-full bg-primary px-3.5 text-xs font-semibold text-white shadow-soft transition hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 ${
             hideSubmitButtonOnDesktop ? "lg:hidden" : ""
           }`}
           aria-label="Search"
@@ -220,7 +220,7 @@ export function SearchBar({ hideSubmitButtonOnDesktop = false }: SearchBarProps)
       {showSuggestions ? (
         <div
           id={listboxId}
-          className="absolute inset-x-0 top-full z-50 mt-2 w-auto sm:w-128 max-w-128 max-h-[70vh] overflow-y-auto rounded-xl border border-border bg-card p-4"
+          className="absolute inset-x-0 top-full z-50 mt-2 max-h-[min(70vh,28rem)] w-auto max-w-[min(100vw-1.5rem,32rem)] overflow-y-auto rounded-2xl border border-border/80 bg-card p-3 shadow-premium scrollbar-thin sm:w-128 sm:max-w-128 sm:p-4"
           role="listbox"
           aria-label="Search suggestions"
         >

@@ -59,10 +59,10 @@ export async function Header() {
 
   return (
     <MobileHeaderVisibility>
-      <header className="border-b border-border/80 bg-background/95 backdrop-blur-md supports-[backdrop-filter]:bg-background/88">
-        <div className="mx-auto w-full max-w-[1920px] px-3 py-4 sm:px-5">
-          {/* Mobile layout (grid) */}
-          <div className="grid grid-cols-3 items-center lg:hidden">
+      <header className="border-b border-border/70 bg-background/90 backdrop-blur-xl supports-[backdrop-filter]:bg-background/80">
+        <div className="mx-auto w-full max-w-[1920px] px-3 py-3 sm:px-5 sm:py-3.5">
+          {/* Mobile layout (grid) — thumb-friendly spacing */}
+          <div className="grid grid-cols-3 items-center gap-2 lg:hidden">
             <MobileNavWrapper
               categories={categories}
               menuPages={menuPages}
@@ -80,7 +80,7 @@ export async function Header() {
             </div>
           </div>
 
-          {/* Desktop layout (flex) — MobileNavWrapper omitted (its trigger is lg:hidden) */}
+          {/* Desktop layout */}
           <div className="hidden items-center justify-between gap-4 lg:flex">
             <div className="flex min-w-0 items-center gap-6">
               <HeaderBrand
@@ -88,20 +88,20 @@ export async function Header() {
                 defaultFaviconUrl={faviconUrl}
                 fallbackStaticFaviconUrl="/favicon.ico"
               />
-              <nav className="flex items-center gap-4 text-sm">
-                <div className="w-48">
+              <nav className="flex items-center gap-3 text-sm xl:gap-4" aria-label="Primary">
+                <div className="w-52 xl:w-64">
                   <SearchBar hideSubmitButtonOnDesktop />
                 </div>
                 <TranslatedHeaderLink
                   href="/preorders/"
-                  className="group relative inline-flex items-center gap-2 rounded-full border border-primary/30 bg-primary/10 px-3 py-1.5 text-sm font-semibold text-primary transition duration-200 hover:-translate-y-0.5 hover:border-primary/50 hover:bg-primary hover:text-white hover:shadow-soft focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 mr-6"
+                  className="group relative inline-flex items-center gap-2 rounded-full border border-primary/30 bg-primary/10 px-3 py-1.5 text-sm font-semibold text-primary transition duration-200 hover:-translate-y-0.5 hover:border-primary/50 hover:bg-primary hover:text-white hover:shadow-soft focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
                   labelKey="Preorders"
                   badgeKey="New"
                 />
                 {categories.slice(0, 4).map((category) => (
                   <Link
                     key={category.id}
-                    className="text-foreground/70 hover:text-foreground uppercase tracking-widest text-xs"
+                    className="link-underline text-xs font-medium uppercase tracking-[0.14em] text-foreground/65 transition hover:text-foreground"
                     href={buildCategoryPath(category.slug_path || category.slug)}
                     prefetch={false}
                   >
@@ -111,7 +111,7 @@ export async function Header() {
                 {menuPages.slice(0, 3).map((page) => (
                   <Link
                     key={page.id}
-                    className="text-foreground/70 hover:text-foreground"
+                    className="link-underline text-sm text-foreground/70 transition hover:text-foreground"
                     href={`/pages/${page.slug}/`}
                     prefetch={false}
                   >

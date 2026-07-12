@@ -70,7 +70,8 @@ export function HeroBannerSlider({
     () => new Set([0])
   );
   const total = banners.length;
-  const defaultHeight = "min(700px, calc(100dvh - var(--header-offset, 5.5rem)))";
+  const defaultHeight =
+    "min(620px, max(280px, calc(100dvh - var(--mobile-header-offset, var(--header-offset, 5.5rem)) - 1rem)))";
 
   React.useEffect(() => {
     if (!autoAdvance || total <= 1) return;
@@ -223,18 +224,24 @@ export function HeroBannerSlider({
                 )}
                 style={{ ...overlayStyle, ...textStyle }}
               >
-                <h2 className="text-xl font-semibold leading-tight sm:text-2xl" style={titleStyle}>
+                <h2
+                  className="max-w-[18ch] text-xl font-semibold leading-tight tracking-tight text-balance sm:max-w-none sm:text-2xl md:text-3xl"
+                  style={titleStyle}
+                >
                   {banner.title}
                 </h2>
                 {banner.subtitle ? (
-                  <p className="mt-2 text-xs opacity-90 sm:text-sm" style={subtitleStyle}>
+                  <p
+                    className="mt-2 max-w-[32ch] text-xs opacity-90 text-pretty sm:max-w-md sm:text-sm md:text-base"
+                    style={subtitleStyle}
+                  >
                     {banner.subtitle}
                   </p>
                 ) : null}
                 {banner.link_text ? (
                   <span
                     className={cn(
-                      "mt-4 inline-flex w-fit items-center rounded-full border border-current/30 px-4 py-1.5 text-xs font-semibold uppercase tracking-[0.2em] sm:min-h-0",
+                      "mt-4 inline-flex min-h-11 w-fit items-center rounded-full border border-white/30 bg-white/15 px-5 py-2 text-xs font-semibold uppercase tracking-[0.16em] shadow-soft backdrop-blur-md transition hover:bg-white/25 sm:min-h-0 sm:py-1.5",
                       buttonAlignmentClass
                     )}
                     style={buttonStyle}
@@ -321,17 +328,25 @@ export function HeroBannerSlider({
       </div>
 
       {total > 1 ? (
-        <div className="mt-3 hidden items-center justify-center gap-1.5 sm:flex">
+        <div
+          className="absolute inset-x-0 bottom-3 z-10 flex items-center justify-center gap-1.5 sm:bottom-4"
+          role="tablist"
+          aria-label="Hero banners"
+        >
           {banners.map((banner, index) => (
             <button
               key={banner.id}
               type="button"
+              role="tab"
+              aria-selected={index === activeIndex}
               className={cn(
-                "h-2 w-2 rounded-full border border-border",
-                index === activeIndex ? "bg-primary" : "bg-muted"
+                "h-2 min-h-[8px] rounded-full border border-white/40 transition-all duration-300",
+                index === activeIndex
+                  ? "w-6 min-w-6 bg-white shadow-soft"
+                  : "w-2 min-w-2 bg-white/40 hover:bg-white/70"
               )}
               onClick={() => setActiveIndex(index)}
-              aria-label={`Show banner ${index + 1}`}
+              aria-label={`Show banner ${index + 1} of ${total}`}
             />
           ))}
         </div>

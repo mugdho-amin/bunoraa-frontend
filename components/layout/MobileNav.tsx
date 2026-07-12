@@ -82,25 +82,25 @@ const NavLink = ({
 }) => (
   <Link
     className={cn(
-      "flex items-center gap-3 rounded-xl border px-3 py-2.5 text-sm transition-colors",
+      "flex min-h-11 items-center gap-3 rounded-xl border px-3 py-2.5 text-sm transition-all duration-200",
       "border-transparent text-foreground/80 hover:border-border hover:bg-muted hover:text-foreground",
       "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40",
-      isActive && "border-primary/25 bg-primary/10 text-primary",
+      isActive && "border-primary/25 bg-primary/10 text-primary shadow-xs",
       highlight &&
         !isActive &&
-        "border-primary/30 bg-primary/5 text-primary font-medium"
+        "border-primary/30 bg-primary/5 font-medium text-primary"
     )}
     href={href}
     onClick={onClick}
   >
-    <Icon className="h-4 w-4 shrink-0 opacity-60" />
-    <span className="flex-1">{label}</span>
+    <Icon className="h-4 w-4 shrink-0 opacity-60" aria-hidden="true" />
+    <span className="flex-1 text-left">{label}</span>
     {badge ? (
-      <span className="rounded-full bg-primary/15 px-2 py-0.5 text-[10px] font-semibold text-primary">
+      <span className="badge-pill bg-primary/15 text-primary">
         {badge}
       </span>
     ) : (
-      <ChevronRight className="h-3.5 w-3.5 shrink-0 text-foreground/25" />
+      <ChevronRight className="h-3.5 w-3.5 shrink-0 text-foreground/25" aria-hidden="true" />
     )}
   </Link>
 );
@@ -230,23 +230,23 @@ export function MobileNav({
       <button
         ref={triggerRef}
         type="button"
-        className="inline-flex items-center justify-center rounded-full border border-border bg-card p-2 text-sm text-foreground shadow-soft transition hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
+        className="icon-btn pressable"
         onClick={() => setOpen(true)}
         aria-haspopup="dialog"
         aria-expanded={open}
         aria-controls="mobile-navigation-panel"
         aria-label="Open menu"
       >
-        <span className="flex flex-col gap-1" aria-hidden="true">
-          <span className="h-0.5 w-5 rounded-full bg-foreground/90" />
-          <span className="h-0.5 w-5 rounded-full bg-foreground/90" />
-          <span className="h-0.5 w-5 rounded-full bg-foreground/90" />
+        <span className="flex flex-col gap-1.5" aria-hidden="true">
+          <span className="h-0.5 w-5 rounded-full bg-foreground/90 transition-transform" />
+          <span className="h-0.5 w-4 rounded-full bg-foreground/70 transition-transform" />
+          <span className="h-0.5 w-5 rounded-full bg-foreground/90 transition-transform" />
         </span>
       </button>
 
       {open ? (
         <div
-          className="fixed inset-0 z-50 h-[100svh] supports-[height:100dvh]:h-[100dvh]"
+          className="fixed inset-0 z-[70] h-[100svh] supports-[height:100dvh]:h-[100dvh]"
           role="dialog"
           aria-modal="true"
           aria-labelledby="mobile-navigation-title"
@@ -257,30 +257,30 @@ export function MobileNav({
           {/* Backdrop */}
           <div
             className={cn(
-              "absolute inset-0 bg-foreground/35 backdrop-blur-sm transition-opacity duration-300",
+              "absolute inset-0 bg-foreground/40 backdrop-blur-md transition-opacity duration-300",
               slideIn ? "opacity-100" : "opacity-0"
             )}
             onClick={closeNav}
           />
 
-          {/* Panel */}
+          {/* Panel — full-bleed on very small phones, max width on larger */}
           <aside
             id="mobile-navigation-panel"
             className={cn(
-              "absolute inset-y-0 left-0 flex h-[100svh] min-h-[100svh] w-full max-w-[22rem] flex-col border-r border-border bg-background text-foreground shadow-2xl transition-transform duration-300 ease-out supports-[height:100dvh]:h-[100dvh] supports-[height:100dvh]:min-h-[100dvh]",
+              "absolute inset-y-0 left-0 flex h-[100svh] min-h-[100svh] w-[min(100vw,22.5rem)] flex-col border-r border-border/80 bg-background text-foreground shadow-premium transition-transform duration-300 ease-out-expo supports-[height:100dvh]:h-[100dvh] supports-[height:100dvh]:min-h-[100dvh]",
               slideIn ? "translate-x-0" : "-translate-x-full"
             )}
             onClick={(event) => event.stopPropagation()}
           >
             {/* ── Header ── */}
-            <div className="flex items-center justify-between border-b border-border px-5 pt-[max(1rem,env(safe-area-inset-top))] pb-3">
+            <div className="flex items-center justify-between border-b border-border/80 bg-muted/30 px-4 pt-[max(0.875rem,env(safe-area-inset-top))] pb-3 sm:px-5">
               <p id="mobile-navigation-title" className="text-lg font-semibold tracking-tight">
                 Menu
               </p>
               <button
                 ref={closeButtonRef}
                 type="button"
-                className="inline-flex h-8 w-8 items-center justify-center rounded-full border border-border text-foreground/60 transition hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
+                className="icon-btn h-10 w-10 min-h-10 min-w-10"
                 onClick={closeNav}
                 aria-label="Close menu"
               >
@@ -289,10 +289,10 @@ export function MobileNav({
             </div>
 
             {/* ── User banner ── */}
-            <div className="border-b border-border px-5 py-3">
+            <div className="border-b border-border/80 px-4 py-3.5 sm:px-5">
               {hasToken ? (
-                <div className="flex items-center gap-3">
-                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary/15 text-sm font-bold text-primary">
+                <div className="flex items-center gap-3 rounded-2xl border border-border/60 bg-muted/40 p-3">
+                  <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-primary/15 text-sm font-bold text-primary ring-2 ring-primary/10">
                     {initials || <User className="h-4 w-4" />}
                   </div>
                   <div className="min-w-0 flex-1">
@@ -307,7 +307,7 @@ export function MobileNav({
                   <Link
                     href="/account/login/"
                     onClick={closeNav}
-                    className="flex flex-1 items-center justify-center gap-1.5 rounded-lg bg-primary px-3 py-2 text-sm font-semibold text-white transition hover:bg-primary/90"
+                    className="flex min-h-11 flex-1 items-center justify-center gap-1.5 rounded-xl bg-primary px-3 py-2.5 text-sm font-semibold text-white shadow-soft transition hover:bg-primary/90"
                   >
                     <LogIn className="h-3.5 w-3.5" />
                     Sign in
@@ -315,7 +315,7 @@ export function MobileNav({
                   <Link
                     href="/account/register/"
                     onClick={closeNav}
-                    className="flex flex-1 items-center justify-center gap-1.5 rounded-lg border border-border px-3 py-2 text-sm font-medium text-foreground transition hover:bg-muted"
+                    className="flex min-h-11 flex-1 items-center justify-center gap-1.5 rounded-xl border border-border bg-card px-3 py-2.5 text-sm font-medium text-foreground shadow-xs transition hover:bg-muted"
                   >
                     <UserPlus className="h-3.5 w-3.5" />
                     Register

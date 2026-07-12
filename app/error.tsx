@@ -13,8 +13,7 @@ export default function GlobalError({
   reset: () => void;
 }) {
   const router = useRouter();
-  
-  // Log error to monitoring service in production
+
   React.useEffect(() => {
     if (process.env.NODE_ENV === "production") {
       console.error("Global error caught:", {
@@ -24,65 +23,71 @@ export default function GlobalError({
       });
     }
   }, [error]);
-  
-  // Provide user-friendly messages without exposing internal details
-  const isNetworkError = error.message?.toLowerCase().includes("fetch") || 
-                         error.message?.toLowerCase().includes("network");
+
+  const isNetworkError =
+    error.message?.toLowerCase().includes("fetch") ||
+    error.message?.toLowerCase().includes("network");
   const isAuthError = error.status === 401 || error.status === 403;
   const isRateLimit = error.status === 429;
-  
+
   let title = "Something went wrong";
-  let description = "An unexpected error occurred. Our team has been notified. Please try again.";
-  
+  let description =
+    "An unexpected error occurred. Our team has been notified. Please try again.";
+
   if (isNetworkError) {
     title = "Connection Issue";
-    description = "We're having trouble connecting to our servers. Please check your internet connection and try again.";
+    description =
+      "We're having trouble connecting to our servers. Please check your internet connection and try again.";
   } else if (isAuthError) {
     title = "Access Denied";
-    description = "You don't have permission to view this content or your session has expired.";
+    description =
+      "You don't have permission to view this content or your session has expired.";
   } else if (isRateLimit) {
     title = "Too Many Requests";
-    description = "You've been doing that a lot lately. Please wait a moment before trying again.";
+    description =
+      "You've been doing that a lot lately. Please wait a moment before trying again.";
   }
 
   return (
-    <div className="min-h-[80vh] bg-background flex items-center justify-center p-6">
-      <div className="mx-auto flex w-full max-w-md flex-col items-center gap-8 text-center">
-        <div className="h-20 w-20 rounded-full bg-destructive/10 flex items-center justify-center text-destructive animate-in zoom-in duration-300">
-          <AlertCircle size={40} />
+    <div className="relative flex min-h-[80dvh] items-center justify-center overflow-hidden bg-background p-4 sm:p-6">
+      <div className="pointer-events-none absolute inset-0 mesh-bg opacity-70" aria-hidden="true" />
+      <div className="relative mx-auto flex w-full max-w-md flex-col items-center gap-6 text-center sm:gap-8">
+        <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-error-100 text-error-600 shadow-soft animate-scale-in dark:bg-error-900/40 dark:text-error-300 sm:h-20 sm:w-20">
+          <AlertCircle size={36} aria-hidden="true" />
         </div>
-        
+
         <div className="space-y-3">
-          <h1 className="text-3xl font-bold tracking-tight">{title}</h1>
-          <p className="text-muted-foreground leading-relaxed">
+          <h1 className="text-2xl font-bold tracking-tight text-foreground sm:text-3xl text-balance">
+            {title}
+          </h1>
+          <p className="text-sm leading-relaxed text-foreground/60 text-pretty sm:text-base">
             {description}
           </p>
         </div>
-        
-        <div className="flex flex-col sm:flex-row w-full gap-3 mt-4">
-          <Button 
-            onClick={reset} 
-            className="flex-1 gap-2 h-12 text-base shadow-lg shadow-primary/10"
-          >
-            <RefreshCw size={18} className="animate-spin-once" />
+
+        <div className="mt-2 flex w-full flex-col gap-2 sm:flex-row sm:gap-3">
+          <Button onClick={reset} className="h-12 flex-1 gap-2 text-base shadow-glow" size="lg">
+            <RefreshCw size={18} aria-hidden="true" />
             Try again
           </Button>
-          
-          <Button 
-            variant="outline" 
+
+          <Button
+            variant="outline"
             onClick={() => router.push("/")}
-            className="flex-1 gap-2 h-12 text-base"
+            className="h-12 flex-1 gap-2 text-base"
+            size="lg"
           >
-            <Home size={18} />
+            <Home size={18} aria-hidden="true" />
             Go Home
           </Button>
         </div>
-        
-        <button 
+
+        <button
+          type="button"
           onClick={() => router.back()}
-          className="text-sm font-medium text-muted-foreground hover:text-foreground flex items-center gap-1 transition-colors"
+          className="flex min-h-11 items-center gap-1 text-sm font-medium text-foreground/55 transition-colors hover:text-foreground"
         >
-          <ChevronLeft size={16} />
+          <ChevronLeft size={16} aria-hidden="true" />
           Go back to previous page
         </button>
       </div>

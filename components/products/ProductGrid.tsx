@@ -68,10 +68,18 @@ export function ProductGrid({
 
   if (!products.length) {
     return (
-      <div className="rounded-2xl border border-dashed border-border bg-card/40 px-3 sm:px-5 py-10 text-center">
-        <h3 className="text-lg font-semibold text-foreground">No products found</h3>
-        <p className="mt-2 text-sm text-foreground/70">{emptyMessage}</p>
-        <p className="mt-3 text-xs text-foreground/50">
+      <div className="rounded-2xl border border-dashed border-border/80 bg-gradient-to-b from-muted/30 to-card/40 px-4 py-12 text-center sm:px-6 sm:py-14">
+        <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-primary/8 text-primary">
+          <svg className="h-7 w-7" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" aria-hidden="true">
+            <path d="M6 6h15l-1.5 9h-12z" />
+            <path d="M6 6 5 3H2" />
+            <circle cx="9" cy="20" r="1" />
+            <circle cx="18" cy="20" r="1" />
+          </svg>
+        </div>
+        <h3 className="text-lg font-semibold tracking-tight text-foreground">No products found</h3>
+        <p className="mx-auto mt-2 max-w-md text-sm text-foreground/65 text-pretty">{emptyMessage}</p>
+        <p className="mt-3 text-xs text-foreground/45">
           Try adjusting your filters or search terms.
         </p>
       </div>
@@ -82,7 +90,7 @@ export function ProductGrid({
     <>
       <div
         className={cn(
-          "grid gap-x-2 sm:gap-x-3 gap-y-4 sm:gap-y-6",
+          "grid gap-x-2 gap-y-5 sm:gap-x-3 sm:gap-y-6",
           gridColsClass(cols, cardStyle)
         )}
       >

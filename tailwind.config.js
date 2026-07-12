@@ -44,6 +44,12 @@ module.exports = {
         'animate-slide-in-up',
         'animate-pulse-soft',
         'skeleton',
+        'skeleton-shimmer',
+        'surface-glass',
+        'surface-card',
+        'page-shell',
+        'section-pad',
+        'mobile-sticky-cta',
     ],
     darkMode: 'class',
     theme: {
@@ -60,11 +66,13 @@ module.exports = {
         extend: {
             screens: {
                 xs: '420px',
+                '3xl': '1920px',
             },
             maxWidth: {
                 '8xl': '88rem',
                 '9xl': '96rem',
                 'full': '100%',
+                content: 'var(--content-max)',
             },
             colors: {
                 background: 'hsl(var(--background) / <alpha-value>)',
@@ -72,6 +80,7 @@ module.exports = {
                 card: 'hsl(var(--card) / <alpha-value>)',
                 border: 'hsl(var(--border) / <alpha-value>)',
                 muted: 'hsl(var(--muted) / <alpha-value>)',
+                ring: 'hsl(var(--ring) / <alpha-value>)',
                 // Brand primary - Warm terracotta/rust
                 primary: {
                     DEFAULT: 'hsl(var(--primary) / <alpha-value>)',
@@ -162,42 +171,63 @@ module.exports = {
                 },
             },
             fontFamily: {
-                sans: ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
+                sans: ['var(--theme-font)', 'system-ui', '-apple-system', 'sans-serif'],
                 serif: ['Merriweather', 'Georgia', 'serif'],
                 mono: ['JetBrains Mono', 'Menlo', 'monospace'],
-                display: ['Poppins', 'system-ui', '-apple-system', 'sans-serif'],
+                display: ['var(--font-poppins)', 'system-ui', '-apple-system', 'sans-serif'],
             },
             fontSize: {
                 '2xs': ['0.625rem', { lineHeight: '0.75rem' }],
+                display: ['var(--text-display)', { lineHeight: '1.15', letterSpacing: '-0.02em' }],
+                title: ['var(--text-title)', { lineHeight: '1.25', letterSpacing: '-0.015em' }],
             },
             spacing: {
                 '18': '4.5rem',
                 '88': '22rem',
                 '128': '32rem',
+                'safe-top': 'var(--safe-top)',
+                'safe-bottom': 'var(--safe-bottom)',
+                'header': 'var(--header-offset)',
             },
             borderRadius: {
                 '4xl': '2rem',
+                sm: 'var(--radius-sm)',
+                md: 'var(--radius-md)',
+                lg: 'var(--radius-lg)',
+                xl: 'var(--radius-xl)',
+                '2xl': 'var(--radius-2xl)',
             },
             zIndex: {
                 '60': '60',
                 '70': '70',
+                '80': '80',
+                '90': '90',
+                '100': '100',
             },
             boxShadow: {
-                'soft': '0 2px 15px -3px rgba(0, 0, 0, 0.07), 0 10px 20px -2px rgba(0, 0, 0, 0.04)',
-                'soft-lg': '0 10px 40px -10px rgba(0, 0, 0, 0.1), 0 2px 20px -10px rgba(0, 0, 0, 0.06)',
+                'xs': 'var(--shadow-xs)',
+                'soft': 'var(--shadow-sm)',
+                'soft-lg': 'var(--shadow-md)',
+                'soft-xl': 'var(--shadow-lg)',
+                'premium': 'var(--shadow-xl)',
+                'glow': 'var(--shadow-glow)',
                 'inner-soft': 'inset 0 2px 4px 0 rgba(0, 0, 0, 0.04)',
             },
+            backdropBlur: {
+                xs: '2px',
+            },
             animation: {
-                'fade-in': 'fadeIn 0.3s ease-out',
+                'fade-in': 'fadeIn 0.3s var(--ease-out-expo)',
                 'fade-out': 'fadeOut 0.3s ease-out',
-                'slide-in-up': 'slideInUp 0.3s ease-out',
-                'slide-in-down': 'slideInDown 0.3s ease-out',
-                'slide-in-left': 'slideInLeft 0.3s ease-out',
-                'slide-in-right': 'slideInRight 0.3s ease-out',
-                'scale-in': 'scaleIn 0.2s ease-out',
+                'slide-in-up': 'slideInUp 0.35s var(--ease-out-expo)',
+                'slide-in-down': 'slideInDown 0.35s var(--ease-out-expo)',
+                'slide-in-left': 'slideInLeft 0.35s var(--ease-out-expo)',
+                'slide-in-right': 'slideInRight 0.35s var(--ease-out-expo)',
+                'scale-in': 'scaleIn 0.25s var(--ease-out-expo)',
                 'bounce-soft': 'bounceSoft 0.5s ease-out',
                 'pulse-soft': 'pulseSoft 2s ease-in-out infinite',
-                'shimmer': 'shimmer 2s linear infinite',
+                'shimmer': 'shimmer 1.8s linear infinite',
+                'float': 'float 6s ease-in-out infinite',
             },
             keyframes: {
                 fadeIn: {
@@ -209,28 +239,28 @@ module.exports = {
                     '100%': { opacity: '0' },
                 },
                 slideInUp: {
-                    '0%': { transform: 'translateY(20px)', opacity: '0' },
+                    '0%': { transform: 'translateY(16px)', opacity: '0' },
                     '100%': { transform: 'translateY(0)', opacity: '1' },
                 },
                 slideInDown: {
-                    '0%': { transform: 'translateY(-20px)', opacity: '0' },
+                    '0%': { transform: 'translateY(-16px)', opacity: '0' },
                     '100%': { transform: 'translateY(0)', opacity: '1' },
                 },
                 slideInLeft: {
-                    '0%': { transform: 'translateX(-20px)', opacity: '0' },
+                    '0%': { transform: 'translateX(-16px)', opacity: '0' },
                     '100%': { transform: 'translateX(0)', opacity: '1' },
                 },
                 slideInRight: {
-                    '0%': { transform: 'translateX(20px)', opacity: '0' },
+                    '0%': { transform: 'translateX(16px)', opacity: '0' },
                     '100%': { transform: 'translateX(0)', opacity: '1' },
                 },
                 scaleIn: {
-                    '0%': { transform: 'scale(0.9)', opacity: '0' },
+                    '0%': { transform: 'scale(0.96)', opacity: '0' },
                     '100%': { transform: 'scale(1)', opacity: '1' },
                 },
                 bounceSoft: {
                     '0%, 100%': { transform: 'translateY(0)' },
-                    '50%': { transform: 'translateY(-5px)' },
+                    '50%': { transform: 'translateY(-4px)' },
                 },
                 pulseSoft: {
                     '0%, 100%': { opacity: '1' },
@@ -240,13 +270,20 @@ module.exports = {
                     '0%': { backgroundPosition: '-200% 0' },
                     '100%': { backgroundPosition: '200% 0' },
                 },
+                float: {
+                    '0%, 100%': { transform: 'translateY(0)' },
+                    '50%': { transform: 'translateY(-6px)' },
+                },
             },
             transitionTimingFunction: {
                 'bounce-in': 'cubic-bezier(0.68, -0.55, 0.265, 1.55)',
+                'out-expo': 'cubic-bezier(0.16, 1, 0.3, 1)',
+                spring: 'cubic-bezier(0.34, 1.56, 0.64, 1)',
             },
             aspectRatio: {
                 'product': '4 / 5',
                 'hero': '21 / 9',
+                'banner': '16 / 7',
             },
             typography: (theme) => ({
                 DEFAULT: {
@@ -285,6 +322,16 @@ module.exports = {
                 '.text-gradient-primary': {
                     'background-image': `linear-gradient(135deg, ${theme('colors.primary.500')}, ${theme('colors.accent.500')})`,
                 },
+                '.safe-pb': {
+                    'padding-bottom': 'max(1rem, env(safe-area-inset-bottom))',
+                },
+                '.safe-pt': {
+                    'padding-top': 'max(0.5rem, env(safe-area-inset-top))',
+                },
+                '.safe-px': {
+                    'padding-left': 'max(0.75rem, env(safe-area-inset-left))',
+                    'padding-right': 'max(0.75rem, env(safe-area-inset-right))',
+                },
             });
             
             // Scrollbar styles
@@ -321,7 +368,7 @@ module.exports = {
                 '.skeleton': {
                     background: `linear-gradient(90deg, ${theme('colors.secondary.100')} 25%, ${theme('colors.secondary.200')} 50%, ${theme('colors.secondary.100')} 75%)`,
                     backgroundSize: '200% 100%',
-                    animation: 'shimmer 2s linear infinite',
+                    animation: 'shimmer 1.8s linear infinite',
                     borderRadius: theme('borderRadius.md'),
                 },
             });

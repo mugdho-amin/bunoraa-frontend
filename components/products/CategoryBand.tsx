@@ -1,7 +1,7 @@
 import { ProductGrid } from "@/components/products/ProductGrid";
-import Link from "next/link";
-import { ProductListItem, Category } from "@/lib/types";
+import type { ProductListItem, Category } from "@/lib/types";
 import { buildCategoryPath } from "@/lib/categoryPaths";
+import { SectionHeading } from "@/components/ui/SectionHeading";
 
 interface CategoryBandProps {
   band: {
@@ -12,20 +12,15 @@ interface CategoryBandProps {
 
 export const CategoryBand = ({ band }: CategoryBandProps) => {
   return (
-    <section className="mx-auto w-full max-w-[1920px] px-3 py-8 sm:px-5">
-      <div className="flex items-center justify-between gap-4">
-        <h2 className="text-sm font-semibold uppercase tracking-[0.2em] text-foreground/70">
-          {band.category.name}
-        </h2>
-        <Link
-          href={buildCategoryPath(band.category.slug_path || band.category.slug)}
-          prefetch={false}
-          className="text-xs font-semibold uppercase tracking-[0.2em] text-foreground/60 hover:text-foreground"
-        >
-          View All
-        </Link>
-      </div>
-      <div className="mt-4 -mx-3 sm:-mx-5 lg:mx-0">
+    <section className="page-shell section-pad" aria-labelledby={`band-${band.category.id}`}>
+      <SectionHeading
+        id={`band-${band.category.id}`}
+        title={band.category.name}
+        href={buildCategoryPath(band.category.slug_path || band.category.slug)}
+        linkLabel="View all"
+        as="h2"
+      />
+      <div className="-mx-3 sm:-mx-5 lg:mx-0">
         <ProductGrid
           products={band.products}
           cardStyle="minimal"

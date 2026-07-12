@@ -168,12 +168,12 @@ export function HeaderClient() {
   }, [pathname]);
 
   const iconButtonClass =
-    "relative inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-border/80 bg-card/90 text-sm leading-none text-foreground shadow-soft transition hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:ring-offset-2 focus-visible:ring-offset-background";
+    "icon-btn pressable leading-none";
   const iconTooltipClass =
     "pointer-events-none absolute left-1/2 top-full z-40 mt-2 hidden -translate-x-1/2 whitespace-nowrap rounded-md bg-foreground px-2 py-1 text-[11px] font-medium text-background opacity-0 shadow-soft transition-opacity duration-150 sm:block";
 
   return (
-    <div className="flex items-center gap-2 sm:gap-3">
+    <div className="flex items-center gap-1.5 sm:gap-2.5">
       <div className="group relative hidden sm:block">
         <NotificationBell className={iconButtonClass} count={unreadCount} />
         <span className={`${iconTooltipClass} group-hover:opacity-100 group-focus-within:opacity-100`} aria-hidden="true">
@@ -192,8 +192,8 @@ export function HeaderClient() {
           Wishlist
         </span>
         {wishlistCount > 0 ? (
-          <span className="absolute -right-1 -top-1 rounded-full bg-accent px-1.5 py-0.5 text-[11px] font-semibold text-white">
-            {wishlistCount}
+          <span className="absolute -right-1 -top-1 flex h-5 min-w-5 items-center justify-center rounded-full bg-accent px-1 text-[10px] font-bold text-white shadow-xs ring-2 ring-background">
+            {wishlistCount > 99 ? "99+" : wishlistCount}
           </span>
         ) : null}
       </Link>
@@ -203,15 +203,16 @@ export function HeaderClient() {
         onClick={() => {
           setOpen((prev) => !prev);
         }}
-        aria-label="Bag"
-      >        <Handbag className="h-5 w-5" strokeWidth={1.8} aria-hidden="true" />
+        aria-label={`Bag${count > 0 ? `, ${count} items` : ""}`}
+      >
+        <Handbag className="h-5 w-5" strokeWidth={1.8} aria-hidden="true" />
         <span className="sr-only">Bag</span>
         <span className={`${iconTooltipClass} group-hover:opacity-100 group-focus-visible:opacity-100`} aria-hidden="true">
           Bag
         </span>
         {count > 0 ? (
-          <span className="absolute -right-1 -top-1 rounded-full bg-accent px-1.5 py-0.5 text-[11px] font-semibold text-white">
-            {count}
+          <span className="absolute -right-1 -top-1 flex h-5 min-w-5 items-center justify-center rounded-full bg-accent px-1 text-[10px] font-bold text-white shadow-xs ring-2 ring-background">
+            {count > 99 ? "99+" : count}
           </span>
         ) : null}
       </button>
@@ -258,7 +259,7 @@ export function HeaderClient() {
         {menuOpen ? (
           mounted && hasToken ? (
             <div
-              className="absolute right-0 top-[calc(100%+0.5rem)] z-50 w-72 max-w-[calc(100vw-2rem)] origin-top-right animate-in fade-in zoom-in-95 rounded-2xl border border-border bg-card shadow-2xl"
+              className="absolute right-0 top-[calc(100%+0.5rem)] z-50 w-72 max-w-[calc(100vw-1.5rem)] origin-top-right animate-scale-in rounded-2xl border border-border/80 bg-card shadow-premium"
               role="menu"
             >
               {/* ── User info header ── */}
@@ -464,7 +465,7 @@ export function HeaderClient() {
             </div>
           ) : (
             <div
-              className="absolute right-0 top-[calc(100%+0.5rem)] z-50 w-64 max-w-[calc(100vw-2rem)] origin-top-right animate-in fade-in zoom-in-95 rounded-2xl border border-border bg-card shadow-2xl"
+              className="absolute right-0 top-[calc(100%+0.5rem)] z-50 w-64 max-w-[calc(100vw-1.5rem)] origin-top-right animate-scale-in rounded-2xl border border-border/80 bg-card shadow-premium"
               role="menu"
             >
               {/* ── Welcome header ── */}

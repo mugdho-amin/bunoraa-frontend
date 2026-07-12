@@ -53,26 +53,28 @@ export function AccountShell({ children }: { children: React.ReactNode }) {
       nextHref={pathname}
     >
       <div className="min-h-screen bg-background text-foreground">
-        <div className="mx-auto w-full max-w-[1920px] px-3 sm:px-5 py-12">
+        <div className="mx-auto w-full max-w-[1920px] px-3 py-6 sm:px-5 sm:py-10 lg:py-12">
           <div className="mb-4 lg:hidden">
             <Button
               type="button"
               variant="secondary"
-              size="sm"
-              className="w-full justify-between rounded-xl px-4 text-sm"
+              size="md"
+              className="w-full justify-between rounded-2xl px-4 text-sm shadow-xs"
               onClick={() => setMobileNavOpen(true)}
             >
-              <span>Account menu</span>
-              <span className="truncate text-foreground/65">{activeItem?.label}</span>
+              <span className="font-semibold">Account menu</span>
+              <span className="truncate rounded-full bg-primary/10 px-2.5 py-0.5 text-xs font-medium text-primary">
+                {activeItem?.label}
+              </span>
             </Button>
           </div>
-          <div className="flex flex-col gap-6 lg:grid lg:grid-cols-[240px_1fr]">
+          <div className="flex flex-col gap-5 lg:grid lg:grid-cols-[260px_1fr] lg:gap-8">
             <aside className="hidden space-y-4 lg:block">
-              <Card variant="bordered" className="space-y-3">
-                <p className="text-xs uppercase tracking-[0.2em] text-foreground/60">
+              <Card variant="bordered" className="space-y-3" padding="md">
+                <p className="text-xs font-semibold uppercase tracking-[0.2em] text-foreground/55">
                   Account
                 </p>
-                <nav className="flex flex-col gap-1">
+                <nav className="flex flex-col gap-0.5" aria-label="Account">
                   {NAV_ITEMS.map((item) => {
                     const active = pathname.startsWith(item.href);
                     return (
@@ -80,10 +82,10 @@ export function AccountShell({ children }: { children: React.ReactNode }) {
                         key={item.href}
                         href={item.href}
                         className={cn(
-                          "rounded-lg px-3 py-2 text-sm transition",
+                          "rounded-xl px-3 py-2.5 text-sm transition-colors",
                           active
-                            ? "bg-muted font-semibold text-foreground"
-                            : "text-foreground/70 hover:bg-muted"
+                            ? "bg-primary/10 font-semibold text-primary"
+                            : "text-foreground/70 hover:bg-muted hover:text-foreground"
                         )}
                       >
                         {item.label}
@@ -120,14 +122,14 @@ export function AccountShell({ children }: { children: React.ReactNode }) {
         >
           <button
             type="button"
-            className="absolute inset-0 bg-black/55"
+            className="absolute inset-0 bg-foreground/40 backdrop-blur-sm"
             aria-label="Close account navigation"
             onClick={() => setMobileNavOpen(false)}
           />
-          <aside className="absolute right-0 top-0 flex h-full w-full max-w-xs flex-col border-l border-border bg-background p-4 shadow-xl">
-            <div className="mb-4 flex items-center justify-between">
+          <aside className="absolute inset-y-0 right-0 flex h-full w-full max-w-[20rem] flex-col border-l border-border/80 bg-background shadow-premium supports-[height:100dvh]:h-[100dvh]">
+            <div className="mb-2 flex items-center justify-between border-b border-border/70 px-4 pb-3 pt-[max(1rem,env(safe-area-inset-top))]">
               <div>
-                <p className="text-xs uppercase tracking-[0.2em] text-foreground/55">
+                <p className="text-xs font-semibold uppercase tracking-[0.2em] text-foreground/55">
                   Account
                 </p>
                 <p className="text-sm font-semibold">{activeItem?.label}</p>
@@ -136,15 +138,15 @@ export function AccountShell({ children }: { children: React.ReactNode }) {
                 type="button"
                 variant="ghost"
                 size="sm"
-                className="rounded-lg px-3"
+                className="rounded-xl px-3"
                 onClick={() => setMobileNavOpen(false)}
               >
                 Close
               </Button>
             </div>
-            <div className="min-h-0 flex-1 space-y-4 overflow-y-auto pr-1">
-              <Card variant="bordered" className="space-y-2 p-3">
-                <nav className="flex flex-col gap-1">
+            <div className="min-h-0 flex-1 space-y-4 overflow-y-auto px-4 pb-[max(1rem,env(safe-area-inset-bottom))] pr-3 scrollbar-thin">
+              <Card variant="bordered" className="space-y-2" padding="sm">
+                <nav className="flex flex-col gap-0.5" aria-label="Account pages">
                   {NAV_ITEMS.map((item) => {
                     const active = pathname.startsWith(item.href);
                     return (
@@ -152,10 +154,10 @@ export function AccountShell({ children }: { children: React.ReactNode }) {
                         key={item.href}
                         href={item.href}
                         className={cn(
-                          "rounded-lg px-3 py-2 text-sm transition",
+                          "min-h-11 rounded-xl px-3 py-2.5 text-sm transition-colors",
                           active
-                            ? "bg-muted font-semibold text-foreground"
-                            : "text-foreground/70 hover:bg-muted"
+                            ? "bg-primary/10 font-semibold text-primary"
+                            : "text-foreground/70 hover:bg-muted hover:text-foreground"
                         )}
                       >
                         {item.label}
@@ -164,7 +166,7 @@ export function AccountShell({ children }: { children: React.ReactNode }) {
                   })}
                 </nav>
               </Card>
-              <Card variant="modern-gradient" className="space-y-2 p-3">
+              <Card variant="modern-gradient" className="space-y-2" padding="sm">
                 <p className="text-sm font-semibold">Need help?</p>
                 <p className="text-sm text-foreground/70">
                   Reach out to support for account updates or data requests.

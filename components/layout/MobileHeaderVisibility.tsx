@@ -112,7 +112,7 @@ export function MobileHeaderVisibility({
     <div
       ref={containerRef}
       className={cn(
-        "sticky top-0 z-40 transform transition-transform duration-300 ease-out",
+        "sticky top-0 z-50 transform transition-transform duration-300 ease-out-expo will-change-transform",
         hidden ? "-translate-y-full sm:translate-y-0" : "translate-y-0",
         className
       )}

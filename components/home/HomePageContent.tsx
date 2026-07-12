@@ -8,6 +8,7 @@ import { JsonLd } from "@/components/seo/JsonLd";
 import { absoluteUrl, buildItemList, buildLocalBusinessSchema, cleanObject } from "@/lib/seo";
 import { buildProductPath } from "@/lib/productPaths";
 import { SectionSkeleton } from "@/components/ui/Skeleton";
+import { SectionHeading } from "@/components/ui/SectionHeading";
 import { CategoryBand } from "@/components/products/CategoryBand";
 import { HeroBannerSlider } from "@/components/promotions/HeroBannerSlider";
 import type { HeroBanner } from "@/components/promotions/HeroBannerSlider";
@@ -71,27 +72,116 @@ export async function HomePageContent({ heroBanners, siteSettings, homepageData 
   const collectionsList = buildItemList(collections.slice(0, 10).map((collection) => ({ name: collection.name, url: `/collections/${collection.slug}/`, image: collection.image || undefined, description: collection.description || undefined })), "Collections");
   const jsonLd = [homePageSchema, buildLocalBusinessSchema(), ...(filteredFeaturedProducts.length ? [featuredList] : []), ...(collections.length ? [collectionsList] : [])];
 
-  const sectionWrapperClass = "mx-auto w-full max-w-[1920px] px-3 sm:px-5";
+  const sectionWrapperClass = "page-shell section-pad";
 
   return (
     <div className="bg-background text-foreground">
       <h1 className="sr-only">Bunoraa: Ethically Sourced Artisan Fashion & Home Decor</h1>
-      <section><div className="w-full pb-6">{heroBanners.length ? <HeroBannerSlider banners={heroBanners} className="mx-auto" autoAdvance={true} intervalMs={5000} /> : <div className="aspect-[16/7] w-full bg-muted" />}</div></section>
+
+      {/* Hero — full-bleed, mobile-optimized height via HeroBannerSlider */}
+      <section aria-label="Featured promotions" className="relative">
+        <div className="w-full">
+          {heroBanners.length ? (
+            <HeroBannerSlider
+              banners={heroBanners}
+              className="mx-auto"
+              autoAdvance={true}
+              intervalMs={5000}
+            />
+          ) : (
+            <div className="aspect-[16/9] w-full bg-muted sm:aspect-[16/7]" aria-hidden="true" />
+          )}
+        </div>
+      </section>
+
+      {/* Spotlights */}
       {spotlights.length ? (
-        <section className={`${sectionWrapperClass} py-8`}>
-          <h2 className="text-sm font-semibold uppercase tracking-[0.2em] text-foreground/70">Spotlights</h2>
-          <div className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-3 -mx-3 sm:-mx-5 lg:mx-0">
+        <section className={sectionWrapperClass} aria-labelledby="spotlights-heading">
+          <SectionHeading
+            eyebrow="Curated"
+            title="Spotlights"
+            as="h2"
+          />
+          <div className="mt-1 grid gap-3 sm:grid-cols-2 sm:gap-4 lg:grid-cols-3 -mx-3 sm:-mx-5 lg:mx-0">
             {spotlights.map((spotlight) => {
               const image = spotlight.product?.primary_image as string;
-              return <Link key={spotlight.id} href={spotlight.product ? buildProductPath(spotlight.product) : "/"} className="group overflow-hidden rounded-2xl border border-border bg-card"><div className="relative aspect-[16/10] overflow-hidden bg-muted">{image && <Image src={image} alt={spotlight.name || spotlight.product?.name || "Spotlight"} fill sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw" className="object-cover transition-transform duration-300 group-hover:scale-[1.02]" loading="lazy" decoding="async" />}</div></Link>;
+              const label = spotlight.name || spotlight.product?.name || "Spotlight";
+              return (
+                <Link
+                  key={spotlight.id}
+                  href={spotlight.product ? buildProductPath(spotlight.product) : "/"}
+                  className="group relative overflow-hidden rounded-2xl border border-border/60 bg-card shadow-soft transition-all duration-300 hover:shadow-soft-lg hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
+                >
+                  <div className="relative aspect-[16/10] overflow-hidden bg-muted">
+                    {image ? (
+                      <Image
+                        src={image}
+                        alt={label}
+                        fill
+                        sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                        className="object-cover transition-transform duration-500 ease-out-expo group-hover:scale-[1.04]"
+                        loading="lazy"
+                        decoding="async"
+                      />
+                    ) : null}
+                    <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-foreground/50 via-transparent to-transparent opacity-80" />
+                    <div className="absolute inset-x-0 bottom-0 p-3 sm:p-4">
+                      <p className="text-sm font-semibold text-white drop-shadow-sm text-balance sm:text-base">
+                        {label}
+                      </p>
+                    </div>
+                  </div>
+                </Link>
+              );
             })}
           </div>
         </section>
       ) : null}
-      <Suspense fallback={<SectionSkeleton title="Loading Categories..." />}><CategoryBandsLoader categoryBandsWithProducts={categoryBandsWithProducts} /></Suspense>
-      <Suspense fallback={<SectionSkeleton title="Seasonal Favs" />}>{filteredOnSale.length ? <section className={`${sectionWrapperClass} py-8`}><h2 className="text-sm font-semibold uppercase tracking-[0.2em] text-foreground/70">Seasonal Favs</h2><div className="mt-4 -mx-3 sm:-mx-5 lg:mx-0"><ProductGrid products={filteredOnSale.slice(0, 8)} cardStyle="minimal" allowQuickView={true} showWishlist={true} /></div></section> : null}</Suspense>
-      <Suspense fallback={<SectionSkeleton title="Recommended" />}><section className={`${sectionWrapperClass} py-8`}><div className="-mx-3 sm:-mx-5 lg:mx-0"><HomeProductTabs newDrops={filteredNewArrivals} trending={filteredBestsellers} allowQuickView={true} showWishlist={true} /></div></section></Suspense>
-      <section className={`${sectionWrapperClass} py-8`}><div className="-mx-3 sm:-mx-5 lg:mx-0"><RecentlyViewedSection /></div></section>
+
+      <Suspense fallback={<SectionSkeleton title="Loading Categories..." />}>
+        <CategoryBandsLoader categoryBandsWithProducts={categoryBandsWithProducts} />
+      </Suspense>
+
+      <Suspense fallback={<SectionSkeleton title="Seasonal Favs" />}>
+        {filteredOnSale.length ? (
+          <section className={sectionWrapperClass} aria-labelledby="seasonal-favs-heading">
+            <SectionHeading
+              eyebrow="Limited time"
+              title="Seasonal Favs"
+              href="/products/?on_sale=true"
+              linkLabel="Shop sale"
+            />
+            <div className="-mx-3 sm:-mx-5 lg:mx-0">
+              <ProductGrid
+                products={filteredOnSale.slice(0, 8)}
+                cardStyle="minimal"
+                allowQuickView={true}
+                showWishlist={true}
+              />
+            </div>
+          </section>
+        ) : null}
+      </Suspense>
+
+      <Suspense fallback={<SectionSkeleton title="Recommended" />}>
+        <section className={sectionWrapperClass} aria-label="Recommended products">
+          <div className="-mx-3 sm:-mx-5 lg:mx-0">
+            <HomeProductTabs
+              newDrops={filteredNewArrivals}
+              trending={filteredBestsellers}
+              allowQuickView={true}
+              showWishlist={true}
+            />
+          </div>
+        </section>
+      </Suspense>
+
+      <section className={sectionWrapperClass} aria-label="Recently viewed">
+        <div className="-mx-3 sm:-mx-5 lg:mx-0">
+          <RecentlyViewedSection />
+        </div>
+      </section>
+
       <JsonLd data={jsonLd} />
     </div>
   );

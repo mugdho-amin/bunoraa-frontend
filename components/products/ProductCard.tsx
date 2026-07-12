@@ -59,7 +59,7 @@ function MinimalProductCard({
   return (
     <div className="group">
       <div
-        className="relative overflow-hidden bg-muted"
+        className="relative overflow-hidden rounded-xl bg-muted sm:rounded-2xl"
         style={{ aspectRatio: aspectRatioValue }}
       >
         {showWishlist ? (
@@ -68,7 +68,7 @@ function MinimalProductCard({
             variant="ghost"
             size="lg"
             color="fixed-black"
-            className="absolute right-0 top-0 z-20 opacity-100 scale-75 transition sm:scale-100 sm:right-2 sm:top-2"
+            className="absolute right-1 top-1 z-20 scale-90 opacity-100 transition sm:right-2 sm:top-2 sm:scale-100"
           />
         ) : null}
         {canQuickView ? (
@@ -97,20 +97,24 @@ function MinimalProductCard({
             quality={72}
             loading="lazy"
             decoding="async"
-            className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-[1.02]"
+            className="h-full w-full object-cover transition-transform duration-500 ease-out-expo group-hover:scale-[1.03]"
           />
-        ) : null}
+        ) : (
+          <div className="absolute inset-0 flex items-center justify-center bg-muted text-foreground/20">
+            <span className="text-xs font-medium uppercase tracking-wider">No image</span>
+          </div>
+        )}
       </div>
-      <div className="mt-1 space-y-1">
+      <div className="mt-2 space-y-1 px-0.5">
         {!product.is_in_stock ? (
-          <p className="pl-1 text-[11px] font-semibold uppercase tracking-[0.2em] text-foreground/70">
+          <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-foreground/55 sm:text-[11px]">
             Sold Out
           </p>
         ) : null}
         <Link
           href={productHref}
           prefetch={false}
-          className="block pl-1 text-sm font-normal leading-snug text-foreground"
+          className="block text-[13px] font-medium leading-snug text-foreground transition-colors hover:text-primary sm:text-sm line-clamp-2"
         >
           {product.name}
         </Link>
@@ -119,8 +123,8 @@ function MinimalProductCard({
           salePrice={product.sale_price}
           currentPrice={product.current_price}
           currency={product.currency}
-          className="text-foreground pl-1"
-          priceClassName="text-[14px] font-medium sm:text-[16px]"
+          className="text-foreground"
+          priceClassName="text-[13px] font-semibold sm:text-[15px]"
         />
       </div>
     </div>
@@ -165,15 +169,15 @@ function InteractiveProductCard({
       className={cn(
         "group relative flex flex-col transition-all duration-300",
         variant === "list"
-          ? "sm:flex-row sm:items-start gap-6 border-b border-border/50 pb-8 last:border-0"
-          : "bg-background rounded-2xl border border-border/40 hover:border-border hover:shadow-[0_12px_40px_-12px_rgba(0,0,0,0.08)]"
+          ? "gap-4 border-b border-border/50 pb-6 last:border-0 sm:flex-row sm:items-start sm:gap-6 sm:pb-8"
+          : "rounded-2xl border border-border/40 bg-card shadow-xs hover:border-border hover:shadow-soft-lg"
       )}
     >
       <div
         className={cn(
           "relative overflow-hidden bg-muted transition-all duration-500",
           variant === "list"
-            ? "aspect-[4/5] w-full sm:w-56 rounded-xl"
+            ? "aspect-[4/5] w-full rounded-xl sm:w-56"
             : "aspect-[var(--aspect-ratio)] rounded-t-2xl",
         )}
         style={{ "--aspect-ratio": aspectRatioValue } as React.CSSProperties}
@@ -191,7 +195,7 @@ function InteractiveProductCard({
             sizes={variant === "list" ? listImageSizes : gridImageSizes}
             quality={85}
             className={cn(
-              "object-cover transition-all duration-700 ease-out group-hover:scale-110",
+              "object-cover transition-all duration-700 ease-out-expo group-hover:scale-105",
               secondaryImageUrl && "group-hover:opacity-0"
             )}
           />
@@ -203,58 +207,77 @@ function InteractiveProductCard({
             fill
             sizes={variant === "list" ? listImageSizes : gridImageSizes}
             quality={85}
-            className="object-cover opacity-0 transition-all duration-700 ease-out scale-105 group-hover:scale-110 group-hover:opacity-100"
+            className="scale-105 object-cover opacity-0 transition-all duration-700 ease-out-expo group-hover:scale-105 group-hover:opacity-100"
           />
         )}
 
         {/* Badges & Overlays */}
-        <div className="absolute left-3 top-3 z-20 flex flex-col gap-1.5">
+        <div className="absolute left-2 top-2 z-20 flex flex-col gap-1 sm:left-3 sm:top-3 sm:gap-1.5">
           <ProductBadges product={product} omitOnSale />
         </div>
 
+        {/* Wishlist always visible on mobile (no hover) */}
         <WishlistIconButton
           productId={product.id}
-          className="absolute right-3 top-3 z-30 sm:translate-y-2 sm:opacity-0 sm:group-hover:translate-y-0 sm:group-hover:opacity-100 transition-all duration-300"
+          className="absolute right-2 top-2 z-30 opacity-100 transition-all duration-300 sm:right-3 sm:top-3 sm:translate-y-1 sm:opacity-0 sm:group-hover:translate-y-0 sm:group-hover:opacity-100"
         />
 
+        {/* Quick view: visible on mobile as subtle chip; full bar on desktop hover */}
         {showQuickView && (
-          <div className="absolute inset-x-0 bottom-0 z-20 p-3 translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-out hidden sm:block">
-            <Button
-              variant="secondary"
-              size="sm"
-              className="w-full bg-background/90 backdrop-blur-sm border-0 shadow-lg hover:bg-background"
-              onClick={(e) => {
-                e.preventDefault();
-                onQuickView?.(product.slug);
-              }}
-            >
-              {t("quick_view", "Quick View")}
-            </Button>
-          </div>
+          <>
+            <div className="absolute inset-x-0 bottom-0 z-20 p-2 sm:hidden">
+              <Button
+                variant="secondary"
+                size="sm"
+                className="h-9 w-full border-0 bg-background/90 text-[11px] font-semibold uppercase tracking-wider shadow-soft backdrop-blur-md"
+                onClick={(e) => {
+                  e.preventDefault();
+                  onQuickView?.(product.slug);
+                }}
+              >
+                {t("quick_view", "Quick View")}
+              </Button>
+            </div>
+            <div className="absolute inset-x-0 bottom-0 z-20 hidden translate-y-full p-3 transition-transform duration-300 ease-out-expo group-hover:translate-y-0 sm:block">
+              <Button
+                variant="secondary"
+                size="sm"
+                className="w-full border-0 bg-background/90 shadow-lg backdrop-blur-sm hover:bg-background"
+                onClick={(e) => {
+                  e.preventDefault();
+                  onQuickView?.(product.slug);
+                }}
+              >
+                {t("quick_view", "Quick View")}
+              </Button>
+            </div>
+          </>
         )}
       </div>
 
-      <div className={cn("flex flex-1 flex-col pt-2 px-4 pb-4 sm:pt-2.5 sm:px-5 sm:pb-5", variant === "list" && "sm:p-0")}>
+      <div className={cn("flex flex-1 flex-col px-3 pb-3 pt-2 sm:px-5 sm:pb-5 sm:pt-2.5", variant === "list" && "sm:p-0")}>
         <div className="mb-2 space-y-1">
-          <p className="pl-1 text-[10px] font-bold uppercase tracking-[0.1em] text-muted-foreground/80">
-            {product.primary_category_name}
-          </p>
+          {product.primary_category_name ? (
+            <p className="text-[10px] font-bold uppercase tracking-[0.1em] text-foreground/45">
+              {product.primary_category_name}
+            </p>
+          ) : null}
           <Link
             href={productHref}
-            className="line-clamp-1 pl-1 text-sm font-medium hover:text-primary transition-colors sm:text-base leading-tight"
+            className="line-clamp-2 text-sm font-medium leading-tight transition-colors hover:text-primary sm:line-clamp-1 sm:text-base"
           >
             {product.name}
           </Link>
         </div>
 
-        <div className="mt-auto space-y-4">
+        <div className="mt-auto space-y-3 sm:space-y-4">
           <div className="flex items-end justify-between gap-2">
             <ProductPrice
               price={product.price}
               salePrice={product.sale_price}
               currentPrice={product.current_price}
               currency={product.currency}
-              priceClassName="text-base font-semibold text-foreground pl-1"
+              priceClassName="text-sm font-semibold text-foreground sm:text-base"
             />
             <RatingStars rating={product.average_rating || 0} count={product.reviews_count} size="sm" />
           </div>
@@ -264,7 +287,7 @@ function InteractiveProductCard({
               productId={product.id}
               variant={product.is_in_stock ? "primary" : "secondary"}
               className={cn(
-                "h-9 text-[11px] font-bold uppercase tracking-wider rounded-lg shadow-sm",
+                "h-10 min-h-10 text-[11px] font-bold uppercase tracking-wider rounded-xl shadow-xs sm:h-9",
                 !product.is_in_stock && "opacity-50"
               )}
               label={product.is_in_stock ? t("add_to_bag", "Add to Bag") : t("out_of_stock", "Sold Out")}
@@ -272,14 +295,15 @@ function InteractiveProductCard({
             />
             <Button
               variant="secondary"
+              size="icon-sm"
               className={cn(
-                "h-9 w-9 rounded-lg border-border/40 hover:bg-muted transition-colors",
-                isInCompare && "text-primary border-primary/20 bg-primary/5"
+                "h-10 w-10 min-h-10 min-w-10 rounded-xl border-border/40 sm:h-9 sm:w-9 sm:min-h-9 sm:min-w-9",
+                isInCompare && "border-primary/20 bg-primary/5 text-primary"
               )}
               onClick={() => toggleCompare(compareItemFromProduct(product))}
               aria-label={isInCompare ? "Remove from compare" : "Add to compare"}
             >
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
                 <path d="M16 3h5v5M8 21H3v-5M21 3l-7 7M3 21l7-7" />
               </svg>
             </Button>

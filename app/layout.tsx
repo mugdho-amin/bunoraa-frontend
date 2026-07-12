@@ -199,7 +199,7 @@ export default function RootLayout({
       <head>
         <link rel="preconnect" href="https://accounts.google.com" crossOrigin="anonymous" />
       </head>
-      <body className="min-h-screen bg-background text-foreground antialiased">
+      <body className="min-h-[100dvh] bg-background text-foreground antialiased">
         <HtmlLangSetter />
         <Script id="theme-bootstrap" strategy="beforeInteractive">
           {themeBootstrapScript}
@@ -208,7 +208,12 @@ export default function RootLayout({
         <WebVitalsReporter />
         <Providers>
           <Header />
-          <main id="main-content" className="min-h-[70vh] bg-background" role="main" aria-label="Main content">
+          <main
+            id="main-content"
+            className="min-h-[70dvh] bg-background"
+            role="main"
+            aria-label="Main content"
+          >
             {children}
           </main>
           <Footer />
