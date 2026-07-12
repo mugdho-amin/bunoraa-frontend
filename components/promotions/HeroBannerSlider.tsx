@@ -215,7 +215,7 @@ export function HeroBannerSlider({
               )}
               <div
                 className={cn(
-                  "absolute inset-0 flex flex-col p-4 transition-opacity sm:p-6",
+                  "absolute inset-0 flex flex-col p-4 pb-20 transition-opacity sm:p-6 sm:pb-24",
                   verticalPositionClass,
                   horizontalAlignmentClass,
                   overlayColor
@@ -329,7 +329,7 @@ export function HeroBannerSlider({
 
       {total > 1 ? (
         <div
-          className="absolute inset-x-0 bottom-3 z-10 flex items-center justify-center gap-1.5 sm:bottom-4"
+          className="absolute inset-x-0 bottom-6 z-10 flex items-center justify-center gap-1.5 sm:bottom-8"
           role="tablist"
           aria-label="Hero banners"
         >
@@ -340,10 +340,11 @@ export function HeroBannerSlider({
               role="tab"
               aria-selected={index === activeIndex}
               className={cn(
-                "h-2 min-h-[8px] rounded-full border border-white/40 transition-all duration-300",
+                "rounded-full border border-white/40 transition-all duration-300",
+                "h-1 min-h-[4px] sm:h-2 sm:min-h-[8px]",
                 index === activeIndex
-                  ? "w-6 min-w-6 bg-white shadow-soft"
-                  : "w-2 min-w-2 bg-white/40 hover:bg-white/70"
+                  ? "w-3 min-w-[12px] sm:w-6 sm:min-w-[24px] bg-white shadow-soft"
+                  : "w-1 min-w-[4px] sm:w-2 sm:min-w-[8px] bg-white/40 hover:bg-white/70"
               )}
               onClick={() => setActiveIndex(index)}
               aria-label={`Show banner ${index + 1} of ${total}`}

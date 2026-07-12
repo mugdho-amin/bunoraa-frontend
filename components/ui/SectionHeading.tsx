@@ -31,8 +31,8 @@ export function SectionHeading({
   return (
     <div
       className={cn(
-        "mb-4 flex flex-col gap-3 sm:mb-6 sm:flex-row sm:items-end sm:justify-between",
-        align === "center" && "items-center text-center sm:flex-col sm:items-center",
+        "mb-4 flex flex-row items-end justify-between gap-3 sm:mb-6",
+        align === "center" && "flex-col items-center text-center",
         className
       )}
     >
@@ -51,7 +51,7 @@ export function SectionHeading({
           href={href}
           prefetch={false}
           className={cn(
-            "group inline-flex min-h-11 items-center gap-1 self-start rounded-full border border-border/80 bg-card px-3.5 py-2 text-sm font-medium text-foreground/80 shadow-xs transition hover:border-primary/30 hover:bg-primary/5 hover:text-primary sm:self-auto",
+            "group inline-flex min-h-11 shrink-0 items-center gap-1 rounded-full border border-border/80 bg-card px-3.5 py-2 text-sm font-medium text-foreground/80 shadow-xs transition hover:border-primary/30 hover:bg-primary/5 hover:text-primary",
             align === "center" && "self-center"
           )}
         >
