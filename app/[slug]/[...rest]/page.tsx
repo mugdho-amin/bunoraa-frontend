@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { apiFetch, ApiError } from "@/lib/api";
 import type { ProductDetail, ProductListItem } from "@/lib/types";
-import { notFound, redirect } from "next/navigation";
+import { notFound } from "next/navigation";
 import { ProductDetailClient } from "@/components/products/ProductDetailClient";
 import { getServerLocaleHeaders, getServerLang } from "@/lib/serverLocale";
 import { JsonLd } from "@/components/seo/JsonLd";
@@ -130,13 +130,7 @@ export default async function NestedCategoryProductDetailPage({
   }
   const relatedProducts = await getRelated(productSlug).catch(() => []);
 
-  const requestedCategoryPath = toRequestedCategoryPath(rootCategory, rest);
-  const canonicalCategoryPath = getProductCategoryPath(product);
   const canonicalPath = buildProductPath(product);
-
-  if (requestedCategoryPath !== canonicalCategoryPath) {
-    redirect(canonicalPath);
-  }
 
   const categoryTrail = buildProductCategoryTrail(product);
   const breadcrumbItems = [{ name: "Home", url: "/" }];

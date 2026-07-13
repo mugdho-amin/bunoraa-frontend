@@ -2,13 +2,24 @@ import "server-only";
 
 import type { Metadata } from "next";
 import { apiFetch, ApiError } from "@/lib/api";
-import type { ProductDetail } from "@/lib/types";
+import type { ProductDetail, ProductListItem } from "@/lib/types";
 import type { CategorySearchParams } from "@/app/categories/[...slug]/categoryPageShared";
 export type { CategorySearchParams };
-import { notFound, redirect } from "next/navigation";
+import { notFound } from "next/navigation";
+import { ProductDetailClient } from "@/components/products/ProductDetailClient";
+import { JsonLd } from "@/components/seo/JsonLd";
 import { getServerLocaleHeaders, getServerLang } from "@/lib/serverLocale";
-import { buildPageMetadata, buildProductKeywords } from "@/lib/seo";
-import { buildProductPath } from "@/lib/productPaths";
+import {
+  buildBreadcrumbList,
+  buildPageMetadata,
+  buildProductSchema,
+  buildProductKeywords,
+} from "@/lib/seo";
+import { buildCategoryPath } from "@/lib/categoryPaths";
+import {
+  buildProductCategoryTrail,
+  buildProductPath,
+} from "@/lib/productPaths";
 import {
   buildCategoryMetadataForPath,
   renderCategoryPageForPath,
@@ -29,6 +40,14 @@ async function getProduct(slug: string) {
     }
     throw error;
   }
+}
+
+async function getRelated(slug: string) {
+  const response = await apiFetch<ProductListItem[]>(
+    `/catalog/products/${slug}/related/`,
+    { params: { limit: 8 }, headers: await getServerLocaleHeaders() }
+  );
+  return response.data;
 }
 
 function toProductSlug(rest: string[]) {
@@ -100,6 +119,27 @@ export async function departmentPage(
   if (!product) {
     notFound();
   }
+  const relatedProducts = await getRelated(productSlug).catch(() => []);
 
-  redirect(buildProductPath(product));
+  const canonicalPath = buildProductPath(product);
+
+  const categoryTrail = buildProductCategoryTrail(product);
+  const breadcrumbItems = [{ name: "Home", url: "/" }];
+  categoryTrail.forEach((crumb) => {
+    breadcrumbItems.push({ name: crumb.name, url: buildCategoryPath(crumb.slugPath) });
+  });
+  breadcrumbItems.push({ name: product.name, url: canonicalPath });
+
+  const breadcrumbs = buildBreadcrumbList(breadcrumbItems);
+  const productSchema = product.schema_org || buildProductSchema(product);
+  const jsonLd = [breadcrumbs, ...(productSchema ? [productSchema] : [])];
+
+  return (
+    <div className="min-h-screen bg-background text-foreground">
+      <div className="mx-auto w-full max-w-6xl px-3 sm:px-5 py-12">
+        <ProductDetailClient product={product} relatedProducts={relatedProducts} />
+      </div>
+      <JsonLd data={jsonLd} />
+    </div>
+  );
 }
