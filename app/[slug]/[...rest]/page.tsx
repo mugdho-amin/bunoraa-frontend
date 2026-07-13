@@ -6,7 +6,7 @@ import { ProductDetailClient } from "@/components/products/ProductDetailClient";
 import { getServerLocaleHeaders, getServerLang } from "@/lib/serverLocale";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { buildBreadcrumbList, buildPageMetadata, buildProductSchema } from "@/lib/seo";
-import { buildProductCategoryTrail, buildProductPath, getProductCategoryPath } from "@/lib/productPaths";
+import { buildProductCategoryTrail, buildProductPath } from "@/lib/productPaths";
 import { buildCategoryPath } from "@/lib/categoryPaths";
 import {
   buildCategoryMetadataForPath,
@@ -37,10 +37,6 @@ async function getRelated(slug: string) {
     { params: { limit: 8 }, headers: await getServerLocaleHeaders()}
   );
   return response.data;
-}
-
-function toRequestedCategoryPath(rootCategory: string, rest: string[]) {
-  return [rootCategory, ...rest.slice(0, -1)].filter(Boolean).join("/");
 }
 
 function toProductSlug(rest: string[]) {
@@ -76,8 +72,6 @@ export async function generateMetadata({
     return buildCategoryMetadataForPath(requestedPath, resolvedSearchParams);
   }
 
-  const canonicalCategoryPath = getProductCategoryPath(product);
-  const requestedCategoryPath = toRequestedCategoryPath(rootCategory, rest);
   const metadataImages = [
     product.primary_image || undefined,
     ...(product.images?.slice(0, 5).map((image) => image.image) || []),
@@ -90,10 +84,7 @@ export async function generateMetadata({
       product.short_description ||
       product.description ||
       "Explore product details on Bunoraa.",
-    path:
-      canonicalCategoryPath === requestedCategoryPath
-        ? `/${requestedCategoryPath}/${product.slug}/`
-        : buildProductPath(product),
+    path: buildProductPath(product),
     images: metadataImages,
     lang,
   });

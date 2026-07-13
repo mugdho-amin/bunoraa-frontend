@@ -15,31 +15,42 @@ function cleanSegment(value: string | null | undefined): string {
 }
 
 /**
- * Resolves the primary subcategory slug intended for contextual filtering
- * or fallback collection navigation.
+ * Resolves the primary category slug path for SEO-friendly product URLs.
+ * Returns the full slash-separated path (e.g. "kids/girls-frocks-outfits").
  */
 export function getProductCategoryPath(product: ProductPathSource): string {
   const precomputedPath = cleanSegment(product.primary_category_slug_path);
   if (precomputedPath) return precomputedPath;
 
   if (product.breadcrumbs?.length) {
-    const directParentSlug = cleanSegment(product.breadcrumbs[product.breadcrumbs.length - 1]?.slug);
-    if (directParentSlug) return directParentSlug;
+    const fullPath = product.breadcrumbs
+      .map(crumb => cleanSegment(crumb.slug))
+      .filter(Boolean)
+      .join("/");
+    if (fullPath) return fullPath;
   }
 
   const primaryCategorySlug = cleanSegment(product.primary_category?.slug);
   if (primaryCategorySlug) return primaryCategorySlug;
 
-  return "all";
+  return "";
 }
 
 /**
- * Generates the unified, flat canonical URL path for product detail views.
- * Enforces strict trailing slashes for directory consistency.
+ * Generates the SEO-friendly nested URL path for a product.
+ * Uses the product's primary category trail to produce URLs like
+ * /kids/girls-frocks-outfits/{slug}/. Falls back to /products/{slug}/
+ * when no category information is available.
  */
 export function buildProductPath(product: ProductPathSource): string {
   const slug = cleanSegment(product.slug);
   if (!slug) return "/products/";
+
+  const categoryPath = getProductCategoryPath(product);
+  if (categoryPath) {
+    return `/${categoryPath}/${slug}/`;
+  }
+
   return `/products/${slug}/`;
 }
 
