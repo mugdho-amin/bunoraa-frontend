@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
 import {
-  buildCategoryMetadataForPath,
-  renderCategoryPageForPath,
+  departmentMetadata,
+  departmentPage,
   type CategorySearchParams,
-} from "@/app/categories/[...slug]/categoryPageShared";
+} from "@/lib/departmentPage";
 
 const ROOT = "kids";
 
@@ -15,11 +15,10 @@ export async function generateMetadata({
   searchParams: Promise<CategorySearchParams>;
 }): Promise<Metadata> {
   const [{ slug }, resolvedSearchParams] = await Promise.all([params, searchParams]);
-  const slugPath = [ROOT, ...(slug || [])].join("/");
-  return buildCategoryMetadataForPath(slugPath, resolvedSearchParams);
+  return departmentMetadata(ROOT, slug, resolvedSearchParams);
 }
 
-export default async function KidsCategoryPage({
+export default async function KidsDepartmentPage({
   params,
   searchParams,
 }: {
@@ -27,6 +26,5 @@ export default async function KidsCategoryPage({
   searchParams: Promise<CategorySearchParams>;
 }) {
   const [{ slug }, resolvedSearchParams] = await Promise.all([params, searchParams]);
-  const slugPath = [ROOT, ...(slug || [])].join("/");
-  return renderCategoryPageForPath(slugPath, resolvedSearchParams);
+  return departmentPage(ROOT, slug, resolvedSearchParams);
 }
