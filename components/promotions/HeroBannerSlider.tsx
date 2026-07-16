@@ -71,7 +71,7 @@ export function HeroBannerSlider({
   );
   const total = banners.length;
   const defaultHeight =
-    "min(620px, max(280px, calc(100dvh - var(--mobile-header-offset, var(--header-offset, 5.5rem)) - 1rem)))";
+    "min(680px, max(320px, calc(100dvh - var(--mobile-header-offset, var(--header-offset, 5.5rem)) - 1rem)))";
 
   React.useEffect(() => {
     if (!autoAdvance || total <= 1) return;
