@@ -18,16 +18,16 @@ import {
 
 const fontPoppins = Poppins({
   subsets: ["latin", "devanagari"],
-  weight: ["300", "400", "500", "600", "700"],
+  weight: ["400", "500", "600", "700"],
   variable: "--font-poppins",
   display: "swap",
 });
 
 const fontDM_Sans = DM_Sans({
   subsets: ["latin"],
-  weight: ["300", "400", "500", "600", "700"],
+  weight: ["400", "500", "600", "700"],
   variable: "--font-dm-sans",
-  display: "swap",
+  display: "optional",
 });
 
 const SITE_DESCRIPTION =
@@ -197,9 +197,8 @@ export default function RootLayout({
       suppressHydrationWarning
       data-scroll-behavior="smooth"
     >
-      <head>
-        <link rel="preconnect" href="https://accounts.google.com" crossOrigin="anonymous" />
-      </head>
+      <head />
+      
       <body className="min-h-[100dvh] bg-background text-foreground antialiased">
         <HtmlLangSetter />
         <Script id="theme-bootstrap" strategy="beforeInteractive">
