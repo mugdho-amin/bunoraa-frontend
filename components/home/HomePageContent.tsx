@@ -103,7 +103,7 @@ export async function HomePageContent({ heroBanners, siteSettings, homepageData 
             as="h2"
           />
           <div className="mt-1 grid gap-3 sm:grid-cols-2 sm:gap-4 lg:grid-cols-3 -mx-3 sm:-mx-5 lg:mx-0">
-            {spotlights.map((spotlight) => {
+            {spotlights.map((spotlight, idx) => {
               const image = spotlight.product?.primary_image as string;
               const label = spotlight.name || spotlight.product?.name || "Spotlight";
               return (
@@ -120,8 +120,9 @@ export async function HomePageContent({ heroBanners, siteSettings, homepageData 
                         fill
                         sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
                         className="object-cover transition-transform duration-500 ease-out-expo group-hover:scale-[1.04]"
-                        loading="lazy"
-                        decoding="async"
+                        priority={idx === 0}
+                        loading={idx === 0 ? "eager" : "lazy"}
+                        decoding={idx === 0 ? "sync" : "async"}
                       />
                     ) : null}
                     <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-foreground/50 via-transparent to-transparent opacity-80" />

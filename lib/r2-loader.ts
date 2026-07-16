@@ -1,8 +1,3 @@
-/**
- * Cloudflare R2 / Custom Image Loader for Next.js.
- * Optimizes image delivery by appending transformation parameters
- * and ensuring the correct R2 public domain is used.
- */
 export default function r2Loader({
   src,
   width,
@@ -12,27 +7,26 @@ export default function r2Loader({
   width: number;
   quality?: number;
 }) {
-  // If URL is already absolute, return as-is to avoid double-prefixing
+  const q = quality || 75;
+
   if (src.startsWith('http://') || src.startsWith('https://')) {
-    return src;
+    const url = new URL(src);
+    url.searchParams.set('w', width.toString());
+    url.searchParams.set('q', q.toString());
+    url.searchParams.set('auto', 'format');
+    return url.toString();
   }
 
-  // Ensure src doesn't start with a slash if it's a relative path
   const relativePath = src.startsWith('/') ? src.slice(1) : src;
-  
-  // Base media URL from environment
   const baseUrl = process.env.NEXT_PUBLIC_MEDIA_BASE_URL;
   if (!baseUrl) {
     throw new Error("NEXT_PUBLIC_MEDIA_BASE_URL is not set. Required for image loading.");
   }
-  
-  // Construct URL with optimization parameters (if supported by the edge/proxy)
-  // Cloudflare Images / Polish often use query params or path segments
-  const params = new URLSearchParams();
-  if (width) params.set('w', width.toString());
-  if (quality) params.set('q', (quality || 75).toString());
-  params.set('auto', 'format'); // AVIF/WebP detection
 
-  const queryString = params.toString();
-  return `${baseUrl}/${relativePath}${queryString ? `?${queryString}` : ''}`;
+  const params = new URLSearchParams();
+  params.set('w', width.toString());
+  params.set('q', q.toString());
+  params.set('auto', 'format');
+
+  return `${baseUrl}/${relativePath}?${params.toString()}`;
 }

@@ -94,13 +94,14 @@ export function ProductGrid({
           gridColsClass(cols, cardStyle)
         )}
       >
-        {products.map((product) => (
+        {products.map((product, index) => (
           cardVariant ? (
             <ProductCardVariant
               key={product.id}
               product={product}
               variant={cardVariant}
               onQuickView={allowQuickView ? setQuickViewSlug : undefined}
+              priority={index === 0}
             />
           ) : (
             <ProductCard
@@ -116,6 +117,7 @@ export function ProductGrid({
               showWishlist={showWishlist}
               showQuickView={showQuickViewButton}
               onQuickView={allowQuickView ? setQuickViewSlug : undefined}
+              priority={index === 0}
             />
           )
         ))}

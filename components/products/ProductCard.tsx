@@ -37,10 +37,12 @@ function MinimalProductCard({
   product,
   showWishlist = true,
   onQuickView,
+  priority = false,
 }: {
   product: ProductListItem;
   showWishlist?: boolean;
   onQuickView?: (slug: string) => void;
+  priority?: boolean;
 }) {
   const mediaUrl = useMediaUrl();
   const image =
@@ -95,8 +97,9 @@ function MinimalProductCard({
             fill
             sizes={gridImageSizes}
             quality={72}
-            loading="lazy"
-            decoding="async"
+            priority={priority}
+            loading={priority ? "eager" : "lazy"}
+            decoding={priority ? "sync" : "async"}
             className="h-full w-full object-cover transition-transform duration-500 ease-out-expo group-hover:scale-[1.03]"
           />
         ) : (
@@ -136,11 +139,13 @@ function InteractiveProductCard({
   variant = "grid",
   showQuickView,
   onQuickView,
+  priority = false,
 }: {
   product: ProductListItem;
   variant?: "grid" | "list";
   showQuickView?: boolean;
   onQuickView?: (slug: string) => void;
+  priority?: boolean;
 }) {
   const { isInCompare, toggleCompare } = useCompareToggle(product);
   const { t } = useUiMessages("cart");
@@ -194,6 +199,9 @@ function InteractiveProductCard({
             fill
             sizes={variant === "list" ? listImageSizes : gridImageSizes}
             quality={85}
+            priority={priority}
+            loading={priority ? "eager" : "lazy"}
+            decoding={priority ? "sync" : "async"}
             className={cn(
               "object-cover transition-all duration-700 ease-out-expo group-hover:scale-105",
               secondaryImageUrl && "group-hover:opacity-0"
@@ -207,6 +215,8 @@ function InteractiveProductCard({
             fill
             sizes={variant === "list" ? listImageSizes : gridImageSizes}
             quality={85}
+            loading="lazy"
+            decoding="async"
             className="scale-105 object-cover opacity-0 transition-all duration-700 ease-out-expo group-hover:scale-105 group-hover:opacity-100"
           />
         )}
@@ -320,12 +330,14 @@ export function ProductCard({
   showWishlist = true,
   showQuickView,
   onQuickView,
+  priority = false,
 }: {
   product: ProductListItem;
   variant?: "grid" | "list" | "minimal" | "fashion";
   showWishlist?: boolean;
   showQuickView?: boolean;
   onQuickView?: (slug: string) => void;
+  priority?: boolean;
 }) {
   if (variant === "fashion") {
     return (
@@ -333,6 +345,7 @@ export function ProductCard({
         product={product}
         variant="fashion"
         onQuickView={onQuickView}
+        priority={priority}
       />
     );
   }
@@ -343,6 +356,7 @@ export function ProductCard({
         product={product}
         showWishlist={showWishlist}
         onQuickView={onQuickView}
+        priority={priority}
       />
     );
   }
@@ -353,6 +367,7 @@ export function ProductCard({
       variant={variant === "list" ? "list" : "grid"}
       showQuickView={showQuickView}
       onQuickView={onQuickView}
+      priority={priority}
     />
   );
 }
