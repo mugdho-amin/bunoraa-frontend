@@ -25,80 +25,210 @@ function getStep(range: number) {
   return 0.5;
 }
 
+function roundToStep(value: number, step: number, min: number) {
+  if (step <= 0) return value;
+  const rounded = Math.round((value - min) / step) * step + min;
+  // Avoid floating-point noise (e.g. 0.30000000004)
+  const decimals = String(step).includes(".") ? String(step).split(".")[1].length : 0;
+  return Number(rounded.toFixed(decimals));
+}
+
+/**
+ * Dual price-range slider (Blucheez / Shopify-style).
+ *
+ * Stacks two native <input type="range"> elements with:
+ * - pointer-events only on thumbs (CSS)
+ * - dynamic z-index so the active / closest thumb is grabable
+ * - local-only updates while dragging; URL commit on release
+ * - refs so mouseup never pushes stale min/max
+ */
 export function PriceSlider({ priceRange }: { priceRange: PriceRange }) {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
 
-  const urlMin = parseNum(searchParams.get("price_min"), priceRange.min);
-  const urlMax = parseNum(searchParams.get("price_max"), priceRange.max);
+  const boundMin = priceRange.min;
+  const boundMax = priceRange.max;
+  const hasValidRange =
+    Number.isFinite(boundMin) && Number.isFinite(boundMax) && boundMax > boundMin;
 
-  const [localMin, setLocalMin] = React.useState<number | "">(urlMin);
-  const [localMax, setLocalMax] = React.useState<number | "">(urlMax);
+  const urlMin = clamp(parseNum(searchParams.get("price_min"), boundMin), boundMin, boundMax);
+  const urlMax = clamp(parseNum(searchParams.get("price_max"), boundMax), boundMin, boundMax);
+  // Ensure URL min never exceeds URL max
+  const safeUrlMin = Math.min(urlMin, urlMax);
+  const safeUrlMax = Math.max(urlMin, urlMax);
+
+  const [localMin, setLocalMin] = React.useState(safeUrlMin);
+  const [localMax, setLocalMax] = React.useState(safeUrlMax);
   const [isDragging, setIsDragging] = React.useState(false);
   const [activeHandle, setActiveHandle] = React.useState<"min" | "max" | null>(null);
-  const timeoutRef = React.useRef<ReturnType<typeof setTimeout> | null>(null);
 
+  // Always hold the latest values for pointer-up / commit (avoids stale closures)
+  const minRef = React.useRef(safeUrlMin);
+  const maxRef = React.useRef(safeUrlMax);
+  const draggingRef = React.useRef(false);
+  const lastPushedRef = React.useRef(`${safeUrlMin}|${safeUrlMax}`);
+  const trackRef = React.useRef<HTMLDivElement | null>(null);
+
+  const step = getStep(boundMax - boundMin);
+  const rangeSpan = Math.max(step, boundMax - boundMin);
+
+  // Keep refs aligned with state
+  minRef.current = localMin;
+  maxRef.current = localMax;
+
+  // When absolute catalog bounds change (category/search switch), adopt URL range.
   React.useEffect(() => {
-    return () => {
-      if (timeoutRef.current) clearTimeout(timeoutRef.current);
-    };
-  }, []);
+    minRef.current = safeUrlMin;
+    maxRef.current = safeUrlMax;
+    setLocalMin(safeUrlMin);
+    setLocalMax(safeUrlMax);
+    lastPushedRef.current = `${safeUrlMin}|${safeUrlMax}`;
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- only when absolute bounds change
+  }, [boundMin, boundMax]);
 
+  // Sync from URL when not dragging. Never clobber local values while our own
+  // push is still in-flight (URL lags behind lastPushedRef).
   React.useEffect(() => {
-    if (isDragging) return;
-    setLocalMin(urlMin);
-    setLocalMax(urlMax);
-  }, [urlMin, urlMax, isDragging]);
-
-  const step = getStep(priceRange.max - priceRange.min);
-  const rangeSpan = Math.max(1, priceRange.max - priceRange.min);
-
-  const displayMin = localMin === "" ? priceRange.min : localMin;
-  const displayMax = localMax === "" ? priceRange.max : localMax;
-
-  const minPct = ((displayMin - priceRange.min) / rangeSpan) * 100;
-  const maxPct = ((displayMax - priceRange.min) / rangeSpan) * 100;
-  const minOnTop = displayMin > displayMax - rangeSpan * 0.05;
+    if (draggingRef.current || isDragging) return;
+    const urlKey = `${safeUrlMin}|${safeUrlMax}`;
+    if (urlKey === lastPushedRef.current) {
+      // URL caught up with what we pushed (or initial match)
+      return;
+    }
+    const localKey = `${minRef.current}|${maxRef.current}`;
+    if (localKey === lastPushedRef.current) {
+      // We pushed newer values; wait for the router to reflect them
+      return;
+    }
+    // External navigation / back-forward — adopt URL values
+    setLocalMin(safeUrlMin);
+    setLocalMax(safeUrlMax);
+    minRef.current = safeUrlMin;
+    maxRef.current = safeUrlMax;
+    lastPushedRef.current = urlKey;
+  }, [safeUrlMin, safeUrlMax, isDragging]);
 
   const pushUrl = React.useCallback(
     (min: number, max: number) => {
+      const nextMin = clamp(min, boundMin, max);
+      const nextMax = clamp(max, nextMin, boundMax);
+      const key = `${nextMin}|${nextMax}`;
+      if (key === lastPushedRef.current) return;
+      lastPushedRef.current = key;
+
       const p = new URLSearchParams(searchParams.toString());
-      if (min > priceRange.min) p.set("price_min", String(min));
+      if (nextMin > boundMin) p.set("price_min", String(nextMin));
       else p.delete("price_min");
-      if (max < priceRange.max) p.set("price_max", String(max));
+      if (nextMax < boundMax) p.set("price_max", String(nextMax));
       else p.delete("price_max");
       p.delete("page");
-      router.push(`${pathname}?${p.toString()}`, { scroll: false });
+
+      const qs = p.toString();
+      router.push(qs ? `${pathname}?${qs}` : pathname, { scroll: false });
     },
-    [pathname, router, searchParams, priceRange.min, priceRange.max]
+    [pathname, router, searchParams, boundMin, boundMax]
   );
 
-  const schedulePush = React.useCallback(
-    (min: number, max: number, immediate = false) => {
-      if (timeoutRef.current) clearTimeout(timeoutRef.current);
-      if (immediate) {
-        pushUrl(min, max);
-      } else {
-        timeoutRef.current = setTimeout(() => pushUrl(min, max), 400);
-      }
-    },
-    [pushUrl]
-  );
+  const beginDrag = (handle: "min" | "max") => {
+    draggingRef.current = true;
+    setIsDragging(true);
+    setActiveHandle(handle);
+  };
 
-  const commitMinMax = React.useCallback(
-    (min: number, max: number) => {
-      const clampedMin = clamp(min, priceRange.min, max);
-      const clampedMax = clamp(max, clampedMin, priceRange.max);
-      setLocalMin(clampedMin);
-      setLocalMax(clampedMax);
-      schedulePush(clampedMin, clampedMax, true);
-    },
-    [priceRange.min, priceRange.max, schedulePush]
-  );
+  const endDrag = React.useCallback(() => {
+    if (!draggingRef.current && !isDragging) return;
+    draggingRef.current = false;
+    setIsDragging(false);
+    setActiveHandle(null);
+    const min = minRef.current;
+    const max = maxRef.current;
+    pushUrl(min, max);
+  }, [isDragging, pushUrl]);
 
-  const hasValidRange = Number.isFinite(priceRange.min) && Number.isFinite(priceRange.max) && priceRange.max > priceRange.min;
-  const disabled = !hasValidRange;
+  // Global pointerup/touchend so release outside the thumb still commits
+  React.useEffect(() => {
+    if (!isDragging) return;
+    const onUp = () => endDrag();
+    window.addEventListener("pointerup", onUp);
+    window.addEventListener("touchend", onUp);
+    window.addEventListener("mouseup", onUp);
+    return () => {
+      window.removeEventListener("pointerup", onUp);
+      window.removeEventListener("touchend", onUp);
+      window.removeEventListener("mouseup", onUp);
+    };
+  }, [isDragging, endDrag]);
+
+  const onMinChange = (raw: number) => {
+    const val = clamp(raw, boundMin, maxRef.current);
+    minRef.current = val;
+    setLocalMin(val);
+  };
+
+  const onMaxChange = (raw: number) => {
+    const val = clamp(raw, minRef.current, boundMax);
+    maxRef.current = val;
+    setLocalMax(val);
+  };
+
+  /** Click/tap on track moves the nearer thumb (Shopify-like). */
+  const onTrackPointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
+    // Ignore if the event already targeted a thumb (range input)
+    const target = e.target as HTMLElement;
+    if (target.tagName === "INPUT") return;
+
+    const track = trackRef.current;
+    if (!track || !hasValidRange) return;
+
+    const rect = track.getBoundingClientRect();
+    if (rect.width <= 0) return;
+
+    const ratio = clamp((e.clientX - rect.left) / rect.width, 0, 1);
+    const value = roundToStep(boundMin + ratio * rangeSpan, step, boundMin);
+    const clamped = clamp(value, boundMin, boundMax);
+
+    const distMin = Math.abs(clamped - minRef.current);
+    const distMax = Math.abs(clamped - maxRef.current);
+    const preferMax =
+      distMax < distMin || (distMax === distMin && clamped > (minRef.current + maxRef.current) / 2);
+
+    if (preferMax) {
+      beginDrag("max");
+      onMaxChange(Math.max(clamped, minRef.current));
+    } else {
+      beginDrag("min");
+      onMinChange(Math.min(clamped, maxRef.current));
+    }
+  };
+
+  const minPct = ((localMin - boundMin) / rangeSpan) * 100;
+  const maxPct = ((localMax - boundMin) / rangeSpan) * 100;
+
+  // Raise z-index of the active thumb; when max sits at the floor, max must sit above min
+  // so it remains reachable (classic dual-range gotcha).
+  const maxAtFloor = localMax <= boundMin + step;
+  const thumbsClose = maxPct - minPct < 5;
+  const minZ =
+    activeHandle === "min" ? 40 : maxAtFloor ? 20 : thumbsClose && activeHandle !== "max" ? 35 : 30;
+  const maxZ =
+    activeHandle === "max" ? 40 : maxAtFloor ? 35 : 32;
+
+  const formatDisplay = (n: number) => {
+    if (!Number.isFinite(n)) return "";
+    return Number.isInteger(n) ? String(n) : String(n);
+  };
+
+  const commitInputs = () => {
+    const min = clamp(minRef.current, boundMin, maxRef.current);
+    const max = clamp(maxRef.current, min, boundMax);
+    minRef.current = min;
+    maxRef.current = max;
+    setLocalMin(min);
+    setLocalMax(max);
+    lastPushedRef.current = ""; // force push even if same as last visual
+    pushUrl(min, max);
+  };
 
   if (!hasValidRange) {
     return (
@@ -111,107 +241,117 @@ export function PriceSlider({ priceRange }: { priceRange: PriceRange }) {
   }
 
   return (
-    <div className="space-y-6 px-1">
-      <div className="relative h-6 flex items-center">
-        <div className="absolute inset-x-0 h-0.5 bg-muted/60" />
+    <div className="space-y-5 px-0.5">
+      {/* Live range readout (Blucheez / Shopify facet style) */}
+      <div className="flex items-center justify-between text-xs font-semibold text-foreground/70">
+        <span>
+          {priceRange.currency_symbol}
+          {formatDisplay(localMin)}
+        </span>
+        <span className="text-foreground/30">—</span>
+        <span>
+          {priceRange.currency_symbol}
+          {formatDisplay(localMax)}
+        </span>
+      </div>
+
+      {/* Dual-thumb track */}
+      <div
+        ref={trackRef}
+        className="relative h-8 flex items-center select-none touch-none cursor-pointer"
+        onPointerDown={onTrackPointerDown}
+      >
+        {/* Full track */}
+        <div className="pointer-events-none absolute inset-x-0 h-1 rounded-full bg-muted/80" />
+        {/* Active segment between thumbs */}
         <div
-          className="absolute h-0.5 bg-primary"
-          style={{ left: `${minPct}%`, right: `${100 - maxPct}%` }}
+          className="pointer-events-none absolute h-1 rounded-full bg-foreground"
+          style={{
+            left: `${minPct}%`,
+            width: `${Math.max(0, maxPct - minPct)}%`,
+          }}
         />
 
         <input
           type="range"
-          min={priceRange.min}
-          max={priceRange.max}
+          min={boundMin}
+          max={boundMax}
           step={step}
-          value={displayMin}
-          disabled={disabled}
-          onMouseDown={() => { setActiveHandle("min"); setIsDragging(true); }}
-          onTouchStart={() => { setActiveHandle("min"); setIsDragging(true); }}
-          onChange={(e) => {
-            const val = Number(e.target.value);
-            const clamped = Math.min(val, displayMax);
-            setLocalMin(clamped);
-            schedulePush(clamped, displayMax);
+          value={localMin}
+          disabled={!hasValidRange}
+          onPointerDown={(e) => {
+            e.stopPropagation();
+            beginDrag("min");
           }}
-          onMouseUp={() => { setIsDragging(false); schedulePush(displayMin, displayMax, true); }}
-          onTouchEnd={() => { setIsDragging(false); schedulePush(displayMin, displayMax, true); }}
-          onKeyDown={(e) => {
-            if (e.key === "PageUp" || e.key === "PageDown") {
-              e.preventDefault();
-              const target = e.target as HTMLInputElement;
-              const delta = e.key === "PageUp" ? step * 10 : -step * 10;
-              const newVal = clamp(Number(target.value) + delta, priceRange.min, displayMax);
-              target.value = String(newVal);
-              target.dispatchEvent(new Event("input", { bubbles: true }));
-            }
+          onTouchStart={(e) => {
+            e.stopPropagation();
+            beginDrag("min");
           }}
-          className="range-slider range-slider-min absolute inset-x-0 w-full appearance-none bg-transparent pointer-events-none"
-          style={{ zIndex: activeHandle === "min" ? 40 : minOnTop ? 35 : 31 }}
+          onChange={(e) => onMinChange(Number(e.target.value))}
+          className="range-slider range-slider-min absolute inset-x-0 w-full appearance-none bg-transparent"
+          style={{ zIndex: minZ }}
           aria-label="Minimum price"
-          aria-valuetext={`${priceRange.currency_symbol}${displayMin}`}
+          aria-valuemin={boundMin}
+          aria-valuemax={localMax}
+          aria-valuenow={localMin}
+          aria-valuetext={`${priceRange.currency_symbol}${localMin}`}
         />
 
         <input
           type="range"
-          min={priceRange.min}
-          max={priceRange.max}
+          min={boundMin}
+          max={boundMax}
           step={step}
-          value={displayMax}
-          disabled={disabled}
-          onMouseDown={() => { setActiveHandle("max"); setIsDragging(true); }}
-          onTouchStart={() => { setActiveHandle("max"); setIsDragging(true); }}
-          onChange={(e) => {
-            const val = Number(e.target.value);
-            const clamped = Math.max(val, displayMin);
-            setLocalMax(clamped);
-            schedulePush(displayMin, clamped);
+          value={localMax}
+          disabled={!hasValidRange}
+          onPointerDown={(e) => {
+            e.stopPropagation();
+            beginDrag("max");
           }}
-          onMouseUp={() => { setIsDragging(false); schedulePush(displayMin, displayMax, true); }}
-          onTouchEnd={() => { setIsDragging(false); schedulePush(displayMin, displayMax, true); }}
-          onKeyDown={(e) => {
-            if (e.key === "PageUp" || e.key === "PageDown") {
-              e.preventDefault();
-              const target = e.target as HTMLInputElement;
-              const delta = e.key === "PageUp" ? step * 10 : -step * 10;
-              const newVal = clamp(Number(target.value) + delta, displayMin, priceRange.max);
-              target.value = String(newVal);
-              target.dispatchEvent(new Event("input", { bubbles: true }));
-            }
+          onTouchStart={(e) => {
+            e.stopPropagation();
+            beginDrag("max");
           }}
-          className="range-slider range-slider-max absolute inset-x-0 w-full appearance-none bg-transparent pointer-events-none"
-          style={{ zIndex: activeHandle === "max" ? 40 : 32 }}
+          onChange={(e) => onMaxChange(Number(e.target.value))}
+          className="range-slider range-slider-max absolute inset-x-0 w-full appearance-none bg-transparent"
+          style={{ zIndex: maxZ }}
           aria-label="Maximum price"
-          aria-valuetext={`${priceRange.currency_symbol}${displayMax}`}
+          aria-valuemin={localMin}
+          aria-valuemax={boundMax}
+          aria-valuenow={localMax}
+          aria-valuetext={`${priceRange.currency_symbol}${localMax}`}
         />
       </div>
 
-      <div className="grid grid-cols-2 gap-4">
+      {/* Min / Max number fields */}
+      <div className="grid grid-cols-2 gap-3">
         <div className="space-y-1.5">
-          <label htmlFor="price-min-input" className="text-[9px] font-black uppercase tracking-widest text-foreground/40 px-1">
+          <label
+            htmlFor="price-min-input"
+            className="text-[9px] font-black uppercase tracking-widest text-foreground/40 px-1"
+          >
             Min
           </label>
           <div className="relative">
-            <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-xs font-bold text-foreground/30">
+            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-xs font-bold text-foreground/30 pointer-events-none">
               {priceRange.currency_symbol}
             </span>
             <input
               id="price-min-input"
               type="number"
-              value={localMin}
-              placeholder={String(priceRange.min)}
+              inputMode="decimal"
+              min={boundMin}
+              max={localMax}
+              step={step}
+              value={formatDisplay(localMin)}
               onChange={(e) => {
                 const raw = e.target.value;
-                if (raw === "") { setLocalMin(""); return; }
+                if (raw === "") return;
                 const num = Number(raw);
                 if (!Number.isFinite(num)) return;
-                setLocalMin(clamp(num, priceRange.min, Number(localMax) || priceRange.max));
+                onMinChange(num);
               }}
-              onBlur={() => {
-                const min = localMin === "" ? priceRange.min : Number(localMin);
-                const max = localMax === "" ? priceRange.max : Number(localMax);
-                commitMinMax(min, max);
-              }}
+              onBlur={commitInputs}
               onKeyDown={(e) => {
                 if (e.key === "Enter") (e.target as HTMLInputElement).blur();
               }}
@@ -221,30 +361,32 @@ export function PriceSlider({ priceRange }: { priceRange: PriceRange }) {
           </div>
         </div>
         <div className="space-y-1.5">
-          <label htmlFor="price-max-input" className="text-[9px] font-black uppercase tracking-widest text-foreground/40 px-1">
+          <label
+            htmlFor="price-max-input"
+            className="text-[9px] font-black uppercase tracking-widest text-foreground/40 px-1"
+          >
             Max
           </label>
           <div className="relative">
-            <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-xs font-bold text-foreground/30">
+            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-xs font-bold text-foreground/30 pointer-events-none">
               {priceRange.currency_symbol}
             </span>
             <input
               id="price-max-input"
               type="number"
-              value={localMax}
-              placeholder={String(priceRange.max)}
+              inputMode="decimal"
+              min={localMin}
+              max={boundMax}
+              step={step}
+              value={formatDisplay(localMax)}
               onChange={(e) => {
                 const raw = e.target.value;
-                if (raw === "") { setLocalMax(""); return; }
+                if (raw === "") return;
                 const num = Number(raw);
                 if (!Number.isFinite(num)) return;
-                setLocalMax(clamp(num, Number(localMin) || priceRange.min, priceRange.max));
+                onMaxChange(num);
               }}
-              onBlur={() => {
-                const min = localMin === "" ? priceRange.min : Number(localMin);
-                const max = localMax === "" ? priceRange.max : Number(localMax);
-                commitMinMax(min, max);
-              }}
+              onBlur={commitInputs}
               onKeyDown={(e) => {
                 if (e.key === "Enter") (e.target as HTMLInputElement).blur();
               }}
