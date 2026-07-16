@@ -10,6 +10,7 @@ import Script from "next/script";
 import { DeferredClientEnhancements } from "@/components/layout/DeferredClientEnhancements";
 import { WebVitalsReporter } from "@/components/analytics/WebVitalsReporter";
 import { HtmlLangSetter } from "@/components/layout/HtmlLangSetter";
+import { SerwistProvider } from "@serwist/next/react";
 import {
   DM_Sans,
   Poppins,
@@ -206,19 +207,21 @@ export default function RootLayout({
         </Script>
         <SkipToContent />
         <WebVitalsReporter />
-        <Providers>
-          <Header />
-          <main
-            id="main-content"
-            className="min-h-[70dvh] bg-background"
-            role="main"
-            aria-label="Main content"
-          >
-            {children}
-          </main>
-          <Footer />
-          <DeferredClientEnhancements />
-        </Providers>
+        <SerwistProvider swUrl="/sw.js">
+          <Providers>
+            <Header />
+            <main
+              id="main-content"
+              className="min-h-[70dvh] bg-background"
+              role="main"
+              aria-label="Main content"
+            >
+              {children}
+            </main>
+            <Footer />
+            <DeferredClientEnhancements />
+          </Providers>
+        </SerwistProvider>
         <JsonLd data={[organizationSchema, websiteSchema]} />
       </body>
     </html>

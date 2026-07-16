@@ -189,7 +189,7 @@ export function HeroBannerSlider({
                     alt={banner.title}
                     fill
                     sizes="100vw"
-                    quality={index === 0 ? 70 : 64}
+                    quality={index === 0 ? 80 : 64}
                     priority={index === 0}
                     loading={index === 0 ? "eager" : "lazy"}
                     className={cn(
@@ -203,7 +203,7 @@ export function HeroBannerSlider({
                       alt={banner.title}
                       fill
                       sizes="100vw"
-                      quality={index === 0 ? 70 : 64}
+                      quality={index === 0 ? 80 : 64}
                       priority={index === 0}
                       loading={index === 0 ? "eager" : "lazy"}
                       className="object-cover block sm:hidden"

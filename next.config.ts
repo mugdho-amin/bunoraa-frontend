@@ -1,6 +1,8 @@
 import type { NextConfig } from "next";
 import type { RemotePattern } from "next/dist/shared/lib/image-config";
 import path from "path";
+import { randomUUID } from "node:crypto";
+import withSerwistInit from "@serwist/next";
 
 // next.config.ts is processed by Next.js, not compiled by standard tsc.
 // The @next/bundle-analyzer import is only resolved at build time when ANALYZE=true.
@@ -114,6 +116,17 @@ if (isProduction) {
     value: cspHeader.replace(/\s{2,}/g, " ").trim(),
   });
 }
+
+const withSerwist = withSerwistInit({
+  swSrc: "app/sw.ts",
+  swDest: "public/sw.js",
+  additionalPrecacheEntries: [
+    { url: "/~offline/", revision: randomUUID() },
+  ],
+  disable: !isProduction,
+  reloadOnOnline: true,
+  globPublicPatterns: ["favicon.ico", "icon.png", "apple-icon.png", "site.webmanifest"],
+});
 
 const nextConfig: NextConfig = {
   trailingSlash: true,
@@ -241,4 +254,4 @@ const nextConfig: NextConfig = {
   },
 };
 
-export default withBundleAnalyzer(nextConfig);
+export default withSerwist(withBundleAnalyzer(nextConfig));
