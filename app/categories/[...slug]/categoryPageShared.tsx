@@ -233,7 +233,7 @@ export async function renderCategoryPageForPath(
 
   return (
     <FilterSidebarProvider>
-    <div className="min-h-screen bg-background selection:bg-primary selection:text-primary-foreground">
+    <div className="min-h-screen bg-background selection:bg-primary selection:text-white">
       <div className="mx-auto w-full max-w-[1920px] px-4 py-6 sm:px-6 lg:py-10">
         {/* Header Section */}
         <div className="mb-10 space-y-6">
@@ -299,7 +299,7 @@ export async function renderCategoryPageForPath(
                 <div className="flex flex-col items-center justify-center py-20 text-center">
                   <p className="text-lg font-semibold text-foreground/80">Coming soon</p>
                   <p className="mt-2 text-sm text-foreground/60">This category has no products yet. Check back later or browse other categories.</p>
-                  <Link href="/products/" className="mt-6 inline-flex items-center rounded-xl bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground transition hover:bg-primary/90">
+                  <Link href="/products/" className="mt-6 inline-flex items-center rounded-xl bg-primary px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-primary/90">
                     Browse all products
                   </Link>
                 </div>

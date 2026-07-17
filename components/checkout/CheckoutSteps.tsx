@@ -35,7 +35,7 @@ export function CheckoutSteps({
                   isComplete
                     ? "border-emerald-600 bg-emerald-600 text-white"
                     : isActive
-                    ? "border-primary bg-primary text-primary-foreground"
+                    ? "border-primary bg-primary text-white"
                     : "border-border bg-muted text-foreground/70",
                   isClickable && "cursor-pointer",
                   !isClickable && "cursor-default"

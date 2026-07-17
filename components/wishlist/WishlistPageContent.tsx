@@ -35,7 +35,7 @@ export function WishlistPageContent() {
           !hasToken ? (
             <div className="space-y-4">
               <div className="text-sm text-foreground/60">Sign in to see your saved items.</div>
-              <Link href="/products/" className="inline-flex items-center rounded-xl bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground transition hover:bg-primary/90">
+              <Link href="/products/" className="inline-flex items-center rounded-xl bg-primary px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-primary/90">
                 Browse products
               </Link>
             </div>

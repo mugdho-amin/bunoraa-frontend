@@ -39,7 +39,7 @@ export async function CategoriesPageContent() {
                 <h2 className="text-base sm:text-lg font-bold tracking-tight text-foreground/90">{category.name}</h2>
                 <div className="flex items-center gap-2">
                   {typeof category.product_count === "number" ? <span className="text-[11px] font-semibold uppercase tracking-wider text-foreground/45">{category.product_count} items</span> : null}
-                  <span className="flex h-8 w-8 items-center justify-center rounded-full bg-primary/10 text-primary transition-all duration-300 group-hover:bg-primary group-hover:text-primary-foreground text-sm font-bold">&rarr;</span>
+                  <span className="flex h-8 w-8 items-center justify-center rounded-full bg-primary/10 text-primary transition-all duration-300 group-hover:bg-primary group-hover:text-white text-sm font-bold">&rarr;</span>
                 </div>
               </div>
             </Link>
