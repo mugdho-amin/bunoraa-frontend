@@ -53,6 +53,11 @@ const remotePatterns: RemotePattern[] = [
     hostname: "**.bunoraa.com",
     pathname: "/**",
   },
+  {
+    protocol: "https",
+    hostname: "**.googleusercontent.com",
+    pathname: "/**",
+  },
 ];
 
 const shouldDisableImageOptimization = process.env.NODE_ENV !== "production";
