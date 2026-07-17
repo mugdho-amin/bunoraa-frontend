@@ -102,6 +102,7 @@ export function useAuth() {
       email: profileQuery.data.email,
       first_name: profileQuery.data.first_name,
       full_name: profileQuery.data.full_name,
+      avatar: profileQuery.data.avatar,
     });
   }, [profileQuery.data]);
 
@@ -126,6 +127,7 @@ export function useAuth() {
             email: response.data.user.email,
             first_name: response.data.user.first_name ?? null,
             full_name: response.data.user.full_name ?? null,
+            avatar: response.data.user.avatar || response.data.user.avatar_url || null,
           });
         }
       }
@@ -164,6 +166,7 @@ export function useAuth() {
             email: response.data.user.email,
             first_name: response.data.user.first_name ?? null,
             full_name: response.data.user.full_name ?? null,
+            avatar: response.data.user.avatar || response.data.user.avatar_url || null,
           });
         }
       }

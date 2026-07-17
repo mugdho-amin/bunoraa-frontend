@@ -197,7 +197,12 @@ export default function RootLayout({
       suppressHydrationWarning
       data-scroll-behavior="smooth"
     >
-      <head />
+      <head>
+        <Script
+          src="https://accounts.google.com/gsi/client"
+          strategy="beforeInteractive"
+        />
+      </head>
       
       <body className="min-h-[100dvh] bg-background text-foreground antialiased">
         <HtmlLangSetter />

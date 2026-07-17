@@ -24,6 +24,7 @@ export type StoredAuthAccount = {
   email?: string;
   first_name?: string;
   full_name?: string;
+  avatar?: string | null;
   created_at: number;
   last_used_at: number;
 };
@@ -32,6 +33,7 @@ type AccountProfileMeta = {
   email?: string | null;
   first_name?: string | null;
   full_name?: string | null;
+  avatar?: string | null;
 };
 
 function notifyAuthChange() {
@@ -168,6 +170,7 @@ export function setTokens(access: string, refresh?: string, remember = true) {
     email: existingAccount?.email,
     first_name: existingAccount?.first_name,
     full_name: existingAccount?.full_name,
+    avatar: existingAccount?.avatar,
     created_at: existingAccount?.created_at || now,
     last_used_at: now,
   };
@@ -258,10 +261,13 @@ export function upsertActiveAccountProfile(meta: AccountProfileMeta) {
       typeof meta.first_name === "string" ? meta.first_name : account.first_name;
     const nextFullName =
       typeof meta.full_name === "string" ? meta.full_name : account.full_name;
+    const nextAvatar =
+      typeof meta.avatar === "string" ? meta.avatar : account.avatar;
     if (
       nextEmail !== account.email ||
       nextFirstName !== account.first_name ||
-      nextFullName !== account.full_name
+      nextFullName !== account.full_name ||
+      nextAvatar !== account.avatar
     ) {
       changed = true;
     }
@@ -270,6 +276,7 @@ export function upsertActiveAccountProfile(meta: AccountProfileMeta) {
       email: nextEmail,
       first_name: nextFirstName,
       full_name: nextFullName,
+      avatar: nextAvatar,
     };
   });
   if (!changed) return;

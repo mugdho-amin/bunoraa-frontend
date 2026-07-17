@@ -102,7 +102,12 @@ export function HeaderClient() {
     0;
   const unreadCount = unreadCountQuery.data?.count ?? 0;
   const hasUnreadNotifications = unreadCount > 0;
-  const hasProfileAvatar = Boolean(profileQuery.data?.avatar);
+  const activeAccount = React.useMemo(
+    () => accounts.find((a) => a.id === activeAccountId),
+    [accounts, activeAccountId]
+  );
+  const profileAvatar = profileQuery.data?.avatar || activeAccount?.avatar || null;
+  const hasProfileAvatar = Boolean(profileAvatar);
   const adminPanelHref = React.useMemo(() => resolveBackendAdminUrl(), []);
   const otherAccounts = React.useMemo(
     () => accounts.filter((account) => account.id !== activeAccountId),
@@ -228,7 +233,7 @@ export function HeaderClient() {
           {mounted && hasToken ? (
             hasProfileAvatar ? (
               <Image
-                src={profileQuery.data?.avatar || ""}
+                src={profileAvatar}
                 alt={profileQuery.data?.first_name || "Profile"}
                 width={28}
                 height={28}
@@ -267,7 +272,7 @@ export function HeaderClient() {
                 <div className="flex h-11 w-11 shrink-0 items-center justify-center overflow-hidden rounded-full bg-primary/15 text-sm font-bold text-primary ring-2 ring-primary/20">
                   {hasProfileAvatar ? (
                     <Image
-                      src={profileQuery.data?.avatar || ""}
+                      src={profileAvatar}
                       alt=""
                       width={44}
                       height={44}

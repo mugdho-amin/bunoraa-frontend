@@ -104,6 +104,7 @@ export function GoogleLoginButton({
             email: res.data.user.email,
             first_name: res.data.user.first_name ?? null,
             full_name: res.data.user.full_name ?? null,
+            avatar: res.data.user.avatar || res.data.user.avatar_url || null,
           });
         }
         window.location.href = nextUrl;
