@@ -39,8 +39,11 @@ const CartDrawer = dynamic(
 );
 
 function resolveBackendAdminUrl() {
+  const adminUrl = (process.env.NEXT_PUBLIC_ADMIN_APP_URL || "").trim();
+  if (adminUrl) return adminUrl.replace(/\/+$/, "") + "/";
+
   const apiBase = (process.env.NEXT_PUBLIC_API_BASE_URL || "").trim();
-  if (!apiBase) return "/admin/";
+  if (!apiBase) return "https://admin.bunoraa.com/";
 
   const stripApiSuffix = (value: string) =>
     value.replace(/\/api(?:\/v\d+)?\/?$/i, "");
@@ -58,7 +61,7 @@ function resolveBackendAdminUrl() {
     parsed.hash = "";
     return parsed.toString();
   } catch {
-    return "/admin/";
+    return "https://admin.bunoraa.com/";
   }
 }
 
