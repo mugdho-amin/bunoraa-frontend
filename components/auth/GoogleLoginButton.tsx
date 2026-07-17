@@ -79,6 +79,20 @@ export function GoogleLoginButton({
     theme: "outline" | "filled_black" | "filled_blue";
   } | null>(null);
 
+  function decodeGoogleCredential(credential: string): Record<string, unknown> | null {
+    try {
+      const parts = credential.split(".");
+      if (parts.length < 2) return null;
+      const base64 = parts[1].replace(/-/g, "+").replace(/_/g, "/");
+      const padded = `${base64}${"=".repeat((4 - (base64.length % 4)) % 4)}`;
+      const decoded = window.atob(padded);
+      const payload = JSON.parse(decoded);
+      return payload && typeof payload === "object" ? (payload as Record<string, unknown>) : null;
+    } catch {
+      return null;
+    }
+  }
+
   const clientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID;
   const isDark =
     theme === "dark" ||
@@ -99,12 +113,15 @@ export function GoogleLoginButton({
 
       if (res.data?.access && res.data?.refresh) {
         setTokens(res.data.access, res.data.refresh, true);
+        const googlePayload = decodeGoogleCredential(response.credential);
+        const googlePicture = typeof googlePayload?.picture === "string" ? googlePayload.picture : null;
+        const avatar = res.data.user?.avatar || res.data.user?.avatar_url || googlePicture || null;
         if (res.data.user?.email) {
           upsertActiveAccountProfile({
             email: res.data.user.email,
             first_name: res.data.user.first_name ?? null,
             full_name: res.data.user.full_name ?? null,
-            avatar: res.data.user.avatar || res.data.user.avatar_url || null,
+            avatar,
           });
         }
         window.location.href = nextUrl;
