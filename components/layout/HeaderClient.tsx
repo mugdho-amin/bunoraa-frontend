@@ -109,7 +109,7 @@ export function HeaderClient() {
     () => accounts.find((a) => a.id === activeAccountId),
     [accounts, activeAccountId]
   );
-  const profileAvatar = profileQuery.data?.avatar || activeAccount?.avatar || null;
+  const profileAvatar = profileQuery.data?.avatar || activeAccount?.avatar || "";
   const hasProfileAvatar = Boolean(profileAvatar);
   const adminPanelHref = React.useMemo(() => resolveBackendAdminUrl(), []);
   const otherAccounts = React.useMemo(
