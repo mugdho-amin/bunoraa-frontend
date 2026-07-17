@@ -9,8 +9,21 @@ type PriceRange = {
   currency_symbol: string;
 };
 
+/**
+ * Parse a URL search param to a finite number.
+ *
+ * CRITICAL: Number(null) === 0 and Number("") === 0, so we must reject
+ * null/empty before calling Number(). Otherwise missing price_min/price_max
+ * both become 0 and both thumbs stick at the catalog minimum.
+ */
 const parseNum = (v: string | null | undefined, fallback: number) => {
+  if (v == null || v === "") return fallback;
   const n = Number(v);
+  return Number.isFinite(n) ? n : fallback;
+};
+
+const toFinite = (v: unknown, fallback: number) => {
+  const n = typeof v === "number" ? v : Number(v);
   return Number.isFinite(n) ? n : fallback;
 };
 
@@ -28,7 +41,6 @@ function getStep(range: number) {
 function roundToStep(value: number, step: number, min: number) {
   if (step <= 0) return value;
   const rounded = Math.round((value - min) / step) * step + min;
-  // Avoid floating-point noise (e.g. 0.30000000004)
   const decimals = String(step).includes(".") ? String(step).split(".")[1].length : 0;
   return Number(rounded.toFixed(decimals));
 }
@@ -40,15 +52,16 @@ function roundToStep(value: number, step: number, min: number) {
  * - pointer-events only on thumbs (CSS)
  * - dynamic z-index so the active / closest thumb is grabable
  * - local-only updates while dragging; URL commit on release
- * - refs so mouseup never pushes stale min/max
+ * - correct parse of missing URL params (never treat null as 0)
  */
 export function PriceSlider({ priceRange }: { priceRange: PriceRange }) {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
 
-  const boundMin = priceRange.min;
-  const boundMax = priceRange.max;
+  // Coerce API values (may arrive as strings from some serializers)
+  const boundMin = toFinite(priceRange.min, 0);
+  const boundMax = toFinite(priceRange.max, boundMin);
   const hasValidRange =
     Number.isFinite(boundMin) && Number.isFinite(boundMax) && boundMax > boundMin;
 
@@ -93,7 +106,6 @@ export function PriceSlider({ priceRange }: { priceRange: PriceRange }) {
     if (draggingRef.current || isDragging) return;
     const urlKey = `${safeUrlMin}|${safeUrlMax}`;
     if (urlKey === lastPushedRef.current) {
-      // URL caught up with what we pushed (or initial match)
       return;
     }
     const localKey = `${minRef.current}|${maxRef.current}`;
@@ -141,9 +153,7 @@ export function PriceSlider({ priceRange }: { priceRange: PriceRange }) {
     draggingRef.current = false;
     setIsDragging(false);
     setActiveHandle(null);
-    const min = minRef.current;
-    const max = maxRef.current;
-    pushUrl(min, max);
+    pushUrl(minRef.current, maxRef.current);
   }, [isDragging, pushUrl]);
 
   // Global pointerup/touchend so release outside the thumb still commits
@@ -174,7 +184,6 @@ export function PriceSlider({ priceRange }: { priceRange: PriceRange }) {
 
   /** Click/tap on track moves the nearer thumb (Shopify-like). */
   const onTrackPointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
-    // Ignore if the event already targeted a thumb (range input)
     const target = e.target as HTMLElement;
     if (target.tagName === "INPUT") return;
 
@@ -191,7 +200,8 @@ export function PriceSlider({ priceRange }: { priceRange: PriceRange }) {
     const distMin = Math.abs(clamped - minRef.current);
     const distMax = Math.abs(clamped - maxRef.current);
     const preferMax =
-      distMax < distMin || (distMax === distMin && clamped > (minRef.current + maxRef.current) / 2);
+      distMax < distMin ||
+      (distMax === distMin && clamped > (minRef.current + maxRef.current) / 2);
 
     if (preferMax) {
       beginDrag("max");
@@ -205,14 +215,14 @@ export function PriceSlider({ priceRange }: { priceRange: PriceRange }) {
   const minPct = ((localMin - boundMin) / rangeSpan) * 100;
   const maxPct = ((localMax - boundMin) / rangeSpan) * 100;
 
-  // Raise z-index of the active thumb; when max sits at the floor, max must sit above min
-  // so it remains reachable (classic dual-range gotcha).
+  // Classic dual-range z-index: when max sits at floor, raise it so it stays reachable.
+  // Also raise the active handle so crossed/close thumbs remain draggable.
+  // Ref: Medium dual-range setToggleAccessible + CSS-Tricks multi-thumb.
   const maxAtFloor = localMax <= boundMin + step;
   const thumbsClose = maxPct - minPct < 5;
   const minZ =
     activeHandle === "min" ? 40 : maxAtFloor ? 20 : thumbsClose && activeHandle !== "max" ? 35 : 30;
-  const maxZ =
-    activeHandle === "max" ? 40 : maxAtFloor ? 35 : 32;
+  const maxZ = activeHandle === "max" ? 40 : maxAtFloor ? 35 : 32;
 
   const formatDisplay = (n: number) => {
     if (!Number.isFinite(n)) return "";
@@ -240,36 +250,44 @@ export function PriceSlider({ priceRange }: { priceRange: PriceRange }) {
     );
   }
 
+  const symbol = priceRange.currency_symbol || "";
+
   return (
-    <div className="space-y-5 px-0.5">
+    <div className="price-range space-y-5">
       {/* Live range readout (Blucheez / Shopify facet style) */}
-      <div className="flex items-center justify-between text-xs font-semibold text-foreground/70">
+      <div className="flex items-center justify-between text-xs font-medium text-foreground/70 tabular-nums">
         <span>
-          {priceRange.currency_symbol}
+          {symbol}
           {formatDisplay(localMin)}
         </span>
-        <span className="text-foreground/30">—</span>
+        <span className="text-foreground/25" aria-hidden>
+          —
+        </span>
         <span>
-          {priceRange.currency_symbol}
+          {symbol}
           {formatDisplay(localMax)}
         </span>
       </div>
 
-      {/* Dual-thumb track */}
+      {/* Dual-thumb track — Blucheez: thin grey rail + dark active span + white ring thumbs */}
       <div
         ref={trackRef}
-        className="relative h-8 flex items-center select-none touch-none cursor-pointer"
+        className="price-range__track relative h-9 flex items-center select-none touch-none cursor-pointer"
         onPointerDown={onTrackPointerDown}
       >
         {/* Full track */}
-        <div className="pointer-events-none absolute inset-x-0 h-1 rounded-full bg-muted/80" />
+        <div
+          className="pointer-events-none absolute inset-x-0 top-1/2 h-0.5 -translate-y-1/2 rounded-full bg-foreground/15"
+          aria-hidden
+        />
         {/* Active segment between thumbs */}
         <div
-          className="pointer-events-none absolute h-1 rounded-full bg-foreground"
+          className="pointer-events-none absolute top-1/2 h-0.5 -translate-y-1/2 rounded-full bg-foreground"
           style={{
             left: `${minPct}%`,
             width: `${Math.max(0, maxPct - minPct)}%`,
           }}
+          aria-hidden
         />
 
         <input
@@ -288,13 +306,13 @@ export function PriceSlider({ priceRange }: { priceRange: PriceRange }) {
             beginDrag("min");
           }}
           onChange={(e) => onMinChange(Number(e.target.value))}
-          className="range-slider range-slider-min absolute inset-x-0 w-full appearance-none bg-transparent"
+          className="range-slider range-slider-min"
           style={{ zIndex: minZ }}
           aria-label="Minimum price"
           aria-valuemin={boundMin}
           aria-valuemax={localMax}
           aria-valuenow={localMin}
-          aria-valuetext={`${priceRange.currency_symbol}${localMin}`}
+          aria-valuetext={`${symbol}${localMin}`}
         />
 
         <input
@@ -313,28 +331,28 @@ export function PriceSlider({ priceRange }: { priceRange: PriceRange }) {
             beginDrag("max");
           }}
           onChange={(e) => onMaxChange(Number(e.target.value))}
-          className="range-slider range-slider-max absolute inset-x-0 w-full appearance-none bg-transparent"
+          className="range-slider range-slider-max"
           style={{ zIndex: maxZ }}
           aria-label="Maximum price"
           aria-valuemin={localMin}
           aria-valuemax={boundMax}
           aria-valuenow={localMax}
-          aria-valuetext={`${priceRange.currency_symbol}${localMax}`}
+          aria-valuetext={`${symbol}${localMax}`}
         />
       </div>
 
-      {/* Min / Max number fields */}
+      {/* Min / Max number fields — Shopify Dawn facets__price layout */}
       <div className="grid grid-cols-2 gap-3">
         <div className="space-y-1.5">
           <label
             htmlFor="price-min-input"
-            className="text-[9px] font-black uppercase tracking-widest text-foreground/40 px-1"
+            className="text-[10px] font-semibold uppercase tracking-[0.14em] text-foreground/45 px-0.5"
           >
-            Min
+            From
           </label>
           <div className="relative">
-            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-xs font-bold text-foreground/30 pointer-events-none">
-              {priceRange.currency_symbol}
+            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-xs font-medium text-foreground/35 pointer-events-none">
+              {symbol}
             </span>
             <input
               id="price-min-input"
@@ -355,7 +373,7 @@ export function PriceSlider({ priceRange }: { priceRange: PriceRange }) {
               onKeyDown={(e) => {
                 if (e.key === "Enter") (e.target as HTMLInputElement).blur();
               }}
-              className="w-full h-11 pl-8 pr-3 bg-muted/10 border border-border/40 rounded-xl text-sm font-black focus:ring-1 focus:ring-primary/20 outline-none no-spin transition-all"
+              className="price-range__field w-full h-11 pl-8 pr-3 bg-background border border-foreground/15 rounded-none text-sm font-medium tabular-nums focus:border-foreground/40 focus:ring-0 outline-none no-spin transition-colors"
               aria-label="Minimum price value"
             />
           </div>
@@ -363,13 +381,13 @@ export function PriceSlider({ priceRange }: { priceRange: PriceRange }) {
         <div className="space-y-1.5">
           <label
             htmlFor="price-max-input"
-            className="text-[9px] font-black uppercase tracking-widest text-foreground/40 px-1"
+            className="text-[10px] font-semibold uppercase tracking-[0.14em] text-foreground/45 px-0.5"
           >
-            Max
+            To
           </label>
           <div className="relative">
-            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-xs font-bold text-foreground/30 pointer-events-none">
-              {priceRange.currency_symbol}
+            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-xs font-medium text-foreground/35 pointer-events-none">
+              {symbol}
             </span>
             <input
               id="price-max-input"
@@ -390,7 +408,7 @@ export function PriceSlider({ priceRange }: { priceRange: PriceRange }) {
               onKeyDown={(e) => {
                 if (e.key === "Enter") (e.target as HTMLInputElement).blur();
               }}
-              className="w-full h-11 pl-8 pr-3 bg-muted/10 border border-border/40 rounded-xl text-sm font-black focus:ring-1 focus:ring-primary/20 outline-none no-spin transition-all"
+              className="price-range__field w-full h-11 pl-8 pr-3 bg-background border border-foreground/15 rounded-none text-sm font-medium tabular-nums focus:border-foreground/40 focus:ring-0 outline-none no-spin transition-colors"
               aria-label="Maximum price value"
             />
           </div>

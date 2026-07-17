@@ -260,11 +260,16 @@
   }
 
   /*
-   * Dual range slider (stacked min/max inputs).
+   * Dual range slider (stacked min/max inputs) — Blucheez / Shopify style.
    * Pattern: pointer-events:none on the input track, auto only on thumbs
    * so the lower thumb remains clickable under the upper input.
-   * Ref: CSS-Tricks multi-thumb, native dual-range best practices.
+   * Ref: CSS-Tricks multi-thumb, Medium native dual-range, Shopify Dawn facets.
    */
+  .price-range__track {
+    --thumb-size: 18px;
+    --track-height: 2px;
+  }
+
   .range-slider {
     -webkit-appearance: none;
     appearance: none;
@@ -301,20 +306,20 @@
     pointer-events: none;
   }
 
-  /* Blucheez / Shopify-style circular thumbs: white fill, dark ring */
+  /* Blucheez: white fill, dark ring, soft shadow — grab cursor */
   .range-slider::-webkit-slider-thumb {
     -webkit-appearance: none;
     appearance: none;
-    height: 18px;
-    width: 18px;
+    height: var(--thumb-size, 18px);
+    width: var(--thumb-size, 18px);
     border-radius: 9999px;
     background: hsl(var(--background));
-    border: 2px solid hsl(var(--foreground));
-    box-shadow: 0 1px 3px hsl(var(--shadow-color) / 0.18);
+    border: 1.5px solid hsl(var(--foreground));
+    box-shadow: 0 1px 2px hsl(var(--shadow-color) / 0.16);
     cursor: grab;
     pointer-events: auto;
-    /* Larger invisible hit target for mobile */
-    margin-top: 0;
+    /* Center thumb on the thin track inside a tall hit area */
+    margin-top: calc((var(--track-height, 2px) - var(--thumb-size, 18px)) / 2);
     position: relative;
     transition: transform var(--duration-fast) var(--ease-out-expo),
       box-shadow var(--duration-fast) ease,
@@ -322,25 +327,25 @@
   }
 
   .range-slider::-webkit-slider-thumb:hover {
-    transform: scale(1.12);
-    box-shadow: 0 2px 8px hsl(var(--shadow-color) / 0.22);
+    transform: scale(1.1);
+    box-shadow: 0 2px 6px hsl(var(--shadow-color) / 0.2);
   }
 
   .range-slider::-webkit-slider-thumb:active {
     cursor: grabbing;
-    transform: scale(1.05);
+    transform: scale(1.04);
     background: hsl(var(--muted));
   }
 
   .range-slider::-moz-range-thumb {
     -moz-appearance: none;
     appearance: none;
-    height: 18px;
-    width: 18px;
+    height: var(--thumb-size, 18px);
+    width: var(--thumb-size, 18px);
     border-radius: 9999px;
     background: hsl(var(--background));
-    border: 2px solid hsl(var(--foreground));
-    box-shadow: 0 1px 3px hsl(var(--shadow-color) / 0.18);
+    border: 1.5px solid hsl(var(--foreground));
+    box-shadow: 0 1px 2px hsl(var(--shadow-color) / 0.16);
     cursor: grab;
     pointer-events: auto;
     transition: transform var(--duration-fast) var(--ease-out-expo),
@@ -349,26 +354,26 @@
   }
 
   .range-slider::-moz-range-thumb:hover {
-    transform: scale(1.12);
-    box-shadow: 0 2px 8px hsl(var(--shadow-color) / 0.22);
+    transform: scale(1.1);
+    box-shadow: 0 2px 6px hsl(var(--shadow-color) / 0.2);
   }
 
   .range-slider::-moz-range-thumb:active {
     cursor: grabbing;
-    transform: scale(1.05);
+    transform: scale(1.04);
     background: hsl(var(--muted));
   }
 
   .range-slider::-webkit-slider-runnable-track {
     background: transparent;
     border: none;
-    height: 4px;
+    height: var(--track-height, 2px);
   }
 
   .range-slider::-moz-range-track {
     background: transparent;
     border: none;
-    height: 4px;
+    height: var(--track-height, 2px);
   }
 
   .range-slider::-moz-range-progress {
