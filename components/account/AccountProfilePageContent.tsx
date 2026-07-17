@@ -8,8 +8,12 @@ import Image from "next/image";
 import { apiFetch } from "@/lib/api";
 
 export function AccountProfilePageContent() {
-  const { profileQuery, updateProfile, logout } = useAuth();
+  const { profileQuery, updateProfile, logout, accounts, activeAccountId } = useAuth();
   const profile = profileQuery.data;
+  const storedAvatar = React.useMemo(
+    () => accounts.find((a) => a.id === activeAccountId)?.avatar || null,
+    [accounts, activeAccountId]
+  );
   const [form, setForm] = React.useState({ first_name: "", last_name: "", phone: "", date_of_birth: "", newsletter_subscribed: false });
   const [avatarUploading, setAvatarUploading] = React.useState(false);
   const [verificationMessage, setVerificationMessage] = React.useState<string | null>(null);
@@ -74,7 +78,7 @@ export function AccountProfilePageContent() {
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex min-w-0 items-center gap-4">
             <div className="relative h-16 w-16 overflow-hidden rounded-full bg-muted">
-              {profile?.avatar ? <Image src={profile.avatar} alt={profile.full_name || "Profile"} fill className="object-cover" sizes="64px" unoptimized /> : <div className="flex h-full w-full items-center justify-center text-xl font-semibold text-foreground/50">{profile?.first_name?.[0] || "U"}</div>}
+              {profile?.avatar || storedAvatar ? <Image src={profile?.avatar || storedAvatar || ""} alt={profile?.full_name || "Profile"} fill className="object-cover" sizes="64px" unoptimized /> : <div className="flex h-full w-full items-center justify-center text-xl font-semibold text-foreground/50">{profile?.first_name?.[0] || "U"}</div>}
             </div>
             <div className="min-w-0">
               <p className="text-sm text-foreground/60">Email</p>
