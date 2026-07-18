@@ -43,7 +43,7 @@ function resolveBackendAdminUrl() {
   if (adminUrl) return adminUrl.replace(/\/+$/, "") + "/";
 
   const apiBase = (process.env.NEXT_PUBLIC_API_BASE_URL || "").trim();
-  if (!apiBase) return "https://admin.bunoraa.com/";
+  if (!apiBase) return "/admin/";
 
   const stripApiSuffix = (value: string) =>
     value.replace(/\/api(?:\/v\d+)?\/?$/i, "");
@@ -61,7 +61,7 @@ function resolveBackendAdminUrl() {
     parsed.hash = "";
     return parsed.toString();
   } catch {
-    return "https://admin.bunoraa.com/";
+    return "/admin/";
   }
 }
 
