@@ -5,6 +5,7 @@ export function ProductPrice({
   price,
   salePrice,
   currentPrice,
+  compareAtPrice,
   currency,
   className,
   priceClassName,
@@ -13,6 +14,7 @@ export function ProductPrice({
   price?: string | null;
   salePrice?: string | null;
   currentPrice?: string | null;
+  compareAtPrice?: string | null;
   currency: string;
   className?: string;
   priceClassName?: string;
@@ -20,15 +22,17 @@ export function ProductPrice({
 }) {
   const base = currentPrice || salePrice || price || "";
   const showSale = Boolean(salePrice && price && salePrice !== price);
+  const showCompareAt = Boolean(!showSale && compareAtPrice && price && compareAtPrice !== price);
+  const strikethroughPrice = showSale ? price : (showCompareAt ? compareAtPrice : null);
 
   return (
     <div className={cn("flex flex-wrap items-baseline gap-2", className)}>
       <span className={cn("text-lg font-semibold", priceClassName)}>
         {formatMoney(base, currency)}
       </span>
-      {showSale ? (
+      {strikethroughPrice ? (
         <span className={cn("text-sm text-foreground/50 line-through", salePriceClassName)}>
-          {formatMoney(price || "", currency)}
+          {formatMoney(strikethroughPrice, currency)}
         </span>
       ) : null}
     </div>

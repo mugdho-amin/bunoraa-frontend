@@ -44,6 +44,7 @@ export type ProductListItem = {
   price: string;
   sale_price?: string | null;
   current_price: string;
+  compare_at_price?: string | null;
   currency: string;
   aspect_ratio?: string | null;
   discount_percentage?: string | null;
@@ -78,6 +79,7 @@ export type ProductVariant = {
   stock_quantity?: number | null;
   is_default?: boolean;
   current_price?: string | null;
+  compare_at_price?: string | null;
   option_values?: Array<{
     id: string;
     option: { id: string; name: string; slug: string };
