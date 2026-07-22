@@ -57,9 +57,9 @@ export function AccountReferralsPageContent() {
     return (
       <div className="space-y-6">
         <div>
-          <p className="text-sm uppercase tracking-[0.2em] text-foreground/60">Account</p>
+          <p className="text-sm uppercase tracking-[0.2em] text-muted-foreground">Account</p>
           <h1 className="text-3xl font-semibold">Referrals</h1>
-          <p className="mt-2 text-sm text-foreground/70">
+          <p className="mt-2 text-sm text-muted-foreground">
             Loading your referral information...
           </p>
         </div>
@@ -76,14 +76,14 @@ export function AccountReferralsPageContent() {
     return (
       <div className="space-y-6">
         <div>
-          <p className="text-sm uppercase tracking-[0.2em] text-foreground/60">Account</p>
+          <p className="text-sm uppercase tracking-[0.2em] text-muted-foreground">Account</p>
           <h1 className="text-3xl font-semibold">Referrals</h1>
         </div>
         <Card variant="bordered" className="flex flex-col items-center gap-4 py-12 text-center">
           <Gift className="h-12 w-12 text-foreground/20" aria-hidden="true" />
           <div>
             <h2 className="text-lg font-semibold">Referral program coming soon</h2>
-            <p className="mt-1 text-sm text-foreground/70">
+            <p className="mt-1 text-sm text-muted-foreground">
               Invite friends to Bunoraa and earn credits when they shop. Stay tuned!
             </p>
           </div>
@@ -95,9 +95,9 @@ export function AccountReferralsPageContent() {
   return (
     <div className="space-y-6">
       <div>
-        <p className="text-sm uppercase tracking-[0.2em] text-foreground/60">Account</p>
+        <p className="text-sm uppercase tracking-[0.2em] text-muted-foreground">Account</p>
         <h1 className="text-3xl font-semibold">Referrals</h1>
-        <p className="mt-2 text-sm text-foreground/70">
+        <p className="mt-2 text-sm text-muted-foreground">
           Invite friends to Bunoraa and earn credits on every purchase they make.
         </p>
       </div>
@@ -109,7 +109,7 @@ export function AccountReferralsPageContent() {
           </div>
           <div>
             <p className="text-2xl font-semibold">{referralData.total_referrals ?? 0}</p>
-            <p className="text-xs text-foreground/60">Total referrals</p>
+            <p className="text-xs text-muted-foreground">Total referrals</p>
           </div>
         </Card>
         <Card variant="bordered" className="flex items-center gap-4">
@@ -118,7 +118,7 @@ export function AccountReferralsPageContent() {
           </div>
           <div>
             <p className="text-2xl font-semibold">{referralData.active_referrals ?? 0}</p>
-            <p className="text-xs text-foreground/60">Active</p>
+            <p className="text-xs text-muted-foreground">Active</p>
           </div>
         </Card>
         <Card variant="bordered" className="flex items-center gap-4">
@@ -129,14 +129,14 @@ export function AccountReferralsPageContent() {
             <p className="text-2xl font-semibold">
               {referralData.credits_earned || "0"} {referralData.credits_currency || ""}
             </p>
-            <p className="text-xs text-foreground/60">Credits earned</p>
+            <p className="text-xs text-muted-foreground">Credits earned</p>
           </div>
         </Card>
       </div>
 
       <Card variant="bordered" className="space-y-4">
         <h2 className="text-lg font-semibold">Your referral link</h2>
-        <p className="text-sm text-foreground/70">
+        <p className="text-sm text-muted-foreground">
           Share this link with friends. You earn credits when they place their first order.
         </p>
         {referralCode ? (
@@ -178,7 +178,7 @@ export function AccountReferralsPageContent() {
                   <p className="font-medium">
                     {r.email || "Anonymous"}
                   </p>
-                  <p className="text-xs text-foreground/60">
+                  <p className="text-xs text-muted-foreground">
                     {new Date(r.created_at).toLocaleDateString()}
                   </p>
                 </div>
@@ -189,7 +189,7 @@ export function AccountReferralsPageContent() {
                         ? "bg-green-100 text-green-700"
                         : r.status === "pending"
                           ? "bg-amber-100 text-amber-700"
-                          : "bg-muted text-foreground/60"
+                          : "bg-muted text-muted-foreground"
                     }`}
                   >
                     {r.status}

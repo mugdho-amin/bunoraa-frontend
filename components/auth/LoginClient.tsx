@@ -178,7 +178,7 @@ export function LoginClient() {
 
   return (
     <div className="min-h-screen bg-background text-foreground">
-      <div className="mx-auto w-full max-w-md px-3 sm:px-5 py-20">
+      <div className="mx-auto w-full max-w-md px-[var(--page-gutter)] py-20">
         <Card variant="bordered" className="space-y-6">
           <div>
             <h1 className="text-2xl font-semibold">{t("common.auth.sign_in")}</h1>
@@ -191,7 +191,7 @@ export function LoginClient() {
               <span className="w-full border-t border-border" />
             </div>
             <div className="relative flex justify-center text-xs uppercase">
-              <span className="bg-card px-2 text-foreground/50">{t("common.auth.or_continue_with")}</span>
+              <span className="bg-card px-2 text-muted-foreground">{t("common.auth.or_continue_with")}</span>
             </div>
           </div>
 
@@ -218,7 +218,7 @@ export function LoginClient() {
                     <button
                       type="button"
                       onClick={() => setShowPassword((v) => !v)}
-                      className="absolute right-0 top-1/2 -translate-y-1/2 text-foreground/60 hover:text-foreground p-2"
+                      className="absolute right-0 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground p-2"
                       aria-label={showPassword ? "Hide password" : "Show password"}
                     >
                       {!showPassword ? (
@@ -261,7 +261,7 @@ export function LoginClient() {
             </form>
           ) : (
             <div className="space-y-4">
-              <p className="text-sm text-foreground/70">
+              <p className="text-sm text-muted-foreground">
                 Multi-factor authentication is enabled for this account.
               </p>
               <div className="flex flex-wrap gap-2">
@@ -332,7 +332,7 @@ export function LoginClient() {
             </div>
           )}
 
-          <div className="flex items-center justify-between text-sm text-foreground/70">
+          <div className="flex items-center justify-between text-sm text-muted-foreground">
             <button
               type="button"
               onClick={() => setShowForgotDialog(true)}
@@ -362,7 +362,7 @@ export function LoginClient() {
                 <button
                   type="button"
                   onClick={() => setShowForgotDialog(false)}
-                  className="text-foreground/60 hover:text-foreground"
+                  className="text-muted-foreground hover:text-foreground"
                   aria-label="Close dialog"
                 >
                   <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
@@ -370,7 +370,7 @@ export function LoginClient() {
               </div>
 
               {forgotSent ? (
-                <p className="text-sm text-foreground/70">
+                <p className="text-sm text-muted-foreground">
                   {t("common.auth.check_email_reset")}
                 </p>
               ) : (

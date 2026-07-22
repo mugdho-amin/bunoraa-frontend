@@ -103,14 +103,14 @@ function MinimalProductCard({
             className="h-full w-full object-cover transition-transform duration-500 ease-out-expo group-hover:scale-[1.03]"
           />
         ) : (
-          <div className="absolute inset-0 flex items-center justify-center bg-muted text-foreground/20">
+          <div className="absolute inset-0 flex items-center justify-center bg-muted text-muted-foreground">
             <span className="text-xs font-medium uppercase tracking-wider">No image</span>
           </div>
         )}
       </div>
       <div className="mt-2 space-y-1 px-0.5">
         {!product.is_in_stock ? (
-          <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-foreground/55 sm:text-[11px]">
+          <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-muted-foreground sm:text-[11px]">
             Sold Out
           </p>
         ) : null}
@@ -229,6 +229,7 @@ function InteractiveProductCard({
         {/* Wishlist always visible on mobile (no hover) */}
         <WishlistIconButton
           productId={product.id}
+          variant="ghost"
           className="absolute right-2 top-2 z-30 opacity-100 transition-all duration-300 sm:right-3 sm:top-3 sm:translate-y-1 sm:opacity-0 sm:group-hover:translate-y-0 sm:group-hover:opacity-100"
         />
 
@@ -268,7 +269,7 @@ function InteractiveProductCard({
       <div className={cn("flex flex-1 flex-col px-3 pb-3 pt-2 sm:px-5 sm:pb-5 sm:pt-2.5", variant === "list" && "sm:p-0")}>
         <div className="mb-2 space-y-1">
           {product.primary_category_name ? (
-            <p className="text-[10px] font-bold uppercase tracking-[0.1em] text-foreground/45">
+            <p className="text-[10px] font-bold uppercase tracking-[0.1em] text-muted-foreground">
               {product.primary_category_name}
             </p>
           ) : null}

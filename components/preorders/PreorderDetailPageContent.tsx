@@ -83,37 +83,37 @@ export function PreorderDetailPageContent({ preorderNumber }: { preorderNumber?:
   return (
     <AuthGate title="Preorder" description="Sign in to view preorder details." nextHref={preorderNumber ? `/preorders/order/${preorderNumber}/` : undefined}>
       <div className="mx-auto w-full max-w-6xl px-4 py-8 sm:px-6 sm:py-12">
-        {preorderQuery.isLoading ? <Card variant="bordered" className="p-6 text-sm text-foreground/70">Loading preorder...</Card>
+        {preorderQuery.isLoading ? <Card variant="bordered" className="p-6 text-sm text-muted-foreground">Loading preorder...</Card>
         : preorder ? (
           <div className="space-y-4 sm:space-y-6">
             <Card variant="bordered" className="space-y-3 p-4 sm:p-5">
               <div className="flex flex-wrap items-center justify-between gap-3">
-                <div><p className="text-xs uppercase tracking-[0.2em] text-foreground/60">Preorder</p><h1 className="break-all text-xl font-semibold sm:text-2xl">#{preorder.preorder_number}</h1></div>
+                <div><p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">Preorder</p><h1 className="break-all text-xl font-semibold sm:text-2xl">#{preorder.preorder_number}</h1></div>
                 <div className="rounded-full bg-muted px-3 py-1 text-xs capitalize">{preorder.status_display || preorder.status}</div>
               </div>
-              <div className="grid gap-3 text-sm text-foreground/70 md:grid-cols-3">
-                <div><p className="text-xs uppercase tracking-[0.2em] text-foreground/60">Category</p><p>{preorder.category_name || "Custom"}</p></div>
-                <div><p className="text-xs uppercase tracking-[0.2em] text-foreground/60">Created</p><p>{formatDate(preorder.created_at)}</p></div>
-                <div><p className="text-xs uppercase tracking-[0.2em] text-foreground/60">Quantity</p><p>{preorder.quantity}</p></div>
+              <div className="grid gap-3 text-sm text-muted-foreground md:grid-cols-3">
+                <div><p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">Category</p><p>{preorder.category_name || "Custom"}</p></div>
+                <div><p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">Created</p><p>{formatDate(preorder.created_at)}</p></div>
+                <div><p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">Quantity</p><p>{preorder.quantity}</p></div>
               </div>
             </Card>
             <div className="grid gap-4 sm:gap-6 lg:grid-cols-[1.6fr_1fr]">
               <div className="space-y-4 sm:space-y-6">
                 <Card variant="bordered" className="space-y-4 p-4 sm:p-5">
                   <h2 className="text-lg font-semibold">Overview</h2>
-                  <div className="grid gap-4 text-sm text-foreground/70 sm:grid-cols-2">
-                    <div><p className="text-xs uppercase tracking-[0.2em] text-foreground/60">Title</p><p>{preorder.title}</p></div>
-                    <div><p className="text-xs uppercase tracking-[0.2em] text-foreground/60">Contact</p><p>{preorder.full_name}</p><p className="break-all">{preorder.email}</p>{preorder.phone ? <p>{preorder.phone}</p> : null}</div>
+                  <div className="grid gap-4 text-sm text-muted-foreground sm:grid-cols-2">
+                    <div><p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">Title</p><p>{preorder.title}</p></div>
+                    <div><p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">Contact</p><p>{preorder.full_name}</p><p className="break-all">{preorder.email}</p>{preorder.phone ? <p>{preorder.phone}</p> : null}</div>
                   </div>
-                  <div className="space-y-2 text-sm text-foreground/70"><p className="text-xs uppercase tracking-[0.2em] text-foreground/60">Description</p><p>{preorder.description}</p></div>
-                  {preorder.special_instructions ? <div className="space-y-2 text-sm text-foreground/70"><p className="text-xs uppercase tracking-[0.2em] text-foreground/60">Special instructions</p><p>{preorder.special_instructions}</p></div> : null}
+                  <div className="space-y-2 text-sm text-muted-foreground"><p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">Description</p><p>{preorder.description}</p></div>
+                  {preorder.special_instructions ? <div className="space-y-2 text-sm text-muted-foreground"><p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">Special instructions</p><p>{preorder.special_instructions}</p></div> : null}
                 </Card>
                 {preorder.option_values?.length ? (
                   <Card variant="bordered" className="space-y-4 p-4 sm:p-5">
                     <h2 className="text-lg font-semibold">Customization</h2>
-                    <div className="grid gap-3 text-sm text-foreground/70 sm:grid-cols-2">
+                    <div className="grid gap-3 text-sm text-muted-foreground sm:grid-cols-2">
                       {preorder.option_values.map((option) => (
-                        <div key={option.id} className="rounded-xl border border-border p-3"><p className="text-xs uppercase tracking-[0.2em] text-foreground/60">{option.option_name}</p><p className="mt-1 font-medium">{option.display_value || "-"}</p></div>
+                        <div key={option.id} className="rounded-xl border border-border p-3"><p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">{option.option_name}</p><p className="mt-1 font-medium">{option.display_value || "-"}</p></div>
                       ))}
                     </div>
                   </Card>
@@ -124,14 +124,14 @@ export function PreorderDetailPageContent({ preorderNumber }: { preorderNumber?:
                     <div className="space-y-3">
                       <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between"><p className="text-sm font-semibold">Design files</p><Button className="w-full sm:w-auto" size="sm" variant="secondary" onClick={() => handleUpload("design")} disabled={actions.uploadDesign.isPending || !designFiles.length}>Upload</Button></div>
                       <FileDropzone label="Add design" description="Upload updated artwork, logos, or sketches." accept=".pdf,.png,.jpg,.jpeg,.ai,.psd,.svg,.eps,.cdr,.zip,.rar" multiple maxFiles={5} value={designFiles} onChange={setDesignFiles} />
-                      <div className="space-y-2 text-xs text-foreground/60">
+                      <div className="space-y-2 text-xs text-muted-foreground">
                         {preorder.designs?.length ? preorder.designs.map((design) => (<a key={design.id} href={design.file || "#"} className="block break-all text-primary" target="_blank" rel="noreferrer">{design.original_filename || "Design file"}</a>)) : <p>No design files uploaded yet.</p>}
                       </div>
                     </div>
                     <div className="space-y-3">
                       <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between"><p className="text-sm font-semibold">Reference files</p><Button className="w-full sm:w-auto" size="sm" variant="secondary" onClick={() => handleUpload("reference")} disabled={actions.uploadReference.isPending || !referenceFiles.length}>Upload</Button></div>
                       <FileDropzone label="Add reference" description="Share inspiration or similar products." accept=".pdf,.png,.jpg,.jpeg,.zip" multiple maxFiles={5} value={referenceFiles} onChange={setReferenceFiles} />
-                      <div className="space-y-2 text-xs text-foreground/60">
+                      <div className="space-y-2 text-xs text-muted-foreground">
                         {preorder.references?.length ? preorder.references.map((ref) => (<a key={ref.id} href={ref.file || "#"} className="block break-all text-primary" target="_blank" rel="noreferrer">{ref.original_filename || "Reference file"}</a>)) : <p>No reference files uploaded yet.</p>}
                       </div>
                     </div>
@@ -142,11 +142,11 @@ export function PreorderDetailPageContent({ preorderNumber }: { preorderNumber?:
                   <div className="space-y-3">
                     {preorder.messages?.length ? preorder.messages.map((message) => (
                       <div key={message.id} className="rounded-xl border border-border bg-muted/30 p-3 text-sm">
-                        <div className="flex flex-wrap items-center justify-between gap-2 text-xs text-foreground/60"><span>{message.sender_name || "Team"}</span><span>{formatDateTime(message.created_at)}</span></div>
+                        <div className="flex flex-wrap items-center justify-between gap-2 text-xs text-muted-foreground"><span>{message.sender_name || "Team"}</span><span>{formatDateTime(message.created_at)}</span></div>
                         {message.subject ? <p className="mt-2 font-semibold">{message.subject}</p> : null}
-                        <p className="mt-1 text-foreground/70">{message.message}</p>
+                        <p className="mt-1 text-muted-foreground">{message.message}</p>
                       </div>
-                    )) : <p className="text-sm text-foreground/60">No messages yet. Start the conversation below.</p>}
+                    )) : <p className="text-sm text-muted-foreground">No messages yet. Start the conversation below.</p>}
                   </div>
                   <div className="grid gap-3">
                     <input className="w-full rounded-lg border border-border bg-card px-3 py-2 text-sm" placeholder="Subject (optional)" autoComplete="off" enterKeyHint="next" value={messageSubject} onChange={(event) => setMessageSubject(event.target.value)} />
@@ -158,7 +158,7 @@ export function PreorderDetailPageContent({ preorderNumber }: { preorderNumber?:
               <div className="space-y-4 sm:space-y-6 lg:sticky lg:top-24 lg:self-start">
                 <Card variant="bordered" className="space-y-3 p-4 sm:p-5">
                   <h2 className="text-lg font-semibold">Payment snapshot</h2>
-                  <div className="space-y-2 text-sm text-foreground/70">
+                  <div className="space-y-2 text-sm text-muted-foreground">
                     <p>Estimated total: {formatMoney(preorder.estimated_price || 0, currency)}</p>
                     {preorder.final_price ? <p>Final quote: {formatMoney(preorder.final_price, currency)}</p> : null}
                     <p>Deposit required: {formatMoney(preorder.deposit_required || 0, currency)}</p>
@@ -169,12 +169,12 @@ export function PreorderDetailPageContent({ preorderNumber }: { preorderNumber?:
                 {statusHistory.length ? (
                   <Card variant="bordered" className="space-y-3 p-4 sm:p-5">
                     <h2 className="text-lg font-semibold">Status timeline</h2>
-                    <div className="space-y-3 text-sm text-foreground/70">
+                    <div className="space-y-3 text-sm text-muted-foreground">
                       {statusHistory.map((entry) => (
                         <div key={entry.id} className="border-l-2 border-primary/40 pl-3">
-                          <p className="text-xs uppercase tracking-[0.2em] text-foreground/60">{formatDateTime(entry.created_at)}</p>
+                          <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">{formatDateTime(entry.created_at)}</p>
                           <p className="font-medium">{entry.to_status_display || entry.to_status}</p>
-                          {entry.notes ? <p className="text-xs text-foreground/60">{entry.notes}</p> : null}
+                          {entry.notes ? <p className="text-xs text-muted-foreground">{entry.notes}</p> : null}
                         </div>
                       ))}
                     </div>
@@ -182,7 +182,7 @@ export function PreorderDetailPageContent({ preorderNumber }: { preorderNumber?:
                 ) : null}
                 <Card variant="bordered" className="space-y-3 p-4 sm:p-5">
                   <h2 className="text-lg font-semibold">Shipping</h2>
-                  <div className="text-sm text-foreground/70">
+                  <div className="text-sm text-muted-foreground">
                     <p>{preorder.shipping_method || "Standard"}</p>
                     <p className="mt-2 break-words">{joinAddress(preorder.shipping_address_line_1, preorder.shipping_address_line_2, preorder.shipping_city, preorder.shipping_state, preorder.shipping_postal_code, preorder.shipping_country) || "Shipping details not provided."}</p>
                     {preorder.tracking_number ? <p className="mt-2">Tracking: {preorder.tracking_number}</p> : null}
@@ -196,8 +196,8 @@ export function PreorderDetailPageContent({ preorderNumber }: { preorderNumber?:
                       {preorder.quotes.map((quote) => (
                         <div key={quote.id} className="rounded-xl border border-border p-3 text-sm">
                           <div className="flex flex-wrap items-center justify-between gap-2"><span className="font-semibold">{quote.quote_number}</span><span className="rounded-full bg-muted px-2 py-1 text-xs">{quote.status}</span></div>
-                          <div className="mt-2 space-y-1 text-foreground/70"><p>Total: {formatMoney(quote.total || 0, currency)}</p><p>Valid until: {formatDate(quote.valid_until)}</p></div>
-                          {quote.terms ? <p className="mt-2 text-xs text-foreground/60">{quote.terms}</p> : null}
+                          <div className="mt-2 space-y-1 text-muted-foreground"><p>Total: {formatMoney(quote.total || 0, currency)}</p><p>Valid until: {formatDate(quote.valid_until)}</p></div>
+                          {quote.terms ? <p className="mt-2 text-xs text-muted-foreground">{quote.terms}</p> : null}
                           {quote.status === "pending" || quote.status === "sent" ? (
                             <div className="mt-3 space-y-2">
                               <textarea className="min-h-[80px] w-full rounded-lg border border-border bg-card px-3 py-2 text-xs" placeholder="Optional rejection reason" value={rejectReasons[quote.id] || ""} onChange={(event) => setRejectReasons((prev) => ({ ...prev, [quote.id]: event.target.value }))} />
@@ -215,11 +215,11 @@ export function PreorderDetailPageContent({ preorderNumber }: { preorderNumber?:
                 {preorder.payments?.length ? (
                   <Card variant="bordered" className="space-y-3 p-4 sm:p-5">
                     <h2 className="text-lg font-semibold">Payments</h2>
-                    <div className="space-y-2 text-sm text-foreground/70">
+                    <div className="space-y-2 text-sm text-muted-foreground">
                       {preorder.payments.map((payment) => (
                         <div key={payment.id} className="flex items-start justify-between gap-3">
-                          <div><p className="font-medium">{payment.payment_type}</p><p className="text-xs text-foreground/60">{formatDateTime(payment.created_at)}</p></div>
-                          <div className="text-right"><p>{formatMoney(payment.amount || 0, currency)}</p><p className="text-xs text-foreground/60">{payment.status}</p></div>
+                          <div><p className="font-medium">{payment.payment_type}</p><p className="text-xs text-muted-foreground">{formatDateTime(payment.created_at)}</p></div>
+                          <div className="text-right"><p>{formatMoney(payment.amount || 0, currency)}</p><p className="text-xs text-muted-foreground">{payment.status}</p></div>
                         </div>
                       ))}
                     </div>
@@ -227,7 +227,7 @@ export function PreorderDetailPageContent({ preorderNumber }: { preorderNumber?:
                 ) : null}
                 <Card variant="bordered" className="space-y-3 p-4 sm:p-5">
                   <h2 className="text-lg font-semibold">Need help?</h2>
-                  <p className="text-sm text-foreground/70">Track your preorder publicly or start a new request.</p>
+                  <p className="text-sm text-muted-foreground">Track your preorder publicly or start a new request.</p>
                   <div className="grid gap-2 sm:flex sm:flex-wrap">
                     <Button asChild className="w-full sm:w-auto" size="sm" variant="secondary"><Link href="/preorders/track/">Track preorder</Link></Button>
                     <Button asChild className="w-full sm:w-auto" size="sm" variant="secondary"><Link href="/preorders/create/1/">Start another preorder</Link></Button>
@@ -236,7 +236,7 @@ export function PreorderDetailPageContent({ preorderNumber }: { preorderNumber?:
               </div>
             </div>
           </div>
-        ) : <Card variant="bordered" className="p-6 text-sm text-foreground/70">Preorder not found.</Card>}
+        ) : <Card variant="bordered" className="p-6 text-sm text-muted-foreground">Preorder not found.</Card>}
       </div>
     </AuthGate>
   );

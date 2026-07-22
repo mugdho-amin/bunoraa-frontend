@@ -31,7 +31,7 @@ export function MiniCart({
   }, [siteSettings?.currency_symbol]);
 
   if (cartQuery.isLoading) {
-    return <div className="p-6 text-sm text-foreground/60">Loading your bag...</div>;
+    return <div className="p-6 text-sm text-muted-foreground">Loading your bag...</div>;
   }
 
   if (cartQuery.isError || !cartQuery.data) {
@@ -69,7 +69,7 @@ export function MiniCart({
         {onClose ? (
           <button
             type="button"
-            className="text-foreground/60 hover:text-foreground"
+            className="text-muted-foreground hover:text-foreground"
             onClick={onClose}
             aria-label="Close"
           >
@@ -87,7 +87,7 @@ export function MiniCart({
         {onClose ? (
           <button
             type="button"
-            className="text-foreground/60 hover:text-foreground"
+            className="text-muted-foreground hover:text-foreground"
             onClick={onClose}
           >
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
@@ -104,6 +104,7 @@ export function MiniCart({
                   src={item.product_image}
                   alt={item.product_name}
                   fill
+                  quality={60}
                   className="object-cover"
                   sizes="64px"
                 />
@@ -111,7 +112,7 @@ export function MiniCart({
             </div>
             <div className="flex-1 space-y-0.5 min-w-0">
               <p className="text-sm font-medium truncate">{item.product_name}</p>
-              <p className="text-[10px] text-foreground/60 truncate">{item.variant_name}</p>
+              <p className="text-[10px] text-muted-foreground truncate">{item.variant_name}</p>
               <div className="flex items-center justify-between pt-1">
                 <div className="flex items-center border border-border rounded-sm">
                   <button className="px-2 py-0.5 text-xs font-bold" onClick={() => updateItem.mutate({ itemId: item.id, quantity: Math.max(1, item.quantity - 1) })}>-</button>
@@ -121,7 +122,7 @@ export function MiniCart({
                 <div className="flex flex-col items-end gap-0.5">
                   <p className="text-sm font-medium">{formatMoney(item.total, currencyConfig)}</p>
                   <button 
-                    className="text-[10px] text-foreground/40 hover:text-red-500" 
+                    className="text-[10px] text-muted-foreground hover:text-red-500" 
                     onClick={() => removeItem.mutate(item.id)}
                   >
                     Remove
@@ -135,7 +136,7 @@ export function MiniCart({
 
       <div className="p-3 border-t border-border space-y-3">
         <div className="flex justify-between text-sm">
-          <span className="text-foreground/70">{t("subtotal", "Subtotal")}</span>
+          <span className="text-muted-foreground">{t("subtotal", "Subtotal")}</span>
           <span className="font-semibold">{subtotalLabel}</span>
         </div>
         {(discount > 0 || shipping > 0 || tax > 0) && (

@@ -34,15 +34,15 @@ export function SubscriptionPlanDetailContent() {
 
   return (
     <AuthGate title="Subscribe" description="Sign in to subscribe to a plan.">
-      <div className="mx-auto w-full max-w-4xl px-3 sm:px-5 py-12">
+      <div className="mx-auto w-full max-w-4xl px-[var(--page-gutter)] py-12">
         {planQuery.isLoading ? (
-          <Card variant="bordered" className="p-6 text-sm text-foreground/70">
+          <Card variant="bordered" className="p-6 text-sm text-muted-foreground">
             Loading plan...
           </Card>
         ) : planQuery.data ? (
           <Card variant="bordered" className="space-y-4 p-6">
             <h1 className="text-2xl font-semibold">{planQuery.data.name}</h1>
-            <p className="text-sm text-foreground/70">{planQuery.data.description}</p>
+            <p className="text-sm text-muted-foreground">{planQuery.data.description}</p>
             <p className="text-lg font-semibold">
               {planQuery.data.price_amount} {planQuery.data.currency} / {planQuery.data.interval}
             </p>
@@ -51,7 +51,7 @@ export function SubscriptionPlanDetailContent() {
             </Button>
           </Card>
         ) : (
-          <Card variant="bordered" className="p-6 text-sm text-foreground/70">
+          <Card variant="bordered" className="p-6 text-sm text-muted-foreground">
             Plan not found.
           </Card>
         )}

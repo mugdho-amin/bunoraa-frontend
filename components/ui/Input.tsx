@@ -20,7 +20,7 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
         ref={ref}
         className={cn(
           "flex w-full border bg-card text-foreground shadow-xs transition-colors",
-          "placeholder:text-foreground/40",
+          "placeholder:text-muted-foreground",
           "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/35 focus-visible:ring-offset-1 focus-visible:ring-offset-background",
           "disabled:cursor-not-allowed disabled:opacity-50",
           error
@@ -49,7 +49,7 @@ export const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
         ref={ref}
         className={cn(
           "flex min-h-[120px] w-full rounded-xl border bg-card px-3.5 py-3 text-base text-foreground shadow-xs transition-colors sm:text-sm",
-          "placeholder:text-foreground/40",
+          "placeholder:text-muted-foreground",
           "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/35 focus-visible:ring-offset-1 focus-visible:ring-offset-background",
           "disabled:cursor-not-allowed disabled:opacity-50",
           error
@@ -74,14 +74,14 @@ export function Label({ className, required, children, ...props }: LabelProps) {
   return (
     <label
       className={cn(
-        "mb-1.5 block text-sm font-medium text-foreground/80",
+        "mb-1.5 block text-sm font-medium text-foreground",
         className
       )}
       {...props}
     >
       {children}
       {required ? (
-        <span className="ml-0.5 text-error-500" aria-hidden="true">
+        <span className="ml-0.5 text-error-600" aria-hidden="true">
           *
         </span>
       ) : null}

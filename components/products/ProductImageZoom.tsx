@@ -118,6 +118,7 @@ export function ProductImageZoom({ src, alt, priority = false, aspectRatio, onZo
             alt={alt}
             fill
             priority={priority}
+            quality={80}
             sizes="(max-width: 768px) 100vw, 800px"
             className="object-contain"
             draggable={false}
@@ -138,7 +139,7 @@ export function ProductImageZoom({ src, alt, priority = false, aspectRatio, onZo
 
         <div
           className={cn(
-            "absolute bottom-3 left-3 rounded-full bg-background/80 backdrop-blur px-2.5 py-1 text-[10px] font-bold text-foreground/50 border border-border/40 pointer-events-none transition-opacity duration-300",
+            "absolute bottom-3 left-3 rounded-full bg-background/80 backdrop-blur px-2.5 py-1 text-[10px] font-bold text-muted-foreground border border-border/40 pointer-events-none transition-opacity duration-300",
             isMobile
               ? "opacity-100"
               : isHovering
@@ -152,18 +153,30 @@ export function ProductImageZoom({ src, alt, priority = false, aspectRatio, onZo
 
       {!isMobile && isHovering && mag.w > 0 && (
         <div
-          className="fixed pointer-events-none z-50 overflow-hidden border border-border shadow-2xl bg-white"
+          className="fixed pointer-events-none z-50 overflow-hidden border border-border shadow-2xl"
           style={{
             left: mag.x,
             top: mag.y,
             width: mag.w,
             height: mag.h,
-            backgroundImage: `url(${src})`,
-            backgroundRepeat: "no-repeat",
-            backgroundSize: `${mag.bgW}px ${mag.bgH}px`,
-            backgroundPosition: `-${mag.bgX}px -${mag.bgY}px`,
           }}
-        />
+        >
+          <Image
+            src={src}
+            alt={alt}
+            fill
+            quality={100}
+            sizes={`${mag.bgW}px`}
+            className="object-none"
+            style={{
+              objectPosition: `-${mag.bgX}px -${mag.bgY}px`,
+              width: mag.bgW,
+              height: mag.bgH,
+              maxWidth: 'none',
+            }}
+            draggable={false}
+          />
+        </div>
       )}
     </>
   );

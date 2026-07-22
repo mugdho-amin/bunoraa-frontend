@@ -533,7 +533,7 @@ export function CheckoutPage() {
 
   if (guestPolicyPending) {
     return (
-      <div className="mx-auto w-full max-w-6xl px-3 sm:px-5 py-16">
+      <div className="mx-auto w-full max-w-6xl px-[var(--page-gutter)] py-16">
         <Card variant="bordered" className="space-y-4">
           <div className="h-6 w-48 rounded bg-muted animate-pulse" />
           <div className="h-4 w-full rounded bg-muted animate-pulse" />
@@ -545,10 +545,10 @@ export function CheckoutPage() {
 
   if (guestPolicyError) {
     return (
-      <div className="mx-auto w-full max-w-5xl px-3 sm:px-5 py-16">
+      <div className="mx-auto w-full max-w-5xl px-[var(--page-gutter)] py-16">
         <Card variant="bordered" className="space-y-3 text-center">
           <h1 className="text-2xl font-semibold">Checkout unavailable</h1>
-          <p className="text-sm text-foreground/60">
+          <p className="text-sm text-muted-foreground">
             We couldn&apos;t verify checkout access right now. Please try again.
           </p>
           <Button asChild>
@@ -562,7 +562,7 @@ export function CheckoutPage() {
   if (isLoading) {
     return (
       <AuthGate nextHref="/checkout" allowGuest={guestCheckoutEnabled}>
-        <div className="mx-auto w-full max-w-6xl px-3 sm:px-5 py-16">
+        <div className="mx-auto w-full max-w-6xl px-[var(--page-gutter)] py-16">
           <Card variant="bordered" className="space-y-4">
             <div className="h-6 w-48 rounded bg-muted animate-pulse" />
             <div className="h-4 w-full rounded bg-muted animate-pulse" />
@@ -578,10 +578,10 @@ export function CheckoutPage() {
     if (error instanceof ApiError && error.status === 400) {
       return (
         <AuthGate nextHref="/checkout" allowGuest={guestCheckoutEnabled}>
-          <div className="mx-auto w-full max-w-5xl px-3 sm:px-5 py-16">
+          <div className="mx-auto w-full max-w-5xl px-[var(--page-gutter)] py-16">
             <Card variant="bordered" className="space-y-3 text-center">
               <h1 className="text-2xl font-semibold">Your bag is empty</h1>
-              <p className="text-sm text-foreground/60">
+              <p className="text-sm text-muted-foreground">
                 Add items to your bag before checking out.
               </p>
               <div className="flex flex-wrap justify-center gap-3">
@@ -599,10 +599,10 @@ export function CheckoutPage() {
     }
     return (
       <AuthGate nextHref="/checkout" allowGuest={guestCheckoutEnabled}>
-        <div className="mx-auto w-full max-w-5xl px-3 sm:px-5 py-16">
+        <div className="mx-auto w-full max-w-5xl px-[var(--page-gutter)] py-16">
           <Card variant="bordered" className="space-y-3 text-center">
             <h1 className="text-2xl font-semibold">Checkout unavailable</h1>
-            <p className="text-sm text-foreground/60">
+            <p className="text-sm text-muted-foreground">
               We couldn&apos;t load checkout right now. Please try again.
             </p>
             <Button asChild>
@@ -617,10 +617,10 @@ export function CheckoutPage() {
   if (cartEmpty) {
     return (
       <AuthGate nextHref="/checkout" allowGuest={guestCheckoutEnabled}>
-        <div className="mx-auto w-full max-w-5xl px-3 sm:px-5 py-16">
+        <div className="mx-auto w-full max-w-5xl px-[var(--page-gutter)] py-16">
           <Card variant="bordered" className="space-y-3 text-center">
             <h1 className="text-2xl font-semibold">Your bag is empty</h1>
-            <p className="text-sm text-foreground/60">
+            <p className="text-sm text-muted-foreground">
               Add items to your bag before checking out.
             </p>
             <div className="flex flex-wrap justify-center gap-3">
@@ -646,20 +646,20 @@ export function CheckoutPage() {
     >
       <div className="min-h-screen bg-background text-foreground">
         <OrderProcessingModal isOpen={isOrderTransitioning} />
-        <div className="mx-auto w-full max-w-[1920px] px-4 py-6 sm:px-6 sm:py-10 lg:py-12">
-          <div className="mb-8">
-            <p className="text-xs uppercase tracking-[0.3em] text-foreground/60">
+        <div className="mx-auto w-full max-w-content px-[var(--page-gutter)] py-6 sm:py-10 lg:py-12">
+          <div className="mb-6 sm:mb-8">
+            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground">
               Checkout
             </p>
             <h1 className="text-2xl font-semibold sm:text-3xl">Secure checkout</h1>
-            <p className="mt-2 max-w-2xl text-sm text-foreground/60">
+            <p className="mt-2 max-w-2xl text-sm text-muted-foreground text-pretty">
               Complete your order in a few quick steps. Your information is
               protected with encrypted connections.
             </p>
           </div>
 
           <div
-            className="sticky z-20 -mx-4 mb-5 border-y border-border/70 bg-background/95 px-4 py-2 backdrop-blur sm:-mx-6 sm:px-6 lg:static lg:m-0 lg:border-0 lg:bg-transparent lg:p-0"
+            className="sticky z-20 -mx-[var(--page-gutter)] mb-5 border-y border-border/70 bg-background/95 px-[var(--page-gutter)] py-2 backdrop-blur lg:static lg:m-0 lg:border-0 lg:bg-transparent lg:p-0"
             style={{
               top: "calc(var(--mobile-header-offset, var(--header-offset)) + 0.25rem)",
             }}
@@ -667,7 +667,7 @@ export function CheckoutPage() {
             <CheckoutSteps current={currentStep} onStepClick={goToStep} />
           </div>
 
-          <div className="grid gap-6 lg:gap-8 lg:grid-cols-[1.2fr_0.8fr]">
+          <div className="grid gap-5 sm:gap-6 lg:grid-cols-[minmax(0,1.2fr)_minmax(0,0.8fr)] lg:gap-8">
             <div className="space-y-6">
               {currentStep === "information" ? (
                 <CheckoutInfoStep

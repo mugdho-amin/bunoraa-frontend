@@ -33,15 +33,15 @@ export async function SharedWishlistPageContent({
   const items = await getSharedWishlist(token);
 
   return (
-    <div className="mx-auto w-full max-w-5xl px-3 sm:px-5 py-12">
+    <div className="mx-auto w-full max-w-5xl px-[var(--page-gutter)] py-12">
       <div className="mb-8">
-        <p className="text-sm uppercase tracking-[0.2em] text-foreground/60">
+        <p className="text-sm uppercase tracking-[0.2em] text-muted-foreground">
           Shared wishlist
         </p>
         <h1 className="text-3xl font-semibold">Wishlist items</h1>
       </div>
       {items.length === 0 ? (
-        <Card variant="bordered" className="p-6 text-sm text-foreground/70">
+        <Card variant="bordered" className="p-6 text-sm text-muted-foreground">
           This wishlist is empty.
         </Card>
       ) : (
@@ -63,7 +63,7 @@ export async function SharedWishlistPageContent({
               </div>
               <div className="flex flex-1 flex-col gap-2">
                 <h2 className="text-lg font-semibold">{item.product_name}</h2>
-                <p className="text-sm text-foreground/70">
+                <p className="text-sm text-muted-foreground">
                   {item.current_price}
                 </p>
               </div>

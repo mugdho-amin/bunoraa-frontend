@@ -81,9 +81,9 @@ export async function CategoriesSlugPageContent({ slug, searchParams }: { slug: 
 
   return (
     <div className="min-h-screen bg-background text-foreground">
-      <div className="mx-auto w-full max-w-[1920px] px-3 sm:px-5 py-10 lg:pb-12">
+      <div className="mx-auto w-full max-w-content px-[var(--page-gutter)] py-8 sm:py-10 lg:pb-12">
         <div className="flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
-          <div><h1 className="text-2xl font-semibold uppercase tracking-[0.12em] sm:text-3xl">{categoryLabel}</h1>{category.description ? <p className="mt-1 text-sm text-foreground/70">{category.description}</p> : null}</div>
+          <div><h1 className="text-2xl font-semibold uppercase tracking-[0.12em] sm:text-3xl">{categoryLabel}</h1>{category.description ? <p className="mt-1 text-sm text-muted-foreground">{category.description}</p> : null}</div>
           <div className="hidden lg:flex lg:items-center lg:gap-3">
             <SortMenu className="border border-border/60 hover:border-primary/40" />
             <ViewToggle className="h-10 border border-border/60 hover:border-primary/40" />
@@ -95,7 +95,7 @@ export async function CategoriesSlugPageContent({ slug, searchParams }: { slug: 
           <div className="mt-6 flex flex-wrap gap-2">
             {childCategories.map((child) => (
               <a key={child.id} href={`/${child.slug_path || child.slug}/`} className="rounded-full border border-border px-4 py-2 text-sm transition-colors hover:border-primary hover:text-primary">
-                {child.name}{typeof child.product_count === "number" ? <span className="ml-2 text-xs text-foreground/60">{child.product_count}</span> : null}
+                {child.name}{typeof child.product_count === "number" ? <span className="ml-2 text-xs text-muted-foreground">{child.product_count}</span> : null}
               </a>
             ))}
           </div>

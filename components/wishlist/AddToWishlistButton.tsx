@@ -77,8 +77,8 @@ export function AddToWishlistButton({
           "h-5 w-5 transition",
           hideIconOnMobile && "hidden sm:block",
           isInWishlist
-            ? "fill-error-500 text-error-500"
-            : "fill-transparent text-foreground/70 group-hover/wishlist:fill-error-500 group-hover/wishlist:text-error-500"
+            ? "fill-error-500 text-error-600"
+            : "fill-transparent text-muted-foreground group-hover/wishlist:fill-error-500 group-hover/wishlist:text-error-600"
         )}
         strokeWidth={1.8}
       />

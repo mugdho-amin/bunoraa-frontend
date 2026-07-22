@@ -171,7 +171,7 @@ export function SearchBar({ hideSubmitButtonOnDesktop = false }: SearchBarProps)
           id={inputId}
           className={`${
             hideSubmitButtonOnDesktop ? "h-11 min-h-11 lg:h-10 lg:min-h-10" : "h-11 min-h-11"
-          } w-full rounded-full border border-border/80 bg-card/95 px-4 py-1 text-base shadow-xs transition placeholder:text-foreground/40 focus-visible:border-primary/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 sm:text-sm ${
+          } w-full rounded-full border border-border/80 bg-card/95 px-4 py-1 text-base shadow-xs transition placeholder:text-muted-foreground focus-visible:border-primary/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 sm:text-sm ${
             hideSubmitButtonOnDesktop ? "pr-24 lg:pr-4" : "pr-24"
           }`}
           placeholder="Search products"
@@ -224,17 +224,17 @@ export function SearchBar({ hideSubmitButtonOnDesktop = false }: SearchBarProps)
           role="listbox"
           aria-label="Search suggestions"
         >
-          <div className="mb-4 flex items-center justify-between text-xs text-foreground/60">
+          <div className="mb-4 flex items-center justify-between text-xs text-muted-foreground">
             <p>{productSuggestions.length} products | {categorySuggestions.length} categories</p>
           </div>
 
           {suggestions.isFetching ? (
-            <p className="text-sm text-foreground/60">Searching...</p>
+            <p className="text-sm text-muted-foreground">Searching...</p>
           ) : null}
 
           {productSuggestions.length > 0 ? (
             <div>
-              <p className="text-xs uppercase tracking-[0.2em] text-foreground/60">Products</p>
+              <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">Products</p>
               <ul className="mt-2 space-y-2">
                 {productSuggestions.slice(0, 6).map((item: ProductListItem, index: number) => {
                   const image = getProductImage(item);
@@ -268,7 +268,7 @@ export function SearchBar({ hideSubmitButtonOnDesktop = false }: SearchBarProps)
                         </div>
                         <div className="min-w-0 flex-1">
                           <p className="line-clamp-1 font-medium">{item.name}</p>
-                          <p className="line-clamp-1 text-xs text-foreground/60">
+                          <p className="line-clamp-1 text-xs text-muted-foreground">
                             {item.primary_category_name || "Product"}
                           </p>
                           <div className="mt-1 flex items-center gap-2">
@@ -276,11 +276,11 @@ export function SearchBar({ hideSubmitButtonOnDesktop = false }: SearchBarProps)
                             {hasRating && item.average_rating && (
                               <div className="flex items-center gap-1">
                                 <Star className="h-3 w-3 fill-amber-400 text-amber-400" />
-                                <span className="text-xs font-medium text-foreground/70">
+                                <span className="text-xs font-medium text-muted-foreground">
                                   {item.average_rating.toFixed(1)}
                                 </span>
                                 {item.reviews_count ? (
-                                  <span className="text-xs text-foreground/60">
+                                  <span className="text-xs text-muted-foreground">
                                     ({item.reviews_count})
                                   </span>
                                 ) : null}
@@ -288,7 +288,7 @@ export function SearchBar({ hideSubmitButtonOnDesktop = false }: SearchBarProps)
                             )}
                           </div>
                         </div>
-                        <ArrowUpRight className="h-4 w-4 shrink-0 text-foreground/60" />
+                        <ArrowUpRight className="h-4 w-4 shrink-0 text-muted-foreground" />
                       </button>
                     </li>
                   );
@@ -299,7 +299,7 @@ export function SearchBar({ hideSubmitButtonOnDesktop = false }: SearchBarProps)
 
           {categorySuggestions.length > 0 ? (
             <div className="mt-4">
-              <p className="text-xs uppercase tracking-[0.2em] text-foreground/60">Categories</p>
+              <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">Categories</p>
               <ul className="mt-2 space-y-1">
                 {categorySuggestions.slice(0, 5).map((item, index) => {
                   const optionIndex = productOptions.length + index;
@@ -319,7 +319,7 @@ export function SearchBar({ hideSubmitButtonOnDesktop = false }: SearchBarProps)
                         onMouseEnter={() => setActiveIndex(optionIndex)}
                       >
                         <p className="font-medium">{item.name}</p>
-                        <p className="text-xs text-foreground/60">
+                        <p className="text-xs text-muted-foreground">
                           {item.product_count || 0} products
                         </p>
                       </button>
@@ -332,7 +332,7 @@ export function SearchBar({ hideSubmitButtonOnDesktop = false }: SearchBarProps)
 
           {!suggestions.isFetching && !hasSuggestions ? (
             <>
-              <p className="text-sm text-foreground/60">
+              <p className="text-sm text-muted-foreground">
                 No direct matches. Press Enter to search all results.
               </p>
               <div className="mt-3 border-t border-border pt-3">

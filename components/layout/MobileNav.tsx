@@ -46,7 +46,7 @@ const SectionHeader = ({
 }) => (
   <button
     type="button"
-    className="flex w-full items-center justify-between rounded-lg px-1 py-1.5 text-left text-xs font-semibold uppercase tracking-[0.2em] text-foreground/50 transition hover:text-foreground/70"
+    className="flex w-full items-center justify-between rounded-lg px-1 py-1.5 text-left text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground transition hover:text-muted-foreground"
     onClick={onToggle}
     aria-expanded={isOpen}
   >
@@ -165,13 +165,15 @@ export function MobileNav({
 
   React.useEffect(() => {
     if (!open) return;
-    const originalOverflow = document.body.style.overflow;
-    const originalTouchAction = document.body.style.touchAction;
+    const originalHtmlOverflow = document.documentElement.style.overflow;
+    const originalBodyOverflow = document.body.style.overflow;
+    
+    document.documentElement.style.overflow = "hidden";
     document.body.style.overflow = "hidden";
-    document.body.style.touchAction = "none";
+    
     return () => {
-      document.body.style.overflow = originalOverflow;
-      document.body.style.touchAction = originalTouchAction;
+      document.documentElement.style.overflow = originalHtmlOverflow;
+      document.body.style.overflow = originalBodyOverflow;
     };
   }, [open]);
 
@@ -238,9 +240,9 @@ export function MobileNav({
         aria-label="Open menu"
       >
         <span className="flex flex-col gap-1.5" aria-hidden="true">
-          <span className="h-0.5 w-5 rounded-full bg-foreground/90 transition-transform" />
-          <span className="h-0.5 w-4 rounded-full bg-foreground/70 transition-transform" />
-          <span className="h-0.5 w-5 rounded-full bg-foreground/90 transition-transform" />
+          <span className="h-0.5 w-5 rounded-full bg-foreground transition-transform" />
+          <span className="h-0.5 w-4 rounded-full bg-muted-foreground transition-transform" />
+          <span className="h-0.5 w-5 rounded-full bg-foreground transition-transform" />
         </span>
       </button>
 
@@ -298,7 +300,7 @@ export function MobileNav({
                   <div className="min-w-0 flex-1">
                     <p className="truncate text-sm font-semibold text-foreground">{accountLabel}</p>
                     {profileQuery.data?.email ? (
-                      <p className="truncate text-xs text-foreground/50">{profileQuery.data.email}</p>
+                      <p className="truncate text-xs text-muted-foreground">{profileQuery.data.email}</p>
                     ) : null}
                   </div>
                 </div>
@@ -384,7 +386,7 @@ export function MobileNav({
                     <>
                       <button
                         type="button"
-                        className="flex w-full items-center justify-between rounded-lg px-3 py-2 text-xs font-medium text-foreground/50 transition hover:text-foreground/70"
+                        className="flex w-full items-center justify-between rounded-lg px-3 py-2 text-xs font-medium text-muted-foreground transition hover:text-muted-foreground"
                         onClick={() => toggleSection("categories")}
                       >
                         <span>Browse by category</span>
@@ -400,7 +402,7 @@ export function MobileNav({
                             <Link
                               key={category.id}
                               className={cn(
-                                "block rounded-lg px-2.5 py-2 text-sm text-foreground/70 transition hover:bg-muted hover:text-foreground",
+                                "block rounded-lg px-2.5 py-2 text-sm text-muted-foreground transition hover:bg-muted hover:text-foreground",
                                 isActiveLink(buildCategoryPath(category.slug_path || category.slug)) &&
                                   "bg-primary/10 text-primary font-medium"
                               )}
@@ -471,14 +473,14 @@ export function MobileNav({
                       {/* Switch account */}
                       {otherAccounts.length > 0 ? (
                         <div className="mt-1 space-y-0.5 rounded-xl border border-dashed border-border p-2">
-                          <p className="px-1 text-[10px] font-semibold uppercase tracking-[0.16em] text-foreground/40">
+                          <p className="px-1 text-[10px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">
                             Switch account
                           </p>
                           {otherAccounts.map((account) => (
                             <button
                               key={account.id}
                               type="button"
-                              className="flex w-full items-center gap-2.5 rounded-lg px-2.5 py-2 text-left text-sm text-foreground/70 transition hover:bg-muted hover:text-foreground"
+                              className="flex w-full items-center gap-2.5 rounded-lg px-2.5 py-2 text-left text-sm text-muted-foreground transition hover:bg-muted hover:text-foreground"
                               onClick={() => {
                                 switchAccount(account.id);
                                 closeNav();

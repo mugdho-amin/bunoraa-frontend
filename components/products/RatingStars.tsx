@@ -12,7 +12,7 @@ function RatingStar({ filled, size = "md" }: { filled: boolean; size?: "sm" | "m
   return (
     <StarIcon
       aria-hidden="true"
-      className={cn(sizeMap[size], filled ? "fill-accent-500 text-accent-500" : "text-border")}
+      className={cn(sizeMap[size], filled ? "fill-accent text-accent" : "text-border")}
       strokeWidth={1.8}
     />
   );
@@ -35,14 +35,14 @@ export function RatingStars({
   const rounded = Math.round(safeRating);
 
   return (
-    <div className={cn("flex items-center gap-1 text-xs text-foreground/70", className)}>
+    <div className={cn("flex items-center gap-1 text-xs text-muted-foreground", className)}>
       <div className="flex items-center gap-0.5">
         {Array.from({ length: 5 }).map((_, index) => (
           <RatingStar key={index} filled={index < rounded} size={size} />
         ))}
       </div>
       {showCount && typeof count === "number" ? (
-        <span className="text-xs text-foreground/60">({count})</span>
+        <span className="text-xs text-muted-foreground">({count})</span>
       ) : null}
     </div>
   );

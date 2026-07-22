@@ -83,7 +83,7 @@ export function ViewToggle({ className }: { className?: string } = {}) {
               "flex items-center gap-1.5 rounded-lg px-2 py-1 text-xs font-normal transition-all relative z-10",
               active
                 ? "text-foreground"
-                : "text-foreground/40 hover:text-foreground/80 hover:bg-muted/20",
+                : "text-muted-foreground hover:text-foreground/80 hover:bg-muted/20",
               breakpoint === "xs" && "flex sm:hidden",
               breakpoint === "sm" && "hidden sm:flex",
               breakpoint === "lg" && "hidden lg:flex"

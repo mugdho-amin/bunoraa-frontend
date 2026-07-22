@@ -4,7 +4,7 @@ import { generatePageMetadata } from "@/components/pages/PagesSlugPageContent";
 
 const PagesSlugPageContent = dynamic(
   () => import("@/components/pages/PagesSlugPageContent").then((mod) => mod.PagesSlugPageContent),
-  { loading: () => <div className="p-8 text-center text-sm text-foreground/60">Loading page...</div> }
+  { loading: () => <div className="p-8 text-center text-sm text-muted-foreground">Loading page...</div> }
 );
 
 export async function generateMetadata({

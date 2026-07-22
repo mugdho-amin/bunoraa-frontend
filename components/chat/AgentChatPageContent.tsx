@@ -96,7 +96,7 @@ function Avatar({ name, url }: { name?: string | null; url?: string | null }) {
           className="object-cover"
         />
       ) : (
-        <div className="flex h-full w-full items-center justify-center text-[10px] font-semibold text-foreground/60">
+        <div className="flex h-full w-full items-center justify-center text-[10px] font-semibold text-muted-foreground">
           {initials(name)}
         </div>
       )}
@@ -334,8 +334,8 @@ function AgentChatConsole() {
     }
   };
 
-  if (profileQuery.isLoading) return <div className="p-8 text-sm text-foreground/70">Loading...</div>;
-  if (!isStaff) return <div className="p-8 text-sm text-foreground/70">Staff access required.</div>;
+  if (profileQuery.isLoading) return <div className="p-8 text-sm text-muted-foreground">Loading...</div>;
+  if (!isStaff) return <div className="p-8 text-sm text-muted-foreground">Staff access required.</div>;
 
   const messages = selectedConversation.data?.messages || [];
 
@@ -353,7 +353,7 @@ function AgentChatConsole() {
           <input className="w-full rounded border border-border bg-card px-3 py-2 text-xs" placeholder="Subject" value={targetSubject} onChange={(e) => setTargetSubject(e.target.value)} />
           <Button size="sm" onClick={() => targetUserId.trim() && startForUser.mutate({ user_id: targetUserId.trim(), subject: targetSubject || "Support" })}>Start User Chat</Button>
           <div className="space-y-2">
-            <div className="text-xs font-semibold uppercase tracking-[0.2em] text-foreground/60">Queue</div>
+            <div className="text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground">Queue</div>
             {(queue.data || []).map((conversation) => (
               <div key={conversation.id} className="rounded border border-border p-2 text-xs">
                 <div className="truncate font-semibold">{conversation.customer_name || conversation.customer_email || "Guest"}</div>
@@ -366,7 +366,7 @@ function AgentChatConsole() {
             {filteredCanned.map((item) => (
               <button key={item.id} className="w-full rounded border border-border px-2 py-1 text-left text-xs" onClick={() => setMessageInput(item.content)}>
                 <div className="font-semibold">{item.title}</div>
-                <div className="text-foreground/60">{item.shortcut}</div>
+                <div className="text-muted-foreground">{item.shortcut}</div>
               </button>
             ))}
           </div>
@@ -375,7 +375,7 @@ function AgentChatConsole() {
         <Card variant="bordered" className="space-y-3">
           <div className="flex flex-wrap gap-2">
             {statusOptions.map((status) => (
-              <button key={status} className={cn("rounded-full border px-3 py-1 text-xs", statusFilter === status ? "border-primary/60 bg-primary/10 text-primary" : "border-border text-foreground/60")} onClick={() => setStatusFilter(status)}>
+              <button key={status} className={cn("rounded-full border px-3 py-1 text-xs", statusFilter === status ? "border-primary/60 bg-primary/10 text-primary" : "border-border text-muted-foreground")} onClick={() => setStatusFilter(status)}>
                 {status}
               </button>
             ))}
@@ -389,7 +389,7 @@ function AgentChatConsole() {
                   <Avatar name={conversation.customer_name || conversation.customer_email} url={conversation.customer_avatar_url || null} />
                   <div className="min-w-0">
                     <div className="truncate text-sm font-semibold">{conversation.customer_name || conversation.customer_email || "Guest"}</div>
-                    <div className="truncate text-xs text-foreground/60">{conversation.subject || "No subject"}</div>
+                    <div className="truncate text-xs text-muted-foreground">{conversation.subject || "No subject"}</div>
                   </div>
                 </div>
               </button>
@@ -398,7 +398,7 @@ function AgentChatConsole() {
         </Card>
 
         <Card variant="bordered" className="flex h-full flex-col">
-          {!selectedConversation.data && <div className="p-6 text-sm text-foreground/60">Select a conversation.</div>}
+          {!selectedConversation.data && <div className="p-6 text-sm text-muted-foreground">Select a conversation.</div>}
           {selectedConversation.data && (
             <div className="flex h-full flex-col gap-3">
               <div className="border-b border-border pb-3">
@@ -411,7 +411,7 @@ function AgentChatConsole() {
                     <div className="text-sm font-semibold">
                       {selectedConversation.data.customer_name || selectedConversation.data.customer_email || "Guest"}
                     </div>
-                    <div className="text-xs text-foreground/60">
+                    <div className="text-xs text-muted-foreground">
                       {selectedConversation.data.subject || "Conversation"}
                     </div>
                   </div>
@@ -459,7 +459,7 @@ function AgentChatConsole() {
                                   <Paperclip className="h-3 w-3 shrink-0" />
                                   <span className="truncate">{attachment.file_name || "Attachment"}</span>
                                 </span>
-                                <span className={cn("shrink-0", msg.is_from_customer ? "text-foreground/60" : "text-white/80")}>
+                                <span className={cn("shrink-0", msg.is_from_customer ? "text-muted-foreground" : "text-white/80")}>
                                   {formatFileSize(attachment.file_size)}
                                 </span>
                               </a>
@@ -467,7 +467,7 @@ function AgentChatConsole() {
                           })}
                         </div>
                       ) : null}
-                      <div className={cn("mt-1 text-[10px]", msg.is_from_customer ? "text-foreground/50" : "text-white/80")}>
+                      <div className={cn("mt-1 text-[10px]", msg.is_from_customer ? "text-muted-foreground" : "text-white/80")}>
                         {new Date(msg.created_at).toLocaleTimeString()}
                       </div>
                     </div>
@@ -487,7 +487,7 @@ function AgentChatConsole() {
                         </span>
                         <button
                           type="button"
-                          className="ml-2 flex h-5 w-5 min-h-5 min-w-5 items-center justify-center rounded-full text-foreground/70 hover:bg-muted hover:text-foreground"
+                          className="ml-2 flex h-5 w-5 min-h-5 min-w-5 items-center justify-center rounded-full text-muted-foreground hover:bg-muted hover:text-foreground"
                           onClick={() => removePendingFile(index)}
                           aria-label={`Remove ${file.name}`}
                         >
@@ -508,7 +508,7 @@ function AgentChatConsole() {
                 <div className="flex items-center gap-2">
                   <button
                     type="button"
-                    className="flex h-10 w-10 min-h-10 min-w-10 items-center justify-center rounded-lg border border-border bg-background text-foreground/70 transition hover:bg-muted hover:text-foreground disabled:opacity-60"
+                    className="flex h-10 w-10 min-h-10 min-w-10 items-center justify-center rounded-lg border border-border bg-background text-muted-foreground transition hover:bg-muted hover:text-foreground disabled:opacity-60"
                     onClick={() => fileInputRef.current?.click()}
                     disabled={isSending}
                     aria-label="Add files"

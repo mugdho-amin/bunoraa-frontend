@@ -17,7 +17,7 @@ export function AppliedFilters({ variant = "default" }: { variant?: "default" | 
   if (variant === "minimal") {
     return (
       <div className="flex flex-wrap items-center gap-2">
-        <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-foreground/55">
+        <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
           Active filters
         </p>
         {applied.map((filter) => (
@@ -52,7 +52,7 @@ export function AppliedFilters({ variant = "default" }: { variant?: "default" | 
   return (
     <div className="rounded-xl border border-border/70 bg-card/40 p-3">
       <div className="flex items-center justify-between gap-3">
-        <p className="text-xs font-medium uppercase tracking-[0.14em] text-foreground/60">
+        <p className="text-xs font-medium uppercase tracking-[0.14em] text-muted-foreground">
           Applied filters
         </p>
         <Button

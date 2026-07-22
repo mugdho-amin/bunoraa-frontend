@@ -16,21 +16,22 @@ const QuickViewModal = dynamic(
 );
 
 function gridColsClass(cols: number, cardStyle: string): string {
+  // Mobile-first: 2-up on phones, scale up at sm/md/lg without horizontal overflow
   if (cardStyle === "fashion") {
     if (cols === 1) return "grid-cols-1";
     if (cols === 2) return "grid-cols-2";
-    if (cols === 6) return "grid-cols-2 lg:grid-cols-6";
-    return "grid-cols-2 lg:grid-cols-4";
+    if (cols === 6) return "grid-cols-2 xs:grid-cols-3 md:grid-cols-4 lg:grid-cols-6";
+    return "grid-cols-2 md:grid-cols-3 lg:grid-cols-4";
   }
   if (cardStyle === "minimal") {
     if (cols === 1) return "grid-cols-1";
     if (cols === 2) return "grid-cols-2";
-    if (cols === 6) return "grid-cols-2 sm:grid-cols-3 lg:grid-cols-6";
+    if (cols === 6) return "grid-cols-2 xs:grid-cols-3 md:grid-cols-4 lg:grid-cols-6";
     return "grid-cols-2 sm:grid-cols-3 lg:grid-cols-4";
   }
   if (cols === 1) return "grid-cols-1";
   if (cols === 2) return "grid-cols-2";
-  if (cols === 6) return "grid-cols-2 sm:grid-cols-3 lg:grid-cols-6";
+  if (cols === 6) return "grid-cols-2 xs:grid-cols-3 md:grid-cols-4 lg:grid-cols-6";
   return "grid-cols-2 sm:grid-cols-3 lg:grid-cols-4";
 }
 
@@ -58,7 +59,7 @@ export function ProductGrid({
 
   if (isLoading) {
     return (
-      <div className={cn("grid gap-4 sm:gap-6", gridColsClass(cols, cardStyle))}>
+      <div className={cn("grid gap-3 xs:gap-4 sm:gap-5 lg:gap-6", gridColsClass(cols, cardStyle))}>
         {Array.from({ length: 6 }).map((_, index) => (
           <ProductCardSkeleton key={index} />
         ))}
@@ -78,8 +79,8 @@ export function ProductGrid({
           </svg>
         </div>
         <h3 className="text-lg font-semibold tracking-tight text-foreground">No products found</h3>
-        <p className="mx-auto mt-2 max-w-md text-sm text-foreground/65 text-pretty">{emptyMessage}</p>
-        <p className="mt-3 text-xs text-foreground/45">
+        <p className="mx-auto mt-2 max-w-md text-sm text-muted-foreground text-pretty">{emptyMessage}</p>
+        <p className="mt-3 text-xs text-muted-foreground">
           Try adjusting your filters or search terms.
         </p>
       </div>
@@ -90,7 +91,7 @@ export function ProductGrid({
     <>
       <div
         className={cn(
-          "grid gap-x-2 gap-y-5 sm:gap-x-3 sm:gap-y-6",
+          "grid gap-x-2.5 gap-y-5 xs:gap-x-3 sm:gap-x-4 sm:gap-y-6 lg:gap-x-5",
           gridColsClass(cols, cardStyle)
         )}
       >

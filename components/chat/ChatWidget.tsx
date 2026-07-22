@@ -370,14 +370,14 @@ export function ChatWidget() {
                       className="object-cover"
                     />
                   ) : (
-                    <div className="flex h-full w-full items-center justify-center text-[11px] font-semibold text-foreground/60">
+                    <div className="flex h-full w-full items-center justify-center text-[11px] font-semibold text-muted-foreground">
                       {initials(receiverName)}
                     </div>
                   )}
                 </div>
                 <div>
                   <p className="text-sm font-semibold leading-tight">{receiverName}</p>
-                  <p className="text-[11px] text-foreground/60">
+                  <p className="text-[11px] text-muted-foreground">
                     Support chat{" "}
                     {wsState === "open" ? " - Live" : wsState === "connecting" ? " - Connecting..." : " - Offline"}
                   </p>
@@ -385,7 +385,7 @@ export function ChatWidget() {
               </div>
               <button
                 type="button"
-                className="flex h-10 w-10 items-center justify-center rounded-full border border-border bg-background/80 text-foreground/70 shadow-sm transition hover:bg-muted hover:text-foreground"
+                className="flex h-10 w-10 items-center justify-center rounded-full border border-border bg-background/80 text-muted-foreground shadow-sm transition hover:bg-muted hover:text-foreground"
                 onClick={() => setOpen(false)}
                 aria-label="Close chat"
               >
@@ -395,7 +395,7 @@ export function ChatWidget() {
 
             {!hasToken ? (
               <div className="flex h-full flex-col items-center justify-center gap-3 rounded-xl border border-dashed border-border/70 bg-background/60 p-4 text-center">
-                <p className="text-sm text-foreground/70">
+                <p className="text-sm text-muted-foreground">
                   Sign in to start a secure support chat with your account.
                 </p>
                 <Link
@@ -412,7 +412,7 @@ export function ChatWidget() {
                   style={{ scrollbarGutter: "stable" }}
                 >
                   {messages.length === 0 ? (
-                    <p className="text-foreground/60">Start a conversation.</p>
+                    <p className="text-muted-foreground">Start a conversation.</p>
                   ) : (
                     messages.map((msg) => {
                       const isMine = msg.is_from_customer;
@@ -436,7 +436,7 @@ export function ChatWidget() {
                                   className="object-cover"
                                 />
                               ) : (
-                                <div className="flex h-full w-full items-center justify-center text-[10px] font-semibold text-foreground/60">
+                                <div className="flex h-full w-full items-center justify-center text-[10px] font-semibold text-muted-foreground">
                                   {initials(receiverName)}
                                 </div>
                               )}
@@ -471,7 +471,7 @@ export function ChatWidget() {
                                         <Paperclip className="h-3 w-3 shrink-0" />
                                         <span className="truncate">{attachment.file_name || "Attachment"}</span>
                                       </span>
-                                      <span className={cn("shrink-0", isMine ? "text-white/80" : "text-foreground/60")}>
+                                      <span className={cn("shrink-0", isMine ? "text-white/80" : "text-muted-foreground")}>
                                         {formatFileSize(attachment.file_size)}
                                       </span>
                                     </a>
@@ -498,7 +498,7 @@ export function ChatWidget() {
                           </span>
                           <button
                             type="button"
-                            className="ml-2 flex h-5 w-5 min-h-5 min-w-5 items-center justify-center rounded-full text-foreground/70 hover:bg-muted hover:text-foreground"
+                            className="ml-2 flex h-5 w-5 min-h-5 min-w-5 items-center justify-center rounded-full text-muted-foreground hover:bg-muted hover:text-foreground"
                             onClick={() => removePendingFile(index)}
                             aria-label={`Remove ${file.name}`}
                           >
@@ -519,7 +519,7 @@ export function ChatWidget() {
                   <div className="flex items-center gap-2">
                   <button
                     type="button"
-                    className="flex h-10 w-10 min-h-10 min-w-10 items-center justify-center rounded-lg border border-border bg-background text-foreground/70 transition hover:bg-muted hover:text-foreground disabled:opacity-60"
+                    className="flex h-10 w-10 min-h-10 min-w-10 items-center justify-center rounded-lg border border-border bg-background text-muted-foreground transition hover:bg-muted hover:text-foreground disabled:opacity-60"
                     onClick={() => fileInputRef.current?.click()}
                     disabled={isSubmitting}
                     aria-label="Add files"

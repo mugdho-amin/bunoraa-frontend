@@ -16,25 +16,34 @@
 
 @layer base {
   :root {
-    /* Core semantic tokens (HSL channels) */
-    --background: 30 25% 99%;
-    --foreground: 20 10% 10%;
-    --primary: 14 72% 38%;
-    --accent: 38 92% 52%;
-    --secondary: 25 6% 38%;
+    /*
+     * Core semantic tokens (HSL channels only — use as hsl(var(--token))).
+     * WCAG 2 AA targets (production):
+     *  - Normal text ≥ 4.5:1  |  Large text / UI chrome ≥ 3:1
+     *  - Prefer solid muted-foreground over opacity text (e.g. text-muted-foreground)
+     *  - Primary dark enough for white label text on filled buttons
+     */
+    --background: 30 22% 99%;
+    --foreground: 22 14% 8%;
+    --primary: 14 75% 34%;
+    --accent: 36 90% 32%;
+    --secondary: 25 9% 30%;
     --card: 0 0% 100%;
-    --border: 24 12% 90%;
-    --muted: 30 18% 96%;
-    --ring: 14 72% 38%;
-    --destructive: 0 72% 51%;
-    --success: 142 71% 35%;
-    --warning: 32 95% 44%;
+    --border: 24 12% 82%;
+    --muted: 30 16% 94%;
+    --muted-foreground: 25 9% 32%;
+    --accent-foreground: 0 0% 100%;
+    --primary-foreground: 0 0% 100%;
+    --ring: 14 75% 34%;
+    --destructive: 0 72% 42%;
+    --success: 142 72% 30%;
+    --warning: 32 95% 36%;
 
     /* Elevation & surfaces */
     --surface-raised: 0 0% 100%;
-    --surface-sunken: 30 18% 97%;
-    --surface-glass: 0 0% 100% / 0.72;
-    --overlay: 20 10% 8% / 0.45;
+    --surface-sunken: 30 16% 96%;
+    --surface-glass: 0 0% 100% / 0.78;
+    --overlay: 20 12% 6% / 0.5;
 
     /* Shadows */
     --shadow-color: 20 15% 12%;
@@ -67,7 +76,7 @@
     --color-bg-muted: var(--muted);
     --color-text-primary: var(--foreground);
     --color-text-secondary: var(--secondary);
-    --color-text-muted: var(--secondary);
+    --color-text-muted: var(--muted-foreground);
     --color-text-inverse: 0 0% 100%;
     --color-border: var(--border);
     --color-border-muted: var(--border);
@@ -76,47 +85,58 @@
     --header-offset: 5.5rem;
     --mobile-header-offset: var(--header-offset);
     --mobile-sticky-footer-clearance: 0.2rem;
-    --page-gutter: clamp(0.75rem, 3.5vw, 1.25rem);
-    --content-max: 1920px;
+    --page-gutter: clamp(0.75rem, 3.2vw, 1.5rem);
+    --content-max: min(100%, 1920px);
+    --section-gap: clamp(1.5rem, 4vw, 3rem);
+    --card-pad: clamp(0.75rem, 2.5vw, 1.25rem);
     --safe-bottom: env(safe-area-inset-bottom, 0px);
     --safe-top: env(safe-area-inset-top, 0px);
     --safe-left: env(safe-area-inset-left, 0px);
     --safe-right: env(safe-area-inset-right, 0px);
     --theme-font: var(--font-poppins), "DM Sans", system-ui, -apple-system, sans-serif;
 
-    /* Fluid type */
-    --text-display: clamp(1.75rem, 4.5vw, 3rem);
-    --text-title: clamp(1.25rem, 2.8vw, 1.75rem);
-    --text-body: clamp(0.9375rem, 1.5vw, 1rem);
+    /* Fluid type — mobile-first, scales cleanly to desktop */
+    --text-display: clamp(1.625rem, 1.1rem + 2.4vw, 3rem);
+    --text-title: clamp(1.2rem, 1rem + 1.1vw, 1.75rem);
+    --text-body: clamp(0.9375rem, 0.9rem + 0.25vw, 1.0625rem);
+    --text-caption: clamp(0.75rem, 0.7rem + 0.2vw, 0.875rem);
   }
 
   .light {
-    --background: 30 25% 99%;
-    --foreground: 20 10% 10%;
-    --primary: 14 72% 38%;
-    --accent: 38 92% 52%;
-    --secondary: 25 6% 38%;
+    --background: 30 22% 99%;
+    --foreground: 22 14% 8%;
+    --primary: 14 75% 34%;
+    --primary-foreground: 0 0% 100%;
+    --accent: 36 90% 32%;
+    --accent-foreground: 0 0% 100%;
+    --secondary: 25 9% 30%;
     --card: 0 0% 100%;
-    --border: 24 12% 90%;
-    --muted: 30 18% 96%;
-    --ring: 14 72% 38%;
+    --border: 24 12% 82%;
+    --muted: 30 16% 94%;
+    --muted-foreground: 25 9% 32%;
+    --ring: 14 75% 34%;
     --theme-font: var(--font-poppins), system-ui, sans-serif;
   }
 
   .dark {
-    --background: 20 10% 6%;
-    --foreground: 30 20% 98%;
-    --primary: 16 78% 52%;
+    /* Brighter brand hues for text/icons on dark surfaces;
+       *-foreground stays near-black for filled buttons (AA white-on-bright fails). */
+    --background: 20 12% 6%;
+    --foreground: 30 16% 97%;
+    --primary: 16 82% 58%;
+    --primary-foreground: 20 14% 8%;
     --accent: 38 92% 58%;
-    --secondary: 25 8% 68%;
-    --card: 20 10% 9%;
-    --border: 20 8% 18%;
-    --muted: 20 8% 12%;
-    --ring: 16 78% 52%;
-    --surface-raised: 20 10% 11%;
-    --surface-sunken: 20 10% 5%;
-    --surface-glass: 20 10% 10% / 0.78;
-    --overlay: 0 0% 0% / 0.55;
+    --accent-foreground: 24 20% 8%;
+    --secondary: 25 10% 74%;
+    --card: 20 12% 9%;
+    --border: 20 10% 24%;
+    --muted: 20 10% 13%;
+    --muted-foreground: 25 10% 74%;
+    --ring: 16 82% 58%;
+    --surface-raised: 20 12% 11%;
+    --surface-sunken: 20 12% 4%;
+    --surface-glass: 20 12% 10% / 0.82;
+    --overlay: 0 0% 0% / 0.6;
     --shadow-color: 0 0% 0%;
     --color-text-inverse: 0 0% 0%;
     --theme-font: var(--font-poppins), system-ui, sans-serif;
@@ -124,66 +144,79 @@
 
   .moonlight {
     --background: 222 35% 9%;
-    --foreground: 210 40% 96%;
-    --primary: 200 80% 58%;
-    --accent: 270 80% 68%;
-    --secondary: 215 25% 70%;
+    --foreground: 210 40% 97%;
+    --primary: 200 84% 54%;
+    --primary-foreground: 222 40% 8%;
+    --accent: 270 70% 66%;
+    --accent-foreground: 270 40% 10%;
+    --secondary: 215 22% 74%;
     --card: 222 30% 13%;
-    --border: 220 20% 24%;
-    --muted: 220 20% 16%;
-    --ring: 200 80% 58%;
+    --border: 220 20% 28%;
+    --muted: 220 22% 15%;
+    --muted-foreground: 215 22% 74%;
+    --ring: 200 84% 54%;
     --surface-raised: 222 30% 15%;
     --surface-sunken: 222 35% 7%;
-    --surface-glass: 222 30% 14% / 0.8;
+    --surface-glass: 222 30% 14% / 0.84;
     --theme-font: var(--font-poppins), system-ui, sans-serif;
   }
 
   .gray {
     --background: 0 0% 100%;
-    --foreground: 0 0% 10%;
+    --foreground: 0 0% 8%;
     --primary: 0 0% 10%;
+    --primary-foreground: 0 0% 100%;
     --accent: 0 0% 22%;
-    --secondary: 0 0% 35%;
+    --accent-foreground: 0 0% 100%;
+    --secondary: 0 0% 30%;
     --card: 0 0% 100%;
-    --border: 0 0% 88%;
-    --muted: 0 0% 96%;
+    --border: 0 0% 82%;
+    --muted: 0 0% 95%;
+    --muted-foreground: 0 0% 32%;
     --ring: 0 0% 10%;
     --theme-font: var(--font-dm-sans), system-ui, sans-serif;
   }
 
   .modern {
     --background: 210 24% 98%;
-    --foreground: 222 22% 12%;
-    --primary: 255 60% 52%;
-    --accent: 190 90% 42%;
-    --secondary: 230 15% 42%;
+    --foreground: 222 24% 10%;
+    --primary: 255 62% 42%;
+    --primary-foreground: 0 0% 100%;
+    --accent: 190 90% 30%;
+    --accent-foreground: 0 0% 100%;
+    --secondary: 230 16% 34%;
     --card: 0 0% 100%;
-    --border: 220 16% 88%;
-    --muted: 220 18% 95%;
-    --ring: 255 60% 52%;
+    --border: 220 16% 82%;
+    --muted: 220 18% 94%;
+    --muted-foreground: 230 14% 34%;
+    --ring: 255 62% 42%;
     --theme-font: var(--font-dm-sans), system-ui, sans-serif;
   }
 
   .system {
-    --background: 30 25% 99%;
-    --foreground: 20 10% 10%;
-    --primary: 14 72% 38%;
-    --accent: 38 92% 52%;
-    --secondary: 25 6% 38%;
+    --background: 30 22% 99%;
+    --foreground: 22 14% 8%;
+    --primary: 14 75% 34%;
+    --primary-foreground: 0 0% 100%;
+    --accent: 36 90% 32%;
+    --accent-foreground: 0 0% 100%;
+    --secondary: 25 9% 30%;
     --card: 0 0% 100%;
-    --border: 24 12% 90%;
-    --muted: 30 18% 96%;
-    --ring: 14 72% 38%;
+    --border: 24 12% 82%;
+    --muted: 30 16% 94%;
+    --muted-foreground: 25 9% 32%;
+    --ring: 14 75% 34%;
     --theme-font: var(--font-dm-sans), system-ui, sans-serif;
   }
 
   body {
     @apply bg-background text-foreground font-sans antialiased;
     font-family: var(--theme-font);
+    font-size: var(--text-body);
     min-height: 100vh;
     min-height: 100dvh;
-    line-height: 1.55;
-    overflow-x: hidden;
+    line-height: 1.6;
+    overflow-x: clip;
     text-rendering: optimizeLegibility;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
@@ -196,6 +229,7 @@
     text-size-adjust: 100%;
     scroll-behavior: smooth;
     scroll-padding-top: calc(var(--mobile-header-offset, var(--header-offset)) + 0.5rem);
+    overflow-x: clip;
   }
 
   *,
@@ -213,6 +247,19 @@
     display: block;
     max-width: 100%;
     height: auto;
+  }
+
+  /* Tables / wide content: never blow out the viewport */
+  table {
+    display: block;
+    width: 100%;
+    max-width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  iframe {
+    max-width: 100%;
   }
 
   input,
@@ -438,7 +485,43 @@
   }
 
   .section-eyebrow {
-    @apply text-[11px] font-semibold uppercase tracking-[0.18em] text-foreground/55 sm:text-xs sm:tracking-[0.2em];
+    @apply text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground sm:text-xs sm:tracking-[0.2em];
+  }
+
+  .text-muted-fg {
+    color: hsl(var(--muted-foreground));
+  }
+
+  /* Responsive media wrappers */
+  .media-cover {
+    @apply relative w-full overflow-hidden;
+  }
+
+  .media-cover > img,
+  .media-cover > video {
+    @apply h-full w-full object-cover;
+  }
+
+  /* Horizontal scroll row (product rails, chips) */
+  .scroll-row {
+    @apply flex gap-3 overflow-x-auto overscroll-x-contain pb-1;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+
+  .scroll-row > * {
+    scroll-snap-align: start;
+    flex: 0 0 auto;
+  }
+
+  .scroll-row::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* Responsive stack → row utility */
+  .stack-to-row {
+    @apply flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between;
   }
 
   .surface-card {
@@ -564,10 +647,19 @@
   }
 }
 
+/* Small phones */
+@media (max-width: 379px) {
+  :root {
+    --page-gutter: 0.75rem;
+    --header-offset: 4.5rem;
+  }
+}
+
+/* Phones & tablets (below lg) */
 @media (max-width: 1023px) {
   :root {
     --header-offset: 4.75rem;
-    --page-gutter: clamp(0.75rem, 4vw, 1rem);
+    --page-gutter: clamp(0.75rem, 4vw, 1.125rem);
   }
 
   body.has-mobile-sticky-cta {
@@ -619,19 +711,29 @@
 
 @media (prefers-color-scheme: dark) {
   .system {
-    --background: 20 10% 6%;
-    --foreground: 30 20% 98%;
-    --primary: 16 78% 52%;
+    --background: 20 12% 6%;
+    --foreground: 30 16% 97%;
+    --primary: 16 82% 58%;
+    --primary-foreground: 20 14% 8%;
     --accent: 38 92% 58%;
-    --secondary: 25 8% 68%;
-    --card: 20 10% 9%;
-    --border: 20 8% 18%;
-    --muted: 20 8% 12%;
-    --ring: 16 78% 52%;
-    --surface-raised: 20 10% 11%;
-    --surface-sunken: 20 10% 5%;
-    --surface-glass: 20 10% 10% / 0.78;
+    --accent-foreground: 24 20% 8%;
+    --secondary: 25 10% 74%;
+    --card: 20 12% 9%;
+    --border: 20 10% 24%;
+    --muted: 20 10% 13%;
+    --muted-foreground: 25 10% 74%;
+    --ring: 16 82% 58%;
+    --surface-raised: 20 12% 11%;
+    --surface-sunken: 20 12% 4%;
+    --surface-glass: 20 12% 10% / 0.82;
     --color-text-inverse: 0 0% 0%;
+  }
+}
+
+/* Large desktops — slightly more breathing room */
+@media (min-width: 1280px) {
+  :root {
+    --page-gutter: clamp(1.25rem, 2vw, 2rem);
   }
 }
 
@@ -648,10 +750,29 @@ html[data-reduce-motion="true"] *::after {
 /* ── Accessibility: High Contrast ── */
 html[data-high-contrast="true"] {
   --foreground: 0 0% 0%;
-  --secondary: 0 0% 15%;
-  --border: 0 0% 30%;
+  --secondary: 0 0% 12%;
+  --muted-foreground: 0 0% 15%;
+  --primary: 14 80% 28%;
+  --primary-foreground: 0 0% 100%;
+  --accent: 36 90% 28%;
+  --accent-foreground: 0 0% 100%;
+  --border: 0 0% 28%;
   --muted: 0 0% 92%;
-  filter: contrast(1.25);
+  filter: contrast(1.15);
+}
+
+html[data-high-contrast="true"].dark,
+html[data-high-contrast="true"].moonlight {
+  --foreground: 0 0% 100%;
+  --secondary: 0 0% 88%;
+  --muted-foreground: 0 0% 86%;
+  --primary: 16 85% 62%;
+  --primary-foreground: 0 0% 0%;
+  --accent: 38 92% 60%;
+  --accent-foreground: 0 0% 0%;
+  --border: 0 0% 72%;
+  --muted: 0 0% 14%;
+  filter: contrast(1.15);
 }
 
 html[data-high-contrast="true"] img,

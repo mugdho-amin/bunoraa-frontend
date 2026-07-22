@@ -60,7 +60,7 @@ export default function GlobalError({
           <h1 className="text-2xl font-bold tracking-tight text-foreground sm:text-3xl text-balance">
             {title}
           </h1>
-          <p className="text-sm leading-relaxed text-foreground/60 text-pretty sm:text-base">
+          <p className="text-sm leading-relaxed text-muted-foreground text-pretty sm:text-base">
             {description}
           </p>
         </div>
@@ -85,7 +85,7 @@ export default function GlobalError({
         <button
           type="button"
           onClick={() => router.back()}
-          className="flex min-h-11 items-center gap-1 text-sm font-medium text-foreground/55 transition-colors hover:text-foreground"
+          className="flex min-h-11 items-center gap-1 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
         >
           <ChevronLeft size={16} aria-hidden="true" />
           Go back to previous page

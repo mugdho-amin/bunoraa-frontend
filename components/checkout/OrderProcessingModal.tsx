@@ -21,7 +21,7 @@ export function OrderProcessingModal({ isOpen }: { isOpen: boolean }) {
         <h2 className="text-2xl font-semibold">
           {t("processing_your_order", "Processing your order")}
         </h2>
-        <p className="mt-3 text-sm text-foreground/60">
+        <p className="mt-3 text-sm text-muted-foreground">
           {t("processing_order_wait", "Please wait while we finalize your order and redirect you.")}
         </p>
       </Card>

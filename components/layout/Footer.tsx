@@ -512,7 +512,7 @@ export async function Footer() {
     address: MapPinHouse,
   } as const;
   const contactIconContainerClass =
-    "mt-0.5 inline-flex h-5 w-5 shrink-0 items-center justify-center text-foreground/60";
+    "mt-0.5 inline-flex h-5 w-5 shrink-0 items-center justify-center text-muted-foreground";
   const contactIconSize = 18;
   const contactIconStroke = 1.9;
 
@@ -520,23 +520,23 @@ export async function Footer() {
     "group rounded-xl border border-border bg-background/40";
   const footerSummaryClass =
     "flex min-h-11 cursor-pointer list-none items-center justify-between gap-3 px-4 py-3 text-sm font-semibold text-foreground/90 [&::-webkit-details-marker]:hidden";
-  const footerListClass = "space-y-2 border-t border-border px-4 pb-4 pt-3 text-sm text-foreground/70";
+  const footerListClass = "space-y-2 border-t border-border px-4 pb-4 pt-3 text-sm text-muted-foreground";
   const footerListLinkClass = "transition-colors hover:text-foreground";
   const shopBrowseAllCtaClass =
     "inline-flex items-center rounded-md border border-border bg-muted/30 px-2.5 py-1 text-xs font-medium text-foreground transition-colors hover:border-foreground/40 hover:bg-muted hover:text-foreground";
   const socialIconLinkClass =
-    "inline-flex h-8 w-8 items-center justify-center rounded-full border border-border bg-background text-foreground/75 transition hover:border-foreground/40 hover:text-foreground";
+    "inline-flex h-8 w-8 items-center justify-center rounded-full border border-border bg-background text-muted-foreground transition hover:border-foreground/40 hover:text-foreground";
 
   return (
     <footer id="footer" className="mt-auto border-t border-border/80 bg-card pb-[max(1rem,env(safe-area-inset-bottom))]">
-      <div className="mx-auto w-full max-w-[1920px] px-3 pb-6 pt-10 sm:px-5 sm:pb-8 sm:pt-14">
+      <div className="mx-auto w-full max-w-content px-[var(--page-gutter)] pb-6 pt-10 sm:pb-8 sm:pt-14">
         <div className="space-y-6 lg:hidden">
           <div className="space-y-4 rounded-2xl border border-border/60 bg-muted/20 p-4 sm:p-5">
             <div>
-              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-foreground/55">
+              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground">
                 {brandName}
               </p>
-              <p className="mt-2 text-sm leading-relaxed text-foreground/70 text-pretty">{brandDescription}</p>
+              <p className="mt-2 text-sm leading-relaxed text-muted-foreground text-pretty">{brandDescription}</p>
             </div>
             <FooterNewsletter />
           </div>
@@ -562,17 +562,17 @@ export async function Footer() {
         <div className="hidden gap-8 sm:grid-cols-2 lg:grid lg:grid-cols-6">
           <div className="space-y-4 sm:col-span-2 lg:col-span-2">
             <div>
-              <p className="text-sm uppercase tracking-[0.2em] text-foreground/60">
+              <p className="text-sm uppercase tracking-[0.2em] text-muted-foreground">
                 {brandName}
               </p>
-              <p className="mt-2 text-sm text-foreground/70">{brandDescription}</p>
+              <p className="mt-2 text-sm text-muted-foreground">{brandDescription}</p>
             </div>
             <FooterNewsletter />
           </div>
 
           <div>
             <p className="text-sm font-semibold">Shop</p>
-            <ul className="mt-3 space-y-2 text-sm text-foreground/70">
+            <ul className="mt-3 space-y-2 text-sm text-muted-foreground">
               {shopLinks.map((item) => (
                 <li key={item.key}>
                   <Link
@@ -597,7 +597,7 @@ export async function Footer() {
 
           <div>
             <p className="text-sm font-semibold">Collections</p>
-            <ul className="mt-3 space-y-2 text-sm text-foreground/70">
+            <ul className="mt-3 space-y-2 text-sm text-muted-foreground">
               {collectionLinks.map((item) => (
                 <li key={item.key}>
                   <Link href={item.href} className={footerListLinkClass}>
@@ -610,7 +610,7 @@ export async function Footer() {
 
           <div>
             <p className="text-sm font-semibold">Company & Support</p>
-            <ul className="mt-3 space-y-2 text-sm text-foreground/70">
+            <ul className="mt-3 space-y-2 text-sm text-muted-foreground">
               {companySupportLinks.map((item) => (
                 <li key={item.href}>
                   <Link href={item.href} className={footerListLinkClass}>
@@ -623,7 +623,7 @@ export async function Footer() {
 
           <div>
             <p className="text-sm font-semibold">Contact & Location</p>
-            <ul className="mt-3 space-y-2 text-sm text-foreground/70">
+            <ul className="mt-3 space-y-2 text-sm text-muted-foreground">
               {contactItems.map((item) => {
                 const Icon = contactIconMap[item.kind];
                 return (
@@ -680,11 +680,11 @@ export async function Footer() {
         >
           <div className="flex flex-col gap-2 sm:gap-3 lg:flex-row lg:items-center lg:justify-between">
             <FooterPreferencesDialog />
-            <p className="text-center text-xs leading-normal text-foreground/60 lg:text-left">
+            <p className="text-center text-xs leading-normal text-muted-foreground lg:text-left">
               &copy; {new Date().getFullYear()} {copyrightText}
             </p>
             {footerLegalLinks.length ? (
-              <ul className="flex flex-wrap items-center justify-center gap-x-3 gap-y-1 text-xs text-foreground/70 lg:justify-end">
+              <ul className="flex flex-wrap items-center justify-center gap-x-3 gap-y-1 text-xs text-muted-foreground lg:justify-end">
                 {footerLegalLinks.map((item) => (
                   <li key={item.key}>
                     <Link href={item.href} className="hover:text-foreground">

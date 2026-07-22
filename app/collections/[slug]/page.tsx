@@ -4,7 +4,7 @@ import { generateCollectionMetadata } from "@/components/collections/CollectionD
 
 const CollectionDetailPageContent = dynamic(
   () => import("@/components/collections/CollectionDetailPageContent").then((mod) => mod.CollectionDetailPageContent),
-  { loading: () => <div className="p-8 text-center text-sm text-foreground/60">Loading collection...</div> }
+  { loading: () => <div className="p-8 text-center text-sm text-muted-foreground">Loading collection...</div> }
 );
 
 export async function generateMetadata({

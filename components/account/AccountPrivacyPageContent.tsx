@@ -54,18 +54,18 @@ export function AccountPrivacyPageContent() {
   return (
     <div className="space-y-6">
       <div>
-        <p className="text-sm uppercase tracking-[0.2em] text-foreground/60">
+        <p className="text-sm uppercase tracking-[0.2em] text-muted-foreground">
           Account
         </p>
         <h1 className="text-3xl font-semibold">Privacy & data</h1>
-        <p className="mt-2 text-sm text-foreground/70">
+        <p className="mt-2 text-sm text-muted-foreground">
           Export your data or schedule account deletion.
         </p>
       </div>
 
       <Card variant="bordered" className="space-y-4">
         <h2 className="text-lg font-semibold">Data export</h2>
-        <p className="text-sm text-foreground/70">
+        <p className="text-sm text-muted-foreground">
           Generate a downloadable archive of your profile, orders, and
           preferences.
         </p>
@@ -84,7 +84,7 @@ export function AccountPrivacyPageContent() {
               >
                 <div>
                   <p className="font-semibold capitalize">{job.status}</p>
-                  <p className="text-xs text-foreground/60">
+                  <p className="text-xs text-muted-foreground">
                     Requested: {job.requested_at}
                   </p>
                 </div>
@@ -96,7 +96,7 @@ export function AccountPrivacyPageContent() {
                     Download
                   </a>
                 ) : (
-                  <span className="text-xs text-foreground/60">
+                  <span className="text-xs text-muted-foreground">
                     Preparing file
                   </span>
                 )}
@@ -108,7 +108,7 @@ export function AccountPrivacyPageContent() {
 
       <Card variant="bordered" className="space-y-4">
         <h2 className="text-lg font-semibold">Delete account</h2>
-        <p className="text-sm text-foreground/70">
+        <p className="text-sm text-muted-foreground">
           Schedule account deletion. You can cancel before the grace period
           ends.
         </p>
@@ -137,14 +137,14 @@ export function AccountPrivacyPageContent() {
           </Button>
         </div>
         {deletionQuery.data ? (
-          <div className="rounded-lg border border-border bg-muted p-3 text-sm text-foreground/70">
+          <div className="rounded-lg border border-border bg-muted p-3 text-sm text-muted-foreground">
             Status: {deletionQuery.data.status || "pending"}
             {deletionQuery.data.scheduled_for ? (
               <p>Scheduled for: {deletionQuery.data.scheduled_for}</p>
             ) : null}
           </div>
         ) : (
-          <p className="text-sm text-foreground/60">No deletion request.</p>
+          <p className="text-sm text-muted-foreground">No deletion request.</p>
         )}
       </Card>
     </div>

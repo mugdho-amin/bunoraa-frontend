@@ -4,7 +4,7 @@ import { Card } from "@/components/ui/Card";
 function CartSkeleton() {
   return (
     <div className="min-h-screen bg-background text-foreground">
-      <div className="mx-auto w-full max-w-[1400px] px-3 sm:px-5 py-12">
+      <div className="mx-auto w-full max-w-[1400px] px-[var(--page-gutter)] py-12">
         <div className="h-8 w-48 rounded bg-muted animate-pulse" />
         <div className="mt-8 grid gap-8 lg:grid-cols-[1.25fr_0.75fr]">
           <div className="space-y-4">

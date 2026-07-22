@@ -176,11 +176,11 @@ export function CheckoutPaymentStep({
   return (
     <Card variant="bordered" className="space-y-6">
       <div>
-        <p className="text-xs uppercase tracking-[0.3em] text-foreground/60">
+        <p className="text-xs uppercase tracking-[0.3em] text-muted-foreground">
           Step 3
         </p>
         <h2 className="text-xl font-semibold">Payment method</h2>
-        <p className="text-sm text-foreground/60">
+        <p className="text-sm text-muted-foreground">
           Select how you want to pay. We will not collect card details here.
         </p>
       </div>
@@ -190,12 +190,12 @@ export function CheckoutPaymentStep({
           <div className="flex items-center justify-between text-sm">
             <p className="font-semibold">Available gateways</p>
             {isLoadingGateways ? (
-              <span className="text-xs text-foreground/60">Loading...</span>
+              <span className="text-xs text-muted-foreground">Loading...</span>
             ) : isAutoSaving ? (
-              <span className="text-xs text-foreground/60">Saving...</span>
+              <span className="text-xs text-muted-foreground">Saving...</span>
             ) : null}
           </div>
-          <p className="text-xs text-foreground/60">
+          <p className="text-xs text-muted-foreground">
             Showing gateways based on your selected currency.
           </p>
           {gateways.length ? (
@@ -227,18 +227,18 @@ export function CheckoutPaymentStep({
                       <div>
                         <p className="font-semibold">{gateway.name}</p>
                         {gateway.description ? (
-                          <p className="text-xs text-foreground/60">
+                          <p className="text-xs text-muted-foreground">
                             {gateway.description}
                           </p>
                         ) : null}
                         {gateway.instructions ? (
-                          <p className="text-xs text-foreground/60">
+                          <p className="text-xs text-muted-foreground">
                             {gateway.instructions}
                           </p>
                         ) : null}
                       </div>
                     </div>
-                    <div className="self-end text-right text-xs text-foreground/60 sm:self-auto">
+                    <div className="self-end text-right text-xs text-muted-foreground sm:self-auto">
                       {gateway.fee_amount_converted !== null &&
                       gateway.fee_amount_converted !== undefined ? (
                         <p>
@@ -257,7 +257,7 @@ export function CheckoutPaymentStep({
               })}
             </div>
           ) : (
-            <p className="text-sm text-foreground/60">
+            <p className="text-sm text-muted-foreground">
               No payment gateways available for this order.
             </p>
           )}
@@ -267,7 +267,7 @@ export function CheckoutPaymentStep({
         {savedMethods.length ? (
           <div className="space-y-2 rounded-xl border border-border bg-muted/40 p-4 text-sm">
             <p className="font-semibold">Saved payment methods</p>
-            <div className="space-y-1 text-xs text-foreground/70">
+            <div className="space-y-1 text-xs text-muted-foreground">
               {savedMethods.map((method) => (
                 <div key={method.id} className="flex items-center justify-between">
                   <span>

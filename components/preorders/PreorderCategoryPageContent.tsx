@@ -13,8 +13,8 @@ export function PreorderCategoryPageContent({ category }: { category: PreorderCa
           <div className="flex items-start justify-between gap-4">
             <div className="space-y-2">
               <h1 className="text-xl font-semibold sm:text-2xl">{category.name}</h1>
-              <p className="text-sm text-foreground/70">{category.description}</p>
-              <div className="flex flex-wrap gap-3 text-xs text-foreground/60">
+              <p className="text-sm text-muted-foreground">{category.description}</p>
+              <div className="flex flex-wrap gap-3 text-xs text-muted-foreground">
                 {category.base_price ? <span>From {formatMoney(category.base_price, "BDT")}</span> : null}
                 {category.deposit_percentage ? <span>Deposit {category.deposit_percentage}%</span> : null}
                 {category.min_production_days ? <span>{category.min_production_days}-{category.max_production_days} days</span> : null}
@@ -29,7 +29,7 @@ export function PreorderCategoryPageContent({ category }: { category: PreorderCa
         </Card>
         <Card variant="glass" className="space-y-3 p-4 sm:p-5">
           <h2 className="text-lg font-semibold">Requirements</h2>
-          <ul className="space-y-2 text-sm text-foreground/70">
+          <ul className="space-y-2 text-sm text-muted-foreground">
             <li>Minimum quantity: {category.min_quantity || 1}</li>
             <li>Maximum quantity: {category.max_quantity || "Open"}</li>
             <li>Requires design files: {category.requires_design ? "Yes" : "No"}</li>
@@ -45,8 +45,8 @@ export function PreorderCategoryPageContent({ category }: { category: PreorderCa
             {category.options.map((option) => (
               <Card key={option.id} variant="bordered" className="p-4">
                 <p className="text-sm font-semibold">{option.name}</p>
-                <p className="text-xs text-foreground/60">{option.description || option.help_text}</p>
-                <p className="mt-2 text-xs text-foreground/60">Type: {option.option_type}{option.is_required ? " - Required" : ""}</p>
+                <p className="text-xs text-muted-foreground">{option.description || option.help_text}</p>
+                <p className="mt-2 text-xs text-muted-foreground">Type: {option.option_type}{option.is_required ? " - Required" : ""}</p>
               </Card>
             ))}
           </div>

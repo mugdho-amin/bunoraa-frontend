@@ -18,8 +18,8 @@ const variantClasses: Record<BadgeVariant, string> = {
   success: "bg-success-100 text-success-800 dark:bg-success-900/40 dark:text-success-200",
   warning: "bg-warning-100 text-warning-800 dark:bg-warning-900/40 dark:text-warning-200",
   error: "bg-error-100 text-error-800 dark:bg-error-900/40 dark:text-error-200",
-  outline: "border border-border bg-transparent text-foreground/80",
-  muted: "bg-muted text-foreground/70",
+  outline: "border border-border bg-transparent text-foreground",
+  muted: "bg-muted text-muted-foreground",
 };
 
 export type BadgeProps = React.HTMLAttributes<HTMLSpanElement> & {

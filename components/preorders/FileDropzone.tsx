@@ -44,14 +44,14 @@ export function FileDropzone({
         </button>
       </div>
       {description ? (
-        <p className="text-xs text-foreground/60">{description}</p>
+        <p className="text-xs text-muted-foreground">{description}</p>
       ) : null}
       <div
         role="button"
         tabIndex={0}
         aria-label={label}
         className={cn(
-          "min-h-28 rounded-xl border border-dashed px-4 py-6 text-center text-sm text-foreground/70 transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:ring-offset-2 focus-visible:ring-offset-background",
+          "min-h-28 rounded-xl border border-dashed px-4 py-6 text-center text-sm text-muted-foreground transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:ring-offset-2 focus-visible:ring-offset-background",
           dragActive ? "border-primary bg-primary/5" : "border-border bg-muted/30"
         )}
         onClick={() => inputRef.current?.click()}
@@ -73,7 +73,7 @@ export function FileDropzone({
         }}
       >
         <p>Drag and drop files here, or tap to browse.</p>
-        <p className="mt-2 text-xs text-foreground/50">
+        <p className="mt-2 text-xs text-muted-foreground">
           {multiple ? `Up to ${maxFiles} files` : "Single file"}
         </p>
       </div>

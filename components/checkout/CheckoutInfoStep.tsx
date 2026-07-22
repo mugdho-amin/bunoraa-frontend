@@ -273,11 +273,11 @@ export function CheckoutInfoStep({
   return (
     <Card variant="bordered" className="space-y-6">
       <div>
-        <p className="text-xs uppercase tracking-[0.3em] text-foreground/60">
+        <p className="text-xs uppercase tracking-[0.3em] text-muted-foreground">
           Step 1
         </p>
         <h2 className="text-xl font-semibold">Shipping information</h2>
-        <p className="text-sm text-foreground/60">
+        <p className="text-sm text-muted-foreground">
           Tell us where you want your order delivered.
         </p>
       </div>
@@ -351,11 +351,11 @@ export function CheckoutInfoStep({
           <div className="mt-6 space-y-4 border-t border-border pt-6">
             <div>
               <p className="text-sm font-semibold">Saved addresses</p>
-              <p className="text-xs text-foreground/60">
+              <p className="text-xs text-muted-foreground">
                 Select a saved address or enter a new one.
               </p>
               {isAutoSavingSelection ? (
-                <p className="text-xs text-foreground/60">
+                <p className="text-xs text-muted-foreground">
                   Saving selected address...
                 </p>
               ) : null}
@@ -389,9 +389,9 @@ export function CheckoutInfoStep({
                       ) : null}
                     </div>
                     {address.phone ? (
-                      <p className="text-xs text-foreground/60">{address.phone}</p>
+                      <p className="text-xs text-muted-foreground">{address.phone}</p>
                     ) : null}
-                    <p className="text-xs text-foreground/70">
+                    <p className="text-xs text-muted-foreground">
                       {formatAddressLine(address, { resolveCountryName })}
                     </p>
                   </label>
@@ -413,7 +413,7 @@ export function CheckoutInfoStep({
                   onChange={() => handleSelectAddress(NEW_ADDRESS_ID)}
                 />
                 <p className="font-semibold">Use a new address</p>
-                <p className="text-xs text-foreground/60">
+                <p className="text-xs text-muted-foreground">
                   Enter a different shipping address.
                 </p>
               </label>
@@ -527,7 +527,7 @@ export function CheckoutInfoStep({
                 />
                 <span>
                   Save this address to my account.
-                  <span className="mt-1 block text-xs text-foreground/60">
+                  <span className="mt-1 block text-xs text-muted-foreground">
                     {savedAddresses.length >= MAX_SAVED_ADDRESSES
                       ? `You can save up to ${MAX_SAVED_ADDRESSES} addresses.`
                       : "You can reuse it for future checkouts."}

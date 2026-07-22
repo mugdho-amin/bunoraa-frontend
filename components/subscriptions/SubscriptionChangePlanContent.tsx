@@ -36,11 +36,11 @@ export function SubscriptionChangePlanContent() {
 
   return (
     <AuthGate title="Change plan" description="Sign in to update your subscription.">
-      <div className="mx-auto w-full max-w-4xl px-3 sm:px-5 py-12">
+      <div className="mx-auto w-full max-w-4xl px-[var(--page-gutter)] py-12">
         <Card variant="bordered" className="space-y-4 p-6">
           <h1 className="text-2xl font-semibold">Select a new plan</h1>
           {plansQuery.isLoading ? (
-            <p className="text-sm text-foreground/70">Loading plans...</p>
+            <p className="text-sm text-muted-foreground">Loading plans...</p>
           ) : (
             <div className="space-y-2">
               {plansQuery.data?.map((plan) => (

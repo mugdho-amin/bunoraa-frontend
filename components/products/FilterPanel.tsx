@@ -43,7 +43,7 @@ function Section({ title, children }: { title: string; children: React.ReactNode
       <button
         type="button"
         onClick={() => setIsOpen(!isOpen)}
-        className="flex w-full items-center justify-between font-bold uppercase tracking-widest text-[11px] text-foreground/60 hover:text-foreground transition-colors group"
+        className="flex w-full items-center justify-between font-bold uppercase tracking-widest text-[11px] text-muted-foreground hover:text-foreground transition-colors group"
       >
         <span>{title}</span>
         <ChevronDown className={cn("h-3.5 w-3.5 transition-transform duration-300", !isOpen && "-rotate-90 opacity-40")} />
@@ -155,7 +155,7 @@ export function FilterPanel({
     return (
       <div className={cn("space-y-8 text-[13px] text-foreground/80", className)}>
         <div className="space-y-4">
-          <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-foreground/40">Price Range</h3>
+          <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground">Price Range</h3>
           <ul className="space-y-2">
             {priceBuckets.map((bucket) => {
               const isActive = String(current.priceMin || "") === String(bucket.min || "") && String(current.priceMax || "") === String(bucket.max || "");
@@ -163,7 +163,7 @@ export function FilterPanel({
                 <li key={bucket.label}>
                   <button
                     type="button"
-                    className={cn("text-left transition-colors", isActive ? "font-bold text-primary" : "text-foreground/70 hover:text-foreground")}
+                    className={cn("text-left transition-colors", isActive ? "font-bold text-primary" : "text-muted-foreground hover:text-foreground")}
                     onClick={() => {
                       const params = updateParamValue(searchParams, "price_min", bucket.min === null ? null : String(bucket.min));
                       const next = updateParamValue(params, "price_max", bucket.max === null ? null : String(bucket.max));
@@ -184,7 +184,7 @@ export function FilterPanel({
   return (
     <div className={cn("space-y-2", className)}>
       <div className="flex items-center justify-between py-2 mb-4 border-b border-border/20">
-        <span className="text-xs font-black uppercase tracking-[0.2em] text-foreground/40">
+        <span className="text-xs font-black uppercase tracking-[0.2em] text-muted-foreground">
           {typeof productCount === "number"
             ? t("product_count", "{count} products", { count: productCount })
             : t("filters", "Filters")}
@@ -210,7 +210,7 @@ export function FilterPanel({
             {categories!.filter(c => c.name && (c.product_count ?? 1) > 0).map((category) => (
               <Link
                 key={category.id}
-                className="inline-flex min-h-10 items-center rounded-xl border border-border/50 px-4 py-1.5 text-xs font-medium text-foreground/70 transition hover:border-primary/40 hover:text-foreground bg-card/20"
+                className="inline-flex min-h-10 items-center rounded-xl border border-border/50 px-4 py-1.5 text-xs font-medium text-muted-foreground transition hover:border-primary/40 hover:text-foreground bg-card/20"
                 href={getCategoryLink(category)}
               >
                 {category.name}
@@ -252,7 +252,7 @@ export function FilterPanel({
                       "inline-flex min-h-10 items-center gap-2.5 rounded-2xl border px-4 py-2 text-xs font-bold transition-all duration-300",
                       isSelected
                         ? "border-primary bg-primary text-white shadow-lg shadow-primary/20 scale-[1.03]"
-                        : "border-border/60 text-foreground/70 hover:border-border hover:bg-muted/30"
+                        : "border-border/60 text-muted-foreground hover:border-border hover:bg-muted/30"
                     )}
                     onClick={() => {
                       const params = toggleMultiValue(searchParams, `attr_${group.slug}`, item.value);
@@ -295,7 +295,7 @@ export function FilterPanel({
               )}>
                 {opt.checked && <div className="h-2 w-2 rounded-sm bg-white" />}
               </div>
-              <span className={cn("text-xs font-bold uppercase tracking-widest transition-colors", opt.checked ? "text-foreground" : "text-foreground/60")}>
+              <span className={cn("text-xs font-bold uppercase tracking-widest transition-colors", opt.checked ? "text-foreground" : "text-muted-foreground")}>
                 {opt.label}
               </span>
             </button>

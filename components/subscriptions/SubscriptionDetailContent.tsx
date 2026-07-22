@@ -36,15 +36,15 @@ export function SubscriptionDetailContent() {
 
   return (
     <AuthGate title="Subscription" description="Sign in to manage your subscription.">
-      <div className="mx-auto w-full max-w-4xl px-3 sm:px-5 py-12">
+      <div className="mx-auto w-full max-w-4xl px-[var(--page-gutter)] py-12">
         {subscriptionQuery.isLoading ? (
-          <Card variant="bordered" className="p-6 text-sm text-foreground/70">
+          <Card variant="bordered" className="p-6 text-sm text-muted-foreground">
             Loading subscription...
           </Card>
         ) : subscriptionQuery.data ? (
           <Card variant="bordered" className="space-y-4 p-6">
             <h1 className="text-2xl font-semibold">{subscriptionQuery.data.plan?.name}</h1>
-            <p className="text-sm text-foreground/70">Status: {subscriptionQuery.data.status}</p>
+            <p className="text-sm text-muted-foreground">Status: {subscriptionQuery.data.status}</p>
             <div className="flex flex-wrap gap-2">
               <Button variant="secondary" onClick={() => resume.mutate()}>
                 Reactivate
@@ -58,7 +58,7 @@ export function SubscriptionDetailContent() {
             </div>
           </Card>
         ) : (
-          <Card variant="bordered" className="p-6 text-sm text-foreground/70">
+          <Card variant="bordered" className="p-6 text-sm text-muted-foreground">
             Subscription not found.
           </Card>
         )}

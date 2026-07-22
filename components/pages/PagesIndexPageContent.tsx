@@ -36,7 +36,7 @@ export async function PagesIndexPageContent() {
 
   return (
     <div className="min-h-screen bg-background text-foreground">
-      <div className="mx-auto w-full max-w-4xl px-3 sm:px-5 py-12">
+      <div className="mx-auto w-full max-w-4xl px-[var(--page-gutter)] py-12">
         <h1 className="text-3xl font-semibold">Pages</h1>
         <div className="mt-6 space-y-4">
           {pages.map((page) => (
@@ -45,7 +45,7 @@ export async function PagesIndexPageContent() {
                 {page.title}
               </Link>
               {page.excerpt ? (
-                <p className="text-sm text-foreground/70">{page.excerpt}</p>
+                <p className="text-sm text-muted-foreground">{page.excerpt}</p>
               ) : null}
             </Card>
           ))}

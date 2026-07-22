@@ -44,7 +44,7 @@ export function FooterNewsletter() {
   return (
     <div className="rounded-2xl border border-border/60 bg-background/60 p-4">
       <p className="text-sm font-semibold">Join the Bunoraa circle</p>
-      <p className="mt-1 text-xs text-foreground/70">
+      <p className="mt-1 text-xs text-muted-foreground">
         Monthly drops, artisan stories, and early access invites.
       </p>
       <form className="mt-3 flex flex-col gap-2 sm:flex-row" onSubmit={handleSubmit}>
@@ -71,7 +71,7 @@ export function FooterNewsletter() {
         </Button>
       </form>
       {message ? (
-        <p className="mt-2 text-xs text-foreground/70" aria-live="polite">
+        <p className="mt-2 text-xs text-muted-foreground" aria-live="polite">
           {message}
         </p>
       ) : null}

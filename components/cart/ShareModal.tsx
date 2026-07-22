@@ -42,14 +42,14 @@ export function ShareModal({
         <button
           type="button"
           onClick={onClose}
-          className="absolute right-4 top-4 rounded-full p-1 text-foreground/70 hover:bg-muted hover:text-foreground"
+          className="absolute right-4 top-4 rounded-full p-1 text-muted-foreground hover:bg-muted hover:text-foreground"
           aria-label="Close dialog"
         >
           <X className="h-5 w-5" />
         </button>
 
         <h2 className="text-xl font-semibold">Share your bag</h2>
-        <p className="mt-1 text-sm text-foreground/70">
+        <p className="mt-1 text-sm text-muted-foreground">
           Share your current bag with family, team members, or your personal shopper.
         </p>
 
@@ -100,7 +100,7 @@ export function ShareModal({
               <div className="absolute right-1 top-1 flex h-8 w-8 flex-col overflow-hidden rounded-lg border border-border bg-muted/40">
                 <button
                   type="button"
-                  className="flex h-4 items-center justify-center border-b border-border/70 text-foreground/70 hover:bg-muted"
+                  className="flex h-4 items-center justify-center border-b border-border/70 text-muted-foreground hover:bg-muted"
                   aria-label="Increase days"
                   onClick={() =>
                     onShareStateChange({
@@ -113,7 +113,7 @@ export function ShareModal({
                 </button>
                 <button
                   type="button"
-                  className="flex h-4 items-center justify-center text-foreground/70 hover:bg-muted"
+                  className="flex h-4 items-center justify-center text-muted-foreground hover:bg-muted"
                   aria-label="Decrease days"
                   onClick={() =>
                     onShareStateChange({

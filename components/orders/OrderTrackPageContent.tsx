@@ -48,32 +48,32 @@ export function OrderTrackPageContent() {
       description="Sign in to track your order."
       allowGuest={allowGuest}
     >
-      <div className="mx-auto w-full max-w-3xl px-3 sm:px-5 py-12">
+      <div className="mx-auto w-full max-w-3xl px-[var(--page-gutter)] py-12">
         <div className="mb-6">
-          <p className="text-sm uppercase tracking-[0.2em] text-foreground/60">
+          <p className="text-sm uppercase tracking-[0.2em] text-muted-foreground">
             Order tracking
           </p>
           <h1 className="text-3xl font-semibold">#{rawId || ""}</h1>
         </div>
 
         {!rawId ? (
-          <Card variant="bordered" className="p-6 text-sm text-foreground/70">
+          <Card variant="bordered" className="p-6 text-sm text-muted-foreground">
             Missing order identifier.
           </Card>
         ) : !isUuid(rawId) && !allowGuest && ordersQuery.isLoading ? (
-          <Card variant="bordered" className="p-6 text-sm text-foreground/70">
+          <Card variant="bordered" className="p-6 text-sm text-muted-foreground">
             Resolving order number...
           </Card>
         ) : !resolvedId ? (
-          <Card variant="bordered" className="p-6 text-sm text-foreground/70">
+          <Card variant="bordered" className="p-6 text-sm text-muted-foreground">
             {allowGuest ? "This order link is invalid." : "Order not found in your account."}
           </Card>
         ) : trackQuery.isLoading ? (
-          <Card variant="bordered" className="p-6 text-sm text-foreground/70">
+          <Card variant="bordered" className="p-6 text-sm text-muted-foreground">
             Loading tracking information...
           </Card>
         ) : trackQuery.data ? (
-          <Card variant="bordered" className="space-y-2 p-6 text-sm text-foreground/70">
+          <Card variant="bordered" className="space-y-2 p-6 text-sm text-muted-foreground">
             <p>
               Status: {String(trackQuery.data.status_display || trackQuery.data.status)}
             </p>
@@ -87,7 +87,7 @@ export function OrderTrackPageContent() {
             ) : null}
           </Card>
         ) : (
-          <Card variant="bordered" className="p-6 text-sm text-foreground/70">
+          <Card variant="bordered" className="p-6 text-sm text-muted-foreground">
             Tracking information is not available.
           </Card>
         )}

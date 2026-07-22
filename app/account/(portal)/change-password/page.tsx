@@ -7,7 +7,7 @@ const AccountChangePasswordPageContent = dynamic(
     ),
   {
     loading: () => (
-      <div className="p-6 text-sm text-foreground/70">Loading...</div>
+      <div className="p-6 text-sm text-muted-foreground">Loading...</div>
     ),
   }
 );

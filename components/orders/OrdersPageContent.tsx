@@ -49,11 +49,11 @@ export function OrdersPageContent() {
       <div className="min-h-screen bg-background text-foreground">
         <div className="mx-auto w-full max-w-5xl px-4 py-12 sm:px-6">
           <div className="mb-6">
-            <p className="text-sm uppercase tracking-[0.2em] text-foreground/60">
+            <p className="text-sm uppercase tracking-[0.2em] text-muted-foreground">
               Orders
             </p>
             <h1 className="text-2xl font-semibold sm:text-3xl">Your orders</h1>
-            <p className="mt-2 text-sm text-foreground/70">
+            <p className="mt-2 text-sm text-muted-foreground">
               Search, sort, and track every order with timestamped updates.
             </p>
           </div>
@@ -91,27 +91,27 @@ export function OrdersPageContent() {
           </Card>
 
           {ordersQuery.isLoading ? (
-            <p className="text-sm text-foreground/60">Loading orders...</p>
+            <p className="text-sm text-muted-foreground">Loading orders...</p>
           ) : ordersQuery.isError ? (
-            <p className="text-sm text-foreground/60">Could not load orders.</p>
+            <p className="text-sm text-muted-foreground">Could not load orders.</p>
           ) : ordersQuery.data?.data?.length ? (
             <div className="space-y-4">
               {ordersQuery.data.data.map((order) => (
                 <Card key={order.id} variant="bordered" className="p-4 sm:p-5">
                   <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                     <div className="space-y-1">
-                      <p className="text-xs uppercase tracking-[0.18em] text-foreground/60">
+                      <p className="text-xs uppercase tracking-[0.18em] text-muted-foreground">
                         Order {order.order_number}
                       </p>
                       <p className="text-lg font-semibold">
                         {order.status_display || order.status}
                       </p>
-                      <p className="text-sm text-foreground/65">
+                      <p className="text-sm text-muted-foreground">
                         Placed on {formatDateTime(order.created_at)}
                       </p>
                     </div>
                     <div className="text-left sm:text-right">
-                      <p className="text-sm text-foreground/60">{order.item_count} items</p>
+                      <p className="text-sm text-muted-foreground">{order.item_count} items</p>
                       <p className="text-lg font-semibold">{order.total}</p>
                       <Link className="text-sm text-primary" href={`/orders/${order.id}/`}>
                         View details
@@ -123,7 +123,7 @@ export function OrdersPageContent() {
             </div>
           ) : (
             <Card variant="bordered" className="p-6">
-              <p className="text-sm text-foreground/60">No orders found for this filter.</p>
+              <p className="text-sm text-muted-foreground">No orders found for this filter.</p>
             </Card>
           )}
         </div>

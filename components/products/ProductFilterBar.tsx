@@ -57,7 +57,7 @@ export function ProductFilterBar() {
         ))}
       </select>
       {isPending ? (
-        <span className="text-xs text-foreground/50">Updating...</span>
+        <span className="text-xs text-muted-foreground">Updating...</span>
       ) : null}
     </div>
   );

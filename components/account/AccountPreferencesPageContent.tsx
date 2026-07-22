@@ -20,7 +20,7 @@ export function AccountPreferencesPageContent() {
 
   if (preferencesQuery.isLoading) {
     return (
-      <Card variant="bordered" className="p-6 text-sm text-foreground/70">
+      <Card variant="bordered" className="p-6 text-sm text-muted-foreground">
         Loading preferences...
       </Card>
     );
@@ -33,11 +33,11 @@ export function AccountPreferencesPageContent() {
   return (
     <div className="space-y-6">
       <div>
-        <p className="text-sm uppercase tracking-[0.2em] text-foreground/60">
+        <p className="text-sm uppercase tracking-[0.2em] text-muted-foreground">
           Account
         </p>
         <h1 className="text-3xl font-semibold">Preferences</h1>
-        <p className="mt-2 text-sm text-foreground/70">
+        <p className="mt-2 text-sm text-muted-foreground">
           Personalize your storefront, language, and accessibility settings.
         </p>
       </div>

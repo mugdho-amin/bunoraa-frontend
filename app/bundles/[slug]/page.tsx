@@ -4,7 +4,7 @@ import { generateBundleMetadata } from "@/components/bundles/BundleDetailPageCon
 
 const BundleDetailPageContent = dynamic(
   () => import("@/components/bundles/BundleDetailPageContent").then((mod) => mod.BundleDetailPageContent),
-  { loading: () => <div className="p-8 text-center text-sm text-foreground/60">Loading bundle...</div> }
+  { loading: () => <div className="p-8 text-center text-sm text-muted-foreground">Loading bundle...</div> }
 );
 
 export async function generateMetadata({

@@ -125,7 +125,7 @@ export function CheckoutSummary({
   const summaryContent = (
     <div className="space-y-6">
       <div className="hidden lg:block">
-        <p className="text-xs uppercase tracking-[0.3em] text-foreground/60">
+        <p className="text-xs uppercase tracking-[0.3em] text-muted-foreground">
           Order summary
         </p>
         <h2 className="text-lg font-semibold">Your items</h2>
@@ -144,6 +144,7 @@ export function CheckoutSummary({
                     src={item.product_image}
                     alt={item.product_name}
                     fill
+                    quality={60}
                     sizes="56px"
                     loading="lazy"
                     decoding="async"
@@ -156,9 +157,9 @@ export function CheckoutSummary({
               <div className="min-w-0 flex-1">
                 <p className="truncate text-sm font-medium">{item.product_name}</p>
                 {item.variant_name ? (
-                  <p className="truncate text-xs text-foreground/60">{item.variant_name}</p>
+                  <p className="truncate text-xs text-muted-foreground">{item.variant_name}</p>
                 ) : null}
-                <p className="text-xs text-foreground/60">
+                <p className="text-xs text-muted-foreground">
                   Qty {item.quantity}
                 </p>
               </div>
@@ -168,41 +169,41 @@ export function CheckoutSummary({
             </div>
           ))
         ) : (
-          <p className="text-sm text-foreground/60">Your bag is empty.</p>
+          <p className="text-sm text-muted-foreground">Your bag is empty.</p>
         )}
       </div>
 
       <div className="space-y-2 border-t border-border pt-4 text-sm">
         <div className="flex items-center justify-between">
-          <span className="text-foreground/70">Subtotal</span>
+          <span className="text-muted-foreground">Subtotal</span>
           <span>{lineValue(cartSummary?.subtotal, cartSummary?.formatted_subtotal)}</span>
         </div>
         {appliedCouponCode ? (
           <div className="flex items-center justify-between">
-            <span className="text-foreground/70">Discount</span>
+            <span className="text-muted-foreground">Discount</span>
             <span>
               {lineValue(cartSummary?.discount_amount, cartSummary?.formatted_discount)}
             </span>
           </div>
         ) : null}
         <div className="flex items-center justify-between">
-          <span className="text-foreground/70">{shippingLabel}</span>
+          <span className="text-muted-foreground">{shippingLabel}</span>
           <span>{lineValue(cartSummary?.shipping_cost, cartSummary?.formatted_shipping)}</span>
         </div>
         {cartSummary?.pickup_location_name ? (
-          <p className="text-xs text-foreground/60">
+          <p className="text-xs text-muted-foreground">
             Store pickup — {cartSummary.pickup_location_name}
           </p>
         ) : null}
         <div className="flex items-center justify-between">
-          <span className="text-foreground/70">Tax</span>
+          <span className="text-muted-foreground">Tax</span>
           <span>{lineValue(cartSummary?.tax_amount, cartSummary?.formatted_tax)}</span>
         </div>
         {(checkoutSession?.gift_wrap ||
           (cartSummary?.gift_wrap_cost &&
             Number(cartSummary.gift_wrap_cost) > 0)) ? (
           <div className="flex items-center justify-between">
-            <span className="text-foreground/70">
+            <span className="text-muted-foreground">
               {cartSummary?.gift_wrap_label || "Gift wrap"}
             </span>
             <span>
@@ -215,7 +216,7 @@ export function CheckoutSummary({
         Number(cartSummary?.payment_fee_amount ?? checkoutSession?.payment_fee_amount ?? 0) >
           0 ? (
           <div className="flex items-center justify-between">
-            <span className="text-foreground/70">
+            <span className="text-muted-foreground">
               {cartSummary?.payment_fee_label ||
                 checkoutSession?.payment_fee_label ||
                 "Payment fee"}
@@ -289,7 +290,7 @@ export function CheckoutSummary({
       <div className="space-y-3 border-t border-border pt-4">
         <div>
           <p className="text-sm font-semibold">Gift options</p>
-          <p className="text-xs text-foreground/60">
+          <p className="text-xs text-muted-foreground">
             Make it special with a note or gift wrap.
           </p>
         </div>
@@ -336,7 +337,7 @@ export function CheckoutSummary({
               />
               {cartSummary?.gift_wrap_label || "Gift wrap"}
               {cartSummary?.gift_wrap_amount ? (
-                <span className="text-xs text-foreground/60">
+                <span className="text-xs text-muted-foreground">
                   (+{cartSummary.formatted_gift_wrap_amount || formatMoney(
                     cartSummary.gift_wrap_amount,
                     currencyCode

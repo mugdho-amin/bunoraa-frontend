@@ -79,11 +79,17 @@ module.exports = {
                 foreground: 'hsl(var(--foreground) / <alpha-value>)',
                 card: 'hsl(var(--card) / <alpha-value>)',
                 border: 'hsl(var(--border) / <alpha-value>)',
-                muted: 'hsl(var(--muted) / <alpha-value>)',
+                // Surface muted + AA-safe muted text (never use opacity for body copy)
+                muted: {
+                    DEFAULT: 'hsl(var(--muted) / <alpha-value>)',
+                    foreground: 'hsl(var(--muted-foreground) / <alpha-value>)',
+                },
                 ring: 'hsl(var(--ring) / <alpha-value>)',
-                // Brand primary - Warm terracotta/rust
+                destructive: 'hsl(var(--destructive) / <alpha-value>)',
+                // Brand primary - Warm terracotta/rust (DEFAULT + foreground for filled CTAs)
                 primary: {
                     DEFAULT: 'hsl(var(--primary) / <alpha-value>)',
+                    foreground: 'hsl(var(--primary-foreground) / <alpha-value>)',
                     50: '#fdf4f3',
                     100: '#fce7e4',
                     200: '#fbd3cd',
@@ -96,7 +102,7 @@ module.exports = {
                     900: '#792d23',
                     950: '#41140e',
                 },
-                // Neutral secondary - Stone grays
+                // Neutral secondary - Stone grays (DEFAULT is AA body secondary)
                 secondary: {
                     DEFAULT: 'hsl(var(--secondary) / <alpha-value>)',
                     50: '#fafaf9',
@@ -111,9 +117,10 @@ module.exports = {
                     900: '#1c1917',
                     950: '#0c0a09',
                 },
-                // Accent - Amber/gold
+                // Accent - Amber/gold (DEFAULT darkened for usable text/UI chrome + white labels)
                 accent: {
                     DEFAULT: 'hsl(var(--accent) / <alpha-value>)',
+                    foreground: 'hsl(var(--accent-foreground) / <alpha-value>)',
                     50: '#fffbeb',
                     100: '#fef3c7',
                     200: '#fde68a',
@@ -126,9 +133,9 @@ module.exports = {
                     900: '#78350f',
                     950: '#451a03',
                 },
-                // Semantic colors
+                // Semantic colors — 600/700 preferred for text on light surfaces
                 success: {
-                    DEFAULT: '#22c55e',
+                    DEFAULT: '#15803d',
                     50: '#f0fdf4',
                     100: '#dcfce7',
                     200: '#bbf7d0',
@@ -142,7 +149,7 @@ module.exports = {
                     950: '#052e16',
                 },
                 warning: {
-                    DEFAULT: '#f97316',
+                    DEFAULT: '#c2410c',
                     50: '#fff7ed',
                     100: '#ffedd5',
                     200: '#fed7aa',
@@ -156,7 +163,7 @@ module.exports = {
                     950: '#431407',
                 },
                 error: {
-                    DEFAULT: '#ef4444',
+                    DEFAULT: '#dc2626',
                     50: '#fef2f2',
                     100: '#fee2e2',
                     200: '#fecaca',

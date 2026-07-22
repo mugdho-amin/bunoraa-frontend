@@ -15,8 +15,8 @@ export default function LogoutPage() {
   }, [logout, router]);
 
   return (
-    <div className="mx-auto w-full max-w-md px-3 sm:px-5 py-20">
-      <Card variant="bordered" className="p-6 text-sm text-foreground/70">
+    <div className="mx-auto w-full max-w-md px-[var(--page-gutter)] py-20">
+      <Card variant="bordered" className="p-6 text-sm text-muted-foreground">
         Signing out...
       </Card>
     </div>

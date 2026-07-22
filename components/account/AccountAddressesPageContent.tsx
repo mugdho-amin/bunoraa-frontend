@@ -12,15 +12,15 @@ export function AccountAddressesPageContent() {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <div><p className="text-sm uppercase tracking-[0.2em] text-foreground/60">Account</p><h1 className="text-3xl font-semibold">Addresses</h1></div>
+        <div><p className="text-sm uppercase tracking-[0.2em] text-muted-foreground">Account</p><h1 className="text-3xl font-semibold">Addresses</h1></div>
         <Button asChild variant="primary-gradient"><Link href="/account/addresses/add/">Add address</Link></Button>
       </div>
-      {addressesQuery.isLoading ? <Card variant="bordered" className="p-6 text-sm text-foreground/70">Loading addresses...</Card>
+      {addressesQuery.isLoading ? <Card variant="bordered" className="p-6 text-sm text-muted-foreground">Loading addresses...</Card>
       : addressesQuery.data?.length ? (
         <div className="grid gap-4 md:grid-cols-2">{addressesQuery.data.map((address) => (
           <Card key={address.id} variant="bordered" className="space-y-2 p-4">
             <div className="flex items-center justify-between"><h2 className="text-base font-semibold">{address.full_name || "Address"}</h2>{address.is_default ? <span className="text-xs uppercase tracking-[0.2em] text-primary">Default</span> : null}</div>
-            <p className="text-sm text-foreground/70">{formatAddressLine(address)}</p>
+            <p className="text-sm text-muted-foreground">{formatAddressLine(address)}</p>
             <div className="flex flex-wrap gap-2">
               <Button asChild size="sm" variant="secondary"><Link href={`/account/addresses/${address.id}/edit/`}>Edit</Link></Button>
               <Button size="sm" variant="ghost" onClick={() => deleteAddress.mutate(address.id)}>Delete</Button>
@@ -28,7 +28,7 @@ export function AccountAddressesPageContent() {
             </div>
           </Card>
         ))}</div>
-      ) : <Card variant="bordered" className="p-6 text-sm text-foreground/70">No addresses yet.</Card>}
+      ) : <Card variant="bordered" className="p-6 text-sm text-muted-foreground">No addresses yet.</Card>}
     </div>
   );
 }

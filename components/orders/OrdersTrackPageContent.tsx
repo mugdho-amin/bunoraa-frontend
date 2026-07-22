@@ -58,13 +58,13 @@ export function OrdersTrackPageContent() {
 
   if (!hasToken) {
     return (
-      <div className="mx-auto w-full max-w-4xl px-3 sm:px-5 py-12">
+      <div className="mx-auto w-full max-w-4xl px-[var(--page-gutter)] py-12">
         <div className="mb-6">
-          <p className="text-sm uppercase tracking-[0.2em] text-foreground/60">
+          <p className="text-sm uppercase tracking-[0.2em] text-muted-foreground">
             Orders
           </p>
           <h1 className="text-3xl font-semibold">Track a guest order</h1>
-          <p className="mt-2 text-sm text-foreground/70">
+          <p className="mt-2 text-sm text-muted-foreground">
             Enter the order number and email you used at checkout.
           </p>
         </div>
@@ -115,15 +115,15 @@ export function OrdersTrackPageContent() {
 
   return (
     <AuthGate title="Track orders" description="Sign in to track your orders.">
-      <div className="mx-auto w-full max-w-4xl px-3 sm:px-5 py-12">
+      <div className="mx-auto w-full max-w-4xl px-[var(--page-gutter)] py-12">
         <div className="mb-6">
-          <p className="text-sm uppercase tracking-[0.2em] text-foreground/60">
+          <p className="text-sm uppercase tracking-[0.2em] text-muted-foreground">
             Orders
           </p>
           <h1 className="text-3xl font-semibold">Track an order</h1>
         </div>
         {ordersQuery.isLoading ? (
-          <Card variant="bordered" className="p-6 text-sm text-foreground/70">
+          <Card variant="bordered" className="p-6 text-sm text-muted-foreground">
             Loading orders...
           </Card>
         ) : ordersQuery.data?.data?.length ? (
@@ -135,7 +135,7 @@ export function OrdersTrackPageContent() {
                 className="flex items-center justify-between p-4"
               >
                 <div>
-                  <p className="text-sm text-foreground/60">Order #{order.order_number}</p>
+                  <p className="text-sm text-muted-foreground">Order #{order.order_number}</p>
                   <p className="text-sm">{order.status_display || order.status}</p>
                 </div>
                 <Link className="text-primary" href={`/orders/${order.id}/`}>
@@ -145,7 +145,7 @@ export function OrdersTrackPageContent() {
             ))}
           </div>
         ) : (
-          <Card variant="bordered" className="p-6 text-sm text-foreground/70">
+          <Card variant="bordered" className="p-6 text-sm text-muted-foreground">
             No orders available for tracking.
           </Card>
         )}

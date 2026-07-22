@@ -136,7 +136,7 @@ export default async function NestedCategoryProductDetailPage({
 
   return (
     <div className="min-h-screen bg-background text-foreground">
-      <div className="mx-auto w-full max-w-6xl px-3 sm:px-5 py-12">
+      <div className="mx-auto w-full max-w-6xl px-[var(--page-gutter)] py-12">
         <ProductDetailClient product={product} relatedProducts={relatedProducts} />
       </div>
       <JsonLd data={jsonLd} />

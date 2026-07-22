@@ -11,7 +11,7 @@ export default function NotFound() {
         <h1 className="text-display font-semibold tracking-tight text-balance">
           Page not found
         </h1>
-        <p className="max-w-md text-sm text-foreground/65 text-pretty sm:text-base">
+        <p className="max-w-md text-sm text-muted-foreground text-pretty sm:text-base">
           The page you are looking for doesn&apos;t exist or may have moved.
           Try searching or head back to the storefront.
         </p>
@@ -31,7 +31,7 @@ export default function NotFound() {
         </div>
         <Link
           href="/products/"
-          className="inline-flex items-center gap-1 text-sm font-medium text-foreground/55 transition hover:text-primary"
+          className="inline-flex items-center gap-1 text-sm font-medium text-muted-foreground transition hover:text-primary"
         >
           <ArrowLeft className="h-4 w-4" aria-hidden="true" />
           Browse all products

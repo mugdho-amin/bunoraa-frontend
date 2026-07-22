@@ -86,14 +86,14 @@ export async function CollectionDetailPageContent({
 
   return (
     <div className="min-h-screen bg-background text-foreground">
-      <div className="mx-auto w-full max-w-[1920px] px-3 sm:px-5 py-12">
+      <div className="mx-auto w-full max-w-content px-[var(--page-gutter)] py-8 sm:py-12">
         <div className="mb-8 flex flex-wrap items-center justify-between gap-4">
           <div>
-            <p className="text-sm uppercase tracking-[0.2em] text-foreground/60">
+            <p className="text-sm uppercase tracking-[0.2em] text-muted-foreground">
               Collection
             </p>
             <h1 className="text-3xl font-semibold">{collection.name}</h1>
-            <p className="mt-2 text-foreground/70">{collection.description}</p>
+            <p className="mt-2 text-muted-foreground">{collection.description}</p>
           </div>
           <Button asChild variant="secondary">
             <Link href="/products/">Shop all products</Link>

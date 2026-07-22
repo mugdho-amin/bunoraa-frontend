@@ -111,7 +111,7 @@ export function FilterDrawer({
                       Filters
                     </h2>
                     {typeof productCount === "number" ? (
-                      <p className="text-[9px] font-black uppercase tracking-widest text-foreground/40">
+                      <p className="text-[9px] font-black uppercase tracking-widest text-muted-foreground">
                         {productCount} results
                       </p>
                     ) : null}
@@ -128,7 +128,7 @@ export function FilterDrawer({
                     <button
                       ref={closeButtonRef}
                       onClick={() => setOpen(false)}
-                      className="flex h-9 w-9 items-center justify-center rounded-full bg-muted/50 text-foreground/60 transition-colors hover:bg-muted hover:text-foreground"
+                      className="flex h-9 w-9 items-center justify-center rounded-full bg-muted/50 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
                     >
                       <X size={18} />
                     </button>

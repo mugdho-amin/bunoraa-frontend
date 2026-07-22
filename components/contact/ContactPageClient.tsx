@@ -58,9 +58,9 @@ export function ContactPageClient() {
 
   return (
     <div className="min-h-screen bg-background text-foreground">
-      <div className="mx-auto w-full max-w-4xl px-3 sm:px-5 py-12">
+      <div className="mx-auto w-full max-w-4xl px-[var(--page-gutter)] py-12">
         <div className="mb-8">
-          <p className="text-sm uppercase tracking-[0.2em] text-foreground/60">
+          <p className="text-sm uppercase tracking-[0.2em] text-muted-foreground">
             Contact
           </p>
           <h1 className="text-3xl font-semibold">Get in touch</h1>
@@ -131,7 +131,7 @@ export function ContactPageClient() {
             </label>
             {status ? (
               <p
-                className={`text-sm ${status.tone === "error" ? "text-error-500" : "text-foreground/70"}`}
+                className={`text-sm ${status.tone === "error" ? "text-error-600" : "text-muted-foreground"}`}
                 aria-live="polite"
               >
                 {status.message}

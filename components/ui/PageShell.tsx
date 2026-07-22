@@ -20,8 +20,8 @@ export function PageShell({
     <Tag
       className={cn(
         "mx-auto w-full",
-        narrow ? "max-w-3xl" : "max-w-[1920px]",
-        !noPad && "px-3 sm:px-5",
+        narrow ? "max-w-3xl" : "max-w-content",
+        !noPad && "px-[var(--page-gutter)]",
         className
       )}
     >
@@ -60,7 +60,7 @@ export function PageHeader({
           {title}
         </Tag>
         {description ? (
-          <p className="mt-2 max-w-2xl text-sm text-foreground/60 text-pretty sm:text-base">
+          <p className="mt-2 max-w-2xl text-sm text-muted-foreground text-pretty sm:text-base">
             {description}
           </p>
         ) : null}

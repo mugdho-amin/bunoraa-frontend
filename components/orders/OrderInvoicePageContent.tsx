@@ -21,21 +21,21 @@ export function OrderInvoicePageContent() {
 
   return (
     <AuthGate title="Invoice" description="Sign in to view invoices.">
-      <div className="mx-auto w-full max-w-3xl px-3 sm:px-5 py-12">
+      <div className="mx-auto w-full max-w-3xl px-[var(--page-gutter)] py-12">
         {!rawId ? (
-          <Card variant="bordered" className="p-6 text-sm text-foreground/70">
+          <Card variant="bordered" className="p-6 text-sm text-muted-foreground">
             Missing order identifier.
           </Card>
         ) : !isUuid(rawId) && ordersQuery.isLoading ? (
-          <Card variant="bordered" className="p-6 text-sm text-foreground/70">
+          <Card variant="bordered" className="p-6 text-sm text-muted-foreground">
             Resolving order number...
           </Card>
         ) : !resolvedId ? (
-          <Card variant="bordered" className="p-6 text-sm text-foreground/70">
+          <Card variant="bordered" className="p-6 text-sm text-muted-foreground">
             Invoice not available for this order.
           </Card>
         ) : (
-          <Card variant="bordered" className="p-6 text-sm text-foreground/70">
+          <Card variant="bordered" className="p-6 text-sm text-muted-foreground">
             Invoice rendering for order #{rawId} is not available via API yet.
           </Card>
         )}

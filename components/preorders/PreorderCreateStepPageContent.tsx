@@ -428,7 +428,7 @@ export function PreorderCreateStepPageContent() {
               {option.is_required ? " *" : ""}
             </label>
             {description ? (
-              <p className="text-xs text-foreground/60">{description}</p>
+              <p className="text-xs text-muted-foreground">{description}</p>
             ) : null}
             <textarea
               rows={4}
@@ -450,7 +450,7 @@ export function PreorderCreateStepPageContent() {
               {option.is_required ? " *" : ""}
             </label>
             {description ? (
-              <p className="text-xs text-foreground/60">{description}</p>
+              <p className="text-xs text-muted-foreground">{description}</p>
             ) : null}
             <input
               type="number"
@@ -472,7 +472,7 @@ export function PreorderCreateStepPageContent() {
               {option.is_required ? " *" : ""}
             </label>
             {description ? (
-              <p className="text-xs text-foreground/60">{description}</p>
+              <p className="text-xs text-muted-foreground">{description}</p>
             ) : null}
             <select
               className={commonClass}
@@ -500,7 +500,7 @@ export function PreorderCreateStepPageContent() {
               {option.is_required ? " *" : ""}
             </label>
             {description ? (
-              <p className="text-xs text-foreground/60">{description}</p>
+              <p className="text-xs text-muted-foreground">{description}</p>
             ) : null}
             <select
               className={commonClass}
@@ -540,7 +540,7 @@ export function PreorderCreateStepPageContent() {
             <span>
               {option.name}
               {description ? (
-                <span className="block text-xs text-foreground/60">
+                <span className="block text-xs text-muted-foreground">
                   {description}
                 </span>
               ) : null}
@@ -555,7 +555,7 @@ export function PreorderCreateStepPageContent() {
               {option.is_required ? " *" : ""}
             </label>
             {description ? (
-              <p className="text-xs text-foreground/60">{description}</p>
+              <p className="text-xs text-muted-foreground">{description}</p>
             ) : null}
             <input
               type="color"
@@ -575,7 +575,7 @@ export function PreorderCreateStepPageContent() {
               {option.is_required ? " *" : ""}
             </label>
             {description ? (
-              <p className="text-xs text-foreground/60">{description}</p>
+              <p className="text-xs text-muted-foreground">{description}</p>
             ) : null}
             <input
               type="date"
@@ -616,7 +616,7 @@ export function PreorderCreateStepPageContent() {
               {option.is_required ? " *" : ""}
             </label>
             {description ? (
-              <p className="text-xs text-foreground/60">{description}</p>
+              <p className="text-xs text-muted-foreground">{description}</p>
             ) : null}
             <input
               className={commonClass}
@@ -635,13 +635,13 @@ export function PreorderCreateStepPageContent() {
     <div className="min-h-screen bg-background pb-24 text-foreground sm:pb-10">
       <div className="mx-auto w-full max-w-6xl px-4 py-6 sm:px-6 sm:py-10">
         <div className="mb-5 space-y-2 sm:mb-8">
-          <p className="text-xs uppercase tracking-[0.3em] text-foreground/60">
+          <p className="text-xs uppercase tracking-[0.3em] text-muted-foreground">
             Custom preorder
           </p>
           <h1 className="text-2xl font-semibold sm:text-3xl">
             Create a preorder request
           </h1>
-          <p className="text-sm text-foreground/60">
+          <p className="text-sm text-muted-foreground">
             Share your requirements and we will send a quote with production
             timeline.
           </p>
@@ -651,7 +651,7 @@ export function PreorderCreateStepPageContent() {
           className="sticky z-20 -mx-4 mb-5 border-y border-border/70 bg-background/95 px-4 py-2 backdrop-blur sm:static sm:mx-0 sm:mb-6 sm:border-0 sm:bg-transparent sm:px-0 sm:py-0 sm:backdrop-blur-0"
           style={{ top: "var(--mobile-header-offset, 4.6rem)" }}
         >
-          <div className="flex items-center gap-2 overflow-x-auto pb-1 text-[11px] uppercase tracking-[0.16em] text-foreground/60 sm:gap-3 sm:text-xs sm:tracking-[0.2em]">
+          <div className="flex items-center gap-2 overflow-x-auto pb-1 text-[11px] uppercase tracking-[0.16em] text-muted-foreground sm:gap-3 sm:text-xs sm:tracking-[0.2em]">
             {stepOrder.map((step, index) => (
               <div
                 key={step}
@@ -676,7 +676,7 @@ export function PreorderCreateStepPageContent() {
                   <h2 className="text-lg font-semibold sm:text-xl">
                     Choose a category
                   </h2>
-                  <p className="text-sm text-foreground/60">
+                  <p className="text-sm text-muted-foreground">
                     Select the closest match to customize your preorder.
                   </p>
                 </div>
@@ -704,7 +704,7 @@ export function PreorderCreateStepPageContent() {
                             <p className="text-sm font-semibold">
                               {category.name}
                             </p>
-                            <p className="text-xs text-foreground/60">
+                            <p className="text-xs text-muted-foreground">
                               {category.description}
                             </p>
                           </div>
@@ -722,7 +722,7 @@ export function PreorderCreateStepPageContent() {
                             </div>
                           ) : null}
                         </div>
-                        <div className="mt-3 flex flex-wrap gap-3 text-xs text-foreground/70">
+                        <div className="mt-3 flex flex-wrap gap-3 text-xs text-muted-foreground">
                           {category.base_price ? (
                             <span>
                               From {formatMoney(category.base_price, "BDT")}
@@ -784,13 +784,13 @@ export function PreorderCreateStepPageContent() {
                             }}
                           >
                             <p className="font-semibold">{template.name}</p>
-                            <p className="text-xs text-foreground/60">
+                            <p className="text-xs text-muted-foreground">
                               {template.description}
                             </p>
                           </button>
                         ))
                       ) : (
-                        <p className="text-xs text-foreground/60">
+                        <p className="text-xs text-muted-foreground">
                           No templates available.
                         </p>
                       )}
@@ -806,7 +806,7 @@ export function PreorderCreateStepPageContent() {
                   <h2 className="text-lg font-semibold sm:text-xl">
                     Customization details
                   </h2>
-                  <p className="text-sm text-foreground/60">
+                  <p className="text-sm text-muted-foreground">
                     Tell us what you need and pick the options that fit best.
                   </p>
                 </div>
@@ -876,7 +876,7 @@ export function PreorderCreateStepPageContent() {
                   <h2 className="text-lg font-semibold sm:text-xl">
                     Contact and delivery
                   </h2>
-                  <p className="text-sm text-foreground/60">
+                  <p className="text-sm text-muted-foreground">
                     We will use this info to send your quote and timeline.
                   </p>
                 </div>
@@ -928,7 +928,7 @@ export function PreorderCreateStepPageContent() {
                     <input type="checkbox" {...form.register("is_rush_order")} />
                     <span>
                       Rush production
-                      <span className="block text-xs text-foreground/60">
+                      <span className="block text-xs text-muted-foreground">
                         Adds {selectedCategory.rush_order_fee_percentage}% rush
                         fee.
                       </span>
@@ -1099,7 +1099,7 @@ export function PreorderCreateStepPageContent() {
                   </div>
                 ) : null}
                 {!auth.hasToken && (designFiles.length || referenceFiles.length) ? (
-                  <p className="text-xs text-foreground/60">
+                  <p className="text-xs text-muted-foreground">
                     Sign in to upload files. Guest submissions will save files
                     after login.
                   </p>
@@ -1113,11 +1113,11 @@ export function PreorderCreateStepPageContent() {
                   <h2 className="text-lg font-semibold sm:text-xl">
                     Review and submit
                   </h2>
-                  <p className="text-sm text-foreground/60">
+                  <p className="text-sm text-muted-foreground">
                     Confirm your details before sending the preorder request.
                   </p>
                 </div>
-                <div className="space-y-3 text-sm text-foreground/70">
+                <div className="space-y-3 text-sm text-muted-foreground">
                   <p>
                     <strong>Category:</strong> {selectedCategory?.name || "Not selected"}
                   </p>
@@ -1132,7 +1132,7 @@ export function PreorderCreateStepPageContent() {
                   </p>
                   {estimate ? (
                     <div className="rounded-xl border border-border bg-muted/30 p-3">
-                      <p className="text-xs uppercase tracking-[0.2em] text-foreground/60">
+                      <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">
                         Estimate
                       </p>
                       <div className="mt-2 space-y-1">
@@ -1141,18 +1141,18 @@ export function PreorderCreateStepPageContent() {
                         <p className="font-semibold">
                           Total: {formatMoney(estimate.total, estimate.currency)}
                         </p>
-                        <p className="text-xs text-foreground/60">
+                        <p className="text-xs text-muted-foreground">
                           Deposit required: {formatMoney(estimate.deposit_required, estimate.currency)}
                         </p>
                       </div>
                     </div>
                   ) : (
-                    <p className="text-xs text-foreground/60">
+                    <p className="text-xs text-muted-foreground">
                       Estimated pricing will appear here.
                     </p>
                   )}
                 </div>
-                <div className="rounded-xl border border-border bg-muted/30 p-4 text-xs text-foreground/60">
+                <div className="rounded-xl border border-border bg-muted/30 p-4 text-xs text-muted-foreground">
                   We will review your request and send a quote with production
                   timeline and next steps. No payment details are collected
                   until you approve the quote.
@@ -1193,12 +1193,12 @@ export function PreorderCreateStepPageContent() {
             className="h-fit space-y-4 p-4 sm:p-5 lg:sticky lg:top-24"
           >
             <div>
-              <p className="text-xs uppercase tracking-[0.3em] text-foreground/60">
+              <p className="text-xs uppercase tracking-[0.3em] text-muted-foreground">
                 Summary
               </p>
               <h3 className="text-lg font-semibold">Preorder snapshot</h3>
             </div>
-            <div className="space-y-2 text-sm text-foreground/70">
+            <div className="space-y-2 text-sm text-muted-foreground">
               <p>Category: {selectedCategory?.name || "Not selected"}</p>
               <p>Quantity: {watched.quantity || 0}</p>
               {estimate ? (
@@ -1214,7 +1214,7 @@ export function PreorderCreateStepPageContent() {
                 </p>
               ) : null}
             </div>
-            <div className="rounded-xl border border-border bg-card p-3 text-xs text-foreground/60">
+            <div className="rounded-xl border border-border bg-card p-3 text-xs text-muted-foreground">
               {selectedCategory?.requires_approval
                 ? "All preorders are reviewed by our team before production."
                 : "We will confirm your preorder details via email."}

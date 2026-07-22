@@ -94,7 +94,7 @@ export function ProductBadges({
           className={cn(
             "rounded-full px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.2em]",
             badge.tone === "accent"
-              ? "bg-accent/15 text-accent"
+              ? "bg-accent/15 text-accent-800 dark:text-accent-200"
               : badge.tone === "secondary"
               ? "bg-secondary/20 text-secondary"
               : "bg-primary/15 text-primary",

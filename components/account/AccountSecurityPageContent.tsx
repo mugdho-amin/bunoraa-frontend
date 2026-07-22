@@ -70,11 +70,11 @@ export function AccountSecurityPageContent() {
 
   return (
     <div className="space-y-6">
-      <div><p className="text-sm uppercase tracking-[0.2em] text-foreground/60">Account</p><h1 className="text-3xl font-semibold">Security</h1><p className="mt-2 text-sm text-foreground/70">Manage password, MFA, passkeys, and active sessions.</p></div>
+      <div><p className="text-sm uppercase tracking-[0.2em] text-muted-foreground">Account</p><h1 className="text-3xl font-semibold">Security</h1><p className="mt-2 text-sm text-muted-foreground">Manage password, MFA, passkeys, and active sessions.</p></div>
       <div className="grid gap-4 lg:grid-cols-2">
         <Card variant="bordered" className="space-y-4">
           <h2 className="text-lg font-semibold">Change password</h2>
-          <p className="text-sm text-foreground/70">Use a long passphrase and avoid reusing passwords across services.</p>
+          <p className="text-sm text-muted-foreground">Use a long passphrase and avoid reusing passwords across services.</p>
           <form className="space-y-3" onSubmit={form.handleSubmit(handlePasswordChange)}>
             <label className="block text-sm">Current password<input className="mt-2 w-full rounded-lg border border-border bg-card px-3 py-2" type="password" autoComplete="current-password" {...form.register("current_password")} /></label>
             <label className="block text-sm">New password<input className="mt-2 w-full rounded-lg border border-border bg-card px-3 py-2" type="password" autoComplete="new-password" {...form.register("new_password")} /></label>
@@ -84,19 +84,19 @@ export function AccountSecurityPageContent() {
         </Card>
         <Card variant="bordered" className="space-y-4">
           <h2 className="text-lg font-semibold">Multi-factor authentication</h2>
-          <p className="text-sm text-foreground/70">Add an authenticator app or passkey to protect your account.</p>
-          <div className="rounded-lg border border-border bg-muted p-3 text-sm"><p>Status: {mfaEnabled ? "Enabled" : "Not enabled"}</p><p className="mt-1 text-xs text-foreground/70">Backup codes remaining: {statusQuery.data?.backup_codes_remaining ?? 0}</p></div>
+          <p className="text-sm text-muted-foreground">Add an authenticator app or passkey to protect your account.</p>
+          <div className="rounded-lg border border-border bg-muted p-3 text-sm"><p>Status: {mfaEnabled ? "Enabled" : "Not enabled"}</p><p className="mt-1 text-xs text-muted-foreground">Backup codes remaining: {statusQuery.data?.backup_codes_remaining ?? 0}</p></div>
           <div className="grid gap-2 sm:flex sm:flex-wrap">
             {!mfaEnabled ? <Button variant="secondary" className="w-full sm:w-auto" onClick={handleTotpSetup} disabled={setupTotp.isPending}>{setupTotp.isPending ? "Preparing..." : "Set up authenticator"}</Button>
             : <Button variant="secondary" className="w-full sm:w-auto" onClick={handleToggleDisableForm}>{showTotpDisableForm ? "Cancel disable" : "Disable MFA"}</Button>}
             <Button variant="secondary" className="w-full sm:w-auto" onClick={handleBackupCodes} disabled={!mfaEnabled || regenerateBackupCodes.isPending}>{!mfaEnabled ? "Backup codes require MFA" : regenerateBackupCodes.isPending ? "Generating..." : "Generate backup codes"}</Button>
           </div>
-          {!mfaEnabled ? <p className="text-xs text-foreground/70">Generate backup codes after enabling MFA. They are recovery codes for your authenticator setup.</p> : null}
-          {mfaNotice ? <p className="rounded-lg border border-border bg-muted px-3 py-2 text-sm text-foreground/75">{mfaNotice}</p> : null}
+          {!mfaEnabled ? <p className="text-xs text-muted-foreground">Generate backup codes after enabling MFA. They are recovery codes for your authenticator setup.</p> : null}
+          {mfaNotice ? <p className="rounded-lg border border-border bg-muted px-3 py-2 text-sm text-muted-foreground">{mfaNotice}</p> : null}
           {showTotpSetupForm ? (
             <div className="space-y-2 rounded-lg border border-border bg-muted p-3 text-sm">
               <p className="font-semibold">Step 1: Scan QR code in your authenticator app</p>
-              {totpQrDataUrl ? <Image src={totpQrDataUrl} alt="Authenticator setup QR code" width={176} height={176} unoptimized loading="lazy" decoding="async" className="mx-auto h-44 w-44 rounded-lg border border-border bg-card p-1 sm:mx-0" /> : totpUri ? <p className="text-xs text-foreground/70">Generating QR code...</p> : null}
+              {totpQrDataUrl ? <Image src={totpQrDataUrl} alt="Authenticator setup QR code" width={176} height={176} unoptimized loading="lazy" decoding="async" className="mx-auto h-44 w-44 rounded-lg border border-border bg-card p-1 sm:mx-0" /> : totpUri ? <p className="text-xs text-muted-foreground">Generating QR code...</p> : null}
               <p className="font-semibold">Step 2: Or enter this setup key manually</p>
               <div className="rounded border border-border bg-card px-2 py-1 font-mono text-xs break-all">{totpSecret}</div>
               <div className="grid gap-2 sm:flex sm:flex-wrap"><Button size="sm" variant="secondary" className="w-full sm:w-auto" onClick={() => copyMfaValue(totpSecret || "", "Setup key")}>Copy setup key</Button>{totpUri ? <Button size="sm" variant="secondary" className="w-full sm:w-auto" onClick={() => copyMfaValue(totpUri, "Setup URI")}>Copy setup URI</Button> : null}</div>
@@ -114,7 +114,7 @@ export function AccountSecurityPageContent() {
           {backupCodes.length ? (
             <div className="rounded-lg border border-border bg-muted p-3 text-sm">
               <div className="flex flex-wrap items-center justify-between gap-2"><p className="font-semibold">Backup codes</p><Button size="sm" variant="secondary" className="w-full sm:w-auto" onClick={handleBackupCodesDownload}>Download .txt</Button></div>
-              <p className="mt-1 text-xs text-foreground/70">Each code can be used once. Store them somewhere safe.</p>
+              <p className="mt-1 text-xs text-muted-foreground">Each code can be used once. Store them somewhere safe.</p>
               <div className="mt-2 grid gap-2 sm:grid-cols-2">{backupCodes.map((code) => <span key={code} className="rounded bg-card px-2 py-1 font-mono">{code}</span>)}</div>
             </div>
           ) : null}
@@ -122,16 +122,16 @@ export function AccountSecurityPageContent() {
       </div>
       <Card variant="bordered" className="space-y-4">
         <h2 className="text-lg font-semibold">Passkeys</h2>
-        <p className="text-sm text-foreground/70">Register a passkey to sign in quickly without a password.</p>
+        <p className="text-sm text-muted-foreground">Register a passkey to sign in quickly without a password.</p>
         <div className="grid gap-2 sm:grid-cols-[1fr_auto] sm:items-center">
           <input className="w-full rounded-lg border border-border bg-card px-3 py-2 text-sm" placeholder="Passkey nickname (optional)" value={passkeyName} onChange={(event) => setPasskeyName(event.target.value)} />
           <Button className="w-full sm:min-w-[12rem] lg:min-w-[14rem]" onClick={handleRegisterPasskey} disabled={passkeyPending}>{passkeyPending ? "Adding passkey..." : "Add passkey"}</Button>
         </div>
-        {passkeysQuery.data?.length ? <div className="space-y-2">{passkeysQuery.data.map((passkey) => (<div key={passkey.id} className="flex flex-col gap-2 rounded-lg border border-border p-3 sm:flex-row sm:items-center sm:justify-between"><div><p className="font-semibold">{passkey.nickname || "Passkey"}</p><p className="text-xs text-foreground/60">Added {passkey.created_at}</p></div><Button size="sm" variant="ghost" className="w-full sm:w-auto" onClick={() => removePasskey.mutate(passkey.id)}>Remove</Button></div>))}</div> : <p className="text-sm text-foreground/60">No passkeys registered.</p>}
+        {passkeysQuery.data?.length ? <div className="space-y-2">{passkeysQuery.data.map((passkey) => (<div key={passkey.id} className="flex flex-col gap-2 rounded-lg border border-border p-3 sm:flex-row sm:items-center sm:justify-between"><div><p className="font-semibold">{passkey.nickname || "Passkey"}</p><p className="text-xs text-muted-foreground">Added {passkey.created_at}</p></div><Button size="sm" variant="ghost" className="w-full sm:w-auto" onClick={() => removePasskey.mutate(passkey.id)}>Remove</Button></div>))}</div> : <p className="text-sm text-muted-foreground">No passkeys registered.</p>}
       </Card>
       <Card variant="bordered" className="space-y-4">
-        <div className="flex flex-wrap items-center justify-between gap-2"><div><h2 className="text-lg font-semibold">Active sessions</h2><p className="text-sm text-foreground/70">Manage devices currently signed in.</p></div><Button variant="secondary" className="w-full sm:w-auto" onClick={() => revokeOthers.mutate()}>Sign out other devices</Button></div>
-        {sessionsQuery.isLoading ? <p className="text-sm text-foreground/60">Loading sessions...</p> : sessionsQuery.data?.length ? <div className="space-y-2">{sessionsQuery.data.map((session) => (<div key={session.id} className="flex flex-col gap-2 rounded-lg border border-border p-3 sm:flex-row sm:items-center sm:justify-between"><div><p className="font-semibold">{session.device_type || "Device"} · {session.browser || "Browser"}</p><p className="text-xs text-foreground/60">{session.ip_address || "Unknown IP"} · Last activity {session.last_activity}</p>{session.is_current ? <span className="text-xs uppercase tracking-[0.2em] text-primary">Current session</span> : null}</div><Button size="sm" variant="ghost" className="w-full sm:w-auto" onClick={() => revokeSession.mutate(session.id)} disabled={session.is_current}>Revoke</Button></div>))}</div> : <p className="text-sm text-foreground/60">No active sessions.</p>}
+        <div className="flex flex-wrap items-center justify-between gap-2"><div><h2 className="text-lg font-semibold">Active sessions</h2><p className="text-sm text-muted-foreground">Manage devices currently signed in.</p></div><Button variant="secondary" className="w-full sm:w-auto" onClick={() => revokeOthers.mutate()}>Sign out other devices</Button></div>
+        {sessionsQuery.isLoading ? <p className="text-sm text-muted-foreground">Loading sessions...</p> : sessionsQuery.data?.length ? <div className="space-y-2">{sessionsQuery.data.map((session) => (<div key={session.id} className="flex flex-col gap-2 rounded-lg border border-border p-3 sm:flex-row sm:items-center sm:justify-between"><div><p className="font-semibold">{session.device_type || "Device"} · {session.browser || "Browser"}</p><p className="text-xs text-muted-foreground">{session.ip_address || "Unknown IP"} · Last activity {session.last_activity}</p>{session.is_current ? <span className="text-xs uppercase tracking-[0.2em] text-primary">Current session</span> : null}</div><Button size="sm" variant="ghost" className="w-full sm:w-auto" onClick={() => revokeSession.mutate(session.id)} disabled={session.is_current}>Revoke</Button></div>))}</div> : <p className="text-sm text-muted-foreground">No active sessions.</p>}
       </Card>
     </div>
   );

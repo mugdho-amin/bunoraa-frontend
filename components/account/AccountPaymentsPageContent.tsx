@@ -25,11 +25,11 @@ export function AccountPaymentsPageContent() {
   return (
     <div className="space-y-6">
       <div>
-        <p className="text-sm uppercase tracking-[0.2em] text-foreground/60">
+        <p className="text-sm uppercase tracking-[0.2em] text-muted-foreground">
           Account
         </p>
         <h1 className="text-3xl font-semibold">Payments</h1>
-        <p className="mt-2 text-sm text-foreground/70">
+        <p className="mt-2 text-sm text-muted-foreground">
           Manage saved payment methods and default billing preferences.
         </p>
       </div>
@@ -37,7 +37,7 @@ export function AccountPaymentsPageContent() {
       <Card variant="bordered" className="space-y-4">
         <h2 className="text-lg font-semibold">Saved methods</h2>
         {methodsQuery.isLoading ? (
-          <p className="text-sm text-foreground/70">Loading payment methods...</p>
+          <p className="text-sm text-muted-foreground">Loading payment methods...</p>
         ) : methodsQuery.data?.length ? (
           <div className="space-y-3">
             {methodsQuery.data.map((method) => (
@@ -46,7 +46,7 @@ export function AccountPaymentsPageContent() {
                 className="flex flex-col gap-3 rounded-xl border border-border p-4 sm:flex-row sm:items-center sm:justify-between"
               >
                 <div>
-                  <p className="text-sm text-foreground/60">
+                  <p className="text-sm text-muted-foreground">
                     {method.type_display || "Payment method"}
                   </p>
                   <p className="text-base font-semibold">
@@ -80,7 +80,7 @@ export function AccountPaymentsPageContent() {
             ))}
           </div>
         ) : (
-          <p className="text-sm text-foreground/70">
+          <p className="text-sm text-muted-foreground">
             No saved payment methods.
           </p>
         )}
@@ -89,7 +89,7 @@ export function AccountPaymentsPageContent() {
       <div className="grid gap-4 lg:grid-cols-2">
         <Card variant="bordered" className="space-y-4">
           <h2 className="text-lg font-semibold">Add a payment method</h2>
-          <p className="text-sm text-foreground/70">
+          <p className="text-sm text-muted-foreground">
             Paste a Stripe payment method ID to attach it to your account.
           </p>
           <label className="block text-sm">
@@ -111,7 +111,7 @@ export function AccountPaymentsPageContent() {
 
         <Card variant="bordered" className="space-y-4">
           <h2 className="text-lg font-semibold">Setup intent</h2>
-          <p className="text-sm text-foreground/70">
+          <p className="text-sm text-muted-foreground">
             Generate a client secret for Stripe Elements integration.
           </p>
           <Button

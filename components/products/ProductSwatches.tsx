@@ -31,7 +31,7 @@ export function ProductSwatches({
             "flex items-center gap-2 rounded-full border px-3 py-1 text-xs",
             selected === option.value
               ? "border-primary text-primary"
-              : "border-border text-foreground/70"
+              : "border-border text-muted-foreground"
           )}
         >
           {option.color ? (

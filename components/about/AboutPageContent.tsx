@@ -75,11 +75,11 @@ export async function AboutPageContent() {
   const organizationSchema = cleanObject({ "@context": "https://schema.org", "@type": "Organization", name: brandName, description: pickText(siteSettings?.site_description, heroSummary), url: absoluteUrl("/"), email: supportEmail || undefined, telephone: phone || undefined, address: address ? { "@type": "PostalAddress", streetAddress: address } : undefined, sameAs: socialLinks.filter((item) => /^https?:\/\//i.test(item.href)).map((item) => item.href) });
 
   return (
-    <div className="mx-auto w-full max-w-6xl px-3 sm:px-5 py-12 space-y-10">
+    <div className="mx-auto w-full max-w-6xl px-[var(--page-gutter)] py-12 space-y-10">
       <section className="overflow-hidden rounded-3xl border border-border bg-gradient-to-br from-primary/15 via-background to-accent/10 px-5 sm:px-8 py-8 sm:py-10">
-        <p className="text-sm uppercase tracking-[0.2em] text-foreground/60">About</p>
+        <p className="text-sm uppercase tracking-[0.2em] text-muted-foreground">About</p>
         <h1 className="mt-2 text-3xl sm:text-4xl font-semibold tracking-tight">{title}</h1>
-        {heroSummary ? <p className="mt-4 max-w-3xl text-sm sm:text-base text-foreground/75">{stripHtml(heroSummary)}</p> : null}
+        {heroSummary ? <p className="mt-4 max-w-3xl text-sm sm:text-base text-muted-foreground">{stripHtml(heroSummary)}</p> : null}
         <div className="mt-6 flex flex-wrap items-center gap-3">
           <Button asChild variant="primary-gradient"><Link href="/products/">Explore products</Link></Button>
           <Button asChild variant="secondary"><Link href="/contact/">Contact us</Link></Button>
@@ -89,7 +89,7 @@ export async function AboutPageContent() {
       <section className="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
         {stats.filter((item) => item.value > 0).map((item) => (
           <Card key={item.key} variant="bordered" className="rounded-2xl p-4">
-            <p className="text-xs uppercase tracking-[0.2em] text-foreground/60">{item.label}</p>
+            <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">{item.label}</p>
             <p className="mt-2 text-2xl font-semibold">{formatCount(item.value)}</p>
             {item.href ? <Link href={item.href} className="mt-3 inline-flex text-sm text-primary">View {item.label.toLowerCase()}</Link> : null}
           </Card>
@@ -101,19 +101,19 @@ export async function AboutPageContent() {
           {page?.content ? (
             <Card variant="bordered" className="lg:col-span-2 p-6 sm:p-7">
               <h2 className="text-xl font-semibold">Our story</h2>
-              <div className="mt-5 max-w-none space-y-4 text-sm leading-relaxed text-foreground/70 [&_h3]:text-base [&_h3]:font-semibold [&_h3]:text-foreground [&_p]:text-foreground/70 [&_ul]:list-disc [&_ul]:space-y-1 [&_ul]:pl-5 [&_li]:text-foreground/70 [&_a]:text-primary [&_a]:underline [&_a]:underline-offset-2 [&_a:hover]:text-primary/80 [&_.lead]:text-base [&_.lead]:font-medium [&_.lead]:text-foreground/80" dangerouslySetInnerHTML={{ __html: sanitizeHtml(page.content) }} />
+              <div className="mt-5 max-w-none space-y-4 text-sm leading-relaxed text-muted-foreground [&_h3]:text-base [&_h3]:font-semibold [&_h3]:text-foreground [&_p]:text-muted-foreground [&_ul]:list-disc [&_ul]:space-y-1 [&_ul]:pl-5 [&_li]:text-muted-foreground [&_a]:text-primary [&_a]:underline [&_a]:underline-offset-2 [&_a:hover]:text-primary/80 [&_.lead]:text-base [&_.lead]:font-medium [&_.lead]:text-foreground/80" dangerouslySetInnerHTML={{ __html: sanitizeHtml(page.content) }} />
             </Card>
           ) : null}
           {brandName || updatedAtLabel || supportEmail || phone || businessHours || responseTime ? (
             <Card variant="bordered" className="p-6 sm:p-7">
               <h2 className="text-xl font-semibold">Quick facts</h2>
               <dl className="mt-5 space-y-3 text-sm">
-                {brandName ? <div><dt className="text-foreground/60">Brand</dt><dd className="font-medium">{brandName}</dd></div> : null}
-                {updatedAtLabel ? <div><dt className="text-foreground/60">Page updated</dt><dd className="font-medium">{updatedAtLabel}</dd></div> : null}
-                {supportEmail ? <div><dt className="text-foreground/60">Support</dt><dd><Link href={`mailto:${supportEmail}`} className="font-medium text-primary">{supportEmail}</Link></dd></div> : null}
-                {phone ? <div><dt className="text-foreground/60">Phone</dt><dd><Link href={`tel:${phone}`} className="font-medium text-primary">{phone}</Link></dd></div> : null}
-                {businessHours ? <div><dt className="text-foreground/60">Business hours</dt><dd className="font-medium">{businessHours}</dd></div> : null}
-                {responseTime ? <div><dt className="text-foreground/60">Support response time</dt><dd className="font-medium">{responseTime}</dd></div> : null}
+                {brandName ? <div><dt className="text-muted-foreground">Brand</dt><dd className="font-medium">{brandName}</dd></div> : null}
+                {updatedAtLabel ? <div><dt className="text-muted-foreground">Page updated</dt><dd className="font-medium">{updatedAtLabel}</dd></div> : null}
+                {supportEmail ? <div><dt className="text-muted-foreground">Support</dt><dd><Link href={`mailto:${supportEmail}`} className="font-medium text-primary">{supportEmail}</Link></dd></div> : null}
+                {phone ? <div><dt className="text-muted-foreground">Phone</dt><dd><Link href={`tel:${phone}`} className="font-medium text-primary">{phone}</Link></dd></div> : null}
+                {businessHours ? <div><dt className="text-muted-foreground">Business hours</dt><dd className="font-medium">{businessHours}</dd></div> : null}
+                {responseTime ? <div><dt className="text-muted-foreground">Support response time</dt><dd className="font-medium">{responseTime}</dd></div> : null}
               </dl>
             </Card>
           ) : null}
@@ -129,7 +129,7 @@ export async function AboutPageContent() {
                 {categorySnapshot.items.map((category) => (
                   <Link key={category.id} href={buildCategoryPath(category.slug_path || category.slug)} className="inline-flex items-center rounded-full border border-border bg-muted/30 px-3 py-1.5 text-sm hover:bg-muted">
                     {category.name}
-                    {typeof category.product_count === "number" ? <span className="ml-2 text-xs text-foreground/60">{category.product_count}</span> : null}
+                    {typeof category.product_count === "number" ? <span className="ml-2 text-xs text-muted-foreground">{category.product_count}</span> : null}
                   </Link>
                 ))}
               </div>
@@ -140,7 +140,7 @@ export async function AboutPageContent() {
               <h2 className="text-xl font-semibold">Featured collections</h2>
               <ul className="mt-5 space-y-3">
                 {collectionSnapshot.items.map((collection) => (
-                  <li key={collection.id}><Link href={`/collections/${collection.slug}/`} className="flex items-start justify-between gap-3 rounded-xl border border-border/70 bg-card/40 px-3 py-3 text-sm transition hover:border-border"><span className="font-medium">{collection.name}</span><span className="text-foreground/60">View</span></Link></li>
+                  <li key={collection.id}><Link href={`/collections/${collection.slug}/`} className="flex items-start justify-between gap-3 rounded-xl border border-border/70 bg-card/40 px-3 py-3 text-sm transition hover:border-border"><span className="font-medium">{collection.name}</span><span className="text-muted-foreground">View</span></Link></li>
                 ))}
               </ul>
             </Card>
@@ -154,10 +154,10 @@ export async function AboutPageContent() {
             <Card variant="bordered" className="p-6 sm:p-7">
               <h2 className="text-xl font-semibold">Contact & support</h2>
               <div className="mt-5 space-y-3 text-sm">
-                {supportEmail ? <p><span className="text-foreground/60">Support:</span> <Link href={`mailto:${supportEmail}`} className="text-primary">{supportEmail}</Link></p> : null}
-                {salesEmail ? <p><span className="text-foreground/60">Sales:</span> <Link href={`mailto:${salesEmail}`} className="text-primary">{salesEmail}</Link></p> : null}
-                {phone ? <p><span className="text-foreground/60">Phone:</span> <Link href={`tel:${phone}`} className="text-primary">{phone}</Link></p> : null}
-                {address ? <p><span className="text-foreground/60">Address:</span> {address}</p> : null}
+                {supportEmail ? <p><span className="text-muted-foreground">Support:</span> <Link href={`mailto:${supportEmail}`} className="text-primary">{supportEmail}</Link></p> : null}
+                {salesEmail ? <p><span className="text-muted-foreground">Sales:</span> <Link href={`mailto:${salesEmail}`} className="text-primary">{salesEmail}</Link></p> : null}
+                {phone ? <p><span className="text-muted-foreground">Phone:</span> <Link href={`tel:${phone}`} className="text-primary">{phone}</Link></p> : null}
+                {address ? <p><span className="text-muted-foreground">Address:</span> {address}</p> : null}
               </div>
             </Card>
           ) : null}
@@ -166,7 +166,7 @@ export async function AboutPageContent() {
               <h2 className="text-xl font-semibold">Follow {brandName || "us"}</h2>
               <ul className="mt-5 grid gap-2.5 sm:grid-cols-2 text-sm">
                 {socialLinks.map((link) => (
-                  <li key={`${link.label}-${link.href}`}><Link href={link.href} target="_blank" rel="noreferrer" className="flex items-center justify-between rounded-xl border border-border/70 bg-card/40 px-3 py-2.5 transition hover:border-border"><span>{link.label}</span><span className="text-foreground/60">Visit</span></Link></li>
+                  <li key={`${link.label}-${link.href}`}><Link href={link.href} target="_blank" rel="noreferrer" className="flex items-center justify-between rounded-xl border border-border/70 bg-card/40 px-3 py-2.5 transition hover:border-border"><span>{link.label}</span><span className="text-muted-foreground">Visit</span></Link></li>
                 ))}
               </ul>
             </Card>

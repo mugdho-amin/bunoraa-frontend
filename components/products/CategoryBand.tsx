@@ -20,7 +20,7 @@ export const CategoryBand = ({ band }: CategoryBandProps) => {
         linkLabel="View all"
         as="h2"
       />
-      <div className="-mx-3 sm:-mx-5 lg:mx-0">
+      <div className="-mx-[var(--page-gutter)] px-[var(--page-gutter)] lg:mx-0 lg:px-0">
         <ProductGrid
           products={band.products}
           cardStyle="minimal"

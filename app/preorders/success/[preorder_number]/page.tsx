@@ -2,7 +2,7 @@ import dynamic from "next/dynamic";
 
 const PreorderSuccessPageContent = dynamic(
   () => import("@/components/preorders/PreorderSuccessPageContent").then((mod) => mod.PreorderSuccessPageContent),
-  { loading: () => <div className="p-8 text-center text-sm text-foreground/60">Loading...</div> }
+  { loading: () => <div className="p-8 text-center text-sm text-muted-foreground">Loading...</div> }
 );
 
 export default async function PreorderSuccessPage({

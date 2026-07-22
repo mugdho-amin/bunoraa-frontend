@@ -27,10 +27,10 @@ export function AccountProfilePageContent() {
     return (
       <div className="space-y-6">
         <div className="flex items-start justify-between gap-3">
-          <div><p className="text-sm uppercase tracking-[0.2em] text-foreground/60">Account</p><h1 className="text-2xl font-semibold">Profile</h1></div>
+          <div><p className="text-sm uppercase tracking-[0.2em] text-muted-foreground">Account</p><h1 className="text-2xl font-semibold">Profile</h1></div>
         </div>
         <Card variant="bordered" className="flex items-center justify-center py-12">
-          <p className="text-sm text-foreground/50 animate-pulse">Loading profile...</p>
+          <p className="text-sm text-muted-foreground animate-pulse">Loading profile...</p>
         </Card>
       </div>
     );
@@ -40,7 +40,7 @@ export function AccountProfilePageContent() {
     return (
       <div className="space-y-6">
         <div className="flex items-start justify-between gap-3">
-          <div><p className="text-sm uppercase tracking-[0.2em] text-foreground/60">Account</p><h1 className="text-2xl font-semibold">Profile</h1></div>
+          <div><p className="text-sm uppercase tracking-[0.2em] text-muted-foreground">Account</p><h1 className="text-2xl font-semibold">Profile</h1></div>
         </div>
         <Card variant="bordered" className="flex items-center justify-center py-12">
           <div className="text-center space-y-2">
@@ -71,23 +71,23 @@ export function AccountProfilePageContent() {
   return (
     <div className="space-y-6">
       <div className="flex items-start justify-between gap-3">
-        <div><p className="text-sm uppercase tracking-[0.2em] text-foreground/60">Account</p><h1 className="text-2xl font-semibold">Profile</h1></div>
+        <div><p className="text-sm uppercase tracking-[0.2em] text-muted-foreground">Account</p><h1 className="text-2xl font-semibold">Profile</h1></div>
         <Button type="button" size="sm" variant="secondary" className="h-9 shrink-0 border-amber-500/40 bg-amber-500/10 px-3 text-amber-700 hover:bg-amber-500/20 dark:text-amber-300" onClick={logout}>Sign out</Button>
       </div>
       <Card variant="bordered" className="space-y-6">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex min-w-0 items-center gap-4">
             <div className="relative h-16 w-16 overflow-hidden rounded-full bg-muted">
-              {profile?.avatar || storedAvatar ? <Image src={profile?.avatar || storedAvatar || ""} alt={profile?.full_name || "Profile"} fill className="object-cover" sizes="64px" unoptimized /> : <div className="flex h-full w-full items-center justify-center text-xl font-semibold text-foreground/50">{profile?.first_name?.[0] || "U"}</div>}
+              {profile?.avatar || storedAvatar ? <Image src={profile?.avatar || storedAvatar || ""} alt={profile?.full_name || "Profile"} fill quality={55} className="object-cover" sizes="64px" /> : <div className="flex h-full w-full items-center justify-center text-xl font-semibold text-muted-foreground">{profile?.first_name?.[0] || "U"}</div>}
             </div>
             <div className="min-w-0">
-              <p className="text-sm text-foreground/60">Email</p>
+              <p className="text-sm text-muted-foreground">Email</p>
               <p className="break-all text-sm font-medium">{profile?.email || "-"}</p>
-              <div className="mt-1 flex flex-wrap items-center gap-2 text-xs text-foreground/60">
+              <div className="mt-1 flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
                 <span>{profile?.is_verified ? "Verified account" : "Email not verified"}</span>
                 {!profile?.is_verified ? <button type="button" className="text-xs font-semibold text-primary hover:underline" onClick={handleResendVerification} disabled={verificationSending}>{verificationSending ? "Sending..." : "Send verification email"}</button> : null}
               </div>
-              {verificationMessage ? <p className="break-words text-xs text-foreground/60">{verificationMessage}</p> : null}
+              {verificationMessage ? <p className="break-words text-xs text-muted-foreground">{verificationMessage}</p> : null}
             </div>
           </div>
           <div className="flex w-full flex-col gap-2 sm:w-auto">

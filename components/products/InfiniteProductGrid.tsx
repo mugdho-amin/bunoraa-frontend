@@ -163,7 +163,7 @@ export function InfiniteProductGrid({
       {products.length ? (
         <div className="space-y-3">
           <div className="flex flex-col items-center gap-3 rounded-2xl border border-border/70 bg-card/30 px-4 py-4 text-center">
-            <p className="text-sm text-foreground/65">
+            <p className="text-sm text-muted-foreground">
               Showing {products.length} of {totalCount} products
             </p>
             {hasMore ? (

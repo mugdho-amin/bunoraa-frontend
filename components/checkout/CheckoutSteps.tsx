@@ -36,7 +36,7 @@ export function CheckoutSteps({
                     ? "border-emerald-600 bg-emerald-600 text-white"
                     : isActive
                     ? "border-primary bg-primary text-white"
-                    : "border-border bg-muted text-foreground/70",
+                    : "border-border bg-muted text-muted-foreground",
                   isClickable && "cursor-pointer",
                   !isClickable && "cursor-default"
                 )}
@@ -59,7 +59,7 @@ export function CheckoutSteps({
                     "inline-flex h-6 w-6 items-center justify-center rounded-full text-[11px] font-semibold",
                     isComplete || isActive
                       ? "bg-white/20 text-current"
-                      : "bg-background text-foreground/70"
+                      : "bg-background text-muted-foreground"
                   )}
                 >
                   {isComplete ? (

@@ -34,10 +34,10 @@ export function NotificationsPageContent() {
 
   return (
     <AuthGate title="Notifications" description="Sign in to view notifications.">
-      <div className="mx-auto w-full max-w-4xl px-3 sm:px-5 py-12">
+      <div className="mx-auto w-full max-w-4xl px-[var(--page-gutter)] py-12">
       <div className="mb-6 flex items-center justify-between">
         <div>
-          <p className="text-sm uppercase tracking-[0.2em] text-foreground/60">
+          <p className="text-sm uppercase tracking-[0.2em] text-muted-foreground">
             Notifications
           </p>
           <h1 className="text-3xl font-semibold">Your updates</h1>
@@ -69,7 +69,7 @@ export function NotificationsPageContent() {
           {showUnread ? "Unread only" : "All"}
         </Button>
         <label className="flex items-center gap-2">
-          <span className="text-foreground/70">Category</span>
+          <span className="text-muted-foreground">Category</span>
           <select
             className="rounded-lg border border-border bg-card px-3 py-1 text-sm"
             value={category}
@@ -86,13 +86,13 @@ export function NotificationsPageContent() {
       {notificationsQuery.isLoading ? (
         <div className="flex flex-col items-center justify-center py-20 text-center" role="status">
           <div className="h-8 w-8 animate-spin rounded-full border-2 border-foreground/20 border-t-foreground/60" aria-hidden />
-          <p className="mt-4 text-sm text-foreground/60">Loading notifications...</p>
+          <p className="mt-4 text-sm text-muted-foreground">Loading notifications...</p>
         </div>
       ) : notifications.length === 0 ? (
         <section className="flex flex-col items-center justify-center py-20 text-center">
           <Bell className="h-14 w-14 text-foreground/20 mb-4" aria-hidden />
           <h2 className="text-xl font-semibold">No notifications yet</h2>
-          <p className="mt-2 max-w-sm text-sm text-foreground/60">
+          <p className="mt-2 max-w-sm text-sm text-muted-foreground">
             We&apos;ll let you know when there are updates on your orders, preorders, or artisan collections.
           </p>
           <Link
@@ -118,12 +118,12 @@ export function NotificationsPageContent() {
                     {note.title || "Notification"}
                   </h2>
                   {note.category ? (
-                    <span className="rounded-full bg-muted px-2 py-0.5 text-xs uppercase text-foreground/70">
+                    <span className="rounded-full bg-muted px-2 py-0.5 text-xs uppercase text-muted-foreground">
                       {note.category}
                     </span>
                   ) : null}
                 </div>
-                <p className="text-sm text-foreground/70">{note.message}</p>
+                <p className="text-sm text-muted-foreground">{note.message}</p>
               </div>
               <input
                 type="checkbox"

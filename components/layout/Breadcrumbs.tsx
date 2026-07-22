@@ -43,7 +43,7 @@ export function Breadcrumbs({
       />
       <nav
         aria-label="Breadcrumb"
-        className={cn("flex items-center space-x-2 text-[11px] font-normal tracking-wide text-foreground/40", className)}
+        className={cn("flex items-center space-x-2 text-[11px] font-normal tracking-wide text-muted-foreground", className)}
       >
         {items.map((item, index) => {
           const isLast = index === items.length - 1;
@@ -54,7 +54,7 @@ export function Breadcrumbs({
                 <span className="text-[10px] opacity-60 px-0.5" aria-hidden="true">&gt;</span>
               )}
               {isLast ? (
-                <span className="truncate max-w-[150px] sm:max-w-none text-foreground/50" aria-current="page">
+                <span className="truncate max-w-[150px] sm:max-w-none text-muted-foreground" aria-current="page">
                   {item.name}
                 </span>
               ) : (

@@ -53,7 +53,7 @@ export function AccountShell({ children }: { children: React.ReactNode }) {
       nextHref={pathname}
     >
       <div className="min-h-screen bg-background text-foreground">
-        <div className="mx-auto w-full max-w-[1920px] px-3 py-6 sm:px-5 sm:py-10 lg:py-12">
+        <div className="mx-auto w-full max-w-content px-[var(--page-gutter)] py-6 sm:py-10 lg:py-12">
           <div className="mb-4 lg:hidden">
             <Button
               type="button"
@@ -71,7 +71,7 @@ export function AccountShell({ children }: { children: React.ReactNode }) {
           <div className="flex flex-col gap-5 lg:grid lg:grid-cols-[260px_1fr] lg:gap-8">
             <aside className="hidden space-y-4 lg:block">
               <Card variant="bordered" className="space-y-3" padding="md">
-                <p className="text-xs font-semibold uppercase tracking-[0.2em] text-foreground/55">
+                <p className="text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground">
                   Account
                 </p>
                 <nav className="flex flex-col gap-0.5" aria-label="Account">
@@ -85,7 +85,7 @@ export function AccountShell({ children }: { children: React.ReactNode }) {
                           "rounded-xl px-3 py-2.5 text-sm transition-colors",
                           active
                             ? "bg-primary/10 font-semibold text-primary"
-                            : "text-foreground/70 hover:bg-muted hover:text-foreground"
+                            : "text-muted-foreground hover:bg-muted hover:text-foreground"
                         )}
                       >
                         {item.label}
@@ -96,7 +96,7 @@ export function AccountShell({ children }: { children: React.ReactNode }) {
               </Card>
               <Card variant="modern-gradient" className="space-y-2">
                 <p className="text-sm font-semibold">Need help?</p>
-                <p className="text-sm text-foreground/70">
+                <p className="text-sm text-muted-foreground">
                   Reach out to our support team for any account changes or data
                   requests.
                 </p>
@@ -129,7 +129,7 @@ export function AccountShell({ children }: { children: React.ReactNode }) {
           <aside className="absolute inset-y-0 right-0 flex h-full w-full max-w-[20rem] flex-col border-l border-border/80 bg-background shadow-premium supports-[height:100dvh]:h-[100dvh]">
             <div className="mb-2 flex items-center justify-between border-b border-border/70 px-4 pb-3 pt-[max(1rem,env(safe-area-inset-top))]">
               <div>
-                <p className="text-xs font-semibold uppercase tracking-[0.2em] text-foreground/55">
+                <p className="text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground">
                   Account
                 </p>
                 <p className="text-sm font-semibold">{activeItem?.label}</p>
@@ -157,7 +157,7 @@ export function AccountShell({ children }: { children: React.ReactNode }) {
                           "min-h-11 rounded-xl px-3 py-2.5 text-sm transition-colors",
                           active
                             ? "bg-primary/10 font-semibold text-primary"
-                            : "text-foreground/70 hover:bg-muted hover:text-foreground"
+                            : "text-muted-foreground hover:bg-muted hover:text-foreground"
                         )}
                       >
                         {item.label}
@@ -168,7 +168,7 @@ export function AccountShell({ children }: { children: React.ReactNode }) {
               </Card>
               <Card variant="modern-gradient" className="space-y-2" padding="sm">
                 <p className="text-sm font-semibold">Need help?</p>
-                <p className="text-sm text-foreground/70">
+                <p className="text-sm text-muted-foreground">
                   Reach out to support for account updates or data requests.
                 </p>
                 <Button asChild size="sm" variant="secondary" className="w-full">

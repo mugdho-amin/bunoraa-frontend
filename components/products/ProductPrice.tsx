@@ -31,7 +31,7 @@ export function ProductPrice({
         {formatMoney(base, currency)}
       </span>
       {strikethroughPrice ? (
-        <span className={cn("text-sm text-foreground/50 line-through", salePriceClassName)}>
+        <span className={cn("text-sm text-muted-foreground line-through", salePriceClassName)}>
           {formatMoney(strikethroughPrice, currency)}
         </span>
       ) : null}

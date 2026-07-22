@@ -42,7 +42,7 @@ export default async function ProductCardDesignPage() {
       <div className="min-h-screen bg-background text-foreground">
         <div className="mx-auto w-full max-w-6xl px-4 py-12 sm:px-6">
           <h1 className="text-3xl font-semibold">Product Card Variants</h1>
-          <p className="mt-3 text-sm text-foreground/65">
+          <p className="mt-3 text-sm text-muted-foreground">
             No products are available to preview card variants yet.
           </p>
         </div>
@@ -54,9 +54,9 @@ export default async function ProductCardDesignPage() {
     <div className="min-h-screen bg-background text-foreground">
       <div className="mx-auto w-full max-w-[1920px] px-4 py-10 sm:px-6 sm:py-12">
         <div className="mb-8 space-y-2">
-          <p className="text-xs uppercase tracking-[0.2em] text-foreground/55">Internal Pattern Lab</p>
+          <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">Internal Pattern Lab</p>
           <h1 className="text-3xl font-semibold sm:text-4xl">12 Product Card Variants</h1>
-          <p className="max-w-3xl text-sm text-foreground/65 sm:text-base">
+          <p className="max-w-3xl text-sm text-muted-foreground sm:text-base">
             Use these cards across different surfaces such as category grids, homepage modules,
             promotional slots, and dense list pages.
           </p>
@@ -74,8 +74,8 @@ export default async function ProductCardDesignPage() {
               >
                 <div className="mb-4 flex flex-col gap-1">
                   <h2 className="text-lg font-semibold sm:text-xl">{entry.name}</h2>
-                  <p className="text-sm text-foreground/65">{entry.description}</p>
-                  <p className="text-xs uppercase tracking-[0.16em] text-foreground/50">
+                  <p className="text-sm text-muted-foreground">{entry.description}</p>
+                  <p className="text-xs uppercase tracking-[0.16em] text-muted-foreground">
                     Best for: {entry.bestFor}
                   </p>
                 </div>

@@ -38,11 +38,11 @@ export function AccountChangePasswordPageContent() {
   return (
     <Card variant="bordered" className="space-y-6">
       <div>
-        <p className="text-sm uppercase tracking-[0.2em] text-foreground/60">
+        <p className="text-sm uppercase tracking-[0.2em] text-muted-foreground">
           Account
         </p>
         <h1 className="text-2xl font-semibold">Change password</h1>
-        <p className="mt-2 text-sm text-foreground/70">
+        <p className="mt-2 text-sm text-muted-foreground">
           Use a long, unique passphrase that is easy to remember but hard to
           guess.
         </p>

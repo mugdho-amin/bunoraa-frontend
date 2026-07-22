@@ -10,7 +10,7 @@ export const metadata: Metadata = buildPageMetadata({
 
 const PagesIndexPageContent = dynamic(
   () => import("@/components/pages/PagesIndexPageContent").then((mod) => mod.PagesIndexPageContent),
-  { loading: () => <div className="p-8 text-center text-sm text-foreground/60">Loading pages...</div> }
+  { loading: () => <div className="p-8 text-center text-sm text-muted-foreground">Loading pages...</div> }
 );
 
 export default function PagesIndex() {

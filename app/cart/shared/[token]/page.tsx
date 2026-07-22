@@ -7,8 +7,8 @@ export default async function SharedCartPage({
 }) {
   const { token } = await params;
   return (
-    <div className="mx-auto w-full max-w-3xl px-3 sm:px-5 py-12">
-      <Card variant="bordered" className="p-6 text-sm text-foreground/70">
+    <div className="mx-auto w-full max-w-3xl px-[var(--page-gutter)] py-12">
+      <Card variant="bordered" className="p-6 text-sm text-muted-foreground">
         Shared bags require a dedicated API endpoint. Token: {token}
       </Card>
     </div>

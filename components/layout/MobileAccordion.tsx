@@ -63,7 +63,7 @@ function SocialIcon({ platform, iconUrl }: { platform: string; iconUrl?: string 
       );
     default:
       return (
-        <span className="flex h-4 w-4 items-center justify-center text-[10px] font-bold text-foreground/40">
+        <span className="flex h-4 w-4 items-center justify-center text-[10px] font-bold text-muted-foreground">
           ?
         </span>
       );
@@ -123,7 +123,7 @@ export function MobileAccordion({
   socialLinks,
   contactIconSize,
   contactIconStroke,
-  contactIconContainerClass = "mt-0.5 inline-flex h-5 w-5 shrink-0 items-center justify-center text-foreground/60",
+  contactIconContainerClass = "mt-0.5 inline-flex h-5 w-5 shrink-0 items-center justify-center text-muted-foreground",
 }: MobileAccordionProps) {
   const containerRef = React.useRef<HTMLDivElement>(null);
 
@@ -163,7 +163,7 @@ export function MobileAccordion({
           <span>Shop</span>
           <ChevronDown
             aria-hidden="true"
-            className="h-4 w-4 shrink-0 text-foreground/60 transition group-open:rotate-180"
+            className="h-4 w-4 shrink-0 text-muted-foreground transition group-open:rotate-180"
             strokeWidth={1.8}
           />
         </summary>
@@ -195,7 +195,7 @@ export function MobileAccordion({
           <span>Collections</span>
           <ChevronDown
             aria-hidden="true"
-            className="h-4 w-4 shrink-0 text-foreground/60 transition group-open:rotate-180"
+            className="h-4 w-4 shrink-0 text-muted-foreground transition group-open:rotate-180"
             strokeWidth={1.8}
           />
         </summary>
@@ -215,7 +215,7 @@ export function MobileAccordion({
           <span>Company & Support</span>
           <ChevronDown
             aria-hidden="true"
-            className="h-4 w-4 shrink-0 text-foreground/60 transition group-open:rotate-180"
+            className="h-4 w-4 shrink-0 text-muted-foreground transition group-open:rotate-180"
             strokeWidth={1.8}
           />
         </summary>
@@ -235,7 +235,7 @@ export function MobileAccordion({
           <span>Contact & Location</span>
           <ChevronDown
             aria-hidden="true"
-            className="h-4 w-4 shrink-0 text-foreground/60 transition group-open:rotate-180"
+            className="h-4 w-4 shrink-0 text-muted-foreground transition group-open:rotate-180"
             strokeWidth={1.8}
           />
         </summary>

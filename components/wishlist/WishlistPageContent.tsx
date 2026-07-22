@@ -14,14 +14,14 @@ export function WishlistPageContent() {
 
   return (
     <div className="min-h-screen bg-background text-foreground">
-      <div className="mx-auto w-full max-w-5xl px-3 sm:px-5 py-16">
+      <div className="mx-auto w-full max-w-5xl px-[var(--page-gutter)] py-16">
         <div className="mb-8">
-          <p className="text-sm uppercase tracking-[0.2em] text-foreground/60">
+          <p className="text-sm uppercase tracking-[0.2em] text-muted-foreground">
             Wishlist
           </p>
           <h1 className="text-2xl font-semibold">Saved items</h1>
           {!hasToken ? (
-            <p className="mt-2 text-sm text-foreground/60">
+            <p className="mt-2 text-sm text-muted-foreground">
               You are viewing a guest wishlist.{" "}
               <Link href="/account/login/" className="text-primary underline-offset-2 hover:underline">
                 Sign in
@@ -34,16 +34,16 @@ export function WishlistPageContent() {
         {wishlistQuery.isLoading ? (
           !hasToken ? (
             <div className="space-y-4">
-              <div className="text-sm text-foreground/60">Sign in to see your saved items.</div>
+              <div className="text-sm text-muted-foreground">Sign in to see your saved items.</div>
               <Link href="/products/" className="inline-flex items-center rounded-xl bg-primary px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-primary/90">
                 Browse products
               </Link>
             </div>
           ) : (
-            <div className="text-sm text-foreground/60">Loading wishlist...</div>
+            <div className="text-sm text-muted-foreground">Loading wishlist...</div>
           )
         ) : wishlistQuery.isError ? (
-          <div className="text-sm text-foreground/60">
+          <div className="text-sm text-muted-foreground">
             Could not load wishlist.
           </div>
         ) : (
@@ -57,6 +57,7 @@ export function WishlistPageContent() {
                         src={item.product_image}
                         alt={item.product_name}
                         fill
+                        quality={80}
                         className="object-cover"
                         sizes="96px"
                         loading="lazy"
@@ -70,7 +71,7 @@ export function WishlistPageContent() {
                         {item.product_name}
                       </h2>
                     </Link>
-                    <p className="text-sm text-foreground/60">
+                    <p className="text-sm text-muted-foreground">
                       {item.current_price || item.price_at_add}
                     </p>
                     <div className="flex flex-wrap gap-2">
@@ -94,7 +95,7 @@ export function WishlistPageContent() {
               ))
             ) : (
               <Card variant="bordered">
-                <p className="text-sm text-foreground/60">
+                <p className="text-sm text-muted-foreground">
                   Your wishlist is empty.
                 </p>
               </Card>

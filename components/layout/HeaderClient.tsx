@@ -200,7 +200,7 @@ export function HeaderClient() {
           Wishlist
         </span>
         {wishlistCount > 0 ? (
-          <span className="absolute -right-1 -top-1 flex h-5 min-w-5 items-center justify-center rounded-full bg-accent px-1 text-[10px] font-bold text-white shadow-xs ring-2 ring-background">
+          <span className="absolute -right-1 -top-1 flex h-5 min-w-5 items-center justify-center rounded-full bg-accent px-1 text-[10px] font-bold text-accent-foreground shadow-xs ring-2 ring-background">
             {wishlistCount > 99 ? "99+" : wishlistCount}
           </span>
         ) : null}
@@ -219,7 +219,7 @@ export function HeaderClient() {
           Bag
         </span>
         {count > 0 ? (
-          <span className="absolute -right-1 -top-1 flex h-5 min-w-5 items-center justify-center rounded-full bg-accent px-1 text-[10px] font-bold text-white shadow-xs ring-2 ring-background">
+          <span className="absolute -right-1 -top-1 flex h-5 min-w-5 items-center justify-center rounded-full bg-accent px-1 text-[10px] font-bold text-accent-foreground shadow-xs ring-2 ring-background">
             {count > 99 ? "99+" : count}
           </span>
         ) : null}
@@ -240,12 +240,11 @@ export function HeaderClient() {
                 alt={profileQuery.data?.first_name || "Profile"}
                 width={28}
                 height={28}
+                quality={50}
                 className="h-full w-full object-cover"
-                loading="lazy"
-                decoding="async"
               />
             ) : (
-              <span className="relative flex h-7 w-7 items-center justify-center overflow-hidden rounded-full bg-muted text-[10px] font-semibold uppercase text-foreground/70">
+              <span className="relative flex h-7 w-7 items-center justify-center overflow-hidden rounded-full bg-muted text-[10px] font-semibold uppercase text-muted-foreground">
                 {profileQuery.data?.first_name?.[0] || "U"}
               </span>
             )
@@ -279,9 +278,8 @@ export function HeaderClient() {
                       alt=""
                       width={44}
                       height={44}
+                      quality={50}
                       className="h-full w-full object-cover"
-                      loading="lazy"
-                      decoding="async"
                     />
                   ) : (
                     <span className="uppercase">
@@ -296,7 +294,7 @@ export function HeaderClient() {
                       "Account"}
                   </p>
                   {profileQuery.data?.email ? (
-                    <p className="truncate text-xs text-foreground/50">
+                    <p className="truncate text-xs text-muted-foreground">
                       {profileQuery.data.email}
                     </p>
                   ) : null}
@@ -404,14 +402,14 @@ export function HeaderClient() {
                 {/* ── Account switching ── */}
                 {otherAccounts.length > 0 ? (
                   <div className="mt-1.5 border-t border-border pt-1.5">
-                    <p className="px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.16em] text-foreground/40">
+                    <p className="px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">
                       Switch account
                     </p>
                     {otherAccounts.map((account) => (
                       <button
                         key={account.id}
                         type="button"
-                        className="flex w-full items-center gap-3 rounded-xl px-3 py-2 text-left text-sm text-foreground/70 transition hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
+                        className="flex w-full items-center gap-3 rounded-xl px-3 py-2 text-left text-sm text-muted-foreground transition hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
                         onClick={() => {
                           switchAccount(account.id);
                           setMenuOpen(false);
@@ -450,7 +448,7 @@ export function HeaderClient() {
                     >
                       <Shield className="h-4 w-4 shrink-0 opacity-60" />
                       <span className="flex-1">Admin panel</span>
-                      <ExternalLink className="h-3 w-3 shrink-0 text-foreground/30" />
+                      <ExternalLink className="h-3 w-3 shrink-0 text-muted-foreground" />
                     </Link>
                   </>
                 ) : null}
@@ -479,11 +477,11 @@ export function HeaderClient() {
               {/* ── Welcome header ── */}
               <div className="flex items-center gap-3 rounded-t-2xl bg-muted/40 px-4 py-3.5">
                 <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-foreground/5">
-                  <UserRound className="h-5 w-5 text-foreground/40" />
+                  <UserRound className="h-5 w-5 text-muted-foreground" />
                 </div>
                 <div>
                   <p className="text-sm font-semibold text-foreground">Welcome</p>
-                  <p className="text-xs text-foreground/50">Sign in for personalized experience</p>
+                  <p className="text-xs text-muted-foreground">Sign in for personalized experience</p>
                 </div>
               </div>
 

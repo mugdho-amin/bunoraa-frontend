@@ -70,7 +70,7 @@ export function EmptyState({
       {description ? (
         <p
           className={cn(
-            "mt-2 max-w-md text-pretty text-foreground/60",
+            "mt-2 max-w-md text-pretty text-muted-foreground",
             compact ? "text-sm" : "text-sm sm:text-base"
           )}
         >

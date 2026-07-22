@@ -20,11 +20,11 @@ export async function BlogPostPageContent({ slug }: { slug: string }) {
   const articleSchema = { "@context": "https://schema.org", "@type": "Article", headline: post.title, description: post.excerpt || undefined, image: post.featured_image ? absoluteUrl(post.featured_image) : undefined, datePublished: post.published_at || post.created_at, dateModified: post.updated_at || post.published_at || post.created_at, author: post.author_name ? { "@type": "Person", name: post.author_name } : undefined };
 
   return (
-    <div className="mx-auto w-full max-w-4xl px-3 sm:px-5 py-12">
+    <div className="mx-auto w-full max-w-4xl px-[var(--page-gutter)] py-12">
       <div className="mb-8">
-        {post.category_name ? <Link href="/blog/" className="text-xs uppercase tracking-[0.2em] text-primary hover:text-primary/80 transition-colors">{post.category_name}</Link> : <Link href="/blog/" className="text-xs uppercase tracking-[0.2em] text-foreground/60 hover:text-foreground/80 transition-colors">Blog</Link>}
+        {post.category_name ? <Link href="/blog/" className="text-xs uppercase tracking-[0.2em] text-primary hover:text-primary/80 transition-colors">{post.category_name}</Link> : <Link href="/blog/" className="text-xs uppercase tracking-[0.2em] text-muted-foreground hover:text-foreground/80 transition-colors">Blog</Link>}
         <h1 className="mt-2 text-3xl font-semibold">{post.title}</h1>
-        <div className="mt-3 flex flex-wrap items-center gap-3 text-sm text-foreground/60">
+        <div className="mt-3 flex flex-wrap items-center gap-3 text-sm text-muted-foreground">
           {post.author_name ? <span>By {post.author_name}</span> : null}
           {post.published_at ? <time dateTime={post.published_at}>{new Date(post.published_at).toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" })}</time> : null}
           {post.reading_time_minutes ? <span>{post.reading_time_minutes} min read</span> : null}

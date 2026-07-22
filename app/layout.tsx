@@ -126,7 +126,10 @@ export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
   viewportFit: "cover",
-  themeColor: "#9c3d1e",
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#faf8f6" },
+    { media: "(prefers-color-scheme: dark)", color: "#12100f" },
+  ],
 };
 
 const themeBootstrapScript = `

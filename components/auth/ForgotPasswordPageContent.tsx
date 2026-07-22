@@ -22,12 +22,12 @@ export function ForgotPasswordPageContent() {
   };
 
   return (
-    <div className="mx-auto w-full max-w-md px-3 sm:px-5 py-20">
+    <div className="mx-auto w-full max-w-md px-[var(--page-gutter)] py-20">
       <Card variant="bordered" className="space-y-6">
-        <div><p className="text-sm uppercase tracking-[0.2em] text-foreground/60">Account</p><h1 className="text-2xl font-semibold">Reset password</h1></div>
-        {sent ? <p className="text-sm text-foreground/70" aria-live="polite">If an account exists with that email, a reset link has been sent.</p>
+        <div><p className="text-sm uppercase tracking-[0.2em] text-muted-foreground">Account</p><h1 className="text-2xl font-semibold">Reset password</h1></div>
+        {sent ? <p className="text-sm text-muted-foreground" aria-live="polite">If an account exists with that email, a reset link has been sent.</p>
         : <form className="space-y-4" onSubmit={form.handleSubmit(onSubmit)}>
-            {errorMessage ? <p className="text-sm text-error-500" role="alert">{errorMessage}</p> : null}
+            {errorMessage ? <p className="text-sm text-error-600" role="alert">{errorMessage}</p> : null}
             <label className="block text-sm">Email<input className="mt-2 w-full rounded-lg border border-border bg-card px-3 py-2" type="email" {...form.register("email")} /></label>
             <Button type="submit" className="w-full">Send reset link</Button>
           </form>}

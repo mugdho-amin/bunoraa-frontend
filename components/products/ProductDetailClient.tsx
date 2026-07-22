@@ -105,13 +105,13 @@ function CollapsibleSection({
         aria-controls={`${id}-content`}
       >
         <div className="flex items-center gap-3">
-          {Icon && <Icon size={18} className="text-foreground/40" />}
+          {Icon && <Icon size={18} className="text-muted-foreground" />}
           <h2 className="text-sm font-bold uppercase tracking-[0.15em]">{title}</h2>
         </div>
         <ChevronDown
           size={16}
           className={cn(
-            "text-foreground/40 transition-transform duration-300",
+            "text-muted-foreground transition-transform duration-300",
             isExpanded && "rotate-180 text-primary"
           )}
         />
@@ -124,7 +124,7 @@ function CollapsibleSection({
         )}
       >
         <div className="overflow-hidden">
-          <div className="pb-5 pt-1 text-sm leading-relaxed text-foreground/70">
+          <div className="pb-5 pt-1 text-sm leading-relaxed text-muted-foreground">
             {children}
           </div>
         </div>
@@ -234,7 +234,7 @@ function ProductGallery({
           <button
             type="button"
             onClick={() => scrollThumbs("up")}
-            className="inline-flex h-8 w-8 items-center justify-center rounded-full border border-border bg-background/85 text-foreground/50 transition hover:border-primary hover:text-primary"
+            className="inline-flex h-8 w-8 items-center justify-center rounded-full border border-border bg-background/85 text-muted-foreground transition hover:border-primary hover:text-primary"
             aria-label="Scroll thumbnails up"
           >
             <ChevronUp aria-hidden="true" className="h-4 w-4" />
@@ -259,6 +259,7 @@ function ProductGallery({
                   src={image.image}
                   alt={image.alt}
                   fill
+                  quality={60}
                   sizes="96px"
                   className="object-cover"
                   loading="lazy"
@@ -270,7 +271,7 @@ function ProductGallery({
           <button
             type="button"
             onClick={() => scrollThumbs("down")}
-            className="inline-flex h-8 w-8 items-center justify-center rounded-full border border-border bg-background/85 text-foreground/50 transition hover:border-primary hover:text-primary"
+            className="inline-flex h-8 w-8 items-center justify-center rounded-full border border-border bg-background/85 text-muted-foreground transition hover:border-primary hover:text-primary"
             aria-label="Scroll thumbnails down"
           >
             <ChevronDown aria-hidden="true" className="h-4 w-4" />
@@ -291,12 +292,12 @@ function ProductGallery({
 
         {/* Gallery Overlay Controls */}
           <div className="absolute inset-x-4 bottom-4 flex items-center justify-between pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-             <div className="pointer-events-auto rounded-full bg-background/90 backdrop-blur-md px-3 py-1.5 text-[10px] font-bold uppercase tracking-widest text-foreground/70 shadow-sm border border-border/40">
+             <div className="pointer-events-auto rounded-full bg-background/90 backdrop-blur-md px-3 py-1.5 text-[10px] font-bold uppercase tracking-widest text-muted-foreground shadow-sm border border-border/40">
                 {images.length ? `${active + 1} / ${images.length}` : "1 / 1"}
               </div>
               <button 
                 onClick={() => setLightboxOpen(true)}
-                className="pointer-events-auto flex h-9 w-9 items-center justify-center rounded-full bg-background/90 backdrop-blur-md text-foreground/60 shadow-sm border border-border/40 hover:text-primary transition-colors"
+                className="pointer-events-auto flex h-9 w-9 items-center justify-center rounded-full bg-background/90 backdrop-blur-md text-muted-foreground shadow-sm border border-border/40 hover:text-primary transition-colors"
                 aria-label="Zoom in"
               >
                 <ChevronUp className="rotate-45" size={18} />
@@ -322,6 +323,7 @@ function ProductGallery({
                   src={image.image}
                   alt={image.alt}
                   fill
+                  quality={60}
                   sizes="64px"
                   className="object-cover"
                   loading="lazy"
@@ -336,7 +338,7 @@ function ProductGallery({
           <div className="fixed inset-0 z-[100] flex items-center justify-center bg-background/98 backdrop-blur-xl animate-in fade-in duration-300">
             <button
               type="button"
-              className="absolute right-6 top-6 z-10 rounded-full bg-muted/80 p-3 text-foreground/60 transition hover:text-foreground"
+              className="absolute right-6 top-6 z-10 rounded-full bg-muted/80 p-3 text-muted-foreground transition hover:text-foreground"
               onClick={() => setLightboxOpen(false)}
             >
               <X size={24} />
@@ -360,6 +362,7 @@ function ProductGallery({
                     alt={activeImage.alt}
                     width={1200}
                     height={1500}
+                    quality={85}
                     className="max-h-[85vh] object-contain shadow-2xl"
                     loading="lazy"
                     decoding="async"
@@ -369,10 +372,10 @@ function ProductGallery({
               </TransformWrapper>
               {hasMultipleImages && (
                 <>
-                  <button onClick={goPrev} className="absolute -left-12 top-1/2 -translate-y-1/2 p-3 text-foreground/40 hover:text-primary transition-colors hidden sm:block z-10">
+                  <button onClick={goPrev} className="absolute -left-12 top-1/2 -translate-y-1/2 p-3 text-muted-foreground hover:text-primary transition-colors hidden sm:block z-10">
                     <ChevronLeft size={48} strokeWidth={1} />
                   </button>
-                  <button onClick={goNext} className="absolute -right-12 top-1/2 -translate-y-1/2 p-3 text-foreground/40 hover:text-primary transition-colors hidden sm:block z-10">
+                  <button onClick={goNext} className="absolute -right-12 top-1/2 -translate-y-1/2 p-3 text-muted-foreground hover:text-primary transition-colors hidden sm:block z-10">
                     <ChevronRight size={48} strokeWidth={1} />
                   </button>
                 </>
@@ -425,7 +428,7 @@ function BackInStockForm({
         </div>
         <div>
           <h3 className="text-sm font-bold uppercase tracking-widest">Get notified</h3>
-          <p className="text-xs text-foreground/50">When this item returns</p>
+          <p className="text-xs text-muted-foreground">When this item returns</p>
         </div>
       </div>
       
@@ -548,7 +551,7 @@ function ShippingEstimator({
             >
               <div className="space-y-0.5">
                 <p className="font-semibold text-sm">{method.name}</p>
-                <div className="flex items-center gap-2 text-[10px] uppercase tracking-wider text-foreground/40 font-bold">
+                <div className="flex items-center gap-2 text-[10px] uppercase tracking-wider text-muted-foreground font-bold">
                    {resolveDeliveryLabel(method)}
                    {method.is_express && (
                       <span className="text-accent">• Express</span>
@@ -632,7 +635,7 @@ function ProductReviews({ product, reviewStatsQuery: sharedReviewStatsQuery }: {
               <span className="text-5xl font-black text-foreground">{summary.average_rating}</span>
               <div className="space-y-1">
                 <RatingStars rating={summary.average_rating} showCount={false} size="lg" />
-                <p className="text-xs font-bold uppercase tracking-widest text-foreground/40">
+                <p className="text-xs font-bold uppercase tracking-widest text-muted-foreground">
                   {summary.total_count} Verified Reviews
                 </p>
               </div>
@@ -645,14 +648,14 @@ function ProductReviews({ product, reviewStatsQuery: sharedReviewStatsQuery }: {
         <div className="flex-1 max-w-md space-y-2.5">
           {ratingRows.map((row) => (
             <div key={row.star} className="flex items-center gap-4 text-xs font-bold uppercase tracking-tighter">
-              <span className="w-12 text-foreground/40">{row.star} Star</span>
+              <span className="w-12 text-muted-foreground">{row.star} Star</span>
               <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-muted">
                 <div
                   className="h-full rounded-full bg-primary transition-all duration-1000 ease-out"
                   style={{ width: isInitialLoading ? "0%" : `${row.percent}%` }}
                 />
               </div>
-              <span className="w-8 text-right text-foreground/60">{row.percent}%</span>
+              <span className="w-8 text-right text-muted-foreground">{row.percent}%</span>
             </div>
           ))}
         </div>
@@ -679,22 +682,22 @@ function ProductReviews({ product, reviewStatsQuery: sharedReviewStatsQuery }: {
                           </span>
                         )}
                       </div>
-                      <p className="text-[10px] font-bold text-foreground/30 uppercase tracking-widest">{formatDateLabel(review.created_at)}</p>
+                      <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">{formatDateLabel(review.created_at)}</p>
                     </div>
                   </div>
                   <RatingStars rating={review.rating} showCount={false} size="sm" />
                 </div>
                 <div className="pl-13 space-y-2">
                   {review.title && <h4 className="font-bold text-sm">{review.title}</h4>}
-                  <p className="text-sm leading-relaxed text-foreground/70 max-w-2xl">{review.body}</p>
+                  <p className="text-sm leading-relaxed text-muted-foreground max-w-2xl">{review.body}</p>
                 </div>
               </article>
             ))}
           </div>
         ) : (
           <div className="py-20 text-center space-y-3 bg-muted/10 border border-dashed border-border/60">
-            <p className="text-sm font-bold text-foreground/40 uppercase tracking-widest">No reviews yet</p>
-            <p className="text-xs text-foreground/30">Be the first to share your experience with this item.</p>
+            <p className="text-sm font-bold text-muted-foreground uppercase tracking-widest">No reviews yet</p>
+            <p className="text-xs text-muted-foreground">Be the first to share your experience with this item.</p>
           </div>
         )}
       </div>
@@ -713,7 +716,7 @@ function ProductReviews({ product, reviewStatsQuery: sharedReviewStatsQuery }: {
           >
             <ChevronLeft size={18} />
           </Button>
-          <span className="text-xs font-bold uppercase tracking-widest text-foreground/40">
+          <span className="text-xs font-bold uppercase tracking-widest text-muted-foreground">
             Page {page} of {totalPages}
           </span>
           <Button
@@ -735,7 +738,7 @@ function ProductReviews({ product, reviewStatsQuery: sharedReviewStatsQuery }: {
         <div className="pt-10 border-t border-border/60 space-y-6">
            <div className="space-y-1">
               <h4 className="text-lg font-bold">Write a review</h4>
-              <p className="text-xs text-foreground/40">Share your thoughts with other customers</p>
+              <p className="text-xs text-muted-foreground">Share your thoughts with other customers</p>
            </div>
            
            <div className="grid gap-6">
@@ -746,7 +749,7 @@ function ProductReviews({ product, reviewStatsQuery: sharedReviewStatsQuery }: {
                     onClick={() => setRating(v)}
                     className={cn(
                       "h-12 w-12 border-2 transition-all flex items-center justify-center font-bold text-sm",
-                      rating === v ? "border-primary bg-primary text-white scale-110 shadow-lg shadow-primary/20" : "border-border/60 text-foreground/40 hover:border-primary/40"
+                      rating === v ? "border-primary bg-primary text-white scale-110 shadow-lg shadow-primary/20" : "border-border/60 text-muted-foreground hover:border-primary/40"
                     )}
                    >
                     {v}
@@ -909,7 +912,7 @@ export function ProductDetailClient({
 
   return (
     <div className="space-y-12 pb-24">
-      <nav className="flex items-center gap-2 text-[10px] font-normal text-foreground/40">
+      <nav className="flex items-center gap-2 text-[10px] font-normal text-muted-foreground">
         {breadcrumbLinks.map((crumb, index) => (
           <React.Fragment key={crumb.label}>
             {index > 0 && <span className="text-[8px] opacity-60">&gt;</span>}
@@ -942,7 +945,7 @@ export function ProductDetailClient({
              </h1>
              <div className="flex items-center gap-4">
                 <RatingStars rating={product.average_rating || 0} size="sm" />
-                <a href="#reviews" className="text-[11px] font-bold uppercase tracking-widest text-foreground/30 hover:text-primary underline-offset-4 hover:underline transition-all">
+                <a href="#reviews" className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground hover:text-primary underline-offset-4 hover:underline transition-all">
                   {reviewStatsQuery.data?.total_count || 0} Reviews
                 </a>
              </div>
@@ -955,10 +958,10 @@ export function ProductDetailClient({
                 currentPrice={selectedVariant?.current_price || product.current_price}
                 currency={product.currency}
                 priceClassName="text-3xl font-black tracking-tight"
-                salePriceClassName="text-lg text-foreground/30 line-through font-medium"
+                salePriceClassName="text-lg text-muted-foreground line-through font-medium"
               />
               {product.tax_info && (
-                <p className="text-[10px] font-bold text-foreground/30 uppercase tracking-widest">{product.tax_info}</p>
+                <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">{product.tax_info}</p>
               )}
           </div>
 
@@ -966,7 +969,7 @@ export function ProductDetailClient({
             {optionGroups.map((group) => (
               <div key={group.slug} className="space-y-3">
                 <div className="flex items-center justify-between">
-                  <p className="text-[11px] font-black uppercase tracking-[0.15em] text-foreground/40">
+                  <p className="text-[11px] font-black uppercase tracking-[0.15em] text-muted-foreground">
                     Select {group.name}
                   </p>
                   {group.slug.includes('size') && (
@@ -988,7 +991,7 @@ export function ProductDetailClient({
                           "relative flex h-11 min-w-[3rem] items-center justify-center gap-2 border-2 px-4 transition-all duration-300",
                           selected
                             ? "border-primary bg-primary/5 text-primary scale-105 shadow-sm"
-                            : "border-border/60 text-foreground/60 hover:border-primary/30"
+                            : "border-border/60 text-muted-foreground hover:border-primary/30"
                         )}
                       >
                         {swatchColor && (
@@ -1019,7 +1022,7 @@ export function ProductDetailClient({
                  <button
                    type="button"
                    onClick={() => setQuantity((q) => Math.max(1, q - 1))}
-                   className="flex h-11 w-11 items-center justify-center text-foreground/60 hover:text-foreground hover:bg-muted/50 transition-colors rounded-l-xl"
+                   className="flex h-11 w-11 items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors rounded-l-xl"
                    aria-label="Decrease quantity"
                    disabled={quantity <= 1}
                  >
@@ -1031,7 +1034,7 @@ export function ProductDetailClient({
                  <button
                    type="button"
                    onClick={() => setQuantity((q) => Math.min(99, q + 1))}
-                   className="flex h-11 w-11 items-center justify-center text-foreground/60 hover:text-foreground hover:bg-muted/50 transition-colors rounded-r-xl"
+                   className="flex h-11 w-11 items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors rounded-r-xl"
                    aria-label="Increase quantity"
                    disabled={quantity >= 99}
                  >
@@ -1063,8 +1066,8 @@ export function ProductDetailClient({
                      <div className="grid grid-cols-2 gap-4 pt-4 border-t border-border/40">
                         {product.attributes?.map(attr => (
                            <div key={attr.id}>
-                              <p className="text-[10px] font-black uppercase text-foreground/30 tracking-widest mb-0.5">{attr.attribute.name}</p>
-                              <p className="text-xs font-bold text-foreground/70">{attr.value}</p>
+                              <p className="text-[10px] font-black uppercase text-muted-foreground tracking-widest mb-0.5">{attr.attribute.name}</p>
+                              <p className="text-xs font-bold text-muted-foreground">{attr.value}</p>
                            </div>
                         ))}
                      </div>
@@ -1118,7 +1121,7 @@ export function ProductDetailClient({
 
       {relatedProducts && relatedProducts.length > 0 && (
         <section className="space-y-8 pt-12 border-t border-border/60">
-          <h2 className="text-xl font-bold uppercase tracking-[0.2em] text-foreground/30 text-center">You May Also Like</h2>
+          <h2 className="text-xl font-bold uppercase tracking-[0.2em] text-muted-foreground text-center">You May Also Like</h2>
           <ProductGrid products={relatedProducts} cardStyle="minimal" />
         </section>
       )}

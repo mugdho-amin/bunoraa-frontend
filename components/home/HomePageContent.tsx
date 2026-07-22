@@ -102,7 +102,7 @@ export async function HomePageContent({ heroBanners, siteSettings, homepageData 
             title="Spotlights"
             as="h2"
           />
-          <div className="mt-1 grid gap-3 sm:grid-cols-2 sm:gap-4 lg:grid-cols-3 -mx-3 sm:-mx-5 lg:mx-0">
+          <div className="mt-1 grid gap-3 sm:grid-cols-2 sm:gap-4 lg:grid-cols-3 -mx-[var(--page-gutter)] px-[var(--page-gutter)] lg:mx-0 lg:px-0">
             {spotlights.map((spotlight, idx) => {
               const image = spotlight.product?.primary_image as string;
               const label = spotlight.name || spotlight.product?.name || "Spotlight";
@@ -152,7 +152,7 @@ export async function HomePageContent({ heroBanners, siteSettings, homepageData 
               href="/products/?on_sale=true"
               linkLabel="Shop sale"
             />
-            <div className="-mx-3 sm:-mx-5 lg:mx-0">
+            <div className="-mx-[var(--page-gutter)] px-[var(--page-gutter)] lg:mx-0 lg:px-0">
               <ProductGrid
                 products={filteredOnSale.slice(0, 8)}
                 cardStyle="minimal"
@@ -166,7 +166,7 @@ export async function HomePageContent({ heroBanners, siteSettings, homepageData 
 
       <Suspense fallback={<SectionSkeleton title="Recommended" />}>
         <section className={sectionWrapperClass} aria-label="Recommended products">
-          <div className="-mx-3 sm:-mx-5 lg:mx-0">
+          <div className="-mx-[var(--page-gutter)] px-[var(--page-gutter)] lg:mx-0 lg:px-0">
             <HomeProductTabs
               newDrops={filteredNewArrivals}
               trending={filteredBestsellers}

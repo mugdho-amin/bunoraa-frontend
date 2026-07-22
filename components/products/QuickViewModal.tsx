@@ -97,7 +97,7 @@ export function QuickViewModal({
 
           {isLoading || isFetching || !data ? (
             <div className="flex h-[500px] items-center justify-center">
-              <div className="flex flex-col items-center gap-4 text-sm text-foreground/50">
+              <div className="flex flex-col items-center gap-4 text-sm text-muted-foreground">
                 <Loader2 className="h-8 w-8 animate-spin" />
                 <span>Fetching product details...</span>
               </div>
@@ -110,11 +110,13 @@ export function QuickViewModal({
                     src={data.primary_image}
                     alt={data.name}
                     fill
-                    className="object-cover transition-transform duration-700 hover:scale-105"
+                    priority
+                    quality={80}
                     sizes="(max-width: 768px) 100vw, 50vw"
+                    className="object-cover transition-transform duration-700 hover:scale-105"
                   />
                 ) : (
-                  <div className="flex h-full w-full items-center justify-center text-sm text-foreground/40">
+                  <div className="flex h-full w-full items-center justify-center text-sm text-muted-foreground">
                     No image available
                   </div>
                 )}
@@ -147,7 +149,7 @@ export function QuickViewModal({
                   {(data.reviews_count ?? 0) > 0 && (
                     <>
                       <span className="h-1 w-1 rounded-full bg-border" />
-                      <span className="text-xs font-medium text-foreground/60">
+                      <span className="text-xs font-medium text-muted-foreground">
                         {data.reviews_count} Reviews
                       </span>
                     </>
@@ -155,7 +157,7 @@ export function QuickViewModal({
                 </div>
 
                 <div className="mb-10 space-y-4">
-                  <p className="text-[15px] leading-relaxed text-foreground/75">
+                  <p className="text-[15px] leading-relaxed text-muted-foreground">
                     {data.short_description || "Experience the perfect blend of style and comfort with this carefully crafted piece, designed for the modern lifestyle."}
                   </p>
                 </div>

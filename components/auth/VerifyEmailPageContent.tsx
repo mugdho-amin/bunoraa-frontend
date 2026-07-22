@@ -11,7 +11,7 @@ export function VerifyEmailPageContent({ token }: { token: string }) {
     apiFetch("/accounts/email/verify/", { method: "POST", body: { token } }).then(() => setStatus("success")).catch(() => setStatus("error"));
   }, [token]);
 
-  return <div className="mx-auto w-full max-w-md px-3 sm:px-5 py-20"><Card variant="bordered" className="p-6 text-sm text-foreground/70">
+  return <div className="mx-auto w-full max-w-md px-[var(--page-gutter)] py-20"><Card variant="bordered" className="p-6 text-sm text-muted-foreground">
     {status === "pending" && "Verifying your email..."}
     {status === "success" && "Email verified successfully. You can sign in now."}
     {status === "error" && "Verification failed. The token may be invalid or expired."}

@@ -253,6 +253,7 @@ function CartItemRow({
               src={item.product_image}
               alt={item.product_name}
               fill
+              quality={65}
               className="object-cover"
               sizes="(max-width: 640px) 96px, 112px"
               loading="lazy"
@@ -270,10 +271,10 @@ function CartItemRow({
             {item.product_name}
           </Link>
           {item.variant_name ? (
-            <p className="text-xs text-foreground/60">{item.variant_name}</p>
+            <p className="text-xs text-muted-foreground">{item.variant_name}</p>
           ) : null}
           {!item.in_stock ? (
-            <p className="mt-1 text-xs font-semibold text-error-500">{t("out_of_stock", "Out of Stock")}</p>
+            <p className="mt-1 text-xs font-semibold text-error-600">{t("out_of_stock", "Out of Stock")}</p>
           ) : null}
         </div>
       </div>
@@ -281,15 +282,15 @@ function CartItemRow({
       <div className="flex flex-1 flex-col gap-3 sm:items-end">
         <div className="grid w-full grid-cols-2 gap-2 sm:w-auto sm:grid-cols-[auto_auto] sm:gap-4">
           <div className="rounded-xl border border-border/70 bg-muted/20 px-3 py-2 sm:border-0 sm:bg-transparent sm:px-0 sm:py-0">
-            <p className="text-[10px] uppercase tracking-[0.15em] text-foreground/50 sm:hidden">
+            <p className="text-[10px] uppercase tracking-[0.15em] text-muted-foreground sm:hidden">
               {t("unit_price", "Unit Price")}
             </p>
-            <p className="text-sm text-foreground/70">
+            <p className="text-sm text-muted-foreground">
               {formatMoney(item.unit_price, currency)}
             </p>
           </div>
           <div className="rounded-xl border border-border/70 bg-muted/20 px-3 py-2 text-right sm:min-w-[120px] sm:border-0 sm:bg-transparent sm:px-0 sm:py-0">
-            <p className="text-[10px] uppercase tracking-[0.15em] text-foreground/50 sm:hidden">
+            <p className="text-[10px] uppercase tracking-[0.15em] text-muted-foreground sm:hidden">
               {t("line_total", "Line Total")}
             </p>
             <p className="text-sm font-semibold">{formatMoney(item.total, currency)}</p>
@@ -792,7 +793,7 @@ export function CartPage() {
   if (cartQuery.isLoading) {
     return (
       <div className="min-h-screen bg-background text-foreground">
-        <div className="mx-auto w-full max-w-[1400px] px-3 sm:px-5 py-12">
+        <div className="mx-auto w-full max-w-[1400px] px-[var(--page-gutter)] py-12">
             <div className="grid gap-6 lg:grid-cols-[1.25fr_0.75fr]">
             <Card variant="bordered" className="h-32" />
             <Card variant="bordered" className="h-48" />
@@ -805,10 +806,10 @@ export function CartPage() {
   if (cartQuery.isError || !cart) {
     return (
       <div className="min-h-screen bg-background text-foreground">
-        <div className="mx-auto w-full max-w-[1100px] px-3 sm:px-5 py-12">
+        <div className="mx-auto w-full max-w-[1100px] px-[var(--page-gutter)] py-12">
           <Card variant="bordered" className="space-y-4 text-center">
             <h1 className="text-2xl font-semibold">Unable to load your bag</h1>
-            <p className="text-sm text-foreground/70">
+            <p className="text-sm text-muted-foreground">
               Please refresh or try again in a moment.
             </p>
             <Button onClick={() => cartQuery.refetch()}>Retry</Button>
@@ -821,10 +822,10 @@ export function CartPage() {
   if (cart.items.length === 0) {
     return (
       <div className="min-h-screen bg-background text-foreground">
-        <div className="mx-auto w-full max-w-[1100px] px-3 sm:px-5 py-12">
+        <div className="mx-auto w-full max-w-[1100px] px-[var(--page-gutter)] py-12">
           <Card variant="bordered" className="space-y-5 text-center">
             <h1 className="text-2xl font-semibold">Your bag is empty</h1>
-            <p className="text-sm text-foreground/70">
+            <p className="text-sm text-muted-foreground">
               Explore new arrivals and curated collections from Bunoraa artisans.
             </p>
             <Button
@@ -846,12 +847,12 @@ export function CartPage() {
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <h1 className="mt-2 text-2xl font-semibold sm:text-3xl">Shopping bag</h1>
-            <p className="text-sm text-foreground/70">
+            <p className="text-sm text-muted-foreground">
               {itemCount} item{itemCount === 1 ? "" : "s"} in your bag.
             </p>
             <Link
               href="/products/"
-              className="mt-2 inline-block text-sm text-foreground/65 underline-offset-4 hover:text-foreground hover:underline sm:hidden"
+              className="mt-2 inline-block text-sm text-muted-foreground underline-offset-4 hover:text-foreground hover:underline sm:hidden"
             >
               Continue shopping
             </Link>
@@ -867,7 +868,7 @@ export function CartPage() {
             <Button
               variant="ghost"
               size="sm"
-              className="px-3 text-sm text-foreground/60 hover:text-foreground"
+              className="px-3 text-sm text-muted-foreground hover:text-foreground"
               onClick={handleClearCart}
             >
               Clear bag
@@ -922,7 +923,7 @@ export function CartPage() {
                   <span
                     className={cn(
                       "text-xs font-semibold",
-                      validationResult.is_valid ? "text-success-500" : "text-warning-500"
+                      validationResult.is_valid ? "text-success-700" : "text-warning-700"
                     )}
                   >
                     {validationResult.is_valid ? "All good" : "Needs attention"}
@@ -930,12 +931,12 @@ export function CartPage() {
                 </div>
                 {validationResult.issues.length > 0 ? (
                   <div>
-                    <p className="mb-1 text-xs uppercase tracking-[0.2em] text-foreground/60">
+                    <p className="mb-1 text-xs uppercase tracking-[0.2em] text-muted-foreground">
                       Issues
                     </p>
                     <ul className="space-y-1">
                       {validationResult.issues.map((issue, index) => (
-                        <li key={`${issue.type}-${index}`} className="text-error-500">
+                        <li key={`${issue.type}-${index}`} className="text-error-600">
                           {issue.message || "Issue detected."}
                         </li>
                       ))}
@@ -944,10 +945,10 @@ export function CartPage() {
                 ) : null}
                 {validationResult.warnings.length > 0 ? (
                   <div>
-                    <p className="mb-1 text-xs uppercase tracking-[0.2em] text-foreground/60">
+                    <p className="mb-1 text-xs uppercase tracking-[0.2em] text-muted-foreground">
                       Warnings
                     </p>
-                    <ul className="space-y-1 text-warning-500">
+                    <ul className="space-y-1 text-warning-700">
                       {validationResult.warnings.map((warn, index) => (
                         <li key={`${warn.type}-${index}`}>
                           {warn.message || "Warning detected."}
@@ -965,18 +966,18 @@ export function CartPage() {
               <h2 className="text-xl font-semibold">Order summary</h2>
               <div className="space-y-2 text-sm">
                 <div className="flex items-start justify-between gap-5">
-                  <span className="flex-1 pr-3 text-foreground/70">Subtotal</span>
+                  <span className="flex-1 pr-3 text-muted-foreground">Subtotal</span>
                   <span className="shrink-0 text-right tabular-nums">{formattedSubtotal}</span>
                 </div>
                 {appliedCouponCode ? (
-                  <div className="flex items-start justify-between gap-5 text-success-500">
+                  <div className="flex items-start justify-between gap-5 text-success-700">
                     <span className="flex-1 pr-3">Discount</span>
                     <span className="shrink-0 text-right tabular-nums">-{formattedDiscount}</span>
                   </div>
                 ) : null}
                 {showShipping ? (
                   <div className="flex items-start justify-between gap-5">
-                    <span className="flex-1 pr-3 text-foreground/70">
+                    <span className="flex-1 pr-3 text-muted-foreground">
                       {shippingLabel}
                       {shippingEstimateLabel ? ` (${shippingEstimateLabel})` : ""}
                     </span>
@@ -985,13 +986,13 @@ export function CartPage() {
                 ) : null}
                 {showTax ? (
                   <div className="flex items-start justify-between gap-5">
-                    <span className="flex-1 pr-3 text-foreground/70">{taxRateLabel}</span>
+                    <span className="flex-1 pr-3 text-muted-foreground">{taxRateLabel}</span>
                     <span className="shrink-0 text-right tabular-nums">{formattedTax}</span>
                   </div>
                 ) : null}
                 {showGiftWrap ? (
                   <div className="flex items-start justify-between gap-5">
-                    <span className="flex-1 pr-3 text-foreground/70">
+                    <span className="flex-1 pr-3 text-muted-foreground">
                       {summary?.gift_wrap_label || "Gift wrap"}
                     </span>
                     <span className="shrink-0 text-right tabular-nums">{formattedGiftWrap}</span>
@@ -1002,7 +1003,7 @@ export function CartPage() {
                   <span className="shrink-0 text-right tabular-nums">{formattedTotal}</span>
                 </div>
                 {summary ? null : (
-                  <p className="text-xs text-foreground/60">
+                  <p className="text-xs text-muted-foreground">
                     Shipping and taxes calculated at checkout.
                   </p>
                 )}
@@ -1010,7 +1011,7 @@ export function CartPage() {
               <Button asChild variant="primary-gradient" className="w-full">
                 <Link href="/checkout/">Proceed to checkout</Link>
               </Button>
-              <div className="grid gap-2 text-xs text-foreground/60">
+              <div className="grid gap-2 text-xs text-muted-foreground">
                 <p>Secure checkout with encrypted payments.</p>
                   <p>7-day easy returns on eligible items.</p>
               </div>
@@ -1111,7 +1112,7 @@ export function CartPage() {
                 </div>
               ) : null}
               {formattedGiftWrapAmount ? (
-                <p className="text-xs text-foreground/60">
+                <p className="text-xs text-muted-foreground">
                   {summary?.gift_wrap_label || giftResponse?.gift_wrap_label || "Gift wrap"} fee: {formattedGiftWrapAmount}
                 </p>
               ) : null}
@@ -1137,6 +1138,7 @@ export function CartPage() {
                         src={getProductImage(product) || ""}
                         alt={product.name}
                         fill
+                        quality={65}
                         className="object-cover"
                         sizes="(max-width: 640px) 65vw, (max-width: 1024px) 50vw, 25vw"
                         loading="lazy"
@@ -1145,11 +1147,11 @@ export function CartPage() {
                     ) : null}
                   </div>
                   <div className="flex flex-1 flex-col gap-1">
-                    <p className="text-xs uppercase tracking-[0.2em] text-foreground/60">
+                    <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">
                       {product.primary_category_name || "Recommended"}
                     </p>
                     <p className="font-medium">{product.name}</p>
-                    <p className="text-sm text-foreground/70">
+                    <p className="text-sm text-muted-foreground">
                       {formatMoney(getProductPrice(product), product.currency)}
                     </p>
                   </div>

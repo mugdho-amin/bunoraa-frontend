@@ -8,7 +8,7 @@ export default function DeleteAccountPage() {
   return (
     <Card variant="bordered" className="space-y-4 p-6">
       <h1 className="text-2xl font-semibold">Delete account</h1>
-      <p className="text-sm text-foreground/70">
+      <p className="text-sm text-muted-foreground">
         Manage account deletion and export requests from the privacy center.
       </p>
       <Button asChild variant="secondary">

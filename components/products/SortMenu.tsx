@@ -86,7 +86,7 @@ export function SortMenu({
                     <h3 className="text-lg font-black tracking-tight">Sort by</h3>
                     <button 
                       onClick={() => setIsOpen(false)}
-                      className="flex h-9 w-9 items-center justify-center rounded-full bg-muted/50 text-foreground/60 transition-colors hover:bg-muted hover:text-foreground"
+                      className="flex h-9 w-9 items-center justify-center rounded-full bg-muted/50 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
                     >
                       <X className="h-5 w-5" />
                     </button>
@@ -105,7 +105,7 @@ export function SortMenu({
                             "flex w-full items-center justify-between rounded-2xl px-5 py-4 text-left transition-all duration-300",
                             isSelected 
                               ? "bg-primary text-white shadow-xl shadow-primary/20 scale-[1.01]" 
-                              : "bg-muted/30 hover:bg-muted text-foreground/70"
+                              : "bg-muted/30 hover:bg-muted text-muted-foreground"
                           )}
                         >
                           <span className="text-sm font-bold uppercase tracking-widest truncate mr-2">{option.label}</span>

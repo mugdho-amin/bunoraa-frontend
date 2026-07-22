@@ -101,7 +101,7 @@ export function FooterPreferencesDialog({ className }: { className?: string }) {
               {index > 0 ? (
                 <span
                   aria-hidden="true"
-                  className="px-2 text-foreground/55 transition-all duration-200 group-hover:scale-110 group-hover:text-foreground/80"
+                  className="px-2 text-muted-foreground transition-all duration-200 group-hover:scale-110 group-hover:text-foreground/80"
                 >
                   |
                 </span>

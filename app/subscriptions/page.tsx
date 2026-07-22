@@ -10,7 +10,7 @@ export const metadata: Metadata = buildPageMetadata({
 
 const SubscriptionPlansPageContent = dynamic(
   () => import("@/components/subscriptions/SubscriptionPlansPageContent").then((mod) => mod.SubscriptionPlansPageContent),
-  { loading: () => <div className="p-8 text-center text-sm text-foreground/60">Loading plans...</div> }
+  { loading: () => <div className="p-8 text-center text-sm text-muted-foreground">Loading plans...</div> }
 );
 
 export default function SubscriptionsLandingPage() {

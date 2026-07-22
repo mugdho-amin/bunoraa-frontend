@@ -71,7 +71,7 @@ export function HeroBannerSlider({
   );
   const total = banners.length;
   const defaultHeight =
-    "min(680px, max(320px, calc(100dvh - var(--mobile-header-offset, var(--header-offset, 5.5rem)) - 1rem)))";
+    "clamp(16rem, 52vw, 42.5rem)";
 
   React.useEffect(() => {
     if (!autoAdvance || total <= 1) return;
@@ -215,24 +215,24 @@ export function HeroBannerSlider({
               )}
               <div
                 className={cn(
-                  "absolute inset-0 flex flex-col p-4 pb-20 transition-opacity sm:p-6 sm:pb-24",
+                  "absolute inset-0 flex flex-col p-4 pb-16 transition-opacity xs:p-5 sm:p-6 sm:pb-20 md:p-8 md:pb-24",
                   verticalPositionClass,
                   horizontalAlignmentClass,
                   overlayColor
                     ? ""
-                    : "bg-gradient-to-t from-black/60 via-black/10 to-transparent"
+                    : "bg-gradient-to-t from-black/70 via-black/25 to-transparent"
                 )}
                 style={{ ...overlayStyle, ...textStyle }}
               >
                 <h2
-                  className="max-w-[18ch] text-xl font-semibold leading-tight tracking-tight text-balance sm:max-w-none sm:text-2xl md:text-3xl"
+                  className="max-w-[18ch] text-lg font-semibold leading-tight tracking-tight text-balance xs:text-xl sm:max-w-none sm:text-2xl md:text-3xl lg:text-4xl"
                   style={titleStyle}
                 >
                   {banner.title}
                 </h2>
                 {banner.subtitle ? (
                   <p
-                    className="mt-2 max-w-[32ch] text-xs opacity-90 text-pretty sm:max-w-md sm:text-sm md:text-base"
+                    className="mt-2 max-w-[32ch] text-xs text-pretty opacity-95 sm:max-w-md sm:text-sm md:text-base"
                     style={subtitleStyle}
                   >
                     {banner.subtitle}
@@ -241,7 +241,7 @@ export function HeroBannerSlider({
                 {banner.link_text ? (
                   <span
                     className={cn(
-                      "mt-4 inline-flex min-h-11 w-fit items-center rounded-full border border-white/30 bg-white/15 px-5 py-2 text-xs font-semibold uppercase tracking-[0.16em] shadow-soft backdrop-blur-md transition hover:bg-white/25 sm:min-h-0 sm:py-1.5",
+                      "mt-3 inline-flex min-h-11 w-fit max-w-full items-center rounded-full border border-white/40 bg-white/20 px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.14em] shadow-soft backdrop-blur-md transition hover:bg-white/30 xs:px-5 xs:text-xs sm:mt-4 sm:min-h-0 sm:py-1.5",
                       buttonAlignmentClass
                     )}
                     style={buttonStyle}

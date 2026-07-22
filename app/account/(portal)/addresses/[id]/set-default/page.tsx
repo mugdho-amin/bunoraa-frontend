@@ -21,7 +21,7 @@ export default function SetDefaultAddressPage() {
   }, [id, router, updateAddress]);
 
   return (
-    <Card variant="bordered" className="p-6 text-sm text-foreground/70">
+    <Card variant="bordered" className="p-6 text-sm text-muted-foreground">
       Setting default address...
     </Card>
   );

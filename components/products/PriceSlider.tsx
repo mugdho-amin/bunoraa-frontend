@@ -255,7 +255,7 @@ export function PriceSlider({ priceRange }: { priceRange: PriceRange }) {
   return (
     <div className="price-range space-y-5">
       {/* Live range readout (Blucheez / Shopify facet style) */}
-      <div className="flex items-center justify-between text-xs font-medium text-foreground/70 tabular-nums">
+      <div className="flex items-center justify-between text-xs font-medium text-muted-foreground tabular-nums">
         <span>
           {symbol}
           {formatDisplay(localMin)}
@@ -346,12 +346,12 @@ export function PriceSlider({ priceRange }: { priceRange: PriceRange }) {
         <div className="space-y-1.5">
           <label
             htmlFor="price-min-input"
-            className="text-[10px] font-semibold uppercase tracking-[0.14em] text-foreground/45 px-0.5"
+            className="text-[10px] font-semibold uppercase tracking-[0.14em] text-muted-foreground px-0.5"
           >
             From
           </label>
           <div className="relative">
-            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-xs font-medium text-foreground/35 pointer-events-none">
+            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-xs font-medium text-muted-foreground pointer-events-none">
               {symbol}
             </span>
             <input
@@ -381,12 +381,12 @@ export function PriceSlider({ priceRange }: { priceRange: PriceRange }) {
         <div className="space-y-1.5">
           <label
             htmlFor="price-max-input"
-            className="text-[10px] font-semibold uppercase tracking-[0.14em] text-foreground/45 px-0.5"
+            className="text-[10px] font-semibold uppercase tracking-[0.14em] text-muted-foreground px-0.5"
           >
             To
           </label>
           <div className="relative">
-            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-xs font-medium text-foreground/35 pointer-events-none">
+            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-xs font-medium text-muted-foreground pointer-events-none">
               {symbol}
             </span>
             <input

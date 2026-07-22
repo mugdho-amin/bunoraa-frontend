@@ -242,7 +242,7 @@ function BaseMedia({
           className="h-full w-full object-cover"
         />
       ) : (
-        <div className="flex h-full w-full items-center justify-center text-sm text-foreground/55">
+        <div className="flex h-full w-full items-center justify-center text-sm text-muted-foreground">
           No image
         </div>
       )}
@@ -394,7 +394,7 @@ function StandardVariant({
     <Card variant="bordered" className={cn("group flex flex-col gap-2 p-4 sm:p-5", className)}>
       <BaseMedia product={product} className="aspect-[4/5]" onQuickView={onQuickView} priority={priority} />
       <div className="space-y-2">
-        <p className="pl-1 text-[11px] uppercase tracking-[0.16em] text-foreground/60">
+        <p className="pl-1 text-[11px] uppercase tracking-[0.16em] text-muted-foreground">
           {getCategoryLabel(product)}
         </p>
         <SharedTitle product={product} className="pl-1 text-base sm:text-lg" />
@@ -471,7 +471,7 @@ function HorizontalVariant({
     <Card variant="bordered" className={cn("flex flex-col gap-2.5 p-4 sm:flex-row sm:items-center", className)}>
       <BaseMedia product={product} className="h-40 w-full sm:h-36 sm:w-44" onQuickView={onQuickView} priority={priority} />
       <div className="flex min-w-0 flex-1 flex-col gap-1">
-        <p className="pl-1 text-xs uppercase tracking-[0.16em] text-foreground/60">{getCategoryLabel(product)}</p>
+        <p className="pl-1 text-xs uppercase tracking-[0.16em] text-muted-foreground">{getCategoryLabel(product)}</p>
         <SharedTitle product={product} className="line-clamp-2 pl-1 text-lg" />
         <RatingStars rating={product.average_rating || 0} count={product.reviews_count} className="pl-1" />
         <ProductPrice
@@ -547,7 +547,7 @@ function DealVariant({ product, onQuickView, className, priority }: RenderProps)
         <div className="flex flex-wrap items-center justify-between gap-2">
           <StockBadge product={product} />
           {discount ? (
-            <span className="rounded-full bg-accent px-2.5 py-1 text-xs font-semibold text-white">
+            <span className="rounded-full bg-accent px-2.5 py-1 text-xs font-semibold text-accent-foreground">
               Save {discount}%
             </span>
           ) : null}
@@ -613,7 +613,7 @@ function MinimalVariant({ product, onQuickView, className, priority }: RenderPro
           priority={priority}
         />
         <div className="min-w-0 flex-1 space-y-1">
-          <p className="pl-1 text-[11px] uppercase tracking-[0.16em] text-foreground/60">{getCategoryLabel(product)}</p>
+          <p className="pl-1 text-[11px] uppercase tracking-[0.16em] text-muted-foreground">{getCategoryLabel(product)}</p>
           <SharedTitle product={product} className="line-clamp-2 pl-1 text-sm font-medium" />
         </div>
       </div>
@@ -644,9 +644,9 @@ function EditorialVariant({ product, onQuickView, className, priority }: RenderP
     <Card variant="glass" className={cn("space-y-2 border border-border/70 p-4 sm:p-5", className)}>
       <BaseMedia product={product} className="aspect-[5/4]" showBadges={false} onQuickView={onQuickView} priority={priority} />
       <div className="space-y-2">
-        <p className="pl-1 text-xs uppercase tracking-[0.2em] text-foreground/60">Curated pick</p>
+        <p className="pl-1 text-xs uppercase tracking-[0.2em] text-muted-foreground">Curated pick</p>
         <SharedTitle product={product} className="pl-1 text-xl" />
-        <p className="pl-1 line-clamp-2 text-sm text-foreground/65">
+        <p className="pl-1 line-clamp-2 text-sm text-muted-foreground">
           Handpicked from our latest artisan selections with a focus on quality, finish, and utility.
         </p>
       </div>
@@ -745,7 +745,7 @@ function CompareFocusVariant({
       <BaseMedia product={product} className="aspect-[4/3]" showBadges={false} onQuickView={onQuickView} priority={priority} />
       <div className="space-y-2">
         <SharedTitle product={product} className="line-clamp-2 pl-1 text-lg" />
-        <div className="flex flex-wrap gap-2 text-xs text-foreground/70 pl-1">
+        <div className="flex flex-wrap gap-2 text-xs text-muted-foreground pl-1">
           <span className="rounded-full border border-border bg-card px-2.5 py-1">{getCategoryLabel(product)}</span>
           <span className="rounded-full border border-border bg-card px-2.5 py-1">
             {product.average_rating ? `${product.average_rating.toFixed(1)} stars` : "No rating yet"}
@@ -856,7 +856,7 @@ function DenseRowVariant({
       />
       <div className="min-w-0 space-y-1">
         <SharedTitle product={product} className="line-clamp-1 pl-1 text-sm sm:text-base" />
-        <p className="pl-1 text-xs text-foreground/60">{getCategoryLabel(product)}</p>
+        <p className="pl-1 text-xs text-muted-foreground">{getCategoryLabel(product)}</p>
       </div>
       <RatingStars
         rating={product.average_rating || 0}

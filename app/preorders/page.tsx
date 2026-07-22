@@ -14,7 +14,7 @@ export const metadata: Metadata = buildPageMetadata({
 
 const PreorderCategoriesPageContent = dynamic(
   () => import("@/components/preorders/PreorderCategoriesPageContent").then((mod) => mod.PreorderCategoriesPageContent),
-  { loading: () => <div className="p-8 text-center text-sm text-foreground/60">Loading categories...</div> }
+  { loading: () => <div className="p-8 text-center text-sm text-muted-foreground">Loading categories...</div> }
 );
 
 async function getCategories() {

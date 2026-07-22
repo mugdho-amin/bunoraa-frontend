@@ -196,11 +196,11 @@ export function CheckoutShippingStep({
   return (
     <Card variant="bordered" className="space-y-6">
       <div>
-        <p className="text-xs uppercase tracking-[0.3em] text-foreground/60">
+        <p className="text-xs uppercase tracking-[0.3em] text-muted-foreground">
           Step 2
         </p>
         <h2 className="text-xl font-semibold">Shipping method</h2>
-        <p className="text-sm text-foreground/60">
+        <p className="text-sm text-muted-foreground">
           Choose delivery or pickup that works best for you.
         </p>
       </div>
@@ -221,7 +221,7 @@ export function CheckoutShippingStep({
             <p className="font-semibold">
               {type === "delivery" ? "Delivery" : "Store pickup"}
             </p>
-            <p className="text-xs text-foreground/60">
+            <p className="text-xs text-muted-foreground">
               {type === "delivery"
                 ? "Ship to your address with live rates."
                 : "Collect from a nearby pickup point."}
@@ -235,9 +235,9 @@ export function CheckoutShippingStep({
           <div className="flex items-center justify-between text-sm">
             <p className="font-semibold">Delivery options</p>
             {shippingRatesLoading ? (
-              <span className="text-xs text-foreground/60">Fetching rates...</span>
+              <span className="text-xs text-muted-foreground">Fetching rates...</span>
             ) : isAutoSaving ? (
-              <span className="text-xs text-foreground/60">Saving...</span>
+              <span className="text-xs text-muted-foreground">Saving...</span>
             ) : null}
           </div>
           {shippingRatesError ? (
@@ -274,13 +274,13 @@ export function CheckoutShippingStep({
                     <div>
                       <p className="font-semibold">{rate.name}</p>
                       {rate.description ? (
-                        <p className="text-xs text-foreground/60">{rate.description}</p>
+                        <p className="text-xs text-muted-foreground">{rate.description}</p>
                       ) : null}
-                      <p className="text-xs text-foreground/60">
+                      <p className="text-xs text-muted-foreground">
                         {rate.delivery_estimate || "Delivery estimate available at checkout"}
                       </p>
                       {rate.carrier?.name ? (
-                        <p className="text-xs text-foreground/50">
+                        <p className="text-xs text-muted-foreground">
                           Carrier: {rate.carrier.name}
                         </p>
                       ) : null}
@@ -298,7 +298,7 @@ export function CheckoutShippingStep({
               ))}
             </div>
           ) : (
-            <p className="text-sm text-foreground/60">
+            <p className="text-sm text-muted-foreground">
               No delivery methods available for this address.
             </p>
           )}
@@ -308,7 +308,7 @@ export function CheckoutShippingStep({
           <div className="flex items-center justify-between text-sm">
             <p className="font-semibold">Pickup locations</p>
             {isAutoSaving ? (
-              <span className="text-xs text-foreground/60">Saving...</span>
+              <span className="text-xs text-muted-foreground">Saving...</span>
             ) : null}
           </div>
           {pickupLocations.length ? (
@@ -332,7 +332,7 @@ export function CheckoutShippingStep({
                   />
                   <div>
                     <p className="font-semibold">{location.name}</p>
-                    <p className="text-xs text-foreground/60">
+                    <p className="text-xs text-muted-foreground">
                       {location.full_address ||
                         location.address ||
                         [
@@ -347,7 +347,7 @@ export function CheckoutShippingStep({
                           .join(", ")}
                     </p>
                     {location.phone || location.email ? (
-                      <p className="text-xs text-foreground/50">
+                      <p className="text-xs text-muted-foreground">
                         {[location.phone, location.email].filter(Boolean).join(" • ")}
                       </p>
                     ) : null}
@@ -355,23 +355,23 @@ export function CheckoutShippingStep({
                       const hoursText = formatHours(location.hours);
                       if (!hoursText) return null;
                       return (
-                        <p className="text-xs text-foreground/50">
+                        <p className="text-xs text-muted-foreground">
                           Hours: {hoursText}
                         </p>
                       );
                     })()}
                     {location.min_pickup_time_hours ? (
-                      <p className="text-xs text-foreground/50">
+                      <p className="text-xs text-muted-foreground">
                         Ready in ~{location.min_pickup_time_hours} hours
                       </p>
                     ) : null}
                     {location.max_hold_days ? (
-                      <p className="text-xs text-foreground/50">
+                      <p className="text-xs text-muted-foreground">
                         Held for up to {location.max_hold_days} days
                       </p>
                     ) : null}
                   </div>
-                  <div className="ml-auto text-right text-xs text-foreground/60">
+                  <div className="ml-auto text-right text-xs text-muted-foreground">
                     {location.pickup_fee !== undefined && location.pickup_fee !== null ? (
                       <span>
                         {Number(location.pickup_fee) > 0
@@ -387,7 +387,7 @@ export function CheckoutShippingStep({
               ))}
             </div>
           ) : (
-            <p className="text-sm text-foreground/60">
+            <p className="text-sm text-muted-foreground">
               No pickup locations available yet.
             </p>
           )}

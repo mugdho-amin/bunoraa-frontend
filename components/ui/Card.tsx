@@ -87,7 +87,7 @@ export function CardDescription({
 }: React.HTMLAttributes<HTMLParagraphElement>) {
   return (
     <p
-      className={cn("text-sm text-foreground/60 leading-relaxed", className)}
+      className={cn("text-sm text-muted-foreground leading-relaxed", className)}
       {...props}
     />
   );
@@ -97,7 +97,7 @@ export function CardContent({
   className,
   ...props
 }: React.HTMLAttributes<HTMLDivElement>) {
-  return <div className={cn("text-sm text-foreground/80", className)} {...props} />;
+  return <div className={cn("text-sm text-muted-foreground", className)} {...props} />;
 }
 
 export function CardFooter({

@@ -10,13 +10,13 @@ export function PreorderCategoriesPageContent({ categories }: { categories: Preo
     <div className="mx-auto w-full max-w-6xl px-4 py-8 sm:px-6 sm:py-12">
       <div className="mb-8 grid gap-4 sm:gap-6 lg:mb-10 lg:grid-cols-[1.2fr_0.8fr]">
         <div className="space-y-4">
-          <p className="text-xs uppercase tracking-[0.3em] text-foreground/60">
+          <p className="text-xs uppercase tracking-[0.3em] text-muted-foreground">
             Preorders
           </p>
           <h1 className="text-2xl font-semibold sm:text-4xl">
             Start a custom preorder
           </h1>
-          <p className="text-sm text-foreground/60">
+          <p className="text-sm text-muted-foreground">
             Submit your custom request, get a production timeline, and receive a
             dedicated quote. We will guide you through approvals, payments, and
             delivery.
@@ -32,7 +32,7 @@ export function PreorderCategoriesPageContent({ categories }: { categories: Preo
         </div>
         <Card variant="modern-gradient" className="space-y-3 p-4 sm:p-5">
           <h2 className="text-lg font-semibold">How it works</h2>
-          <ul className="space-y-2 text-sm text-foreground/70">
+          <ul className="space-y-2 text-sm text-muted-foreground">
             <li>Share details, options, and reference files.</li>
             <li>Receive a quote with production timeline.</li>
             <li>Approve, pay deposit, and track progress.</li>
@@ -46,7 +46,7 @@ export function PreorderCategoriesPageContent({ categories }: { categories: Preo
             <div className="flex items-start justify-between gap-3">
               <div>
                 <h2 className="text-lg font-semibold">{category.name}</h2>
-                <p className="text-sm text-foreground/70">
+                <p className="text-sm text-muted-foreground">
                   {category.description}
                 </p>
               </div>
@@ -64,7 +64,7 @@ export function PreorderCategoriesPageContent({ categories }: { categories: Preo
                 </div>
               ) : null}
             </div>
-            <div className="mt-4 flex flex-wrap gap-3 text-xs text-foreground/60">
+            <div className="mt-4 flex flex-wrap gap-3 text-xs text-muted-foreground">
               {category.base_price ? (
                 <span>From {formatMoney(category.base_price, "BDT")}</span>
               ) : null}

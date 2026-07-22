@@ -13,12 +13,12 @@ type ButtonSize = "sm" | "md" | "lg" | "icon" | "icon-sm";
 
 const variantClasses: Record<ButtonVariant, string> = {
   primary:
-    "bg-primary text-white shadow-soft hover:bg-primary-700 hover:shadow-soft-lg active:scale-[0.98]",
+    "bg-primary text-primary-foreground shadow-soft hover:brightness-95 hover:shadow-soft-lg active:scale-[0.98]",
   secondary:
     "border border-border bg-card text-foreground shadow-xs hover:bg-muted hover:border-border active:scale-[0.98]",
   ghost: "bg-transparent text-foreground hover:bg-muted active:scale-[0.98]",
   "primary-gradient":
-    "bg-gradient-to-r from-primary via-primary-600 to-accent text-white shadow-glow hover:opacity-95 active:scale-[0.98]",
+    "bg-gradient-to-r from-primary via-primary to-accent text-primary-foreground shadow-glow hover:opacity-95 active:scale-[0.98]",
   outline:
     "border border-primary/40 text-primary hover:bg-primary/5 hover:border-primary active:scale-[0.98]",
   destructive:

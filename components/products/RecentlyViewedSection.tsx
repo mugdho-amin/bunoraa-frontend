@@ -101,7 +101,7 @@ export function RecentlyViewedSection({
   return (
     <div className="space-y-4">
       {!hideTitle && (
-        <h2 className="text-sm font-semibold uppercase tracking-[0.2em] text-foreground/70">
+        <h2 className="text-sm font-semibold uppercase tracking-[0.2em] text-muted-foreground">
           Recently viewed
         </h2>
       )}
@@ -158,7 +158,7 @@ export function RecentlyViewedSection({
                 >
                   {item.name}
                 </Link>
-                <p className="text-sm text-foreground/70">
+                <p className="text-sm text-muted-foreground">
                   {formatMoney(item.current_price, item.currency || "USD")}
                 </p>
               </div>

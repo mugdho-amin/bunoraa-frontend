@@ -19,7 +19,7 @@ export function AccountAddressDeletePageContent() {
   return (
     <Card variant="bordered" className="space-y-4 p-6">
       <h1 className="text-2xl font-semibold">Delete address</h1>
-      <p className="text-sm text-foreground/70">
+      <p className="text-sm text-muted-foreground">
         Are you sure you want to delete this address? This action cannot be undone.
       </p>
       <div className="flex gap-3">

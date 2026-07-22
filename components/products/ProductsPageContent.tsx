@@ -64,9 +64,11 @@ export async function ProductsPageContent({ searchParams }: { searchParams: Sear
 
   return (
     <div className="min-h-screen bg-background text-foreground">
-      <div className="mx-auto w-full max-w-[1920px] px-3 sm:px-5 py-10 lg:pb-12">
-        <div className="flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
-          <h1 className="text-2xl font-semibold uppercase tracking-[0.12em] sm:text-3xl">Products</h1>
+      <div className="mx-auto w-full max-w-content px-[var(--page-gutter)] py-8 sm:py-10 lg:pb-12">
+        <div className="flex flex-col gap-4 sm:gap-6 lg:flex-row lg:items-center lg:justify-between">
+          <h1 className="text-xl font-semibold uppercase tracking-[0.12em] sm:text-2xl lg:text-3xl">
+            Products
+          </h1>
           <div className="hidden lg:flex lg:items-center lg:gap-3">
             <SortMenu className="border border-border/60 hover:border-primary/40" />
             <ViewToggle className="h-10 border border-border/60 hover:border-primary/40" />
@@ -74,11 +76,33 @@ export async function ProductsPageContent({ searchParams }: { searchParams: Sear
           {showFilters ? <MobileFilterSortBar filters={filterData} productCount={totalCount} /> : null}
         </div>
 
-        <div className={showFilters ? "mt-8 grid gap-8 lg:grid-cols-[220px_1fr]" : "mt-8 grid gap-8"}>
-          {showFilters ? <aside className="hidden lg:block"><FilterPanel filters={filterData} productCount={totalCount} /></aside> : null}
-          <div className="space-y-6 -mx-3 sm:-mx-5 lg:mx-0">
+        <div
+          className={
+            showFilters
+              ? "mt-6 grid gap-6 sm:mt-8 lg:grid-cols-[minmax(0,240px)_minmax(0,1fr)] lg:gap-8"
+              : "mt-6 grid gap-6 sm:mt-8"
+          }
+        >
+          {showFilters ? (
+            <aside className="hidden min-w-0 lg:block">
+              <FilterPanel filters={filterData} productCount={totalCount} />
+            </aside>
+          ) : null}
+          <div className="min-w-0 space-y-5 sm:space-y-6 -mx-[var(--page-gutter)] px-[var(--page-gutter)] lg:mx-0 lg:px-0">
             <AppliedFilters variant="minimal" />
-            <InfiniteProductGrid endpoint="/catalog/products/" requestParams={requestParams} initialProducts={products} initialPagination={pagination} resetKey={JSON.stringify({ endpoint: "/catalog/products/", params: requestParams, cols })} cols={cols} cardStyle="minimal" />
+            <InfiniteProductGrid
+              endpoint="/catalog/products/"
+              requestParams={requestParams}
+              initialProducts={products}
+              initialPagination={pagination}
+              resetKey={JSON.stringify({
+                endpoint: "/catalog/products/",
+                params: requestParams,
+                cols,
+              })}
+              cols={cols}
+              cardStyle="minimal"
+            />
           </div>
         </div>
       </div>

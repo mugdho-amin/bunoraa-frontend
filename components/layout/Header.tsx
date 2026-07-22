@@ -60,7 +60,7 @@ export async function Header() {
   return (
     <MobileHeaderVisibility>
       <header className="border-b border-border/70 bg-background/90 backdrop-blur-xl supports-[backdrop-filter]:bg-background/80">
-        <div className="mx-auto w-full max-w-[1920px] px-3 py-3 sm:px-5 sm:py-3.5">
+        <div className="mx-auto w-full max-w-content px-[var(--page-gutter)] py-3 sm:py-3.5">
           {/* Mobile layout (grid) — thumb-friendly spacing */}
           <div className="grid grid-cols-3 items-center gap-2 lg:hidden">
             <MobileNavWrapper
@@ -101,7 +101,7 @@ export async function Header() {
                 {categories.slice(0, 4).map((category) => (
                   <Link
                     key={category.id}
-                    className="link-underline text-xs font-medium uppercase tracking-[0.14em] text-foreground/65 transition hover:text-foreground"
+                    className="link-underline whitespace-nowrap text-xs font-medium uppercase tracking-[0.14em] text-muted-foreground transition hover:text-foreground"
                     href={buildCategoryPath(category.slug_path || category.slug)}
                     prefetch={false}
                   >
@@ -111,7 +111,7 @@ export async function Header() {
                 {menuPages.slice(0, 3).map((page) => (
                   <Link
                     key={page.id}
-                    className="link-underline text-sm text-foreground/70 transition hover:text-foreground"
+                    className="link-underline text-sm text-muted-foreground transition hover:text-foreground"
                     href={`/pages/${page.slug}/`}
                     prefetch={false}
                   >

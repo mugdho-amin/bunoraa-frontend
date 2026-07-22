@@ -49,12 +49,11 @@ export async function SearchPageContent({ searchParams }: { searchParams: Search
   if (!query) {
     return (
       <div className="min-h-screen bg-background text-foreground">
-        <div className="mx-auto w-full max-w-6xl px-3 sm:px-5 py-12">
+        <div className="mx-auto w-full max-w-6xl px-[var(--page-gutter)] py-12">
           <div className="mb-8">
-            <p className="text-sm uppercase tracking-[0.2em] text-foreground/60">{t("common.search.title")}</p>
             <h1 className="text-3xl font-semibold">{t("common.search.catalog_search")}</h1>
           </div>
-          <p className="text-sm text-foreground/60">{t("common.search.no_query")}</p>
+          <p className="text-sm text-muted-foreground">{t("common.search.no_query")}</p>
         </div>
       </div>
     );
@@ -89,10 +88,9 @@ export async function SearchPageContent({ searchParams }: { searchParams: Search
 
   return (
     <div className="min-h-screen bg-background text-foreground">
-      <div className="mx-auto w-full max-w-[1920px] px-3 sm:px-5 py-12">
+      <div className="mx-auto w-full max-w-content px-[var(--page-gutter)] py-8 sm:py-12">
         <div className="mb-8 flex flex-wrap items-center justify-between gap-4">
           <div>
-            <p className="text-sm uppercase tracking-[0.2em] text-foreground/60">{t("common.search.title")}</p>
             <h1 className="text-3xl font-semibold">{t("common.search.results_for")} &quot;{query}&quot;</h1>
           </div>
           <div className="flex flex-wrap items-center gap-3">
@@ -116,9 +114,9 @@ export async function SearchPageContent({ searchParams }: { searchParams: Search
             <ProductGrid products={products} cols={cols} emptyMessage={t("common.search.no_results")} />
             {showPagination ? (
               <div className="mt-10 flex items-center justify-between">
-                {pagination?.previous ? <Button asChild variant="ghost" size="sm"><Link href={pageLink(currentPage - 1)}>{t("common.search.previous")}</Link></Button> : <span className="rounded-xl px-4 py-2 text-sm text-foreground/40">{t("common.search.previous")}</span>}
-                <span className="text-sm text-foreground/60">{t("common.search.page")} {currentPage}{pagination?.total_pages ? ` ${t("common.search.of")} ${pagination.total_pages}` : ""}</span>
-                {pagination?.next ? <Button asChild variant="ghost" size="sm"><Link href={pageLink(currentPage + 1)}>{t("common.search.next")}</Link></Button> : <span className="rounded-xl px-4 py-2 text-sm text-foreground/40">{t("common.search.next")}</span>}
+                {pagination?.previous ? <Button asChild variant="ghost" size="sm"><Link href={pageLink(currentPage - 1)}>{t("common.search.previous")}</Link></Button> : <span className="rounded-xl px-4 py-2 text-sm text-muted-foreground">{t("common.search.previous")}</span>}
+                <span className="text-sm text-muted-foreground">{t("common.search.page")} {currentPage}{pagination?.total_pages ? ` ${t("common.search.of")} ${pagination.total_pages}` : ""}</span>
+                {pagination?.next ? <Button asChild variant="ghost" size="sm"><Link href={pageLink(currentPage + 1)}>{t("common.search.next")}</Link></Button> : <span className="rounded-xl px-4 py-2 text-sm text-muted-foreground">{t("common.search.next")}</span>}
               </div>
             ) : null}
           </div>

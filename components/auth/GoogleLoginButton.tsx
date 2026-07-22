@@ -253,7 +253,7 @@ export function GoogleLoginButton({
         className="flex min-h-[44px] w-full justify-center overflow-hidden rounded-lg bg-card"
       />
       {isLoading && (
-        <p className="text-center text-xs text-foreground/50 animate-pulse">
+        <p className="text-center text-xs text-muted-foreground animate-pulse">
           Signing you in...
         </p>
       )}

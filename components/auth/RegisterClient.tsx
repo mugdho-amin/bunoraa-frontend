@@ -56,7 +56,7 @@ export function RegisterClient() {
 
   return (
     <div className="min-h-screen bg-background text-foreground">
-      <div className="mx-auto w-full max-w-md px-3 sm:px-5 py-20">
+      <div className="mx-auto w-full max-w-md px-[var(--page-gutter)] py-20">
         <Card variant="bordered" className="space-y-6">
           <div>
             <h1 className="text-2xl font-semibold">{t("common.auth.create_account")}</h1>
@@ -69,7 +69,7 @@ export function RegisterClient() {
               <span className="w-full border-t border-border" />
             </div>
             <div className="relative flex justify-center text-xs uppercase">
-              <span className="bg-card px-2 text-foreground/50">{t("common.auth.or_continue_with")}</span>
+              <span className="bg-card px-2 text-muted-foreground">{t("common.auth.or_continue_with")}</span>
             </div>
           </div>
 
@@ -115,7 +115,7 @@ export function RegisterClient() {
                   <button
                     type="button"
                     onClick={() => setShowPassword((v) => !v)}
-                    className="absolute right-0 top-1/2 -translate-y-1/2 text-foreground/60 hover:text-foreground p-2"
+                    className="absolute right-0 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground p-2"
                     aria-label={showPassword ? "Hide password" : "Show password"}
                   >
                     {!showPassword ? (
@@ -139,7 +139,7 @@ export function RegisterClient() {
                   <button
                     type="button"
                     onClick={() => setShowConfirmPassword((v) => !v)}
-                    className="absolute right-0 top-1/2 -translate-y-1/2 text-foreground/60 hover:text-foreground p-2"
+                    className="absolute right-0 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground p-2"
                     aria-label={showConfirmPassword ? "Hide password" : "Show password"}
                   >
                     {!showConfirmPassword ? (
@@ -165,7 +165,7 @@ export function RegisterClient() {
             </Button>
           </form>
 
-          <p className="text-sm text-foreground/70">
+          <p className="text-sm text-muted-foreground">
             {t("common.auth.already_have_account")}{" "}
             <Link className="text-primary" href="/account/login/">
               {t("common.auth.sign_in")}

@@ -79,7 +79,7 @@ export function LoadingScreen({
           ) : null}
 
           {subtitle && (
-            <p className="max-w-[240px] text-center text-sm text-foreground/40 leading-relaxed">
+            <p className="max-w-[240px] text-center text-sm text-muted-foreground leading-relaxed">
               {subtitle}
             </p>
           )}

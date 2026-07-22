@@ -5,7 +5,7 @@ import { Card } from "@/components/ui/Card";
 function CheckoutSkeleton() {
   return (
     <div className="min-h-screen bg-background text-foreground">
-      <div className="mx-auto w-full max-w-6xl px-3 sm:px-5 py-16">
+      <div className="mx-auto w-full max-w-6xl px-[var(--page-gutter)] py-16">
         <div className="mb-8">
           <div className="h-4 w-24 rounded bg-muted animate-pulse" />
           <div className="mt-2 h-8 w-64 rounded bg-muted animate-pulse" />

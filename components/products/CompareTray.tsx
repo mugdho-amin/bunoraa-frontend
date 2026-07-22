@@ -38,7 +38,7 @@ export function CompareTray() {
               <span className="max-w-[140px] truncate font-medium sm:max-w-[160px]">{item.name}</span>
               <button
                 type="button"
-                className="flex h-7 w-7 min-h-7 min-w-7 items-center justify-center rounded-full text-foreground/60 transition hover:bg-muted hover:text-foreground"
+                className="flex h-7 w-7 min-h-7 min-w-7 items-center justify-center rounded-full text-muted-foreground transition hover:bg-muted hover:text-foreground"
                 onClick={() => {
                   removeCompareItem(item.id);
                   setItems(getCompareItems());
@@ -57,7 +57,7 @@ export function CompareTray() {
           <Button asChild size="sm" variant="primary-gradient" className="flex-1 sm:flex-none">
             <Link href="/compare/">Compare ({items.length})</Link>
           </Button>
-          <div className="hidden text-xs text-foreground/55 sm:block">
+          <div className="hidden text-xs text-muted-foreground sm:block">
             {items[0]?.current_price
               ? `Starting at ${formatMoney(items[0]?.current_price, items[0]?.currency || "USD")}`
               : ""}

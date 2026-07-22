@@ -28,7 +28,7 @@ export function FilterSidebarToggle({ className }: { className?: string }) {
         "hidden lg:inline-flex items-center gap-2 h-10 px-4 rounded-xl text-sm font-medium transition-colors",
         open
           ? "bg-foreground text-background shadow-md"
-          : "text-foreground/70 hover:text-foreground hover:bg-muted/30",
+          : "text-muted-foreground hover:text-foreground hover:bg-muted/30",
         className
       )}
     >

@@ -42,7 +42,7 @@ export function PreorderTrackPageContent() {
       <div className="grid gap-4 sm:gap-6 lg:grid-cols-[1fr_1.2fr]">
         <Card variant="bordered" className="space-y-4 p-4 sm:p-5">
           <h1 className="text-xl font-semibold sm:text-2xl">Track preorder</h1>
-          <p className="text-sm text-foreground/70">Enter your preorder number and the email used during submission.</p>
+          <p className="text-sm text-muted-foreground">Enter your preorder number and the email used during submission.</p>
           <form className="space-y-4" onSubmit={handleSubmit}>
             <label className="block text-sm">Preorder number<input className="mt-2 w-full rounded-lg border border-border bg-card px-3 py-2" placeholder="PRE-2026-0001" autoCapitalize="characters" autoComplete="off" enterKeyHint="next" value={form.preorder_number} onChange={(event) => setForm((prev) => ({ ...prev, preorder_number: event.target.value }))} /></label>
             <label className="block text-sm">Email<input type="email" className="mt-2 w-full rounded-lg border border-border bg-card px-3 py-2" placeholder="you@example.com" autoComplete="email" inputMode="email" enterKeyHint="done" value={form.email} onChange={(event) => setForm((prev) => ({ ...prev, email: event.target.value }))} /></label>
@@ -50,29 +50,29 @@ export function PreorderTrackPageContent() {
           </form>
         </Card>
         <Card variant="bordered" className="space-y-4 p-4 sm:p-5">
-          <div><p className="text-xs uppercase tracking-[0.2em] text-foreground/60">Status</p><h2 className="text-lg font-semibold">{result ? result.status_display || result.status : "Awaiting lookup"}</h2></div>
+          <div><p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">Status</p><h2 className="text-lg font-semibold">{result ? result.status_display || result.status : "Awaiting lookup"}</h2></div>
           {result ? (
-            <div className="space-y-4 text-sm text-foreground/70">
+            <div className="space-y-4 text-sm text-muted-foreground">
               <div className="rounded-xl border border-border bg-muted/30 p-3">
-                <p className="text-xs uppercase tracking-[0.2em] text-foreground/60">Preorder</p>
+                <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">Preorder</p>
                 <p className="mt-1 font-semibold">#{result.preorder_number}</p>
                 <p>Quantity: {result.quantity}</p>
                 <p>Estimated total: {formatMoney(result.estimated_price || 0, result.currency)}</p>
                 <p>Deposit required: {formatMoney(result.deposit_required || 0, result.currency)}</p>
               </div>
               {result.status_history?.length ? (
-                <div><p className="text-xs uppercase tracking-[0.2em] text-foreground/60">Timeline</p>
+                <div><p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">Timeline</p>
                   <div className="mt-2 space-y-2">{[...result.status_history].reverse().map((entry) => (
                     <div key={entry.id} className="border-l-2 border-primary/40 pl-3">
-                      <p className="text-xs text-foreground/60">{formatDateTime(entry.created_at)}</p>
+                      <p className="text-xs text-muted-foreground">{formatDateTime(entry.created_at)}</p>
                       <p className="font-medium">{entry.to_status_display || entry.to_status}</p>
-                      {entry.notes ? <p className="text-xs text-foreground/60">{entry.notes}</p> : null}
+                      {entry.notes ? <p className="text-xs text-muted-foreground">{entry.notes}</p> : null}
                     </div>
                   ))}</div>
                 </div>
               ) : null}
               {result.quotes?.length ? (
-                <div><p className="text-xs uppercase tracking-[0.2em] text-foreground/60">Quotes</p>
+                <div><p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">Quotes</p>
                   <div className="mt-2 space-y-2">{result.quotes.map((quote) => (
                     <div key={quote.id} className="rounded-xl border border-border p-3">
                       <p className="font-semibold">{quote.quote_number}</p>
@@ -83,14 +83,14 @@ export function PreorderTrackPageContent() {
                 </div>
               ) : null}
               {result.payments?.length ? (
-                <div><p className="text-xs uppercase tracking-[0.2em] text-foreground/60">Payments</p>
+                <div><p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">Payments</p>
                   <div className="mt-2 space-y-2">{result.payments.map((payment) => (
                     <div key={payment.id} className="flex items-center justify-between"><span>{payment.payment_type}</span><span>{formatMoney(payment.amount || 0, result.currency)}</span></div>
                   ))}</div>
                 </div>
               ) : null}
             </div>
-          ) : <p className="text-sm text-foreground/60">Submit the form to see your preorder timeline and quote status.</p>}
+          ) : <p className="text-sm text-muted-foreground">Submit the form to see your preorder timeline and quote status.</p>}
         </Card>
       </div>
     </div>

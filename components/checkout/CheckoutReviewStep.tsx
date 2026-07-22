@@ -118,43 +118,43 @@ export function CheckoutReviewStep({
   return (
     <Card variant="bordered" className="space-y-6">
       <div>
-        <p className="text-xs uppercase tracking-[0.3em] text-foreground/60">
+        <p className="text-xs uppercase tracking-[0.3em] text-muted-foreground">
           Step 4
         </p>
         <h2 className="text-xl font-semibold">Review & place order</h2>
-        <p className="text-sm text-foreground/60">
+        <p className="text-sm text-muted-foreground">
           Confirm details before submitting your order.
         </p>
       </div>
 
       <div className="grid gap-4 md:grid-cols-2">
         <div className="rounded-xl border border-border bg-card p-4 text-sm">
-          <p className="text-xs uppercase tracking-[0.2em] text-foreground/60">
+          <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">
             Shipping
           </p>
           <p className="mt-2 font-semibold">{shippingName || "Recipient"}</p>
           {formattedShippingAddress ? (
-            <p className="text-foreground/70">{formattedShippingAddress}</p>
+            <p className="text-muted-foreground">{formattedShippingAddress}</p>
           ) : null}
         </div>
         <div className="rounded-xl border border-border bg-card p-4 text-sm">
-          <p className="text-xs uppercase tracking-[0.2em] text-foreground/60">
+          <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">
             Billing
           </p>
           <p className="mt-2 font-semibold">
             {billingIsShipping ? shippingName || "Recipient" : billingName || "Billing contact"}
             {billingIsShipping ? (
-              <span className="ml-2 text-xs text-foreground/60">
+              <span className="ml-2 text-xs text-muted-foreground">
                 (Same as shipping)
               </span>
             ) : null}
           </p>
           {billingAddressLine ? (
-            <p className="text-foreground/70">{billingAddressLine}</p>
+            <p className="text-muted-foreground">{billingAddressLine}</p>
           ) : null}
         </div>
         <div className="rounded-xl border border-border bg-card p-4 text-sm">
-          <p className="text-xs uppercase tracking-[0.2em] text-foreground/60">
+          <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">
             Payment
           </p>
           <p className="mt-2 font-semibold">
@@ -163,7 +163,7 @@ export function CheckoutReviewStep({
               : "Not selected"}
           </p>
           {checkoutSession?.payment_method ? (
-            <p className="text-foreground/70">
+            <p className="text-muted-foreground">
               Fee: {formattedFee || "0.00"}
             </p>
           ) : null}
@@ -173,7 +173,7 @@ export function CheckoutReviewStep({
       <div className="space-y-2">
         <p className="text-sm font-semibold">Bag validation</p>
         {isValidating ? (
-          <p className="text-sm text-foreground/60">Validating bag...</p>
+          <p className="text-sm text-muted-foreground">Validating bag...</p>
         ) : validation ? (
           <>
             {issues.length ? (
@@ -206,7 +206,7 @@ export function CheckoutReviewStep({
             ) : null}
           </>
         ) : (
-          <p className="text-sm text-foreground/60">
+          <p className="text-sm text-muted-foreground">
             Validation will run before placing your order.
           </p>
         )}
