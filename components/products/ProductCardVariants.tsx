@@ -5,7 +5,7 @@ import Link from "next/link";
 import Image from "next/image";
 import type { ProductListItem } from "@/lib/types";
 import { Card } from "@/components/ui/Card";
-import { Button } from "@/components/ui/Button";
+import { Button, type ButtonProps } from "@/components/ui/Button";
 import { WishlistIconButton } from "@/components/wishlist/WishlistIconButton";
 import { AddToCartButton } from "@/components/cart/AddToCartButton";
 import { RatingStars } from "@/components/products/RatingStars";
@@ -16,24 +16,36 @@ import { compareItemFromProduct, useCompareToggle } from "@/components/products/
 import { buildProductPath } from "@/lib/productPaths";
 import { VariantPopup } from "@/components/products/VariantPopup";
 
+type VariantAwareAddToCartProps = {
+  product: ProductListItem;
+  label?: string;
+  variant?: ButtonProps["variant"];
+  size?: ButtonProps["size"];
+  className?: string;
+  disabled?: boolean;
+};
+
 function VariantAwareAddToCart({
   product,
-  ...props
-}: { product: ProductListItem } & Record<string, unknown>) {
+  label: customLabel,
+  variant: customVariant,
+  size: customSize,
+  className,
+  disabled: customDisabled,
+}: VariantAwareAddToCartProps) {
   const [showPopup, setShowPopup] = React.useState(false);
 
   if (product.has_variants) {
-    const label = (props.label as string) || (product.is_in_stock ? "Add to Bag" : "Sold Out");
-    const buttonVariant = (props.variant as string) || "primary";
-    const buttonSize = (props.size as string) || "default";
-    const className = props.className as string | undefined;
-    const disabled = !product.is_in_stock || (props.disabled as boolean);
+    const label = customLabel || (product.is_in_stock ? "Add to Bag" : "Sold Out");
+    const buttonVariant = customVariant || "primary";
+    const buttonSize = customSize || "md";
+    const disabled = !product.is_in_stock || Boolean(customDisabled);
 
     return (
       <>
         <Button
-          variant={buttonVariant as any}
-          size={buttonSize as any}
+          variant={buttonVariant}
+          size={buttonSize}
           className={className}
           disabled={disabled}
           onClick={() => setShowPopup(true)}
@@ -51,7 +63,16 @@ function VariantAwareAddToCart({
     );
   }
 
-  return <AddToCartButton productId={product.id} {...(props as any)} />;
+  return (
+    <AddToCartButton
+      productId={product.id}
+      label={customLabel}
+      variant={customVariant}
+      size={customSize}
+      className={className}
+      disabled={customDisabled}
+    />
+  );
 }
 
 export type ProductCardVariantName =

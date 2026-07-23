@@ -84,7 +84,8 @@ export function VariantSelector({ variants, selectedVariantId, onChange }: Varia
       onChange(defaultVariant.id);
       setSelectedOptions(getVariantOptionMap(defaultVariant));
     }
-  }, []);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [defaultVariant, selectedVariantId]);
 
   const handleOptionSelect = (groupSlug: string, value: string) => {
     const nextSelection = { ...selectedOptions, [groupSlug]: value };
