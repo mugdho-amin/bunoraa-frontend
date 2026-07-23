@@ -32,7 +32,7 @@ export async function ArtisansPageContent() {
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
         {artisans.map((artisan) => (
           <Card key={artisan.id} variant="bordered" className="flex flex-col gap-4">
-            <div className="relative aspect-[4/3] overflow-hidden rounded-xl bg-muted">{artisan.avatar ? <Image src={artisan.avatar} alt={artisan.name} fill className="object-cover" sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw" unoptimized /> : null}</div>
+            <div className="relative aspect-[4/3] overflow-hidden rounded-xl bg-muted">{artisan.avatar ? <Image src={artisan.avatar} alt={artisan.name} fill quality={72} className="object-cover" sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw" loading="lazy" decoding="async" /> : null}</div>
             <div className="flex flex-1 flex-col gap-2"><h2 className="text-lg font-semibold">{artisan.name}</h2><p className="text-sm text-muted-foreground">{artisan.bio}</p></div>
             <Button asChild variant="primary-gradient"><Link href={`/artisans/${artisan.slug}/`}>View artisan</Link></Button>
           </Card>

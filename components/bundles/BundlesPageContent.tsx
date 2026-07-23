@@ -25,7 +25,7 @@ export async function BundlesPageContent() {
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
         {bundles.map((bundle) => (
           <Card key={bundle.id} variant="bordered" className="flex flex-col gap-4">
-            <div className="relative aspect-[4/3] overflow-hidden rounded-xl bg-muted">{bundle.image ? <Image src={bundle.image} alt={bundle.name} fill className="object-cover" sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw" unoptimized /> : null}</div>
+            <div className="relative aspect-[4/3] overflow-hidden rounded-xl bg-muted">{bundle.image ? <Image src={bundle.image} alt={bundle.name} fill quality={72} className="object-cover" sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw" loading="lazy" decoding="async" /> : null}</div>
             <div className="flex flex-1 flex-col gap-2"><h2 className="text-lg font-semibold">{bundle.name}</h2><p className="text-sm text-muted-foreground">{bundle.description}</p></div>
             <Button asChild variant="primary-gradient"><Link href={`/bundles/${bundle.slug}/`}>View bundle</Link></Button>
           </Card>

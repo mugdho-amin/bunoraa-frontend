@@ -32,7 +32,7 @@ export async function ArtisanDetailPageContent({ slug }: { slug: string }) {
             <Card key={product.id} variant="bordered" className="flex flex-col gap-4">
               <div className="relative aspect-[4/5] overflow-hidden rounded-xl bg-muted">
                 <WishlistIconButton productId={product.id} className="absolute right-3 top-3" />
-                {product.primary_image ? <Image src={product.primary_image} alt={product.name} fill className="object-cover" sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw" unoptimized /> : null}
+                {product.primary_image ? <Image src={product.primary_image} alt={product.name} fill quality={72} className="object-cover" sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw" loading="lazy" decoding="async" /> : null}
               </div>
               <div className="flex flex-1 flex-col gap-2"><h2 className="text-lg font-semibold">{product.name}</h2><p className="text-sm text-muted-foreground">{product.short_description}</p></div>
               <Button asChild size="sm" variant="secondary"><Link href={buildProductPath(product)}>View product</Link></Button>
