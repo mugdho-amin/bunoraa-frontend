@@ -9,6 +9,7 @@ import type { CartItem, ProductListItem } from "@/lib/types";
 import { useCart } from "@/components/cart/useCart";
 import { useWishlist } from "@/components/wishlist/useWishlist";
 import { useAuthContext } from "@/components/providers/AuthProvider";
+import { useMediaUrl } from "@/components/providers/SiteSettingsProvider";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { useToast } from "@/components/ui/ToastProvider";
@@ -160,6 +161,12 @@ function CartItemRow({
   resetTargetId: string | null;
 }) {
   const { t } = useUiMessages("cart");
+  const mediaUrl = useMediaUrl();
+  const fullImageUrl = (url: string | null | undefined) => {
+    if (!url) return null;
+    if (url.startsWith("http://") || url.startsWith("https://") || url.startsWith("/")) return url;
+    return `${mediaUrl}${url}`;
+  };
   const [quantity, setQuantity] = React.useState<number>(item.quantity);
   const manualEditRef = React.useRef(false);
   const debounceRef = React.useRef<number | null>(null);
@@ -248,9 +255,9 @@ function CartItemRow({
     >
       <div className="flex items-start gap-3 sm:items-center sm:gap-4">
         <div className="relative h-24 w-24 shrink-0 overflow-hidden rounded-xl bg-muted sm:h-28 sm:w-28">
-          {item.product_image ? (
+          {fullImageUrl(item.product_image) ? (
             <Image
-              src={item.product_image}
+              src={fullImageUrl(item.product_image)!}
               alt={item.product_name}
               fill
               quality={65}

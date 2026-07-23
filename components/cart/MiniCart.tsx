@@ -6,7 +6,7 @@ import Image from "next/image";
 import { Button } from "@/components/ui/Button";
 import { useCart } from "@/components/cart/useCart";
 import { useUiMessages } from "@/components/i18n/useUiMessages";
-import { useSiteSettings } from "@/components/providers/SiteSettingsProvider";
+import { useSiteSettings, useMediaUrl } from "@/components/providers/SiteSettingsProvider";
 import { cn } from "@/lib/utils";
 import { formatMoney, parseMoney } from "@/lib/money";
 
@@ -22,6 +22,12 @@ export function MiniCart({
   const { cartQuery, cartSummaryQuery, removeItem, updateItem } = useCart();
   const { t } = useUiMessages("cart");
   const siteSettings = useSiteSettings();
+  const mediaUrl = useMediaUrl();
+  const fullImageUrl = (url: string | null | undefined) => {
+    if (!url) return null;
+    if (url.startsWith("http://") || url.startsWith("https://") || url.startsWith("/")) return url;
+    return `${mediaUrl}${url}`;
+  };
   const handleClose = () => onClose?.();
   const defaultSymbol = siteSettings?.currency_symbol || "৳";
   const [currencyConfig, setCurrencyConfig] = React.useState({ symbol: defaultSymbol, position: 'after' as const });
@@ -99,9 +105,9 @@ export function MiniCart({
         {cart.items.map((item) => (
           <div key={item.id} className="flex gap-3">
             <div className="relative h-20 w-16 bg-muted rounded-sm shrink-0 overflow-hidden">
-              {item.product_image ? (
+              {fullImageUrl(item.product_image) ? (
                 <Image
-                  src={item.product_image}
+                  src={fullImageUrl(item.product_image)!}
                   alt={item.product_name}
                   fill
                   quality={60}
