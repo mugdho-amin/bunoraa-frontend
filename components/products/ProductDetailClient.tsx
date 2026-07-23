@@ -28,6 +28,7 @@ import { ProductGrid } from "@/components/products/ProductGrid";
 import { buildProductCategoryTrail, buildProductPath } from "@/lib/productPaths";
 import { buildCategoryPath } from "@/lib/categoryPaths";
 import { ChevronLeft, ChevronRight, ChevronUp, ChevronDown, X, Info, Truck, RefreshCw, Ruler } from "lucide-react";
+import { getColorSwatch } from "@/lib/colors";
 import { Modal } from "@/components/ui/Modal";
 import { ProductImageZoom } from "@/components/products/ProductImageZoom";
 import { TransformWrapper, TransformComponent } from "react-zoom-pan-pinch";
