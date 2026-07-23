@@ -69,22 +69,23 @@ export function ProductImageZoom({ src, alt, priority = false, aspectRatio, onZo
 
       setShade({ x: vi.x + sx, y: vi.y + sy, w: sw, h: sh });
 
-      const gap = 24;
+      const gap = 20;
+      const magW = Math.min(vi.w, 600);
+      const magH = Math.min(vi.h, 600);
       const magX = cr.left + vi.x + vi.w + gap;
-      const magW = vi.w;
       const magRight = magX + magW;
       const clampedX =
         magRight > window.innerWidth
-          ? cr.left + vi.x - gap - magW
+          ? Math.max(10, cr.left + vi.x - gap - magW)
           : magX;
 
       const bgW = ZOOM * vi.w;
       const bgH = ZOOM * vi.h;
       setMag({
         x: clampedX,
-        y: cr.top + vi.y,
+        y: Math.max(10, cr.top + vi.y),
         w: magW,
-        h: vi.h,
+        h: magH,
         bgX: (sx / vi.w) * bgW,
         bgY: (sy / vi.h) * bgH,
         bgW,
@@ -99,7 +100,7 @@ export function ProductImageZoom({ src, alt, priority = false, aspectRatio, onZo
       <div
         ref={containerRef}
         className={cn(
-          "relative w-full select-none overflow-hidden max-h-[80vh]",
+          "relative w-full select-none overflow-hidden rounded-2xl border border-border/40 bg-muted/20 shadow-sm transition-all duration-300",
           isMobile ? "cursor-pointer" : "cursor-crosshair"
         )}
         style={{ aspectRatio: `${aspectRatio}` }}
@@ -118,8 +119,8 @@ export function ProductImageZoom({ src, alt, priority = false, aspectRatio, onZo
             alt={alt}
             fill
             priority={priority}
-            quality={80}
-            sizes="(max-width: 768px) 100vw, 800px"
+            quality={85}
+            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 800px"
             className="object-contain"
             draggable={false}
           />
@@ -127,7 +128,7 @@ export function ProductImageZoom({ src, alt, priority = false, aspectRatio, onZo
 
         {!isMobile && isHovering && (
           <div
-            className="absolute pointer-events-none border border-white/60 bg-white/20"
+            className="absolute pointer-events-none border border-primary/60 bg-primary/10 backdrop-blur-[1px] shadow-sm rounded-sm transition-all duration-75"
             style={{
               left: shade.x,
               top: shade.y,
@@ -139,7 +140,7 @@ export function ProductImageZoom({ src, alt, priority = false, aspectRatio, onZo
 
         <div
           className={cn(
-            "absolute bottom-3 left-3 rounded-full bg-background/80 backdrop-blur px-2.5 py-1 text-[10px] font-bold text-muted-foreground border border-border/40 pointer-events-none transition-opacity duration-300",
+            "absolute bottom-3 left-3 rounded-full bg-background/90 backdrop-blur-md px-3 py-1 text-[11px] font-semibold text-foreground/80 border border-border/50 pointer-events-none transition-opacity duration-300 shadow-sm",
             isMobile
               ? "opacity-100"
               : isHovering
@@ -147,13 +148,13 @@ export function ProductImageZoom({ src, alt, priority = false, aspectRatio, onZo
                 : "opacity-100"
           )}
         >
-          {isMobile ? "Tap to zoom" : "Hover to zoom"}
+          {isMobile ? "Tap to view full image" : "Hover to zoom • Click for modal"}
         </div>
       </div>
 
       {!isMobile && isHovering && mag.w > 0 && (
         <div
-          className="fixed pointer-events-none z-50 overflow-hidden border border-border shadow-2xl"
+          className="fixed pointer-events-none z-[80] overflow-hidden rounded-2xl border border-border/80 bg-background shadow-2xl animate-in fade-in duration-150"
           style={{
             left: mag.x,
             top: mag.y,
@@ -161,21 +162,24 @@ export function ProductImageZoom({ src, alt, priority = false, aspectRatio, onZo
             height: mag.h,
           }}
         >
-          <Image
-            src={src}
-            alt={alt}
-            fill
-            quality={100}
-            sizes={`${mag.bgW}px`}
-            className="object-none"
+          <div
             style={{
-              objectPosition: `-${mag.bgX}px -${mag.bgY}px`,
               width: mag.bgW,
               height: mag.bgH,
-              maxWidth: 'none',
+              transform: `translate(-${mag.bgX}px, -${mag.bgY}px)`,
+              position: "relative",
             }}
-            draggable={false}
-          />
+          >
+            <Image
+              src={src}
+              alt={alt}
+              fill
+              quality={95}
+              sizes={`${mag.bgW}px`}
+              className="object-contain max-w-none"
+              draggable={false}
+            />
+          </div>
         </div>
       )}
     </>

@@ -28,7 +28,7 @@ import { ProductGrid } from "@/components/products/ProductGrid";
 import { buildProductCategoryTrail, buildProductPath } from "@/lib/productPaths";
 import { buildCategoryPath } from "@/lib/categoryPaths";
 import { ChevronLeft, ChevronRight, ChevronUp, ChevronDown, X, Info, Truck, RefreshCw, Ruler } from "lucide-react";
-import { getColorSwatch } from "@/lib/colors";
+import { Modal } from "@/components/ui/Modal";
 import { ProductImageZoom } from "@/components/products/ProductImageZoom";
 import { TransformWrapper, TransformComponent } from "react-zoom-pan-pinch";
 
@@ -455,14 +455,18 @@ function BackInStockForm({
   );
 }
 
-function ShippingEstimator({
+function ShippingEstimatorModal({
   product,
   quantity,
   unitPrice,
+  isOpen,
+  onClose,
 }: {
   product: ProductDetail;
   quantity: number;
   unitPrice: string | number | null | undefined;
+  isOpen: boolean;
+  onClose: () => void;
 }) {
   const { push } = useToast();
   const [country, setCountry] = React.useState("Bangladesh");
@@ -510,62 +514,67 @@ function ShippingEstimator({
   };
 
   return (
-    <Card variant="bordered" className="p-6 bg-muted/10 space-y-5">
-      <div className="flex items-center gap-3">
-        <Truck size={20} className="text-primary" />
-        <h3 className="text-sm font-bold uppercase tracking-widest text-foreground/80">
-          Delivery Estimator
-        </h3>
-      </div>
-      
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-         <input
-          value={country}
-          onChange={(event) => setCountry(event.target.value)}
-          className="h-11 rounded-xl border border-border bg-background px-4 text-sm outline-none focus:ring-2 focus:ring-primary/10 transition-all"
-          placeholder="Country"
-        />
-        <input
-          value={state}
-          onChange={(event) => setState(event.target.value)}
-          className="h-11 rounded-xl border border-border bg-background px-4 text-sm outline-none focus:ring-2 focus:ring-primary/10 transition-all"
-          placeholder="State"
-        />
-        <Button
-          size="md"
-          variant="secondary"
-          onClick={handleEstimate}
-          disabled={loading}
-          className="h-11 shadow-sm"
-        >
-          {loading ? "Calculating..." : "Get Rates"}
-        </Button>
-      </div>
+    <Modal
+      isOpen={isOpen}
+      onClose={onClose}
+      title="Delivery & Shipping Estimator"
+      description="Estimate delivery dates and rates based on your location."
+      maxWidth="lg"
+    >
+      <div className="space-y-6 pt-2">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          <input
+            value={country}
+            onChange={(event) => setCountry(event.target.value)}
+            className="h-11 rounded-xl border border-border bg-background px-4 text-sm outline-none focus:ring-2 focus:ring-primary/20 transition-all"
+            placeholder="Country"
+          />
+          <input
+            value={state}
+            onChange={(event) => setState(event.target.value)}
+            className="h-11 rounded-xl border border-border bg-background px-4 text-sm outline-none focus:ring-2 focus:ring-primary/20 transition-all"
+            placeholder="State"
+          />
+          <Button
+            size="md"
+            variant="primary"
+            onClick={handleEstimate}
+            disabled={loading}
+            className="h-11 shadow-sm"
+          >
+            {loading ? "Calculating..." : "Calculate Rates"}
+          </Button>
+        </div>
 
-      {orderedMethods.length > 0 && (
-        <div className="space-y-3 pt-2 animate-in slide-in-from-top-4 duration-500">
-          {orderedMethods.map((method) => (
-            <div
-              key={method.code || method.name}
-              className="group relative flex items-center justify-between p-4 rounded-xl bg-background border border-border/60 hover:border-primary/30 transition-all shadow-sm"
-            >
-              <div className="space-y-0.5">
-                <p className="font-semibold text-sm">{method.name}</p>
-                <div className="flex items-center gap-2 text-[10px] uppercase tracking-wider text-muted-foreground font-bold">
-                   {resolveDeliveryLabel(method)}
-                   {method.is_express && (
+        {orderedMethods.length > 0 ? (
+          <div className="space-y-3 pt-2 animate-in fade-in duration-300">
+            {orderedMethods.map((method) => (
+              <div
+                key={method.code || method.name}
+                className="group relative flex items-center justify-between p-4 rounded-xl bg-muted/20 border border-border/60 hover:border-primary/40 transition-all shadow-sm"
+              >
+                <div className="space-y-1">
+                  <p className="font-bold text-sm text-foreground">{method.name}</p>
+                  <div className="flex items-center gap-2 text-[10px] uppercase tracking-wider text-muted-foreground font-bold">
+                    {resolveDeliveryLabel(method)}
+                    {method.is_express && (
                       <span className="text-accent">• Express</span>
-                   )}
+                    )}
+                  </div>
+                </div>
+                <div className="text-right">
+                  <p className="font-bold text-primary text-base">{method.rate_display || method.rate}</p>
                 </div>
               </div>
-              <div className="text-right">
-                <p className="font-bold text-primary">{method.rate_display || method.rate}</p>
-              </div>
-            </div>
-          ))}
-        </div>
-      )}
-    </Card>
+            ))}
+          </div>
+        ) : result ? (
+          <div className="p-4 rounded-xl bg-muted/20 text-center text-xs text-muted-foreground">
+            No shipping options available for this location.
+          </div>
+        ) : null}
+      </div>
+    </Modal>
   );
 }
 
@@ -909,6 +918,8 @@ export function ProductDetailClient({
     ...categoryTrail.map(crumb => ({ label: crumb.name.toLowerCase(), href: buildCategoryPath(crumb.slugPath) })),
     { label: product.name.toLowerCase(), href: buildProductPath(product) },
   ];
+  const [isSizeGuideOpen, setIsSizeGuideOpen] = React.useState(false);
+  const [isShippingEstimatorOpen, setIsShippingEstimatorOpen] = React.useState(false);
 
   return (
     <div className="space-y-12 pb-24">
@@ -972,8 +983,13 @@ export function ProductDetailClient({
                   <p className="text-[11px] font-black uppercase tracking-[0.15em] text-muted-foreground">
                     Select {group.name}
                   </p>
-                  {group.slug.includes('size') && (
-                     <button onClick={() => document.getElementById('size-chart')?.scrollIntoView({ behavior: 'smooth' })} className="text-[10px] font-bold uppercase tracking-widest text-primary underline underline-offset-4">
+                  {(group.slug.includes('size') || group.name.toLowerCase().includes('size')) && hasSizeChartContent && (
+                     <button
+                       type="button"
+                       onClick={() => setIsSizeGuideOpen(true)}
+                       className="inline-flex items-center gap-1 text-[11px] font-bold uppercase tracking-widest text-primary underline underline-offset-4 hover:text-primary/80 transition-colors"
+                     >
+                        <Ruler size={13} />
                         Size Guide
                      </button>
                   )}
@@ -988,7 +1004,7 @@ export function ProductDetailClient({
                         type="button"
                         onClick={() => handleOptionSelect(group.slug, value)}
                         className={cn(
-                          "relative flex h-11 min-w-[3rem] items-center justify-center gap-2 border-2 px-4 transition-all duration-300",
+                          "relative flex h-11 min-w-[3rem] items-center justify-center gap-2 border-2 px-4 transition-all duration-300 rounded-xl",
                           selected
                             ? "border-primary bg-primary/5 text-primary scale-105 shadow-sm"
                             : "border-border/60 text-muted-foreground hover:border-primary/30"
@@ -1056,6 +1072,31 @@ export function ProductDetailClient({
              </div>
           </div>
 
+          <div className="grid grid-cols-2 gap-3 pt-2">
+            {hasSizeChartContent && (
+              <Button
+                type="button"
+                variant="secondary"
+                size="md"
+                className="h-11 rounded-xl gap-2 font-bold uppercase tracking-wider text-xs border-border/60"
+                onClick={() => setIsSizeGuideOpen(true)}
+              >
+                <Ruler size={16} />
+                Size Guide
+              </Button>
+            )}
+            <Button
+              type="button"
+              variant="secondary"
+              size="md"
+              className={cn("h-11 rounded-xl gap-2 font-bold uppercase tracking-wider text-xs border-border/60", !hasSizeChartContent && "col-span-2")}
+              onClick={() => setIsShippingEstimatorOpen(true)}
+            >
+              <Truck size={16} />
+              Calculate Delivery
+            </Button>
+          </div>
+
           {!inStock && <BackInStockForm product={product} variantId={variantId} />}
 
           <div className="pt-6 border-t border-border/60">
@@ -1109,13 +1150,91 @@ export function ProductDetailClient({
                      <RefreshCw size={18} className="text-primary shrink-0" />
                      <p className="text-sm">Enjoy free returns within 7 days. Ensure tags are attached and items are in original condition.</p>
                   </div>
+                  <button
+                    type="button"
+                    onClick={() => setIsShippingEstimatorOpen(true)}
+                    className="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-primary underline underline-offset-4 pt-1"
+                  >
+                    Estimate delivery date & rates
+                  </button>
                </div>
             </CollapsibleSection>
           </div>
         </div>
       </div>
 
-      <ShippingEstimator product={product} quantity={quantity} unitPrice={unitPrice} />
+      {/* Size Guide Modal */}
+      {hasSizeChartContent && (
+        <Modal
+          isOpen={isSizeGuideOpen}
+          onClose={() => setIsSizeGuideOpen(false)}
+          title="Size Guide & Fit Information"
+          description="Find your accurate size and measurements below."
+          maxWidth="2xl"
+        >
+          <div className="space-y-6 pt-2">
+            {product.size_charts?.map((link) => (
+              <div key={link.size_chart.id} className="space-y-3">
+                <div className="flex items-center justify-between">
+                  <h3 className="font-bold text-base text-foreground">
+                    {link.size_chart.name}
+                  </h3>
+                  <span className="text-xs font-bold uppercase tracking-widest text-muted-foreground px-2 py-0.5 bg-muted rounded">
+                    Unit: {link.size_chart.unit}
+                  </span>
+                </div>
+                <div className="overflow-x-auto rounded-xl border border-border/80 shadow-sm">
+                  <table className="w-full text-xs text-left">
+                    <thead className="bg-muted/60 border-b border-border/80">
+                      <tr>
+                        {link.size_chart.columns?.map((c) => (
+                          <th key={c} className="p-3.5 font-bold uppercase tracking-wider text-foreground">
+                            {c}
+                          </th>
+                        ))}
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-border/60">
+                      {link.size_chart.rows?.map((r, i) => (
+                        <tr key={i} className="hover:bg-muted/20 transition-colors">
+                          {r.map((cell, ci) => (
+                            <td key={cell + ci} className="p-3.5 font-semibold text-foreground/80">
+                              {cell}
+                            </td>
+                          ))}
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            ))}
+
+            {sizeAttributeFallback.length > 0 && (
+              <div className="space-y-3 pt-2">
+                <h4 className="font-bold text-sm text-foreground">Size Attributes</h4>
+                <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
+                  {sizeAttributeFallback.map((attr) => (
+                    <div key={attr.id} className="p-3 rounded-xl bg-muted/20 border border-border/60">
+                      <p className="text-[10px] font-bold uppercase text-muted-foreground tracking-wider">{attr.attribute.name}</p>
+                      <p className="text-sm font-bold text-foreground">{attr.value}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+        </Modal>
+      )}
+
+      {/* Delivery Estimator Modal */}
+      <ShippingEstimatorModal
+        product={product}
+        quantity={quantity}
+        unitPrice={unitPrice}
+        isOpen={isShippingEstimatorOpen}
+        onClose={() => setIsShippingEstimatorOpen(false)}
+      />
 
       <RecentlyViewedSection excludeProductId={product.id} excludeProductSlug={product.slug} />
 
