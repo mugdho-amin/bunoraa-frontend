@@ -100,7 +100,7 @@ export function ProductImageZoom({ src, alt, priority = false, aspectRatio, onZo
       <div
         ref={containerRef}
         className={cn(
-          "relative w-full select-none overflow-hidden rounded-2xl border border-border/40 bg-muted/20 shadow-sm transition-all duration-300",
+          "relative w-full select-none overflow-hidden",
           isMobile ? "cursor-pointer" : "cursor-crosshair"
         )}
         style={{ aspectRatio: `${aspectRatio}` }}
@@ -128,7 +128,7 @@ export function ProductImageZoom({ src, alt, priority = false, aspectRatio, onZo
 
         {!isMobile && isHovering && (
           <div
-            className="absolute pointer-events-none border border-primary/60 bg-primary/10 backdrop-blur-[1px] shadow-sm rounded-sm transition-all duration-75"
+            className="absolute pointer-events-none border border-primary/60 bg-primary/10 backdrop-blur-[1px] transition-all duration-75"
             style={{
               left: shade.x,
               top: shade.y,
@@ -140,7 +140,7 @@ export function ProductImageZoom({ src, alt, priority = false, aspectRatio, onZo
 
         <div
           className={cn(
-            "absolute bottom-3 left-3 rounded-full bg-background/90 backdrop-blur-md px-3 py-1 text-[11px] font-semibold text-foreground/80 border border-border/50 pointer-events-none transition-opacity duration-300 shadow-sm",
+            "absolute bottom-3 left-3 bg-background/90 backdrop-blur-md px-3 py-1 text-[11px] font-semibold text-foreground/80 border border-border/50 pointer-events-none transition-opacity duration-300",
             isMobile
               ? "opacity-100"
               : isHovering
@@ -154,7 +154,7 @@ export function ProductImageZoom({ src, alt, priority = false, aspectRatio, onZo
 
       {!isMobile && isHovering && mag.w > 0 && (
         <div
-          className="fixed pointer-events-none z-[80] overflow-hidden rounded-2xl border border-border/80 bg-background shadow-2xl animate-in fade-in duration-150"
+          className="fixed pointer-events-none z-[80] overflow-hidden border border-border/80 bg-background shadow-2xl animate-in fade-in duration-150"
           style={{
             left: mag.x,
             top: mag.y,

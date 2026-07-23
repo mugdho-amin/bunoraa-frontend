@@ -364,7 +364,7 @@ function ProductGallery({
                     width={1200}
                     height={1500}
                     quality={85}
-                    className="max-h-[85vh] object-contain shadow-2xl"
+                    className="max-h-[85vh] object-contain"
                     loading="lazy"
                     decoding="async"
                     draggable={false}
