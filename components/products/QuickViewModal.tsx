@@ -4,7 +4,7 @@ import * as React from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Loader2 } from "lucide-react";
 import { apiFetch } from "@/lib/api";
-import type { ProductBadge, ProductListItem } from "@/lib/types";
+import type { ProductBadge, ProductListItem, ProductVariant } from "@/lib/types";
 import Image from "next/image";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
@@ -14,10 +14,13 @@ import Link from "next/link";
 import { RatingStars } from "@/components/products/RatingStars";
 import { ProductBadges } from "@/components/products/ProductBadges";
 import { ProductPrice } from "@/components/products/ProductPrice";
+import { VariantSelector } from "@/components/products/VariantSelector";
 import { buildProductPath } from "@/lib/productPaths";
 
 type QuickViewData = ProductListItem & {
   badges?: ProductBadge[];
+  has_variants?: boolean;
+  variants?: ProductVariant[];
 };
 
 async function fetchQuickView(slug: string) {
@@ -58,6 +61,12 @@ export function QuickViewModal({
       window.removeEventListener("keydown", onKeyDown);
     };
   }, [isOpen, onClose]);
+
+  const [selectedVariantId, setSelectedVariantId] = React.useState<string | null>(null);
+
+  React.useEffect(() => {
+    setSelectedVariantId(null);
+  }, [slug]);
 
   if (!isOpen) return null;
 
@@ -162,9 +171,17 @@ export function QuickViewModal({
                   </p>
                 </div>
 
-                <div className="mt-auto space-y-3">
+                <div className="mt-auto space-y-4">
+                  {data.has_variants && data.variants && data.variants.length > 0 && (
+                    <VariantSelector
+                      variants={data.variants}
+                      selectedVariantId={selectedVariantId}
+                      onChange={setSelectedVariantId}
+                    />
+                  )}
                   <AddToCartButton
                     productId={data.id}
+                    variantId={selectedVariantId}
                     variant="primary"
                     size="lg"
                     className="h-14 w-full rounded-none bg-foreground text-[13px] font-bold uppercase tracking-[0.2em] text-background hover:bg-foreground/90"

@@ -1,5 +1,6 @@
 "use client";
 
+import * as React from "react";
 import Link from "next/link";
 import Image from "next/image";
 import type { ProductListItem } from "@/lib/types";
@@ -13,6 +14,45 @@ import { ProductPrice } from "@/components/products/ProductPrice";
 import { cn } from "@/lib/utils";
 import { compareItemFromProduct, useCompareToggle } from "@/components/products/compareHelpers";
 import { buildProductPath } from "@/lib/productPaths";
+import { VariantPopup } from "@/components/products/VariantPopup";
+
+function VariantAwareAddToCart({
+  product,
+  ...props
+}: { product: ProductListItem } & Record<string, unknown>) {
+  const [showPopup, setShowPopup] = React.useState(false);
+
+  if (product.has_variants) {
+    const label = (props.label as string) || (product.is_in_stock ? "Add to Bag" : "Sold Out");
+    const buttonVariant = (props.variant as string) || "primary";
+    const buttonSize = (props.size as string) || "default";
+    const className = props.className as string | undefined;
+    const disabled = !product.is_in_stock || (props.disabled as boolean);
+
+    return (
+      <>
+        <Button
+          variant={buttonVariant as any}
+          size={buttonSize as any}
+          className={className}
+          disabled={disabled}
+          onClick={() => setShowPopup(true)}
+        >
+          {label}
+        </Button>
+        {showPopup && (
+          <VariantPopup
+            product={product}
+            isOpen
+            onClose={() => setShowPopup(false)}
+          />
+        )}
+      </>
+    );
+  }
+
+  return <AddToCartButton productId={product.id} {...(props as any)} />;
+}
 
 export type ProductCardVariantName =
   | "standard"
@@ -408,8 +448,8 @@ function StandardVariant({
         />
       </div>
       <div className="mt-auto grid grid-cols-2 gap-2">
-        <AddToCartButton
-          productId={product.id}
+        <VariantAwareAddToCart
+          product={product}
           label={product.is_in_stock ? "Add to bag" : "Out of stock"}
           disabled={!product.is_in_stock}
           size="sm"
@@ -446,8 +486,8 @@ function CompactVariant({ product, onQuickView, className, priority }: RenderPro
         />
       </div>
       <div className="grid grid-cols-2 gap-2">
-        <AddToCartButton
-          productId={product.id}
+        <VariantAwareAddToCart
+          product={product}
           label={product.is_in_stock ? "Add" : "Out"}
           disabled={!product.is_in_stock}
           size="sm"
@@ -482,12 +522,13 @@ function HorizontalVariant({
           className="pl-1"
         />
         <div className="mt-1 flex flex-wrap gap-2">
-          <AddToCartButton
-            productId={product.id}
+          <VariantAwareAddToCart
+            product={product}
             label={product.is_in_stock ? "Add to bag" : "Out of stock"}
             disabled={!product.is_in_stock}
             size="sm"
             variant="secondary"
+            className="w-full"
           />
           <Button size="sm" variant={isInCompare ? "primary" : "secondary"} onClick={onToggleCompare}>
             {isInCompare ? "Compared" : "Compare"}
@@ -561,8 +602,8 @@ function DealVariant({ product, onQuickView, className, priority }: RenderProps)
           priceClassName="text-2xl pl-1"
         />
       </div>
-      <AddToCartButton
-        productId={product.id}
+      <VariantAwareAddToCart
+        product={product}
         label={product.is_in_stock ? "Grab deal" : "Out of stock"}
         disabled={!product.is_in_stock}
         variant="primary-gradient"
@@ -587,8 +628,8 @@ function QuickAddVariant({ product, onQuickView, className, priority }: RenderPr
         />
       </div>
       <div className="grid grid-cols-2 gap-2">
-        <AddToCartButton
-          productId={product.id}
+        <VariantAwareAddToCart
+          product={product}
           label={product.is_in_stock ? "Quick add" : "Out of stock"}
           disabled={!product.is_in_stock}
           variant="primary"
@@ -669,8 +710,8 @@ function EditorialVariant({ product, onQuickView, className, priority }: RenderP
         >
           Explore product
         </Link>
-        <AddToCartButton
-          productId={product.id}
+        <VariantAwareAddToCart
+          product={product}
           label={product.is_in_stock ? "Add to bag" : "Out of stock"}
           disabled={!product.is_in_stock}
           size="sm"
@@ -711,8 +752,8 @@ function RatingFocusVariant({
         />
       </div>
       <div className="grid grid-cols-2 gap-2">
-        <AddToCartButton
-          productId={product.id}
+        <VariantAwareAddToCart
+          product={product}
           label={product.is_in_stock ? "Add to bag" : "Out of stock"}
           disabled={!product.is_in_stock}
           size="sm"
@@ -815,8 +856,8 @@ function InventoryFocusVariant({
         </div>
       </div>
       <div className="grid grid-cols-2 gap-2">
-        <AddToCartButton
-          productId={product.id}
+        <VariantAwareAddToCart
+          product={product}
           label={product.is_in_stock ? "Add one more" : "Notify me"}
           disabled={!product.is_in_stock}
           size="sm"
@@ -875,8 +916,8 @@ function DenseRowVariant({
         <Button size="sm" variant={isInCompare ? "primary" : "secondary"} onClick={onToggleCompare}>
           {isInCompare ? "Compared" : "Compare"}
         </Button>
-        <AddToCartButton
-          productId={product.id}
+        <VariantAwareAddToCart
+          product={product}
           label={product.is_in_stock ? "Add" : "Out"}
           disabled={!product.is_in_stock}
           size="sm"

@@ -10,6 +10,7 @@ import { AddToCartButton } from "@/components/cart/AddToCartButton";
 import { RatingStars } from "@/components/products/RatingStars";
 import { ProductBadges } from "@/components/products/ProductBadges";
 import { ProductPrice } from "@/components/products/ProductPrice";
+import { VariantPopup } from "@/components/products/VariantPopup";
 import { cn } from "@/lib/utils";
 import { compareItemFromProduct, useCompareToggle } from "@/components/products/compareHelpers";
 import { buildProductPath } from "@/lib/productPaths";
@@ -150,6 +151,7 @@ function InteractiveProductCard({
   const { isInCompare, toggleCompare } = useCompareToggle(product);
   const { t } = useUiMessages("cart");
   const mediaUrl = useMediaUrl();
+  const [variantPopupSlug, setVariantPopupSlug] = React.useState<string | null>(null);
 
   const getFullUrl = (img: string | null | undefined) => {
     if (!img) return null;
@@ -170,6 +172,7 @@ function InteractiveProductCard({
   const listImageSizes = "(max-width: 640px) 100vw, 224px";
 
   return (
+    <>
     <div
       className={cn(
         "group relative flex flex-col transition-all duration-300",
@@ -294,16 +297,30 @@ function InteractiveProductCard({
           </div>
 
           <div className="grid grid-cols-[1fr_auto] gap-2">
-            <AddToCartButton
-              productId={product.id}
-              variant={product.is_in_stock ? "primary" : "secondary"}
-              className={cn(
-                "h-10 min-h-10 text-[11px] font-bold uppercase tracking-wider rounded-xl shadow-xs sm:h-9",
-                !product.is_in_stock && "opacity-50"
-              )}
-              label={product.is_in_stock ? t("add_to_bag", "Add to Bag") : t("out_of_stock", "Sold Out")}
-              disabled={!product.is_in_stock}
-            />
+            {product.has_variants ? (
+              <Button
+                variant={product.is_in_stock ? "primary" : "secondary"}
+                className={cn(
+                  "h-10 min-h-10 text-[11px] font-bold uppercase tracking-wider rounded-xl shadow-xs sm:h-9",
+                  !product.is_in_stock && "opacity-50"
+                )}
+                disabled={!product.is_in_stock}
+                onClick={() => setVariantPopupSlug(product.slug)}
+              >
+                {product.is_in_stock ? t("add_to_bag", "Add to Bag") : t("out_of_stock", "Sold Out")}
+              </Button>
+            ) : (
+              <AddToCartButton
+                productId={product.id}
+                variant={product.is_in_stock ? "primary" : "secondary"}
+                className={cn(
+                  "h-10 min-h-10 text-[11px] font-bold uppercase tracking-wider rounded-xl shadow-xs sm:h-9",
+                  !product.is_in_stock && "opacity-50"
+                )}
+                label={product.is_in_stock ? t("add_to_bag", "Add to Bag") : t("out_of_stock", "Sold Out")}
+                disabled={!product.is_in_stock}
+              />
+            )}
             <Button
               variant="secondary"
               size="icon-sm"
@@ -322,6 +339,12 @@ function InteractiveProductCard({
         </div>
       </div>
     </div>
+    <VariantPopup
+      product={product}
+      isOpen={variantPopupSlug === product.slug}
+      onClose={() => setVariantPopupSlug(null)}
+    />
+    </>
   );
 }
 

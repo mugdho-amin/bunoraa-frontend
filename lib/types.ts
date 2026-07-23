@@ -53,6 +53,7 @@ export type ProductListItem = {
   is_featured?: boolean;
   is_bestseller?: boolean;
   is_new_arrival?: boolean;
+  has_variants?: boolean;
   average_rating?: number | null;
   reviews_count?: number | null;
   views_count?: number | null;
