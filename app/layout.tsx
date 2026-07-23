@@ -13,6 +13,7 @@ import { HtmlLangSetter } from "@/components/layout/HtmlLangSetter";
 import { SerwistProvider } from "@serwist/next/react";
 import {
   DM_Sans,
+  Noto_Sans_Bengali,
   Poppins,
 } from "next/font/google";
 
@@ -27,7 +28,14 @@ const fontDM_Sans = DM_Sans({
   subsets: ["latin"],
   weight: ["400", "500", "600", "700"],
   variable: "--font-dm-sans",
-  display: "optional",
+  display: "swap",
+});
+
+const fontNotoSansBengali = Noto_Sans_Bengali({
+  subsets: ["bengali"],
+  weight: ["400", "500", "600", "700"],
+  variable: "--font-noto-sans-bengali",
+  display: "swap",
 });
 
 const SITE_DESCRIPTION =
@@ -196,7 +204,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`system ${fontPoppins.variable} ${fontDM_Sans.variable}`}
+      className={`system ${fontPoppins.variable} ${fontDM_Sans.variable} ${fontNotoSansBengali.variable}`}
       suppressHydrationWarning
       data-scroll-behavior="smooth"
     >

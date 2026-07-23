@@ -182,6 +182,7 @@ module.exports = {
                 serif: ['Merriweather', 'Georgia', 'serif'],
                 mono: ['JetBrains Mono', 'Menlo', 'monospace'],
                 display: ['var(--font-poppins)', 'system-ui', '-apple-system', 'sans-serif'],
+                bangla: ['var(--font-bangla)', 'system-ui', '-apple-system', 'sans-serif'],
             },
             fontSize: {
                 '2xs': ['0.625rem', { lineHeight: '0.75rem' }],

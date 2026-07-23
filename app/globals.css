@@ -94,6 +94,7 @@
     --safe-left: env(safe-area-inset-left, 0px);
     --safe-right: env(safe-area-inset-right, 0px);
     --theme-font: var(--font-poppins), "DM Sans", system-ui, -apple-system, sans-serif;
+    --font-bangla: var(--font-noto-sans-bengali), "Noto Sans Bengali", "Hind Siliguri", system-ui, -apple-system, sans-serif;
 
     /* Fluid type — mobile-first, scales cleanly to desktop */
     --text-display: clamp(1.625rem, 1.1rem + 2.4vw, 3rem);
@@ -464,6 +465,11 @@
     min-height: 44px;
     min-width: 44px;
   }
+}
+
+/* ── Bengali script: override theme font when language is bn ── */
+html[data-language="bn"] body {
+  --theme-font: var(--font-bangla);
 }
 
 /* ── Component utilities ── */
