@@ -5,24 +5,36 @@ export default function robots(): MetadataRoute.Robots {
   const sitemapUrl = `${siteUrl}/sitemap.xml`;
 
   return {
-    rules: {
-      userAgent: "*",
-      allow: "/",
-      disallow: [
-        "/api/",
-        "/admin/",
-        "/cart/",
-        "/checkout/",
-        "/account/",
-        "/wishlist/",
-        "/search/",
-        "/oauth/",
-        "/email/",
-        "/health/",
-        "/status/",
-        // API schema paths intentionally omitted to avoid exposing internal structure
-      ],
-    },
+    rules: [
+      {
+        userAgent: "*",
+        allow: "/",
+        disallow: [
+          "/api/",
+          "/admin/",
+          "/cart/",
+          "/checkout/",
+          "/account/",
+          "/wishlist/",
+          "/search/",
+          "/oauth/",
+          "/email/",
+          "/health/",
+          "/status/",
+          "/_next/",
+          "/404",
+          "/500",
+        ],
+      },
+      {
+        userAgent: "GPTBot",
+        disallow: "/",
+      },
+      {
+        userAgent: "ClaudeBot",
+        disallow: "/",
+      },
+    ],
     sitemap: sitemapUrl,
   };
 }
