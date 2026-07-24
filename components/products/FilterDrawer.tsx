@@ -151,7 +151,10 @@ export function FilterDrawer({
                 <Button 
                   variant="primary" 
                   className="w-full h-12 rounded-xl text-[11px] font-black uppercase tracking-[0.2em] shadow-xl shadow-primary/20" 
-                  onClick={() => setOpen(false)}
+                  onClick={() => {
+                    router.push(`${pathname}?${searchParams.toString()}`, { scroll: false });
+                    setOpen(false);
+                  }}
                 >
                   Apply Filters
                 </Button>
