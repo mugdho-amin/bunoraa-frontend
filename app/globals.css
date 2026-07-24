@@ -308,7 +308,7 @@
   }
 
   /*
-   * Dual range slider (stacked min/max inputs) — Blucheez / Shopify style.
+   * Dual range slider (stacked min/max inputs).
    * Pattern: pointer-events:none on the input track, auto only on thumbs
    * so the lower thumb remains clickable under the upper input.
    * Ref: CSS-Tricks multi-thumb, Medium native dual-range, Shopify Dawn facets.

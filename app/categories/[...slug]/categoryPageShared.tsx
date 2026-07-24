@@ -79,7 +79,7 @@ async function getCategory(slug: string) {
   try {
     const response = await apiFetch<Category>(`/catalog/categories/${slug}/`, {
       headers: await getServerLocaleHeaders(),
-      next: { revalidate: 300 }
+      next: { revalidate: 30, tags: ["category"] }
     });
     return response.data;
   } catch (error) {

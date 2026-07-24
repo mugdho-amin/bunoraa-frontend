@@ -5,6 +5,7 @@ import { getServerLocaleHeaders } from "@/lib/serverLocale";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { buildCollectionPage, buildItemList } from "@/lib/seo";
 import { buildProductPath } from "@/lib/productPaths";
+import { FilterSidebar, FilterSidebarToggle, FilterSidebarProvider } from "@/components/products/FilterSidebar";
 
 const InfiniteProductGrid = dynamic(() => import("@/components/products/InfiniteProductGrid").then((mod) => mod.InfiniteProductGrid));
 const FilterPanel = dynamic(() => import("@/components/products/FilterPanel").then((mod) => mod.FilterPanel));
@@ -63,6 +64,7 @@ export async function ProductsPageContent({ searchParams }: { searchParams: Sear
   const collectionPage = buildCollectionPage({ name: "Products", description: "Shop the Bunoraa catalog.", url: "/products/", itemListId: listId });
 
   return (
+    <FilterSidebarProvider>
     <div className="min-h-screen bg-background text-foreground">
       <div className="mx-auto w-full max-w-content px-[var(--page-gutter)] py-8 sm:py-10 lg:pb-12">
         <div className="flex flex-col gap-4 sm:gap-6 lg:flex-row lg:items-center lg:justify-between">
@@ -70,6 +72,9 @@ export async function ProductsPageContent({ searchParams }: { searchParams: Sear
             Products
           </h1>
           <div className="hidden lg:flex lg:items-center lg:gap-3">
+            {showFilters && (
+              <FilterSidebarToggle className="border border-border/60 hover:border-primary/40" />
+            )}
             <SortMenu className="border border-border/60 hover:border-primary/40" />
             <ViewToggle className="h-10 border border-border/60 hover:border-primary/40" />
           </div>
@@ -79,15 +84,15 @@ export async function ProductsPageContent({ searchParams }: { searchParams: Sear
         <div
           className={
             showFilters
-              ? "mt-6 grid gap-6 sm:mt-8 lg:grid-cols-[minmax(0,240px)_minmax(0,1fr)] lg:gap-8"
+              ? "mt-6 grid gap-6 sm:mt-8 lg:grid-cols-[auto_1fr] lg:gap-6"
               : "mt-6 grid gap-6 sm:mt-8"
           }
         >
-          {showFilters ? (
-            <aside className="hidden min-w-0 lg:block">
+          {showFilters && (
+            <FilterSidebar>
               <FilterPanel filters={filterData} productCount={totalCount} />
-            </aside>
-          ) : null}
+            </FilterSidebar>
+          )}
           <div className="min-w-0 space-y-5 sm:space-y-6 -mx-[var(--page-gutter)] px-[var(--page-gutter)] lg:mx-0 lg:px-0">
             <AppliedFilters variant="minimal" />
             <InfiniteProductGrid
@@ -108,5 +113,6 @@ export async function ProductsPageContent({ searchParams }: { searchParams: Sear
       </div>
       {products.length ? <JsonLd data={[collectionPage, productList]} /> : null}
     </div>
+    </FilterSidebarProvider>
   );
 }

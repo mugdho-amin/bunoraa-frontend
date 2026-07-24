@@ -113,22 +113,29 @@ export function QuickViewModal({
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-[1fr_1.1fr]">
-              <div className="relative aspect-[3/4] overflow-hidden bg-muted">
-                {data.primary_image ? (
-                  <Image
-                    src={data.primary_image}
-                    alt={data.name}
-                    fill
-                    priority
-                    quality={80}
-                    sizes="(max-width: 768px) 100vw, 50vw"
-                    className="object-cover transition-transform duration-700 hover:scale-105"
-                  />
-                ) : (
-                  <div className="flex h-full w-full items-center justify-center text-sm text-muted-foreground">
-                    No image available
-                  </div>
-                )}
+              <div className="flex flex-col">
+                <div className="relative aspect-[3/4] overflow-hidden bg-muted">
+                  {data.primary_image ? (
+                    <Image
+                      src={data.primary_image}
+                      alt={data.name}
+                      fill
+                      priority
+                      quality={80}
+                      sizes="(max-width: 768px) 100vw, 50vw"
+                      className="object-cover transition-transform duration-700 hover:scale-105"
+                    />
+                  ) : (
+                    <div className="flex h-full w-full items-center justify-center text-sm text-muted-foreground">
+                      No image available
+                    </div>
+                  )}
+                </div>
+                <div className="px-6 pb-6 pt-5 sm:px-10 md:px-6 md:pb-6">
+                  <p className="text-[15px] leading-relaxed text-muted-foreground">
+                    {data.short_description || "Experience the perfect blend of style and comfort with this carefully crafted piece, designed for the modern lifestyle."}
+                  </p>
+                </div>
               </div>
               <div className="flex flex-col p-6 sm:p-10">
                 <div className="mb-6 space-y-2">
@@ -153,23 +160,15 @@ export function QuickViewModal({
                   </div>
                 </div>
 
-                <div className="mb-8 flex items-center gap-3 border-y border-border/40 py-4">
-                  <RatingStars rating={data.average_rating || 0} count={data.reviews_count} size="sm" />
-                  {(data.reviews_count ?? 0) > 0 && (
-                    <>
-                      <span className="h-1 w-1 rounded-full bg-border" />
-                      <span className="text-xs font-medium text-muted-foreground">
-                        {data.reviews_count} Reviews
-                      </span>
-                    </>
-                  )}
-                </div>
-
-                <div className="mb-10 space-y-4">
-                  <p className="text-[15px] leading-relaxed text-muted-foreground">
-                    {data.short_description || "Experience the perfect blend of style and comfort with this carefully crafted piece, designed for the modern lifestyle."}
-                  </p>
-                </div>
+                {(data.reviews_count ?? 0) > 0 && (
+                  <div className="mb-8 flex items-center gap-3 border-y border-border/40 py-4">
+                    <RatingStars rating={data.average_rating || 0} count={data.reviews_count} size="sm" />
+                    <span className="h-1 w-1 rounded-full bg-border" />
+                    <span className="text-xs font-medium text-muted-foreground">
+                      {data.reviews_count} Reviews
+                    </span>
+                  </div>
+                )}
 
                 <div className="mt-auto space-y-4">
                   {data.has_variants && data.variants && data.variants.length > 0 && (
