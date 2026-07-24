@@ -984,16 +984,6 @@ export function ProductDetailClient({
                   <p className="text-[11px] font-black uppercase tracking-[0.15em] text-muted-foreground">
                     Select {group.name}
                   </p>
-                  {(group.slug.includes('size') || group.name.toLowerCase().includes('size')) && hasSizeChartContent && (
-                     <button
-                       type="button"
-                       onClick={() => setIsSizeGuideOpen(true)}
-                       className="inline-flex items-center gap-1 text-[11px] font-bold uppercase tracking-widest text-primary underline underline-offset-4 hover:text-primary/80 transition-colors"
-                     >
-                        <Ruler size={13} />
-                        Size Guide
-                     </button>
-                  )}
                 </div>
                 <div className="flex flex-wrap gap-2.5">
                   {group.values.map((value) => {
