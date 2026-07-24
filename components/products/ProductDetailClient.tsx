@@ -1117,30 +1117,6 @@ export function ProductDetailClient({
                </div>
             </CollapsibleSection>
             
-            {hasSizeChartContent && (
-               <CollapsibleSection id="size-chart" title="Size & Fit" icon={Ruler}>
-                  <div className="space-y-4">
-                     {product.size_charts?.map(link => (
-                        <div key={link.size_chart.id} className="space-y-3">
-                           <p className="font-bold text-foreground/80">{link.size_chart.name} ({link.size_chart.unit})</p>
-                           <div className="overflow-x-auto border border-border/60">
-                              <table className="w-full text-xs text-left">
-                                 <thead className="bg-muted/50 border-b border-border/60">
-                                    <tr>{link.size_chart.columns?.map(c => <th key={c} className="p-3 font-black uppercase tracking-widest">{c}</th>)}</tr>
-                                 </thead>
-                                 <tbody>
-                                    {link.size_chart.rows?.map((r, i) => (
-                                       <tr key={i} className="border-b border-border/40 last:border-0">{r.map((cell, ci) => <td key={cell+ci} className="p-3 font-medium">{cell}</td>)}</tr>
-                                    ))}
-                                 </tbody>
-                              </table>
-                           </div>
-                        </div>
-                     ))}
-                  </div>
-               </CollapsibleSection>
-            )}
-
             <CollapsibleSection id="shipping" title="Shipping & Returns" icon={RefreshCw}>
                <div className="space-y-4">
                   <div className="flex gap-3">
