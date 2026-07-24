@@ -24,8 +24,11 @@ const CHANNELS: Record<string, string> = {
 };
 
 function buildWsUrl(path: string) {
-  const enabled = (process.env.NEXT_PUBLIC_WS_ENABLED || "").toLowerCase() === "true";
-  if (!enabled) return null;
+  // Realtime is on by default whenever a websocket base URL is configured.
+  // The previous opt-in-only flag was absent from production env files, which
+  // silently disabled notifications for every customer.
+  const configured = (process.env.NEXT_PUBLIC_WS_ENABLED || "").toLowerCase();
+  if (["false", "0", "off", "no"].includes(configured)) return null;
   return buildGlobalWsUrl(path, getAccessToken());
 }
 
@@ -130,13 +133,16 @@ export function WebSocketProvider({ children }: { children: React.ReactNode }) {
         setStatus((prev) => ({ ...prev, [channel]: "error" }));
       };
 
-      ws.onclose = () => {
+      ws.onclose = (event) => {
         if (socketsRef.current[channel] === ws) {
           socketsRef.current[channel] = null;
         }
         setStatus((prev) => ({ ...prev, [channel]: "closed" }));
         if (!isMountedRef.current) return;
         if (!activeChannelsRef.current.includes(channel)) return;
+        // Policy/authentication failures need a refreshed session, not an
+        // infinite reconnect loop that wastes battery and floods logs.
+        if (event.code === 1008 || event.code === 1011) return;
         if (!isMountedRef.current) return;
         if (reconnectTimers.current[channel]) {
           clearTimeout(reconnectTimers.current[channel] as ReturnType<typeof setTimeout>);
@@ -189,9 +195,14 @@ export function WebSocketProvider({ children }: { children: React.ReactNode }) {
     const handleOnline = () => {
       activeChannelsRef.current.forEach((channel) => connectRef.current(channel));
     };
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === "visible") handleOnline();
+    };
     window.addEventListener("online", handleOnline);
+    document.addEventListener("visibilitychange", handleVisibilityChange);
     return () => {
       window.removeEventListener("online", handleOnline);
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
     };
   }, []);
 

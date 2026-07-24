@@ -3,6 +3,7 @@
 import * as React from "react";
 import Link from "next/link";
 import Image from "next/image";
+import { Minus, Plus, ShieldCheck, Trash2, Truck, X } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { useCart } from "@/components/cart/useCart";
 import { useUiMessages } from "@/components/i18n/useUiMessages";
@@ -65,46 +66,42 @@ export function MiniCart({
 
   const totalValue = Math.max(0, subtotalValue - discount + shipping + tax + giftWrap + paymentFee);
   const totalLabel = formatMoney(totalValue, currencyConfig);
+  const freeShippingThreshold = Number(siteSettings?.free_shipping_threshold || 0);
+  const amountUntilFreeShipping = Math.max(0, freeShippingThreshold - subtotalValue);
+  const freeShippingProgress = freeShippingThreshold > 0
+    ? Math.min(100, Math.round((subtotalValue / freeShippingThreshold) * 100))
+    : 0;
+  const isMutating = updateItem.isPending || removeItem.isPending;
+  const mutationError = updateItem.error || removeItem.error;
 
   if (cart.items.length === 0) {
     return (
-      <div className={cn("flex items-center justify-between p-3", className)}>
-        <p className="text-sm font-medium text-foreground">
-          {t("empty_bag_text", "You have no item in your bag.")}
-        </p>
-        {onClose ? (
-          <button
-            type="button"
-            className="text-muted-foreground hover:text-foreground"
-            onClick={onClose}
-            aria-label="Close"
-          >
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-          </button>
-        ) : null}
+      <div className={cn("flex h-full flex-col justify-between p-5", className)}>
+        <div className="flex items-start justify-between gap-4">
+          <div>
+            <h3 className="text-base font-semibold">{title || t("mini_bag_title", "Your bag")}</h3>
+            <p className="mt-2 text-sm text-muted-foreground">{t("empty_bag_text", "You have no item in your bag.")}</p>
+          </div>
+          {onClose ? <button type="button" className="rounded-full p-1.5 text-muted-foreground transition hover:bg-muted hover:text-foreground" onClick={onClose} aria-label="Close shopping bag"><X className="h-4 w-4" aria-hidden="true" /></button> : null}
+        </div>
+        <Button asChild variant="secondary" className="mt-8 w-full"><Link href="/products/" onClick={handleClose}>Continue shopping</Link></Button>
       </div>
     );
   }
 
   return (
     <div className={cn("flex h-full flex-col", className)}>
-      <div className="flex items-center justify-between p-3 border-b border-border">
-        <h3 className="text-base font-medium">{title || t("mini_bag_title", "Your bag")}</h3>
+      <div className="flex items-center justify-between border-b border-border p-4">
+        <h3 className="text-base font-semibold">{title || t("mini_bag_title", "Your bag")}</h3>
         {onClose ? (
-          <button
-            type="button"
-            className="text-muted-foreground hover:text-foreground"
-            onClick={onClose}
-          >
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-          </button>
+          <button type="button" className="rounded-full p-1.5 text-muted-foreground transition hover:bg-muted hover:text-foreground" onClick={onClose} aria-label="Close shopping bag"><X className="h-4 w-4" aria-hidden="true" /></button>
         ) : null}
       </div>
 
-      <div className="flex-1 overflow-y-auto p-3 space-y-4">
+      <div className="flex-1 space-y-4 overflow-y-auto p-4" aria-busy={isMutating}>
         {cart.items.map((item) => (
           <div key={item.id} className="flex gap-3">
-            <div className="relative h-20 w-16 bg-muted rounded-sm shrink-0 overflow-hidden">
+            <div className="relative h-24 w-[4.5rem] shrink-0 overflow-hidden rounded-lg bg-muted">
               {fullImageUrl(item.product_image) ? (
                 <Image
                   src={fullImageUrl(item.product_image)!}
@@ -112,27 +109,22 @@ export function MiniCart({
                   fill
                   quality={60}
                   className="object-cover"
-                  sizes="64px"
+                  sizes="72px"
                 />
               ) : null}
             </div>
-            <div className="flex-1 space-y-0.5 min-w-0">
-              <p className="text-sm font-medium truncate">{item.product_name}</p>
-              <p className="text-[10px] text-muted-foreground truncate">{item.variant_name}</p>
-              <div className="flex items-center justify-between pt-1">
-                <div className="flex items-center border border-border rounded-sm">
-                  <button className="px-2 py-0.5 text-xs font-bold" onClick={() => updateItem.mutate({ itemId: item.id, quantity: Math.max(1, item.quantity - 1) })}>-</button>
-                  <span className="px-2 text-xs font-medium">{item.quantity}</span>
-                  <button className="px-2 py-0.5 text-xs font-bold" onClick={() => updateItem.mutate({ itemId: item.id, quantity: item.quantity + 1 })}>+</button>
+            <div className="min-w-0 flex-1 space-y-0.5">
+              <p className="truncate text-sm font-semibold">{item.product_name}</p>
+              {item.variant_name ? <p className="truncate text-xs text-muted-foreground">{item.variant_name}</p> : null}
+              <div className="flex items-end justify-between gap-2 pt-2">
+                <div className="inline-flex items-center rounded-lg border border-border bg-background" aria-label={`Quantity for ${item.product_name}`}>
+                  <button type="button" className="flex h-8 w-8 items-center justify-center rounded-l-lg text-muted-foreground transition hover:bg-muted hover:text-foreground disabled:cursor-not-allowed disabled:opacity-40" onClick={() => updateItem.mutate({ itemId: item.id, quantity: Math.max(1, item.quantity - 1) })} disabled={isMutating || item.quantity <= 1} aria-label={`Decrease quantity of ${item.product_name}`}><Minus className="h-3.5 w-3.5" aria-hidden="true" /></button>
+                  <span className="flex h-8 min-w-8 items-center justify-center border-x border-border px-2 text-xs font-semibold tabular-nums" aria-live="polite">{item.quantity}</span>
+                  <button type="button" className="flex h-8 w-8 items-center justify-center rounded-r-lg text-muted-foreground transition hover:bg-muted hover:text-foreground disabled:cursor-not-allowed disabled:opacity-40" onClick={() => updateItem.mutate({ itemId: item.id, quantity: item.quantity + 1 })} disabled={isMutating} aria-label={`Increase quantity of ${item.product_name}`}><Plus className="h-3.5 w-3.5" aria-hidden="true" /></button>
                 </div>
                 <div className="flex flex-col items-end gap-0.5">
-                  <p className="text-sm font-medium">{formatMoney(item.total, currencyConfig)}</p>
-                  <button 
-                    className="text-[10px] text-muted-foreground hover:text-red-500" 
-                    onClick={() => removeItem.mutate(item.id)}
-                  >
-                    Remove
-                  </button>
+                  <p className="text-sm font-semibold">{formatMoney(item.total, currencyConfig)}</p>
+                  <button type="button" className="inline-flex items-center gap-1 text-xs text-muted-foreground transition hover:text-destructive disabled:cursor-not-allowed disabled:opacity-40" onClick={() => removeItem.mutate(item.id)} disabled={isMutating}><Trash2 className="h-3 w-3" aria-hidden="true" /> Remove</button>
                 </div>
               </div>
             </div>
@@ -140,7 +132,20 @@ export function MiniCart({
         ))}
       </div>
 
-      <div className="p-3 border-t border-border space-y-3">
+      <div className="space-y-3 border-t border-border bg-card/60 p-4">
+        {freeShippingThreshold > 0 ? (
+          <div className="rounded-xl border border-border/70 bg-background/70 p-3">
+            <div className="flex items-start gap-2">
+              <Truck className="mt-0.5 h-4 w-4 shrink-0 text-primary" aria-hidden="true" />
+              <p className="text-xs leading-5 text-muted-foreground">
+                {amountUntilFreeShipping > 0 ? `Add ${formatMoney(amountUntilFreeShipping, currencyConfig)} more for free delivery.` : "You qualify for free delivery."}
+              </p>
+            </div>
+            <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-muted" role="progressbar" aria-label="Progress toward free delivery" aria-valuemin={0} aria-valuemax={100} aria-valuenow={freeShippingProgress}>
+              <div className="h-full rounded-full bg-primary transition-[width] duration-300" style={{ width: `${freeShippingProgress}%` }} />
+            </div>
+          </div>
+        ) : null}
         <div className="flex justify-between text-sm">
           <span className="text-muted-foreground">{t("subtotal", "Subtotal")}</span>
           <span className="font-semibold">{subtotalLabel}</span>
@@ -151,6 +156,8 @@ export function MiniCart({
             <span className="font-bold text-primary">{totalLabel}</span>
           </div>
         )}
+        {mutationError ? <p className="text-xs text-destructive" role="alert">Could not update your bag. Please try again.</p> : null}
+        <p className="flex items-center gap-1.5 text-[11px] text-muted-foreground"><ShieldCheck className="h-3.5 w-3.5 text-success-600" aria-hidden="true" /> Secure checkout</p>
         <div className="grid grid-cols-2 gap-2 pt-1">
           <Button asChild variant="secondary" className="h-9 w-full uppercase tracking-widest text-[10px]">
             <Link href="/cart/" onClick={handleClose}>

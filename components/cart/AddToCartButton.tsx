@@ -37,6 +37,10 @@ export function AddToCartButton({
     try {
       const response = await addItem.mutateAsync({ productId, quantity, variantId });
       push(resolveMessage(response, t("added_to_bag", "Added to bag.")), "success");
+      // A product detail page should confirm success in context.  The header
+      // owns the drawer, so use a small browser event rather than coupling
+      // every product card to layout state.
+      window.dispatchEvent(new CustomEvent("bunoraa:cart-added"));
     } catch (error) {
       if (error instanceof ApiError) {
         if (typeof error.data === "object" && error.data && "message" in error.data) {

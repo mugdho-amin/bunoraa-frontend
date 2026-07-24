@@ -46,7 +46,11 @@ export function useNotifications(
     enabled: hasToken && includeList,
     staleTime: 60_000,
     refetchOnMount: false,
-    refetchOnReconnect: false,
+    refetchOnReconnect: true,
+    // WebSockets provide the fast path; this interval is the correctness
+    // fallback for mobile sleep, corporate proxies, and a waking HF Space.
+    refetchInterval: 60_000,
+    refetchIntervalInBackground: false,
   });
 
   const unreadCountQuery = useQuery({
@@ -55,7 +59,9 @@ export function useNotifications(
     enabled: hasToken && includeUnread,
     staleTime: 60_000,
     refetchOnMount: false,
-    refetchOnReconnect: false,
+    refetchOnReconnect: true,
+    refetchInterval: 60_000,
+    refetchIntervalInBackground: false,
   });
 
   const markAllRead = useMutation({

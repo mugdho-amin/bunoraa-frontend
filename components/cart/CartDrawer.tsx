@@ -15,6 +15,8 @@ export function CartDrawer({
   itemCount: number;
 }) {
   const originalOverflow = React.useRef<string | null>(null);
+  const dialogRef = React.useRef<HTMLElement | null>(null);
+  const lastFocusedElement = React.useRef<HTMLElement | null>(null);
   const [mounted, setMounted] = React.useState(false);
 
   React.useEffect(() => {
@@ -24,11 +26,38 @@ export function CartDrawer({
 
   React.useEffect(() => {
     if (!isOpen) return;
+    lastFocusedElement.current = document.activeElement instanceof HTMLElement
+      ? document.activeElement
+      : null;
+    requestAnimationFrame(() => dialogRef.current?.focus());
+
     const onKey = (event: KeyboardEvent) => {
       if (event.key === "Escape") onClose();
+      if (event.key !== "Tab" || !dialogRef.current) return;
+
+      const focusable = dialogRef.current.querySelectorAll<HTMLElement>(
+        'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])'
+      );
+      if (!focusable.length) {
+        event.preventDefault();
+        dialogRef.current.focus();
+        return;
+      }
+      const first = focusable[0];
+      const last = focusable[focusable.length - 1];
+      if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault();
+        last.focus();
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault();
+        first.focus();
+      }
     };
     window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
+    return () => {
+      window.removeEventListener("keydown", onKey);
+      lastFocusedElement.current?.focus();
+    };
   }, [isOpen, onClose]);
 
   React.useEffect(() => {
@@ -70,6 +99,7 @@ export function CartDrawer({
       {/* Dynamic Drawer Content */}
       {itemCount === 0 ? (
         <div 
+          ref={dialogRef as React.RefObject<HTMLDivElement>}
           className={cn(
             "absolute right-3 top-[calc(var(--header-offset,4.75rem)+0.5rem)] flex w-[min(100vw-1.5rem,20rem)] flex-col rounded-2xl border border-border/80 bg-card p-4 shadow-premium transition-all duration-300 ease-out-expo sm:right-4 sm:w-80",
             isOpen ? "translate-y-0 opacity-100" : "-translate-y-3 opacity-0"
@@ -77,11 +107,13 @@ export function CartDrawer({
           role="dialog"
           aria-modal="true"
           aria-label="Shopping bag"
+          tabIndex={-1}
         >
           <MiniCart onClose={onClose} className="h-auto p-0" />
         </div>
       ) : (
         <aside
+          ref={dialogRef as React.RefObject<HTMLElement>}
           className={cn(
             "absolute right-0 top-0 flex h-full w-full max-w-md flex-col border-l border-border/60 bg-background/95 shadow-premium backdrop-blur-xl transition-transform duration-300 ease-out-expo supports-[height:100dvh]:h-[100dvh]",
             isOpen ? "translate-x-0" : "translate-x-full"
@@ -89,6 +121,7 @@ export function CartDrawer({
           role="dialog"
           aria-modal="true"
           aria-label="Shopping bag"
+          tabIndex={-1}
           onClick={(event) => event.stopPropagation()}
         >
           <MiniCart onClose={onClose} className="h-full border-none bg-transparent p-0 shadow-none" />

@@ -24,6 +24,10 @@ export default function robots(): MetadataRoute.Robots {
           "/_next/",
           "/404",
           "/500",
+          "/*?*sort=*",
+          "/*?*filter=*",
+          "/*?*price=*",
+          "/*?*q=*",
         ],
       },
       {

@@ -175,6 +175,12 @@ export function HeaderClient() {
     setMenuOpen(false);
   }, [pathname]);
 
+  React.useEffect(() => {
+    const openCartAfterAdd = () => setOpen(true);
+    window.addEventListener("bunoraa:cart-added", openCartAfterAdd);
+    return () => window.removeEventListener("bunoraa:cart-added", openCartAfterAdd);
+  }, []);
+
   const iconButtonClass =
     "icon-btn pressable leading-none";
   const iconTooltipClass =
