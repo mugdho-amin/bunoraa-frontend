@@ -292,7 +292,7 @@ export async function renderCategoryPageForPath(
           )}
 
           <main className="space-y-8">
-            <AppliedFilters />
+            <AppliedFilters variant="minimal" />
             
             <div className="relative -mx-4 sm:-mx-6 lg:mx-0">
               {totalCount === 0 && !hasIndexBustingFilters(resolvedSearchParams) ? (
