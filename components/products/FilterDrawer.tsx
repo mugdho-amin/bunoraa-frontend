@@ -40,7 +40,9 @@ export function FilterDrawer({
 
   const handleClearAll = () => {
     const params = clearAllFilters(searchParams);
-    router.push(`${pathname}?${params.toString()}`);
+    const url = `${pathname}?${params.toString()}`;
+    router.push(url);
+    
   };
 
   React.useEffect(() => {
@@ -152,11 +154,13 @@ export function FilterDrawer({
                   variant="primary" 
                   className="w-full h-12 rounded-xl text-[11px] font-black uppercase tracking-[0.2em] shadow-xl shadow-primary/20" 
                   onClick={() => {
-                    router.push(`${pathname}?${searchParams.toString()}`, { scroll: false });
+                    const url = `${pathname}?${searchParams.toString()}`;
+                    router.push(url, { scroll: false });
+                    
                     setOpen(false);
                   }}
                 >
-                  Apply Filters
+                  Show Results
                 </Button>
               </div>
             </div>

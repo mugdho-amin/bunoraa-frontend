@@ -164,11 +164,12 @@ export function FilterPanel({
                   <button
                     type="button"
                     className={cn("text-left transition-colors", isActive ? "font-bold text-primary" : "text-muted-foreground hover:text-foreground")}
-                    onClick={() => {
-                      const params = updateParamValue(searchParams, "price_min", bucket.min === null ? null : String(bucket.min));
-                      const next = updateParamValue(params, "price_max", bucket.max === null ? null : String(bucket.max));
-                      router.push(`${pathname}?${next.toString()}`, { scroll: false });
-                    }}
+                      onClick={() => {
+                        const params = updateParamValue(searchParams, "price_min", bucket.min === null ? null : String(bucket.min));
+                        const next = updateParamValue(params, "price_max", bucket.max === null ? null : String(bucket.max));
+                        const url = `${pathname}?${next.toString()}`;
+                        router.push(url, { scroll: false });
+                      }}
                   >
                     {bucket.label}
                   </button>
@@ -195,9 +196,10 @@ export function FilterPanel({
             variant="ghost"
             className="h-auto p-0 text-[10px] font-black uppercase tracking-widest text-primary hover:bg-transparent hover:text-primary/70"
             onClick={() => {
-              const params = clearAllFilters(searchParams);
-              router.push(`${pathname}?${params.toString()}`);
-            }}
+                const params = clearAllFilters(searchParams);
+                const url = `${pathname}?${params.toString()}`;
+                router.push(url);
+              }}
           >
             {t("clear_all", "Reset")}
           </Button>
@@ -256,7 +258,8 @@ export function FilterPanel({
                     )}
                     onClick={() => {
                       const params = toggleMultiValue(searchParams, `attr_${group.slug}`, item.value);
-                      router.push(`${pathname}?${params.toString()}`, { scroll: false });
+                      const url = `${pathname}?${params.toString()}`;
+                      router.push(url, { scroll: false });
                     }}
                   >
                     {swatchColor && (
@@ -285,7 +288,8 @@ export function FilterPanel({
               key={opt.key}
               onClick={() => {
                 const params = updateParamValue(searchParams, opt.key, opt.checked ? null : "true");
-                router.push(`${pathname}?${params.toString()}`, { scroll: false });
+                const url = `${pathname}?${params.toString()}`;
+                router.push(url, { scroll: false });
               }}
               className="flex w-full items-center gap-3 py-2 group"
             >
@@ -310,7 +314,8 @@ export function FilterPanel({
               key={rating}
               onClick={() => {
                 const params = updateParamValue(searchParams, "min_rating", String(rating));
-                router.push(`${pathname}?${params.toString()}`, { scroll: false });
+                const url = `${pathname}?${params.toString()}`;
+                router.push(url, { scroll: false });
               }}
               className="flex items-center gap-3 py-2 group"
             >

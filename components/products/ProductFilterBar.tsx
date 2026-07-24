@@ -27,9 +27,8 @@ export function ProductFilterBar() {
       params.delete(key);
     }
     params.delete("page");
-    startTransition(() => {
-      router.push(`/products/?${params.toString()}`);
-    });
+    const url = `/products/?${params.toString()}`;
+    router.push(url);
   };
 
   return (

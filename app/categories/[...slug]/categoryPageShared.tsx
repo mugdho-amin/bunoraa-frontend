@@ -96,7 +96,7 @@ async function getCategoryProducts(slug: string, searchParams: CategorySearchPar
     {
       params: buildCategoryProductsParams(searchParams),
       headers: await getServerLocaleHeaders(),
-      next: { revalidate: 300 }
+      next: { revalidate: 30, tags: ["category"] }
     }
   );
   return response;
@@ -125,7 +125,7 @@ async function getFilters(slug: string, searchParams: CategorySearchParams) {
   const response = await apiFetch<ProductFilterResponse>("/catalog/products/filters/", {
     params,
     headers: await getServerLocaleHeaders(),
-    next: { revalidate: 300 },
+    next: { revalidate: 30, tags: ["category"] },
   });
   return response.data;
 }
@@ -137,7 +137,7 @@ async function getCategoryFacets(slug: string, searchParams: CategorySearchParam
     { 
       params,
       headers: await getServerLocaleHeaders(),
-      next: { revalidate: 300 }
+      next: { revalidate: 30, tags: ["category"] }
     }
   );
   return response.data;

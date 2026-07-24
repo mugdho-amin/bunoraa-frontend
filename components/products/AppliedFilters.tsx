@@ -27,7 +27,9 @@ export function AppliedFilters({ variant = "default" }: { variant?: "default" | 
             aria-label={`Remove filter: ${filter.label}`}
             onClick={() => {
               const params = removeAppliedFilter(searchParams, filter);
-              router.push(`${pathname}?${params.toString()}`);
+              const url = `${pathname}?${params.toString()}`;
+              router.push(url);
+              
             }}
             className="inline-flex min-h-9 items-center rounded-full border border-border bg-card px-3 py-1 text-xs font-medium text-foreground/80"
           >
@@ -40,7 +42,9 @@ export function AppliedFilters({ variant = "default" }: { variant?: "default" | 
           className="px-2.5 text-xs"
           onClick={() => {
             const params = clearAllFilters(searchParams);
-            router.push(`${pathname}?${params.toString()}`);
+            const url = `${pathname}?${params.toString()}`;
+            router.push(url);
+            
           }}
         >
           Clear all
@@ -61,7 +65,9 @@ export function AppliedFilters({ variant = "default" }: { variant?: "default" | 
           className="px-2.5 text-xs sm:text-sm"
           onClick={() => {
             const params = clearAllFilters(searchParams);
-            router.push(`${pathname}?${params.toString()}`);
+            const url = `${pathname}?${params.toString()}`;
+            router.push(url);
+            
           }}
         >
           Clear all
@@ -75,7 +81,9 @@ export function AppliedFilters({ variant = "default" }: { variant?: "default" | 
             aria-label={`Remove filter: ${filter.label}`}
             onClick={() => {
               const params = removeAppliedFilter(searchParams, filter);
-              router.push(`${pathname}?${params.toString()}`);
+              const url = `${pathname}?${params.toString()}`;
+              router.push(url);
+              
             }}
             className="inline-flex min-h-10 items-center rounded-full border border-border bg-card px-3.5 py-1.5 text-sm text-foreground/80"
           >

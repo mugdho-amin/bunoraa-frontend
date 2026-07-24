@@ -42,7 +42,8 @@ export function SortMenu({
 
   const handleSelect = (value: string) => {
     const params = updateParamValue(searchParams, "ordering", value);
-    router.push(`${pathname}?${params.toString()}`);
+    const url = `${pathname}?${params.toString()}`;
+    router.push(url);
     setIsOpen(false);
   };
 

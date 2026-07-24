@@ -17,7 +17,7 @@ type PageSummary = {
 const getCategoryTree = cache(async (): Promise<CategoryTreeNode[]> => {
   try {
     const response = await apiFetch<CategoryTreeNode[]>("/catalog/categories/tree/", {
-      next: { revalidate: 300 },
+      next: { revalidate: 30, tags: ["category"] },
       suppressError: true,
       suppressErrorStatus: [404],
     });
@@ -54,7 +54,7 @@ export async function categoryPathExists(slugPath: string): Promise<boolean> {
 const getPublishedPageSlugs = cache(async (): Promise<Set<string>> => {
   try {
     const response = await apiFetch<PageSummary[]>("/pages/", {
-      next: { revalidate: 300 },
+      next: { revalidate: 30, tags: ["pages"] },
       suppressError: true,
       suppressErrorStatus: [404],
     });

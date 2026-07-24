@@ -77,7 +77,8 @@ export function ViewToggle({ className }: { className?: string } = {}) {
             onClick={(e) => {
               e.preventDefault();
               const params = updateParamValue(searchParams, "cols", String(cols));
-              router.push(`${pathname}?${params.toString()}`, { scroll: false });
+              const url = `${pathname}?${params.toString()}`;
+              router.push(url, { scroll: false });
             }}
             className={cn(
               "flex items-center gap-1.5 rounded-lg px-2 py-1 text-xs font-normal transition-all relative z-10",

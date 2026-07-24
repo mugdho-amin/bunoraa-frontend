@@ -137,7 +137,8 @@ export function PriceSlider({ priceRange }: { priceRange: PriceRange }) {
       p.delete("page");
 
       const qs = p.toString();
-      router.push(qs ? `${pathname}?${qs}` : pathname, { scroll: false });
+      const url = qs ? `${pathname}?${qs}` : pathname;
+      router.push(url, { scroll: false });
     },
     [pathname, router, searchParams, boundMin, boundMax]
   );

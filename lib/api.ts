@@ -9,7 +9,7 @@ type ApiFetchOptions = {
   headers?: HeadersInit;
   params?: Record<string, string | number | boolean | Array<string | number | boolean> | undefined>;
   cache?: RequestCache;
-  next?: { revalidate?: number };
+  next?: { revalidate?: number; tags?: string[] };
   signal?: AbortSignal;
   retryOnCsrf?: boolean;
   retryOnAuth?: boolean;
@@ -379,7 +379,7 @@ export async function apiFetch<T>(path: string, options: ApiFetchOptions = {}): 
 
   const requestId = generateRequestId();
 
-  const init: RequestInit & { next?: { revalidate?: number } } = {
+  const init: RequestInit & { next?: { revalidate?: number; tags?: string[] } } = {
     method,
     headers: {
       ...(isFormData ? {} : { "Content-Type": "application/json" }),
