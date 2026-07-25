@@ -55,7 +55,6 @@ export async function Header() {
       : false;
   const siteSettings = siteSettingsResult.status === "fulfilled" ? siteSettingsResult.value : null;
   const brandName = siteSettings?.company_name?.trim() || siteSettings?.site_name?.trim() || "Bunoraa";
-  const faviconUrl = siteSettings?.favicon?.trim() || "/icon.png";
 
   return (
     <MobileHeaderVisibility>
@@ -69,11 +68,7 @@ export async function Header() {
               hasBundles={hasBundles}
             />
             <div className="justify-self-center">
-              <HeaderBrand
-                defaultBrandName={brandName}
-                defaultFaviconUrl={faviconUrl}
-                fallbackStaticFaviconUrl="/favicon.ico"
-              />
+              <HeaderBrand defaultBrandName={brandName} />
             </div>
             <div className="justify-self-end">
               <HeaderClient />
@@ -83,11 +78,7 @@ export async function Header() {
           {/* Desktop layout */}
           <div className="hidden items-center justify-between gap-4 lg:flex">
             <div className="flex min-w-0 items-center gap-6">
-              <HeaderBrand
-                defaultBrandName={brandName}
-                defaultFaviconUrl={faviconUrl}
-                fallbackStaticFaviconUrl="/favicon.ico"
-              />
+              <HeaderBrand defaultBrandName={brandName} />
               <nav className="flex items-center gap-3 text-sm xl:gap-4" aria-label="Primary">
                 <div className="w-52 xl:w-64">
                   <SearchBar hideSubmitButtonOnDesktop />
