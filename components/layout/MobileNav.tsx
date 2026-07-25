@@ -2,6 +2,7 @@
 
 import * as React from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { SearchBar } from "@/components/search/SearchBar";
 import { useAuthContext } from "@/components/providers/AuthProvider";
@@ -120,6 +121,13 @@ export function MobileNav({
   const triggerRef = React.useRef<HTMLButtonElement | null>(null);
   const closeButtonRef = React.useRef<HTMLButtonElement | null>(null);
   const wasOpenRef = React.useRef(false);
+
+  const activeAccount = React.useMemo(
+    () => accounts.find((a) => a.id === activeAccountId) || null,
+    [accounts, activeAccountId],
+  );
+  const profileAvatar = profileQuery.data?.avatar || activeAccount?.avatar || "";
+  const hasProfileAvatar = Boolean(profileAvatar);
 
   const accountLabel =
     profileQuery.data?.full_name ||
@@ -294,8 +302,12 @@ export function MobileNav({
             <div className="border-b border-border/80 px-4 py-3.5 sm:px-5">
               {hasToken ? (
                 <div className="flex items-center gap-3 rounded-2xl border border-border/60 bg-muted/40 p-3">
-                  <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-primary/15 text-sm font-bold text-primary ring-2 ring-primary/10">
-                    {initials || <User className="h-4 w-4" />}
+                  <div className="flex h-11 w-11 shrink-0 items-center justify-center overflow-hidden rounded-full bg-primary/15 text-sm font-bold text-primary ring-2 ring-primary/10">
+                    {hasProfileAvatar ? (
+                      <Image src={profileAvatar} alt="" width={44} height={44} className="h-full w-full object-cover" />
+                    ) : (
+                      initials || <User className="h-4 w-4" />
+                    )}
                   </div>
                   <div className="min-w-0 flex-1">
                     <p className="truncate text-sm font-semibold text-foreground">{accountLabel}</p>
