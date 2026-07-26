@@ -163,18 +163,20 @@ function parseAspectRatio(value?: string | null) {
 
 function ProductGallery({
   product,
+  variantId,
   layout = "default",
 }: {
   product: ProductDetail;
+  variantId?: string | null;
   layout?: "default" | "minimal";
 }) {
   const aspectRatio = React.useMemo(() => parseAspectRatio(product.aspect_ratio), [product.aspect_ratio]);
   const images = React.useMemo(() => {
-    const next: Array<{ id: string; image: string; alt: string }> = [];
-    const pushImage = (id: string, image: string | null | undefined, alt: string) => {
+    const next: Array<{ id: string; image: string; alt: string; variant_ids: string[] }> = [];
+    const pushImage = (id: string, image: string | null | undefined, alt: string, variant_ids?: string[]) => {
       if (!image) return;
       if (next.some((item) => item.image === image)) return;
-      next.push({ id, image, alt });
+      next.push({ id, image, alt, variant_ids: variant_ids || [] });
     };
 
     const primaryImage =
@@ -184,32 +186,47 @@ function ProductGallery({
 
     pushImage("primary", primaryImage, product.name);
     (product.images || []).forEach((image) => {
-      pushImage(image.id, image.image, image.alt_text || product.name);
+      pushImage(image.id, image.image, image.alt_text || product.name, image.variant_ids);
     });
     return next;
   }, [product]);
   const [active, setActive] = React.useState(0);
-  const activeImage = images[active] || images[0] || null;
   const [lightboxOpen, setLightboxOpen] = React.useState(false);
   const thumbsRef = React.useRef<HTMLDivElement | null>(null);
+
+  const visibleImages = React.useMemo(() => {
+    if (!variantId) return images;
+    const variantSpecific = images.filter((img) => img.variant_ids.includes(variantId));
+    if (variantSpecific.length > 0) {
+      const shared = images.filter((img) => img.variant_ids.length === 0);
+      return [...variantSpecific, ...shared];
+    }
+    return images;
+  }, [images, variantId]);
+
+  const activeImage = visibleImages[active] || visibleImages[0] || null;
 
   React.useEffect(() => {
     setActive(0);
     setLightboxOpen(false);
   }, [product.id]);
 
-  const hasMultipleImages = images.length > 1;
+  React.useEffect(() => {
+    setActive(0);
+  }, [variantId]);
+
+  const hasMultipleImages = visibleImages.length > 1;
   const isMinimal = layout === "minimal";
 
   const goNext = React.useCallback(() => {
-    if (!images.length) return;
-    setActive((prev) => (prev + 1) % images.length);
-  }, [images.length]);
+    if (!visibleImages.length) return;
+    setActive((prev) => (prev + 1) % visibleImages.length);
+  }, [visibleImages.length]);
 
   const goPrev = React.useCallback(() => {
-    if (!images.length) return;
-    setActive((prev) => (prev - 1 + images.length) % images.length);
-  }, [images.length]);
+    if (!visibleImages.length) return;
+    setActive((prev) => (prev - 1 + visibleImages.length) % visibleImages.length);
+  }, [visibleImages.length]);
 
   React.useEffect(() => {
     if (!lightboxOpen) return;
@@ -244,7 +261,7 @@ function ProductGallery({
             ref={thumbsRef}
             className="flex max-h-[500px] flex-col gap-3 overflow-y-auto pr-1 scrollbar-none"
           >
-            {images.map((image, index) => (
+            {visibleImages.map((image, index) => (
               <button
                 key={image.id}
                 type="button"
@@ -293,8 +310,8 @@ function ProductGallery({
 
         {/* Gallery Overlay Controls */}
           <div className="absolute inset-x-4 bottom-4 flex items-center justify-between pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-             <div className="pointer-events-auto rounded-full bg-background/90 backdrop-blur-md px-3 py-1.5 text-[10px] font-bold uppercase tracking-widest text-muted-foreground shadow-sm border border-border/40">
-                {images.length ? `${active + 1} / ${images.length}` : "1 / 1"}
+              <div className="pointer-events-auto rounded-full bg-background/90 backdrop-blur-md px-3 py-1.5 text-[10px] font-bold uppercase tracking-widest text-muted-foreground shadow-sm border border-border/40">
+                {visibleImages.length ? `${active + 1} / ${visibleImages.length}` : "1 / 1"}
               </div>
               <button 
                 onClick={() => setLightboxOpen(true)}
@@ -309,7 +326,7 @@ function ProductGallery({
         {/* Mobile Thumbnails */}
         {hasMultipleImages && (
           <div className="flex gap-2.5 overflow-x-auto mt-4 px-1 py-1 lg:hidden scrollbar-none">
-            {images.map((image, index) => (
+            {visibleImages.map((image, index) => (
               <button
                 key={image.id}
                 type="button"
@@ -805,16 +822,10 @@ export function ProductDetailClient({
   relatedProducts?: ProductListItem[];
 }) {
   const variants = React.useMemo<Variant[]>(() => product.variants ?? [], [product.variants]);
-  const defaultVariant = React.useMemo(
-    () => variants.find((v) => v.is_default) || variants[0] || null,
-    [variants]
-  );
   
-  const [variantId, setVariantId] = React.useState<string | null>(defaultVariant?.id || null);
+  const [variantId, setVariantId] = React.useState<string | null>(null);
   const [quantity, setQuantity] = React.useState(1);
-  const [selectedOptions, setSelectedOptions] = React.useState<VariantOptionMap>(
-    getVariantOptionMap(defaultVariant)
-  );
+  const [selectedOptions, setSelectedOptions] = React.useState<VariantOptionMap>({});
 
   const sizeAttributeFallback = React.useMemo(
     () =>
@@ -869,19 +880,24 @@ export function ProductDetailClient({
   }, [variants]);
 
   const selectedVariant = React.useMemo(
-    () => variants.find((v) => v.id === variantId) || defaultVariant || null,
-    [defaultVariant, variantId, variants]
+    () => variants.find((v) => v.id === variantId) || null,
+    [variantId, variants]
   );
-  
-  const inStock = getVariantInStock(selectedVariant, product);
+
+  const hasVariants = variants.length > 0;
+  const inStock = hasVariants
+    ? (selectedVariant ? getVariantInStock(selectedVariant, product) : false)
+    : product.is_in_stock;
   const stockQty = typeof selectedVariant?.stock_quantity === "number" ? selectedVariant.stock_quantity : product.available_stock;
-  const isLowStock = Boolean(product.is_low_stock) || (typeof stockQty === 'number' && stockQty > 0 && stockQty <= 5);
+  const isLowStock = (hasVariants && !selectedVariant)
+    ? false
+    : Boolean(product.is_low_stock) || (typeof stockQty === 'number' && stockQty > 0 && stockQty <= 5);
 
   React.useEffect(() => {
-    setVariantId(defaultVariant?.id || null);
-    setSelectedOptions(getVariantOptionMap(defaultVariant));
+    setVariantId(null);
+    setSelectedOptions({});
     setQuantity(1);
-  }, [defaultVariant, product.id]);
+  }, [product.id]);
 
   const handleOptionSelect = (groupSlug: string, value: string) => {
     const nextSelection = { ...selectedOptions, [groupSlug]: value };
@@ -911,7 +927,9 @@ export function ProductDetailClient({
   }, [product]);
 
   const unitPrice = selectedVariant?.current_price || selectedVariant?.price || product.current_price || product.price || "0";
-  const stockLabel = !inStock ? "Currently Sold Out" : isLowStock ? `Only ${stockQty} left!` : "Ready to Ship";
+  const stockLabel = !inStock
+    ? (hasVariants && !selectedVariant ? "Select options" : "Currently Sold Out")
+    : isLowStock ? `Only ${stockQty} left!` : "Ready to Ship";
   
   const categoryTrail = buildProductCategoryTrail(product);
   const breadcrumbLinks = [
@@ -936,7 +954,7 @@ export function ProductDetailClient({
       </nav>
 
       <div className="grid gap-12 lg:grid-cols-[1.1fr_0.9fr] items-start">
-        <ProductGallery product={product} layout="minimal" />
+        <ProductGallery product={product} variantId={variantId} layout="minimal" />
 
         <div className="space-y-8 lg:sticky lg:top-[var(--header-offset)]">
           <div className="space-y-3">
@@ -1019,10 +1037,17 @@ export function ProductDetailClient({
           </div>
 
           <div className="space-y-4 pt-4">
-             <div className="flex items-center gap-3 text-[11px] font-bold uppercase tracking-widest">
-                <div className={cn("h-2 w-2 rounded-full", inStock ? "bg-success-500 animate-pulse" : "bg-destructive")} />
-                <span className={cn(inStock ? "text-success-700" : "text-destructive")}>{stockLabel}</span>
-             </div>
+              <div className="flex items-center gap-3 text-[11px] font-bold uppercase tracking-widest">
+                 <div className={cn(
+                   "h-2 w-2 rounded-full",
+                   inStock ? "bg-success-500 animate-pulse" : "bg-destructive",
+                   hasVariants && !selectedVariant && "bg-amber-500"
+                 )} />
+                 <span className={cn(
+                   inStock ? "text-success-700" : "text-destructive",
+                   hasVariants && !selectedVariant && "text-muted-foreground"
+                 )}>{stockLabel}</span>
+              </div>
 
              <div className="flex items-center gap-3">
                <div className="flex items-center border border-border/60 rounded-xl">
@@ -1056,8 +1081,8 @@ export function ProductDetailClient({
                    size="lg"
                    variant="primary"
                    className="w-full h-14 text-base font-bold shadow-2xl shadow-primary/20 hover:scale-[1.01] active:scale-95 transition-all"
-                   disabled={!inStock}
-                   label={inStock ? "Add to Shopping Bag" : "Currently Unavailable"}
+                    disabled={!inStock}
+                    label={inStock ? "Add to Shopping Bag" : (hasVariants && !selectedVariant ? "Select options" : "Currently Unavailable")}
                  />
                </div>
              </div>

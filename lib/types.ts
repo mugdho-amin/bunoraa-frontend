@@ -71,6 +71,7 @@ export type ProductImage = {
   alt_text?: string | null;
   is_primary?: boolean;
   ordering?: number;
+  variant_ids?: string[];
 };
 
 export type ProductVariant = {
