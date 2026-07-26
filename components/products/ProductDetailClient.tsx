@@ -884,7 +884,7 @@ export function ProductDetailClient({
     [variantId, variants]
   );
 
-  const hasVariants = variants.length > 0;
+  const hasVariants = product.has_variants && variants.length > 0;
   const inStock = hasVariants
     ? (selectedVariant ? getVariantInStock(selectedVariant, product) : false)
     : product.is_in_stock;
