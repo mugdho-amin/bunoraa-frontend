@@ -55,11 +55,9 @@ type CheckoutPaymentStepProps = {
   shippingDefaults?: Partial<CheckoutPaymentFormValues>;
   currencyCode?: string;
   onSubmit: (values: CheckoutPaymentFormValues) => Promise<void>;
-  onSelectionChange?: (paymentMethod: string) => void;
   onBack: () => void;
   isSubmitting?: boolean;
   isLoadingGateways?: boolean;
-  isAutoSaving?: boolean;
 };
 
 export function CheckoutPaymentStep({
@@ -70,11 +68,9 @@ export function CheckoutPaymentStep({
   shippingDefaults,
   currencyCode,
   onSubmit,
-  onSelectionChange,
   onBack,
   isSubmitting,
   isLoadingGateways,
-  isAutoSaving,
 }: CheckoutPaymentStepProps) {
   const form = useForm<CheckoutPaymentFormValues>({
     resolver: zodResolver(schema),
@@ -107,12 +103,6 @@ export function CheckoutPaymentStep({
     form.setValue("payment_method", gateways[0].code, { shouldValidate: true });
     setSelectedPayment(gateways[0].code);
   }, [gateways, form]);
-
-  React.useEffect(() => {
-    if (!onSelectionChange) return;
-    if (!selectedPayment) return;
-    onSelectionChange(selectedPayment);
-  }, [selectedPayment, onSelectionChange]);
 
   const billingSame = useWatch({
     control: form.control,
@@ -191,8 +181,6 @@ export function CheckoutPaymentStep({
             <p className="font-semibold">Available gateways</p>
             {isLoadingGateways ? (
               <span className="text-xs text-muted-foreground">Loading...</span>
-            ) : isAutoSaving ? (
-              <span className="text-xs text-muted-foreground">Saving...</span>
             ) : null}
           </div>
           <p className="text-xs text-muted-foreground">

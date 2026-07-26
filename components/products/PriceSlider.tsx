@@ -230,17 +230,6 @@ export function PriceSlider({ priceRange }: { priceRange: PriceRange }) {
     return Number.isInteger(n) ? String(n) : String(n);
   };
 
-  const commitInputs = () => {
-    const min = clamp(minRef.current, boundMin, maxRef.current);
-    const max = clamp(maxRef.current, min, boundMax);
-    minRef.current = min;
-    maxRef.current = max;
-    setLocalMin(min);
-    setLocalMax(max);
-    lastPushedRef.current = ""; // force push even if same as last visual
-    pushUrl(min, max);
-  };
-
   if (!hasValidRange) {
     return (
       <div className="h-24 flex items-center justify-center">
@@ -342,79 +331,6 @@ export function PriceSlider({ priceRange }: { priceRange: PriceRange }) {
         />
       </div>
 
-      {/* Min / Max number fields — Shopify Dawn facets__price layout */}
-      <div className="grid grid-cols-2 gap-3">
-        <div className="space-y-1.5">
-          <label
-            htmlFor="price-min-input"
-            className="text-[10px] font-semibold uppercase tracking-[0.14em] text-muted-foreground px-0.5"
-          >
-            From
-          </label>
-          <div className="relative">
-            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-xs font-medium text-muted-foreground pointer-events-none">
-              {symbol}
-            </span>
-            <input
-              id="price-min-input"
-              type="number"
-              inputMode="decimal"
-              min={boundMin}
-              max={localMax}
-              step={step}
-              value={formatDisplay(localMin)}
-              onChange={(e) => {
-                const raw = e.target.value;
-                if (raw === "") return;
-                const num = Number(raw);
-                if (!Number.isFinite(num)) return;
-                onMinChange(num);
-              }}
-              onBlur={commitInputs}
-              onKeyDown={(e) => {
-                if (e.key === "Enter") (e.target as HTMLInputElement).blur();
-              }}
-              className="price-range__field w-full h-11 pl-8 pr-3 bg-background border border-foreground/15 rounded-none text-sm font-medium tabular-nums focus:border-foreground/40 focus:ring-0 outline-none no-spin transition-colors"
-              aria-label="Minimum price value"
-            />
-          </div>
-        </div>
-        <div className="space-y-1.5">
-          <label
-            htmlFor="price-max-input"
-            className="text-[10px] font-semibold uppercase tracking-[0.14em] text-muted-foreground px-0.5"
-          >
-            To
-          </label>
-          <div className="relative">
-            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-xs font-medium text-muted-foreground pointer-events-none">
-              {symbol}
-            </span>
-            <input
-              id="price-max-input"
-              type="number"
-              inputMode="decimal"
-              min={localMin}
-              max={boundMax}
-              step={step}
-              value={formatDisplay(localMax)}
-              onChange={(e) => {
-                const raw = e.target.value;
-                if (raw === "") return;
-                const num = Number(raw);
-                if (!Number.isFinite(num)) return;
-                onMaxChange(num);
-              }}
-              onBlur={commitInputs}
-              onKeyDown={(e) => {
-                if (e.key === "Enter") (e.target as HTMLInputElement).blur();
-              }}
-              className="price-range__field w-full h-11 pl-8 pr-3 bg-background border border-foreground/15 rounded-none text-sm font-medium tabular-nums focus:border-foreground/40 focus:ring-0 outline-none no-spin transition-colors"
-              aria-label="Maximum price value"
-            />
-          </div>
-        </div>
-      </div>
     </div>
   );
 }

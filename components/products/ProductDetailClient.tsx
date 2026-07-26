@@ -1113,7 +1113,7 @@ export function ProductDetailClient({
             </Button>
           </div>
 
-          {!inStock && <BackInStockForm product={product} variantId={variantId} />}
+          {!inStock && (!hasVariants || selectedVariant) && <BackInStockForm product={product} variantId={variantId} />}
 
           <div className="pt-6 border-t border-border/60">
             <CollapsibleSection id="description" title="The Detail" icon={Info}>

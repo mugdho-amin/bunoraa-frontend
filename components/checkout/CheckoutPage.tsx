@@ -105,10 +105,8 @@ export function CheckoutPage() {
   const lastValidationKey = React.useRef<string>("");
   const lastAutoInfoKey = React.useRef<string>("");
   const lastAutoShippingKey = React.useRef<string>("");
-  const lastAutoPaymentKey = React.useRef<string>("");
   const [autoSavingInfo, setAutoSavingInfo] = React.useState(false);
   const [autoSavingShipping, setAutoSavingShipping] = React.useState(false);
-  const [autoSavingPayment, setAutoSavingPayment] = React.useState(false);
   const [isRedirectingAfterOrder, setIsRedirectingAfterOrder] = React.useState(false);
 
   const cartEmpty = !cart || cart.item_count === 0;
@@ -302,20 +300,6 @@ export function CheckoutPage() {
       });
     },
     [push, updateShippingInfo]
-  );
-
-  const handleAutoSavePayment = React.useCallback(
-    (paymentMethod: string) => {
-      if (!paymentMethod) return;
-      if (paymentMethod === lastAutoPaymentKey.current) return;
-      lastAutoPaymentKey.current = paymentMethod;
-      setAutoSavingPayment(true);
-      selectPaymentMethod.mutate(
-        { payment_method: paymentMethod },
-        { onSettled: () => setAutoSavingPayment(false) }
-      );
-    },
-    [selectPaymentMethod]
   );
 
   const fallbackCountry = React.useMemo(() => {
@@ -722,11 +706,9 @@ export function CheckoutPage() {
                   cartSummary?.currency_code || cartSummary?.currency || ""
                 }
                 onSubmit={handlePaymentSubmit}
-                onSelectionChange={handleAutoSavePayment}
                 onBack={() => goToStep("shipping")}
                 isSubmitting={selectPaymentMethod.isPending}
                 isLoadingGateways={paymentGatewaysQuery.isLoading}
-                isAutoSaving={autoSavingPayment}
                 />
               ) : null}
 
