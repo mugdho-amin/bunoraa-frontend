@@ -11,6 +11,7 @@ type AddToCartButtonProps = {
   productId: string;
   variantId?: string | null;
   quantity?: number;
+  customizationData?: Record<string, string> | null;
   label?: string;
 } & Omit<ButtonProps, "onClick">;
 
@@ -18,6 +19,7 @@ export function AddToCartButton({
   productId,
   variantId,
   quantity = 1,
+  customizationData,
   label,
   ...props
 }: AddToCartButtonProps) {
@@ -33,9 +35,11 @@ export function AddToCartButton({
     return fallback;
   }, []);
 
+  const hasCustomization = customizationData && Object.keys(customizationData).length > 0;
+
   const handleClick = React.useCallback(async () => {
     try {
-      const response = await addItem.mutateAsync({ productId, quantity, variantId });
+      const response = await addItem.mutateAsync({ productId, quantity, variantId, customizationData: hasCustomization ? customizationData : undefined });
       push(resolveMessage(response, t("added_to_bag", "Added to bag.")), "success");
       // A product detail page should confirm success in context.  The header
       // owns the drawer, so use a small browser event rather than coupling
@@ -53,7 +57,7 @@ export function AddToCartButton({
       }
       push(t("add_failed", "Could not add to bag."), "error");
     }
-  }, [addItem, productId, quantity, resolveMessage, push, t, variantId]);
+  }, [addItem, productId, quantity, resolveMessage, push, t, variantId, customizationData, hasCustomization]);
 
   return (
     <Button onClick={handleClick} disabled={addItem.isPending} {...props}>

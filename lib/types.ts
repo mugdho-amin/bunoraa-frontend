@@ -54,6 +54,8 @@ export type ProductListItem = {
   is_bestseller?: boolean;
   is_new_arrival?: boolean;
   has_variants?: boolean;
+  can_be_customized?: boolean;
+  has_cover_video?: boolean;
   average_rating?: number | null;
   reviews_count?: number | null;
   views_count?: number | null;
@@ -119,6 +121,20 @@ export type ProductDetail = ProductListItem & {
   is_ar_compatible?: boolean | null;
   is_mobile_optimized?: boolean | null;
   tax_info?: string | null;
+  videos?: Array<{
+    id: string;
+    video_url: string;
+    video?: string | null;
+    thumbnail?: string | null;
+    thumbnail_url?: string | null;
+    title?: string;
+    alt_text?: string;
+    is_cover?: boolean;
+    is_featured?: boolean;
+    ordering?: number;
+    duration?: number | null;
+    mime_type?: string;
+  }> | null;
   size_charts?: Array<{
     id: string | null;
     is_primary: boolean;
@@ -136,6 +152,37 @@ export type ProductDetail = ProductListItem & {
       is_default?: boolean;
     };
   }> | null;
+  customization_options?: CustomizationOption[];
+};
+
+export type CustomizationOption = {
+  id: string;
+  product: string;
+  name: string;
+  option_type: "text" | "textarea" | "select" | "color" | "file" | "image" | "number" | "checkbox";
+  is_required: boolean;
+  price_modifier: string;
+  choices: string[] | null;
+  placeholder: string;
+  help_text: string;
+  min_value: number | null;
+  max_value: number | null;
+  max_file_size: number | null;
+  allowed_file_types: string;
+  ordering: number;
+  is_active: boolean;
+  created_at: string;
+};
+
+export type CustomizationResponse = {
+  id: string;
+  product: string;
+  user: string | null;
+  session_key: string;
+  data: Record<string, string>;
+  price_modifier_total: string;
+  notes: string;
+  created_at: string;
 };
 
 export type ProductBadge = {
@@ -422,6 +469,10 @@ export type SiteSettings = {
   address_region?: string | null;
   currency?: string | null;
   currency_symbol?: string | null;
+  cover_video_url?: string | null;
+  cover_video_mp4?: string | null;
+  cover_video_webm?: string | null;
+  cover_video_poster?: string | null;
 };
 
 export type ContactSettings = {

@@ -25,6 +25,7 @@ import { addRecentlyViewed } from "@/lib/recentlyViewed";
 import { cn } from "@/lib/utils";
 import { RecentlyViewedSection } from "@/components/products/RecentlyViewedSection";
 import { ProductGrid } from "@/components/products/ProductGrid";
+import { CustomizationForm } from "@/components/products/CustomizationForm";
 import { buildProductCategoryTrail, buildProductPath } from "@/lib/productPaths";
 import { buildCategoryPath } from "@/lib/categoryPaths";
 import { ChevronLeft, ChevronRight, ChevronUp, ChevronDown, X, Info, Truck, RefreshCw, Ruler } from "lucide-react";
@@ -32,6 +33,7 @@ import { getColorSwatch } from "@/lib/colors";
 import { Modal } from "@/components/ui/Modal";
 import { ProductImageZoom } from "@/components/products/ProductImageZoom";
 import { TransformWrapper, TransformComponent } from "react-zoom-pan-pinch";
+import { ProductVideoGallery } from "@/components/products/ProductVideoGallery";
 
 type Variant = NonNullable<ProductDetail["variants"]>[number];
 type VariantOptionMap = Record<string, string>;
@@ -826,6 +828,27 @@ export function ProductDetailClient({
   const [variantId, setVariantId] = React.useState<string | null>(null);
   const [quantity, setQuantity] = React.useState(1);
   const [selectedOptions, setSelectedOptions] = React.useState<VariantOptionMap>({});
+  const [customizationExpanded, setCustomizationExpanded] = React.useState(false);
+  const [customizationValues, setCustomizationValues] = React.useState<Record<string, string> | null>(null);
+  const [customizationModifier, setCustomizationModifier] = React.useState(0);
+
+  const customizationOptions = product.customization_options ?? [];
+
+  const customizationQuery = useQuery({
+    queryKey: ["product", product.id, "customization-options"],
+    queryFn: async () => {
+      const response = await apiFetch<import("@/lib/types").CustomizationOption[]>(
+        `/catalog/products/${product.id}/customization-options/`
+      );
+      return response.data || [];
+    },
+    enabled: product.can_be_customized && customizationOptions.length === 0,
+    staleTime: 120000,
+  });
+
+  const resolvedCustomizationOptions = customizationOptions.length > 0
+    ? customizationOptions
+    : (customizationQuery.data ?? []);
 
   const sizeAttributeFallback = React.useMemo(
     () =>
@@ -954,7 +977,12 @@ export function ProductDetailClient({
       </nav>
 
       <div className="grid gap-12 lg:grid-cols-[1.1fr_0.9fr] items-start">
-        <ProductGallery product={product} variantId={variantId} layout="minimal" />
+        <div className="space-y-6">
+          <ProductGallery product={product} variantId={variantId} layout="minimal" />
+          {product.videos && product.videos.length > 0 && (
+            <ProductVideoGallery videos={product.videos} />
+          )}
+        </div>
 
         <div className="space-y-8 lg:sticky lg:top-[var(--header-offset)]">
           <div className="space-y-3">
@@ -990,6 +1018,11 @@ export function ProductDetailClient({
                 priceClassName="text-3xl font-black tracking-tight"
                 salePriceClassName="text-lg text-muted-foreground line-through font-medium"
               />
+              {customizationModifier > 0 && (
+                <p className="text-xs font-semibold text-primary">
+                  +{currencySymbol}{customizationModifier.toFixed(2)} customization
+                </p>
+              )}
               {product.tax_info && (
                 <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">{product.tax_info}</p>
               )}
@@ -1036,6 +1069,43 @@ export function ProductDetailClient({
             ))}
           </div>
 
+          {product.can_be_customized && resolvedCustomizationOptions.length > 0 && (
+            <div className="space-y-4 pt-2 border-t border-border/60">
+              <button
+                type="button"
+                onClick={() => setCustomizationExpanded((v) => !v)}
+                className="flex w-full items-center justify-between text-left"
+              >
+                <span className="text-sm font-bold uppercase tracking-widest text-muted-foreground">
+                  Add Customization
+                </span>
+                <ChevronDown
+                  size={18}
+                  className={cn(
+                    "text-muted-foreground transition-transform duration-300",
+                    customizationExpanded && "rotate-180"
+                  )}
+                />
+              </button>
+              <div
+                className={cn(
+                  "overflow-hidden transition-all duration-300",
+                  customizationExpanded ? "max-h-[2000px] opacity-100" : "max-h-0 opacity-0"
+                )}
+              >
+                <CustomizationForm
+                  productId={product.id}
+                  options={resolvedCustomizationOptions}
+                  currencySymbol={currencySymbol}
+                  onChange={({ values, totalModifier }) => {
+                    setCustomizationValues(values);
+                    setCustomizationModifier(totalModifier);
+                  }}
+                />
+              </div>
+            </div>
+          )}
+
           <div className="space-y-4 pt-4">
               <div className="flex items-center gap-3 text-[11px] font-bold uppercase tracking-widest">
                  <div className={cn(
@@ -1074,11 +1144,12 @@ export function ProductDetailClient({
                  </button>
                </div>
                <div className="flex-1">
-                 <AddToCartButton
-                   productId={product.id}
-                   variantId={variantId}
-                   quantity={quantity}
-                   size="lg"
+                  <AddToCartButton
+                    productId={product.id}
+                    variantId={variantId}
+                    quantity={quantity}
+                    customizationData={customizationValues}
+                    size="lg"
                    variant="primary"
                    className="w-full h-14 text-base font-bold shadow-2xl shadow-primary/20 hover:scale-[1.01] active:scale-95 transition-all"
                     disabled={!inStock}

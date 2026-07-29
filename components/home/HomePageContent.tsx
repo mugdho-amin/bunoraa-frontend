@@ -22,7 +22,9 @@ type Spotlight = { id: string; name?: string; placement?: string; product?: Prod
 type Banner = HeroBanner & { position?: string | null; };
 type CategoryBandData = { category: FeaturedCategory; products: ProductListItem[]; };
 type HomepageData = { featured_products: ProductListItem[]; new_arrivals: ProductListItem[]; bestsellers: ProductListItem[]; on_sale: ProductListItem[]; featured_categories: FeaturedCategory[]; category_bands?: CategoryBandData[]; collections: Collection[]; spotlights?: Spotlight[]; show_by_categories?: FeaturedCategory[]; };
-type SiteSettings = { site_name?: string | null; site_tagline?: string | null; tagline?: string | null; site_description?: string | null; } | null;
+type SiteSettings = { site_name?: string | null; site_tagline?: string | null; tagline?: string | null; site_description?: string | null; cover_video_url?: string | null; cover_video_mp4?: string | null; cover_video_webm?: string | null; cover_video_poster?: string | null; } | null;
+
+type SiteSettingsWithVideo = NonNullable<SiteSettings> & { cover_video_url?: string | null; cover_video_mp4?: string | null; cover_video_webm?: string | null; cover_video_poster?: string | null; };
 
 const pickText = (...values: Array<string | null | undefined>) => { for (const value of values) { if (value && value.trim()) return value.trim(); } return ""; };
 const getImage = (product: ProductListItem | null | undefined) => {
@@ -88,6 +90,33 @@ export async function HomePageContent({ heroBanners, siteSettings, homepageData 
               autoAdvance={true}
               intervalMs={5000}
             />
+          ) : siteSettings?.cover_video_url || siteSettings?.cover_video_mp4 ? (
+            <div className="relative w-full overflow-hidden bg-black" style={{ aspectRatio: "16/9" }}>
+              <video
+                autoPlay
+                muted
+                loop
+                playsInline
+                poster={siteSettings.cover_video_poster || undefined}
+                className="h-full w-full object-cover"
+              >
+                {siteSettings.cover_video_webm && (
+                  <source src={siteSettings.cover_video_webm} type="video/webm" />
+                )}
+                {siteSettings.cover_video_mp4 && (
+                  <source src={siteSettings.cover_video_mp4} type="video/mp4" />
+                )}
+                {siteSettings.cover_video_url && (
+                  <source src={siteSettings.cover_video_url} type="video/mp4" />
+                )}
+              </video>
+              <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-black/20" />
+              <div className="pointer-events-none absolute bottom-8 left-8 right-8 sm:bottom-12 sm:left-12">
+                <h2 className="text-2xl font-bold text-white drop-shadow-lg sm:text-4xl">
+                  {siteSettings.site_tagline || siteSettings.site_name}
+                </h2>
+              </div>
+            </div>
           ) : (
             <div className="aspect-[16/9] w-full bg-muted sm:aspect-[16/7]" aria-hidden="true" />
           )}

@@ -7,6 +7,7 @@ type AddItemInput = {
   productId: string;
   quantity?: number;
   variantId?: string | null;
+  customizationData?: Record<string, string>;
 };
 
 type UpdateItemInput = {
@@ -118,10 +119,15 @@ export function useCart(options?: UseCartOptions) {
   });
 
   const addItem = useMutation({
-    mutationFn: async ({ productId, quantity = 1, variantId }: AddItemInput) => {
+    mutationFn: async ({ productId, quantity = 1, variantId, customizationData }: AddItemInput) => {
       return apiFetch("/commerce/cart/add/", {
         method: "POST",
-        body: { product_id: productId, quantity, variant_id: variantId },
+        body: {
+          product_id: productId,
+          quantity,
+          variant_id: variantId,
+          ...(customizationData ? { customization_data: customizationData } : {}),
+        },
         allowGuest: true,
       });
     },
