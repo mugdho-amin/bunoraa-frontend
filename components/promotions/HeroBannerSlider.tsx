@@ -190,8 +190,9 @@ export function HeroBannerSlider({
                     fill
                     sizes="100vw"
                     quality={index === 0 ? 80 : 64}
-                    priority={index === 0}
-                    loading={index === 0 ? "eager" : "lazy"}
+                    priority={index === 0 && !banner.image_mobile}
+                    loading={index === 0 && !banner.image_mobile ? "eager" : "lazy"}
+                    fetchPriority={index === 0 ? (banner.image_mobile ? "low" : "high") : "low"}
                     className={cn(
                       "object-cover",
                       banner.image_mobile ? "hidden sm:block" : "block"
@@ -206,6 +207,7 @@ export function HeroBannerSlider({
                       quality={index === 0 ? 80 : 64}
                       priority={index === 0}
                       loading={index === 0 ? "eager" : "lazy"}
+                      fetchPriority={index === 0 ? "high" : "low"}
                       className="object-cover block sm:hidden"
                     />
                   )}

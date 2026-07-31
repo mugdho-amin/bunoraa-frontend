@@ -18,7 +18,7 @@ import {
 } from "next/font/google";
 
 const fontPoppins = Poppins({
-  subsets: ["latin", "devanagari"],
+  subsets: ["latin"],
   weight: ["400", "500", "600", "700"],
   variable: "--font-poppins",
   display: "swap",
@@ -29,6 +29,7 @@ const fontDM_Sans = DM_Sans({
   weight: ["400", "500", "600", "700"],
   variable: "--font-dm-sans",
   display: "swap",
+  preload: false,
 });
 
 const fontNotoSansBengali = Noto_Sans_Bengali({
@@ -36,6 +37,7 @@ const fontNotoSansBengali = Noto_Sans_Bengali({
   weight: ["400", "500", "600", "700"],
   variable: "--font-noto-sans-bengali",
   display: "swap",
+  preload: false,
 });
 
 const SITE_DESCRIPTION =
@@ -209,12 +211,8 @@ export default function RootLayout({
       data-scroll-behavior="smooth"
     >
       <head>
-        <Script
-          src="https://accounts.google.com/gsi/client"
-          strategy="beforeInteractive"
-        />
       </head>
-      
+
       <body className="min-h-[100dvh] bg-background text-foreground antialiased">
         <HtmlLangSetter />
         <Script id="theme-bootstrap" strategy="beforeInteractive">
