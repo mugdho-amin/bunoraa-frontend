@@ -79,29 +79,28 @@ export function CheckoutPaymentStep({
       ...defaultValues,
     },
   });
-  const [selectedPayment, setSelectedPayment] = React.useState(
-    defaultValues.payment_method || ""
-  );
+
+  const watchedPayment = useWatch({
+    control: form.control,
+    name: "payment_method",
+  });
+
+  const gatewaySeeded = React.useRef(false);
 
   React.useEffect(() => {
-    form.reset({
-      billing_same_as_shipping: true,
-      ...defaultValues,
-    });
-    setSelectedPayment(defaultValues.payment_method || "");
-  }, [defaultValues, form]);
-
-  React.useEffect(() => {
+    if (gatewaySeeded.current) return;
     if (!gateways.length) return;
     const current = form.getValues("payment_method");
     const hasCurrent =
       Boolean(current) && gateways.some((gateway) => gateway.code === current);
     if (hasCurrent) {
-      setSelectedPayment(current);
+      gatewaySeeded.current = true;
       return;
     }
-    form.setValue("payment_method", gateways[0].code, { shouldValidate: true });
-    setSelectedPayment(gateways[0].code);
+    form.setValue("payment_method", gateways[0].code, {
+      shouldValidate: true,
+    });
+    gatewaySeeded.current = true;
   }, [gateways, form]);
 
   const billingSame = useWatch({
@@ -189,8 +188,7 @@ export function CheckoutPaymentStep({
           {gateways.length ? (
             <div className="space-y-2">
               {gateways.map((gateway) => {
-                const paymentField = form.register("payment_method");
-                const isSelected = selectedPayment === gateway.code;
+                const isSelected = watchedPayment === gateway.code;
                 return (
                   <label
                     key={gateway.code}
@@ -204,12 +202,15 @@ export function CheckoutPaymentStep({
                     <div className="flex items-start gap-3">
                       <input
                         type="radio"
-                        className="mt-1 h-4 w-4"
+                        name="payment_method"
                         value={gateway.code}
-                        {...paymentField}
-                        onChange={(event) => {
-                          paymentField.onChange(event);
-                          setSelectedPayment(event.target.value);
+                        checked={isSelected}
+                        className="mt-1 h-4 w-4"
+                        onChange={() => {
+                          form.setValue("payment_method", gateway.code, {
+                            shouldValidate: true,
+                            shouldDirty: true,
+                          });
                         }}
                       />
                       <div>
