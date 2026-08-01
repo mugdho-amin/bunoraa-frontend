@@ -49,21 +49,23 @@ type GeoOption = {
 };
 
 async function fetchDivisions() {
-  const response = await apiFetch<GeoOption[]>("/i18n/divisions/?country=BD");
+  const response = await apiFetch<GeoOption[]>("/i18n/divisions/", {
+    params: { country: "BD" },
+  });
   return response.data;
 }
 
 async function fetchDistricts(divisionId: string) {
-  const response = await apiFetch<GeoOption[]>(
-    `/i18n/districts/?division=${encodeURIComponent(divisionId)}`
-  );
+  const response = await apiFetch<GeoOption[]>("/i18n/districts/", {
+    params: { division: divisionId },
+  });
   return response.data;
 }
 
 async function fetchThanas(districtId: string) {
-  const response = await apiFetch<GeoOption[]>(
-    `/i18n/thanas/?district=${encodeURIComponent(districtId)}`
-  );
+  const response = await apiFetch<GeoOption[]>("/i18n/thanas/", {
+    params: { district: districtId },
+  });
   return response.data;
 }
 
