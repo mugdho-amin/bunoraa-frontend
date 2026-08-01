@@ -387,7 +387,7 @@ function getLanguageKeywords(lang?: string): string[] {
 
 const BANGLADESH_LOCATIONS = [
   "Bangladesh", "Dhaka", "Chattogram", "Rangpur", "Kurigram", "Ulipur",
-  "Sylhet", "Khulna", "Rajshahi", "Barisal", "Mymensingh",
+  "Sylhet", "Khulna", "Rajshahi", "Barishal", "Mymensingh",
 ];
 
 const FESTIVE_KEYWORDS = [

@@ -59,28 +59,42 @@ function extractCartFromResponse(response: unknown): Cart | null {
 }
 
 function mergeSummaryWithCart(previous: CartSummary | undefined, cart: Cart): CartSummary {
-  const base: CartSummary = previous ?? {
-    id: cart.id,
+  const previousTotal = parseMoney(previous?.total);
+  const previousDiscount = parseMoney(previous?.discount_amount);
+  const nextDiscount = parseMoney(cart.discount_amount);
+
+  const merged: CartSummary = {
+    ...previous,
+    id: previous?.id || cart.id,
     item_count: cart.item_count,
     subtotal: cart.subtotal,
     discount_amount: cart.discount_amount,
     total: cart.total,
     coupon_code: cart.coupon_code ?? null,
-    currency: cart.currency,
-    currency_code: cart.currency,
+    currency: previous?.currency || cart.currency,
+    currency_code: previous?.currency_code || cart.currency,
   };
 
-  return {
-    ...base,
-    id: base.id || cart.id,
-    item_count: cart.item_count,
-    subtotal: cart.subtotal,
-    discount_amount: cart.discount_amount,
-    total: cart.total,
-    coupon_code: cart.coupon_code ?? null,
-    currency: base.currency || cart.currency,
-    currency_code: base.currency_code || cart.currency,
-  };
+  // Coupon apply/remove responses only carry cart-level totals
+  // (subtotal - discount, without shipping/tax). Preserve the full summary
+  // total by applying the discount delta to the previously displayed total.
+  if (
+    previousTotal !== null &&
+    previousDiscount !== null &&
+    nextDiscount !== null
+  ) {
+    merged.total = Math.max(
+      0,
+      previousTotal - (nextDiscount - previousDiscount)
+    ).toFixed(2);
+  }
+
+  // Drop stale derived strings (formatted_*) so consumers format from the
+  // fresh raw values; the follow-up invalidate/refetch restores the
+  // authoritative server-formatted values.
+  return Object.fromEntries(
+    Object.entries(merged).filter(([key]) => !key.startsWith("formatted_"))
+  ) as CartSummary;
 }
 
 async function fetchCart() {

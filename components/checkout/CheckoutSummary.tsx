@@ -238,41 +238,34 @@ export function CheckoutSummary({
       </div>
 
       <div className="space-y-3 border-t border-border pt-4">
-        <div className="flex items-center justify-between">
-          <p className="text-sm font-semibold">Coupon</p>
-          {appliedCouponCode ? (
-            <button
-              type="button"
-              className="text-xs font-semibold text-primary"
-              onClick={handleRemoveCoupon}
-              disabled={isRemovingCoupon}
-            >
-              {isRemovingCoupon ? "Removing..." : "Remove"}
-            </button>
-          ) : null}
-        </div>
-        <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
-          <input
-            className={cn(
-              "h-10 flex-1 rounded-lg border border-border bg-card px-3 text-sm",
-              appliedCouponCode && "cursor-not-allowed opacity-70"
-            )}
-            placeholder="Enter coupon code"
-            value={couponCode}
-            onChange={(event) => setCouponCode(event.target.value)}
-            readOnly={Boolean(appliedCouponCode)}
-          />
-          {appliedCouponCode ? (
+        <p className="text-sm font-semibold">Coupon</p>
+        {appliedCouponCode ? (
+          <div className="flex items-center justify-between gap-3 rounded-xl border border-success-500/30 bg-success-500/5 p-3">
+            <p className="text-sm text-foreground/80">
+              Applied coupon:{" "}
+              <span className="font-semibold text-success-600">
+                {appliedCouponCode}
+              </span>
+            </p>
             <Button
               type="button"
               size="sm"
               variant="secondary"
-              className="w-full cursor-default border-primary/35 bg-primary/10 text-primary hover:bg-primary/10 disabled:opacity-100 sm:w-auto"
-              disabled
+              className="w-full shrink-0 sm:w-auto"
+              onClick={handleRemoveCoupon}
+              disabled={isRemovingCoupon}
             >
-              Applied
+              {isRemovingCoupon ? "Removing..." : "Remove"}
             </Button>
-          ) : (
+          </div>
+        ) : (
+          <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
+            <input
+              className="h-10 flex-1 rounded-lg border border-border bg-card px-3 text-sm"
+              placeholder="Enter coupon code"
+              value={couponCode}
+              onChange={(event) => setCouponCode(event.target.value)}
+            />
             <Button
               type="button"
               size="sm"
@@ -283,8 +276,8 @@ export function CheckoutSummary({
             >
               {isApplyingCoupon ? "Applying..." : "Apply"}
             </Button>
-          )}
-        </div>
+          </div>
+        )}
       </div>
 
       <div className="space-y-3 border-t border-border pt-4">

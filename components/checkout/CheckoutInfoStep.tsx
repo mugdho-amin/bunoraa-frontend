@@ -1,11 +1,13 @@
 "use client";
 
 import * as React from "react";
-import { useForm } from "react-hook-form";
+import { useForm, useWatch } from "react-hook-form";
+import { useQuery } from "@tanstack/react-query";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
+import { apiFetch } from "@/lib/api";
 import { formatAddressLine } from "@/lib/address";
 import type { Address, Country } from "@/lib/types";
 
@@ -18,7 +20,8 @@ const schema = z.object({
   shipping_address_line_2: z.string().optional(),
   shipping_city: z.string().min(1, "City is required"),
   shipping_state: z.string().optional(),
-  shipping_postal_code: z.string().min(1, "Postal code is required"),
+  shipping_thana: z.string().optional(),
+  shipping_postal_code: z.string().optional(),
   shipping_country: z.string().min(1, "Country is required"),
   saved_shipping_address_id: z.string().uuid().nullable().optional(),
   save_address: z.boolean().optional(),
@@ -37,6 +40,32 @@ type CheckoutInfoStepProps = {
   isSubmitting?: boolean;
   isAutoSavingSelection?: boolean;
 };
+
+type GeoOption = {
+  id: string;
+  code: string;
+  name: string;
+  native_name?: string | null;
+};
+
+async function fetchDivisions() {
+  const response = await apiFetch<GeoOption[]>("/i18n/divisions/?country=BD");
+  return response.data;
+}
+
+async function fetchDistricts(divisionId: string) {
+  const response = await apiFetch<GeoOption[]>(
+    `/i18n/districts/?division=${encodeURIComponent(divisionId)}`
+  );
+  return response.data;
+}
+
+async function fetchThanas(districtId: string) {
+  const response = await apiFetch<GeoOption[]>(
+    `/i18n/thanas/?district=${encodeURIComponent(districtId)}`
+  );
+  return response.data;
+}
 
 export function CheckoutInfoStep({
   defaultValues,
@@ -89,7 +118,7 @@ export function CheckoutInfoStep({
       resolveCountryName(defaultValues.shipping_country || "")
     );
 
-    if (!shippingLine1 || !shippingCity || !shippingPostal || !shippingCountry) {
+    if (!shippingLine1 || !shippingCity || !shippingCountry) {
       return null;
     }
 
@@ -179,6 +208,7 @@ export function CheckoutInfoStep({
     form.setValue("shipping_address_line_2", address.address_line_2 || "");
     form.setValue("shipping_city", address.city || "");
     form.setValue("shipping_state", address.state || "");
+    form.setValue("shipping_thana", "");
     form.setValue("shipping_postal_code", address.postal_code || "");
     form.setValue("shipping_country", resolveCountryName(address.country));
     form.setValue("save_address", false);
@@ -192,6 +222,7 @@ export function CheckoutInfoStep({
         shipping_address_line_2: address.address_line_2 || "",
         shipping_city: address.city || "",
         shipping_state: address.state || "",
+        shipping_thana: "",
         shipping_postal_code: address.postal_code || "",
         shipping_country: resolveCountryName(address.country),
         save_address: false,
@@ -220,6 +251,7 @@ export function CheckoutInfoStep({
     form.setValue("shipping_address_line_2", "");
     form.setValue("shipping_city", "");
     form.setValue("shipping_state", "");
+    form.setValue("shipping_thana", "");
     form.setValue("shipping_postal_code", "");
     form.setValue("shipping_country", "");
   }, [form]);
@@ -244,6 +276,69 @@ export function CheckoutInfoStep({
   const sortedCountries = React.useMemo(() => {
     return [...countries].sort((a, b) => a.name.localeCompare(b.name));
   }, [countries]);
+
+  const watchedCountry = useWatch({ control: form.control, name: "shipping_country" });
+  const watchedState = useWatch({ control: form.control, name: "shipping_state" });
+  const watchedCity = useWatch({ control: form.control, name: "shipping_city" });
+  const isBangladesh = normalize(watchedCountry) === normalize("Bangladesh");
+
+  const divisionsQuery = useQuery({
+    queryKey: ["i18n", "divisions", "BD"],
+    queryFn: fetchDivisions,
+    enabled: isBangladesh,
+  });
+  const divisions = React.useMemo(
+    () => divisionsQuery.data || [],
+    [divisionsQuery.data]
+  );
+
+  const selectedDivisionId = React.useMemo(
+    () =>
+      divisions.find((division) => normalize(division.name) === normalize(watchedState))
+        ?.id || "",
+    [divisions, normalize, watchedState]
+  );
+
+  const districtsQuery = useQuery({
+    queryKey: ["i18n", "districts", selectedDivisionId],
+    queryFn: () => fetchDistricts(selectedDivisionId),
+    enabled: isBangladesh && Boolean(selectedDivisionId),
+  });
+  const districts = React.useMemo(
+    () => districtsQuery.data || [],
+    [districtsQuery.data]
+  );
+
+  const selectedDistrictId = React.useMemo(
+    () =>
+      districts.find((district) => normalize(district.name) === normalize(watchedCity))
+        ?.id || "",
+    [districts, normalize, watchedCity]
+  );
+
+  const thanasQuery = useQuery({
+    queryKey: ["i18n", "thanas", selectedDistrictId],
+    queryFn: () => fetchThanas(selectedDistrictId),
+    enabled: isBangladesh && Boolean(selectedDistrictId),
+  });
+  const thanas = React.useMemo(() => thanasQuery.data || [], [thanasQuery.data]);
+
+  const handleDivisionChange = React.useCallback(
+    (event: React.ChangeEvent<HTMLSelectElement>) => {
+      form.setValue("shipping_state", event.target.value);
+      form.setValue("shipping_city", "");
+      form.setValue("shipping_thana", "");
+    },
+    [form]
+  );
+
+  const handleDistrictChange = React.useCallback(
+    (event: React.ChangeEvent<HTMLSelectElement>) => {
+      form.setValue("shipping_city", event.target.value);
+      form.setValue("shipping_thana", "");
+    },
+    [form]
+  );
 
   const renderError = (name: keyof CheckoutInfoFormValues) => {
     const error = form.formState.errors[name];
@@ -283,19 +378,6 @@ export function CheckoutInfoStep({
       </div>
 
       <form className="grid gap-4" onSubmit={handleSubmit}>
-        <label className="block text-sm">
-          Email
-          <input
-            className="mt-2 w-full rounded-lg border border-border bg-card px-3 py-2 text-sm"
-            type="email"
-            autoComplete="email"
-            {...form.register("email")}
-            aria-invalid={Boolean(form.formState.errors.email)}
-            aria-describedby={form.formState.errors.email ? "email-error" : undefined}
-          />
-          {renderError("email")}
-        </label>
-
         <div className="grid gap-4 md:grid-cols-2">
           <label className="block text-sm">
             First name
@@ -327,24 +409,59 @@ export function CheckoutInfoStep({
             />
             {renderError("shipping_last_name")}
           </label>
+          <label className="block text-sm">
+            Email
+            <input
+              className="mt-2 w-full rounded-lg border border-border bg-card px-3 py-2 text-sm"
+              type="email"
+              autoComplete="email"
+              {...form.register("email")}
+              aria-invalid={Boolean(form.formState.errors.email)}
+              aria-describedby={form.formState.errors.email ? "email-error" : undefined}
+            />
+            {renderError("email")}
+          </label>
+          <label className="block text-sm">
+            Phone
+            <input
+              className="mt-2 w-full rounded-lg border border-border bg-card px-3 py-2 text-sm"
+              type="tel"
+              autoComplete="shipping tel"
+              inputMode="tel"
+              {...form.register("shipping_phone")}
+              aria-invalid={Boolean(form.formState.errors.shipping_phone)}
+              aria-describedby={
+                form.formState.errors.shipping_phone
+                  ? "shipping_phone-error"
+                  : undefined
+              }
+            />
+            {renderError("shipping_phone")}
+          </label>
         </div>
 
         <label className="block text-sm">
-          Phone
-          <input
+          Country
+          <select
             className="mt-2 w-full rounded-lg border border-border bg-card px-3 py-2 text-sm"
-            type="tel"
-            autoComplete="shipping tel"
-            inputMode="tel"
-            {...form.register("shipping_phone")}
-            aria-invalid={Boolean(form.formState.errors.shipping_phone)}
+            autoComplete="shipping country-name"
+            {...form.register("shipping_country")}
+            aria-invalid={Boolean(form.formState.errors.shipping_country)}
             aria-describedby={
-              form.formState.errors.shipping_phone
-                ? "shipping_phone-error"
+              form.formState.errors.shipping_country
+                ? "shipping_country-error"
                 : undefined
             }
-          />
-          {renderError("shipping_phone")}
+          >
+            <option value="">Select country</option>
+            {sortedCountries.map((country) => (
+              <option key={country.code} value={country.name}>
+                {country.flag_emoji ? `${country.flag_emoji} ` : ""}
+                {country.name}
+              </option>
+            ))}
+          </select>
+          {renderError("shipping_country")}
         </label>
 
         {savedAddresses.length ? (
@@ -449,73 +566,112 @@ export function CheckoutInfoStep({
               />
             </label>
 
-            <div className="grid gap-4 md:grid-cols-2">
-              <label className="block text-sm">
-                City
-                <input
-                  className="mt-2 w-full rounded-lg border border-border bg-card px-3 py-2 text-sm"
-                  autoComplete="shipping address-level2"
-                  {...form.register("shipping_city")}
-                  aria-invalid={Boolean(form.formState.errors.shipping_city)}
-                  aria-describedby={
-                    form.formState.errors.shipping_city
-                      ? "shipping_city-error"
-                      : undefined
-                  }
-                />
-                {renderError("shipping_city")}
-              </label>
-              <label className="block text-sm">
-                State / Province
-                <input
-                  className="mt-2 w-full rounded-lg border border-border bg-card px-3 py-2 text-sm"
-                  autoComplete="shipping address-level1"
-                  {...form.register("shipping_state")}
-                />
-              </label>
-            </div>
+            {isBangladesh ? (
+              <div className="grid gap-4 md:grid-cols-2">
+                <label className="block text-sm">
+                  Division
+                  <select
+                    className="mt-2 w-full rounded-lg border border-border bg-card px-3 py-2 text-sm"
+                    autoComplete="shipping address-level1"
+                    {...form.register("shipping_state")}
+                    onChange={handleDivisionChange}
+                  >
+                    <option value="">Select division</option>
+                    {divisions.map((division) => (
+                      <option key={division.id} value={division.name}>
+                        {division.name}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+                <label className="block text-sm">
+                  District
+                  <select
+                    className="mt-2 w-full rounded-lg border border-border bg-card px-3 py-2 text-sm"
+                    autoComplete="shipping address-level2"
+                    {...form.register("shipping_city")}
+                    onChange={handleDistrictChange}
+                    disabled={!selectedDivisionId}
+                    aria-invalid={Boolean(form.formState.errors.shipping_city)}
+                    aria-describedby={
+                      form.formState.errors.shipping_city
+                        ? "shipping_city-error"
+                        : undefined
+                    }
+                  >
+                    <option value="">Select district</option>
+                    {districts.map((district) => (
+                      <option key={district.id} value={district.name}>
+                        {district.name}
+                      </option>
+                    ))}
+                  </select>
+                  {renderError("shipping_city")}
+                </label>
+                <label className="block text-sm">
+                  Thana
+                  <select
+                    className="mt-2 w-full rounded-lg border border-border bg-card px-3 py-2 text-sm"
+                    {...form.register("shipping_thana")}
+                    disabled={!selectedDistrictId}
+                  >
+                    <option value="">Select thana</option>
+                    {thanas.map((thana) => (
+                      <option key={thana.id} value={thana.name}>
+                        {thana.name}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+                <label className="block text-sm">
+                  Postal code (optional)
+                  <input
+                    className="mt-2 w-full rounded-lg border border-border bg-card px-3 py-2 text-sm"
+                    autoComplete="shipping postal-code"
+                    inputMode="text"
+                    {...form.register("shipping_postal_code")}
+                  />
+                </label>
+              </div>
+            ) : (
+              <>
+                <div className="grid gap-4 md:grid-cols-2">
+                  <label className="block text-sm">
+                    City
+                    <input
+                      className="mt-2 w-full rounded-lg border border-border bg-card px-3 py-2 text-sm"
+                      autoComplete="shipping address-level2"
+                      {...form.register("shipping_city")}
+                      aria-invalid={Boolean(form.formState.errors.shipping_city)}
+                      aria-describedby={
+                        form.formState.errors.shipping_city
+                          ? "shipping_city-error"
+                          : undefined
+                      }
+                    />
+                    {renderError("shipping_city")}
+                  </label>
+                  <label className="block text-sm">
+                    State / Province
+                    <input
+                      className="mt-2 w-full rounded-lg border border-border bg-card px-3 py-2 text-sm"
+                      autoComplete="shipping address-level1"
+                      {...form.register("shipping_state")}
+                    />
+                  </label>
+                </div>
 
-            <div className="grid gap-4 md:grid-cols-2">
-              <label className="block text-sm">
-                Postal code
-                <input
-                  className="mt-2 w-full rounded-lg border border-border bg-card px-3 py-2 text-sm"
-                  autoComplete="shipping postal-code"
-                  inputMode="text"
-                  {...form.register("shipping_postal_code")}
-                  aria-invalid={Boolean(form.formState.errors.shipping_postal_code)}
-                  aria-describedby={
-                    form.formState.errors.shipping_postal_code
-                      ? "shipping_postal_code-error"
-                      : undefined
-                  }
-                />
-                {renderError("shipping_postal_code")}
-              </label>
-              <label className="block text-sm">
-                Country
-                <select
-                  className="mt-2 w-full rounded-lg border border-border bg-card px-3 py-2 text-sm"
-                  autoComplete="shipping country-name"
-                  {...form.register("shipping_country")}
-                  aria-invalid={Boolean(form.formState.errors.shipping_country)}
-                  aria-describedby={
-                    form.formState.errors.shipping_country
-                      ? "shipping_country-error"
-                      : undefined
-                  }
-                >
-                  <option value="">Select country</option>
-                  {sortedCountries.map((country) => (
-                    <option key={country.code} value={country.name}>
-                      {country.flag_emoji ? `${country.flag_emoji} ` : ""}
-                      {country.name}
-                    </option>
-                  ))}
-                </select>
-                {renderError("shipping_country")}
-              </label>
-            </div>
+                <label className="block text-sm">
+                  Postal code (optional)
+                  <input
+                    className="mt-2 w-full rounded-lg border border-border bg-card px-3 py-2 text-sm"
+                    autoComplete="shipping postal-code"
+                    inputMode="text"
+                    {...form.register("shipping_postal_code")}
+                  />
+                </label>
+              </>
+            )}
 
             {allowSaveAddress ? (
               <label className="flex items-start gap-2 rounded-lg border border-border bg-card px-3 py-3 text-sm">

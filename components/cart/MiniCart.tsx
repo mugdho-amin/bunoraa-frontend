@@ -3,7 +3,7 @@
 import * as React from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { Minus, Plus, ShieldCheck, Trash2, Truck, X } from "lucide-react";
+import { Minus, Plus, Trash2, Truck, X } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { useCart } from "@/components/cart/useCart";
 import { useUiMessages } from "@/components/i18n/useUiMessages";
@@ -84,7 +84,6 @@ export function MiniCart({
           </div>
           {onClose ? <button type="button" className="rounded-full p-1.5 text-muted-foreground transition hover:bg-muted hover:text-foreground" onClick={onClose} aria-label="Close shopping bag"><X className="h-4 w-4" aria-hidden="true" /></button> : null}
         </div>
-        <Button asChild variant="secondary" className="mt-8 w-full"><Link href="/products/" onClick={handleClose}>Continue shopping</Link></Button>
       </div>
     );
   }
@@ -157,7 +156,6 @@ export function MiniCart({
           </div>
         )}
         {mutationError ? <p className="text-xs text-destructive" role="alert">Could not update your bag. Please try again.</p> : null}
-        <p className="flex items-center gap-1.5 text-[11px] text-muted-foreground"><ShieldCheck className="h-3.5 w-3.5 text-success-600" aria-hidden="true" /> Secure checkout</p>
         <div className="grid grid-cols-2 gap-2 pt-1">
           <Button asChild variant="secondary" className="h-9 w-full uppercase tracking-widest text-[10px]">
             <Link href="/cart/" onClick={handleClose}>
