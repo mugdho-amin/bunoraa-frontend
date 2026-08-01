@@ -99,8 +99,12 @@ export function buildPageMetadata({
     alternates.languages = langAlternates;
   }
 
+  // Strip redundant site name to prevent duplicate " | Bunoraa | Bunoraa"
+  // which causes Google to rewrite the snippet title to the root category.
+  const cleanTitle = title.replace(/\s*[|\-]\s*Bunoraa$/i, "").trim();
+
   return {
-    title,
+    title: cleanTitle,
     ...(description ? { description } : {}),
     keywords: enrichedKeywords,
     alternates,
@@ -108,13 +112,13 @@ export function buildPageMetadata({
       type,
       url: canonicalUrl,
       siteName: SITE_NAME,
-      title,
+      title: cleanTitle,
       ...(description ? { description } : {}),
       images: shareImages,
     },
     twitter: {
       card: "summary_large_image",
-      title,
+      title: cleanTitle,
       ...(description ? { description } : {}),
       images: shareImages,
     },
@@ -395,6 +399,26 @@ const FESTIVE_KEYWORDS = [
   "Durga Puja", "Bijoya Dashami", "wedding season", "festive collection",
 ];
 
+export function optimizeProductTitle(product: ProductDetail): string {
+  const baseTitle = product.meta_title || product.name || "";
+  if (!baseTitle) return "";
+  
+  const categoryName = product.primary_category?.name;
+  if (!categoryName) return baseTitle;
+
+  const titleLower = baseTitle.toLowerCase();
+  const needsEnrichment = !titleLower.includes("hand embroidered") && !titleLower.includes("handmade");
+
+  if (needsEnrichment && baseTitle.split(" ").length <= 5) {
+    if (!titleLower.includes(categoryName.toLowerCase())) {
+       return `${baseTitle} - Hand Embroidered ${categoryName}`;
+    }
+    return `${baseTitle} - Hand Embroidered`;
+  }
+  
+  return baseTitle;
+}
+
 export function buildProductKeywords(product: ProductDetail, lang?: string): string[] {
   const result: string[] = [];
 
@@ -413,6 +437,8 @@ export function buildProductKeywords(product: ProductDetail, lang?: string): str
     result.push(`${categoryName} Bangladesh`);
     result.push(`handmade ${categoryName.toLowerCase()}`);
     result.push(`${categoryName} online`);
+    result.push(`hand embroidered ${categoryName.toLowerCase()}`);
+    result.push(`artisan ${categoryName.toLowerCase()}`);
   }
 
   // Tags

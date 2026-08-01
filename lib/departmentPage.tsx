@@ -14,6 +14,7 @@ import {
   buildPageMetadata,
   buildProductSchema,
   buildProductKeywords,
+  optimizeProductTitle,
 } from "@/lib/seo";
 import { buildCategoryPath } from "@/lib/categoryPaths";
 import {
@@ -82,7 +83,7 @@ export async function departmentMetadata(
   const productKeywords = buildProductKeywords(product, lang);
 
   return buildPageMetadata({
-    title: product.meta_title || product.name,
+    title: optimizeProductTitle(product),
     description:
       product.meta_description ||
       product.short_description ||

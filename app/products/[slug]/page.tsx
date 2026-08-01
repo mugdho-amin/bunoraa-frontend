@@ -5,7 +5,7 @@ import { notFound, redirect } from "next/navigation";
 import { ProductDetailClient } from "@/components/products/ProductDetailClient";
 import { getServerLocaleHeaders, getServerLang } from "@/lib/serverLocale";
 import { JsonLd } from "@/components/seo/JsonLd";
-import { buildBreadcrumbList, buildPageMetadata, buildProductSchema, buildProductKeywords, stripHtml } from "@/lib/seo";
+import { buildBreadcrumbList, buildPageMetadata, buildProductSchema, buildProductKeywords, stripHtml, optimizeProductTitle } from "@/lib/seo";
 import { buildCategoryPath } from "@/lib/categoryPaths";
 import { buildProductCategoryTrail, buildProductPath, getProductCategoryPath } from "@/lib/productPaths";
 
@@ -37,7 +37,7 @@ export async function generateMetadata({
   const productKeywords = buildProductKeywords(product, lang);
 
   return buildPageMetadata({
-    title: product.meta_title || product.name,
+    title: optimizeProductTitle(product),
     description:
       product.meta_description ||
       stripHtml(product.short_description) ||
