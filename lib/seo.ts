@@ -569,6 +569,22 @@ export function buildPageKeywords(title: string, excerpt?: string | null, metaKe
   return mergeKeywords(metaKeywords, result).slice(0, 20);
 }
 
+export function stripHtml(html?: string | null): string | undefined {
+  if (!html) return undefined;
+  const stripped = html.replace(/<[^>]*>?/gm, "").trim();
+  // Decode common entities
+  return stripped
+    .replace(/&nbsp;/g, " ")
+    .replace(/&amp;/g, "&")
+    .replace(/&lt;/g, "<")
+    .replace(/&gt;/g, ">")
+    .replace(/&quot;/g, '"')
+    .replace(/&#39;/g, "'")
+    // Collapse multiple spaces
+    .replace(/\s+/g, " ")
+    .slice(0, 160);
+}
+
 export function buildProductSchema(product: ProductDetail) {
   const url = absoluteUrl(buildProductPath(product));
   const images = [
@@ -713,8 +729,8 @@ export function buildProductSchema(product: ProductDetail) {
     name: product.meta_title || product.name,
     description:
       product.meta_description ||
-      product.short_description ||
-      product.description ||
+      stripHtml(product.short_description) ||
+      stripHtml(product.description) ||
       undefined,
     sku: product.sku || undefined,
     mpn: product.sku || undefined,

@@ -5,7 +5,7 @@ import { notFound, redirect } from "next/navigation";
 import { ProductDetailClient } from "@/components/products/ProductDetailClient";
 import { getServerLocaleHeaders, getServerLang } from "@/lib/serverLocale";
 import { JsonLd } from "@/components/seo/JsonLd";
-import { buildBreadcrumbList, buildPageMetadata, buildProductSchema, buildProductKeywords } from "@/lib/seo";
+import { buildBreadcrumbList, buildPageMetadata, buildProductSchema, buildProductKeywords, stripHtml } from "@/lib/seo";
 import { buildCategoryPath } from "@/lib/categoryPaths";
 import { buildProductCategoryTrail, buildProductPath, getProductCategoryPath } from "@/lib/productPaths";
 
@@ -40,8 +40,8 @@ export async function generateMetadata({
     title: product.meta_title || product.name,
     description:
       product.meta_description ||
-      product.short_description ||
-      product.description ||
+      stripHtml(product.short_description) ||
+      stripHtml(product.description) ||
       "Explore product details on Bunoraa.",
     path: buildProductPath(product),
     images: metadataImages,

@@ -12,7 +12,7 @@ import { MobileFilterSortBar } from "@/components/products/MobileFilterSortBar";
 import { notFound } from "next/navigation";
 import type { CategoryFacet } from "@/components/products/FilterPanel";
 import { getServerLocaleHeaders } from "@/lib/serverLocale";
-import { buildPageMetadata, buildCategoryKeywords } from "@/lib/seo";
+import { buildPageMetadata, buildCategoryKeywords, stripHtml } from "@/lib/seo";
 import { getServerLang } from "@/lib/serverLocale";
 import { buildCategoryPath } from "@/lib/categoryPaths";
 import { cn } from "@/lib/utils";
@@ -155,7 +155,7 @@ export async function buildCategoryMetadataForPath(
     title: category.meta_title || category.name,
     description:
       category.meta_description ||
-      category.description ||
+      stripHtml(category.description) ||
       `Browse ${category.name} products on Bunoraa.`,
     path: basePath,
     keywords: categoryKeywords,
