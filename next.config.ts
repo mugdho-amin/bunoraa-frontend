@@ -40,16 +40,6 @@ const remotePatterns: RemotePattern[] = [
   },
   {
     protocol: "https",
-    hostname: "media.**",
-    pathname: "/**",
-  },
-  {
-    protocol: "https",
-    hostname: "cdn.**",
-    pathname: "/**",
-  },
-  {
-    protocol: "https",
     hostname: "**.bunoraa.com",
     pathname: "/**",
   },
@@ -75,9 +65,9 @@ const cspHeader = `
   default-src 'self';
   script-src 'self' 'unsafe-inline' 'unsafe-eval' https://accounts.google.com https://www.googletagmanager.com https://cdn.cloudflare.com;
   style-src 'self' 'unsafe-inline' https://accounts.google.com;
-  img-src 'self' blob: data: https: http:;
+  img-src 'self' blob: data: https:;
   font-src 'self' data:;
-  connect-src 'self' https: http: ws: wss: https://accounts.google.com https://www.google-analytics.com;
+  connect-src 'self' https: wss: https://accounts.google.com https://www.google-analytics.com;
   frame-src 'self' https://accounts.google.com;
   object-src 'none';
   base-uri 'self';

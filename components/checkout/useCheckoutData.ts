@@ -305,13 +305,42 @@ export function useCheckoutData(options?: {
 
   const completeCheckout = useMutation({
     mutationFn: async (payload?: Record<string, unknown>) => {
+      // Generate/persist an idempotency key per checkout session so that a
+      // retry after a lost response cannot place a duplicate order. The key
+      // is rotated only after a definitive success.
+      const sessionId = (checkoutQuery.data?.id as string | undefined) ?? "";
+      const storageKey = sessionId
+        ? `checkout-idempotency-${sessionId}`
+        : "checkout-idempotency";
+      let idempotencyKey: string | null = null;
+      if (typeof window !== "undefined") {
+        idempotencyKey = window.sessionStorage.getItem(storageKey);
+        if (!idempotencyKey) {
+          idempotencyKey =
+            typeof crypto !== "undefined" && "randomUUID" in crypto
+              ? crypto.randomUUID()
+              : `chk-${Date.now()}-${Math.random().toString(36).slice(2)}`;
+          window.sessionStorage.setItem(storageKey, idempotencyKey);
+        }
+      }
       return apiFetch("/commerce/checkout/complete/", {
         method: "POST",
         body: payload,
         allowGuest: true,
+        headers: idempotencyKey
+          ? { "Idempotency-Key": idempotencyKey }
+          : undefined,
       });
     },
     onSuccess: () => {
+      // Definitively placed — rotate the key for any future placement.
+      if (typeof window !== "undefined") {
+        const sessionId = (checkoutQuery.data?.id as string | undefined) ?? "";
+        const storageKey = sessionId
+          ? `checkout-idempotency-${sessionId}`
+          : "checkout-idempotency";
+        window.sessionStorage.removeItem(storageKey);
+      }
       queryClient.invalidateQueries({ queryKey: ["cart"] });
       queryClient.invalidateQueries({ queryKey: ["cart", "summary"] });
     },
