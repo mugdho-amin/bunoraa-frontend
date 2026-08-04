@@ -12,6 +12,7 @@ export type NotificationFilters = {
   type?: string;
   priority?: string;
   status?: string;
+  archived?: boolean | "all";
 };
 
 type UseNotificationsOptions = {

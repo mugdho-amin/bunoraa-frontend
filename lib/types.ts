@@ -609,6 +609,8 @@ export type NotificationItem = {
   url?: string | null;
   is_read?: boolean;
   read_at?: string | null;
+  is_archived?: boolean;
+  archived_at?: string | null;
   created_at?: string | null;
   channels_requested?: string[] | null;
   channels_sent?: string[] | null;

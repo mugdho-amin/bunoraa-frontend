@@ -41,7 +41,7 @@ import type { NotificationItem } from "@/lib/types";
 // ── Constants ───────────────────────────────────────────────────────────────
 
 const PAGE_SIZE = 10;
-const TABS = ["all", "unread", "transactional", "marketing", "system", "custom"] as const;
+const TABS = ["all", "unread", "transactional", "marketing", "system", "custom", "archived"] as const;
 type Tab = (typeof TABS)[number];
 
 type DateRangePreset = "today" | "7d" | "30d" | "custom" | null;
@@ -220,17 +220,17 @@ function NotificationCard({
       variant="interactive"
       padding="md"
       className={cn(
-        "group flex items-start gap-3 sm:gap-4 transition-all duration-200",
-        isUnread && "border-l-2 border-l-primary/60"
+        "group relative flex items-start gap-3 overflow-hidden border-border/70 bg-card/90 shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:border-primary/25 hover:shadow-lg sm:gap-4",
+        isUnread && "border-l-4 border-l-primary bg-gradient-to-r from-primary/[0.07] via-card to-card"
       )}
     >
       {/* Icon */}
       <div
         className={cn(
-          "flex h-10 w-10 shrink-0 items-center justify-center rounded-full",
+          "flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl ring-1 ring-inset",
           isUnread
-            ? "bg-primary/10 text-primary"
-            : "bg-muted text-muted-foreground"
+            ? "bg-primary/12 text-primary ring-primary/15"
+            : "bg-muted text-muted-foreground ring-border"
         )}
       >
         {React.createElement(IconComponent, { className: "h-5 w-5", strokeWidth: 1.6 })}
@@ -295,7 +295,7 @@ function NotificationCard({
         </div>
 
         {/* Action row */}
-        <div className="mt-2 flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-150">
+        <div className="mt-3 hidden items-center gap-3 border-t border-border/50 pt-3 opacity-70 transition-opacity duration-150 group-hover:opacity-100 sm:flex">
           {note.url && (
             <Link
               href={note.url}
@@ -318,7 +318,7 @@ function NotificationCard({
             onClick={() => onArchive(note.id)}
             className="text-xs font-medium text-muted-foreground hover:text-foreground transition-colors"
           >
-            Archive
+            {note.is_archived ? "Restore" : "Archive"}
           </button>
         </div>
 
@@ -348,7 +348,7 @@ function NotificationCard({
             className="inline-flex items-center gap-1 rounded-lg bg-muted px-2.5 py-1 text-xs font-medium text-muted-foreground"
           >
             <Archive className="h-3 w-3" />
-            Archive
+            {note.is_archived ? "Restore" : "Archive"}
           </button>
         </div>
       </div>
@@ -507,6 +507,7 @@ export function NotificationsPageContent() {
   const hookFilters = React.useMemo<NotificationFilters>(() => {
     const f: NotificationFilters = {};
     if (activeTab === "unread") f.unread = true;
+    else if (activeTab === "archived") f.archived = true;
     else if (activeTab !== "all") f.category = activeTab;
     return f;
   }, [activeTab]);
@@ -520,6 +521,20 @@ export function NotificationsPageContent() {
   const archiveMutation = useMutation({
     mutationFn: async (ids: string[]) => {
       return apiFetch("/notifications/archive/", {
+        method: "POST",
+        body: { notification_ids: ids },
+      });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["notifications"] });
+      queryClient.invalidateQueries({ queryKey: ["notifications", "unread"] });
+      setSelectedIds(new Set());
+    },
+  });
+
+  const restoreMutation = useMutation({
+    mutationFn: async (ids: string[]) => {
+      return apiFetch("/notifications/restore/", {
         method: "POST",
         body: { notification_ids: ids },
       });
@@ -607,7 +622,8 @@ export function NotificationsPageContent() {
   const handleArchiveSelected = () => {
     const ids = Array.from(selectedIds);
     if (ids.length === 0) return;
-    archiveMutation.mutate(ids);
+    if (activeTab === "archived") restoreMutation.mutate(ids);
+    else archiveMutation.mutate(ids);
   };
 
   const handleDeleteSelected = () => {
@@ -621,7 +637,9 @@ export function NotificationsPageContent() {
   };
 
   const handleSingleArchive = (id: string) => {
-    archiveMutation.mutate([id]);
+    const notification = notifications.find((item) => item.id === id);
+    if (notification?.is_archived) restoreMutation.mutate([id]);
+    else archiveMutation.mutate([id]);
   };
 
   const handleRetry = () => {
@@ -635,9 +653,9 @@ export function NotificationsPageContent() {
       title="Notifications"
       description="Sign in to view your notifications."
     >
-      <div className="mx-auto w-full max-w-6xl px-[var(--page-gutter)] py-8 sm:py-12">
+      <div className="mx-auto w-full max-w-7xl px-[var(--page-gutter)] py-8 sm:py-12">
         {/* Stats header */}
-        <div className="mb-6 sm:mb-8">
+        <div className="mb-8 overflow-hidden rounded-3xl border border-primary/10 bg-gradient-to-br from-primary/[0.10] via-card to-accent/[0.08] p-5 shadow-sm sm:p-8">
           <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
             <div>
               <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">
@@ -741,7 +759,7 @@ export function NotificationsPageContent() {
                     ? stats.total
                     : tab === "unread"
                       ? stats.unread
-                      : stats.categories[tab] ?? 0;
+                      : tab === "archived" ? notifications.length : stats.categories[tab] ?? 0;
 
                 return (
                   <button
@@ -847,14 +865,14 @@ export function NotificationsPageContent() {
                     variant="ghost"
                     size="sm"
                     onClick={handleArchiveSelected}
-                    disabled={archiveMutation.isPending}
+                    disabled={archiveMutation.isPending || restoreMutation.isPending}
                   >
-                    {archiveMutation.isPending ? (
+                    {archiveMutation.isPending || restoreMutation.isPending ? (
                       <Loader2 className="h-4 w-4 animate-spin" />
                     ) : (
                       <Archive className="h-4 w-4" />
                     )}
-                    Archive
+                    {activeTab === "archived" ? "Restore" : "Archive"}
                   </Button>
                   <Button
                     variant="ghost"
