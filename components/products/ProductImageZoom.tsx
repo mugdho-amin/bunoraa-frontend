@@ -12,7 +12,7 @@ type Props = {
   onZoomClick?: () => void;
 };
 
-const ZOOM = 4;
+const ZOOM = 5;
 
 function getVisibleImageRect(
   cw: number,
@@ -70,20 +70,24 @@ export function ProductImageZoom({ src, alt, priority = false, aspectRatio, onZo
       setShade({ x: vi.x + sx, y: vi.y + sy, w: sw, h: sh });
 
       const gap = 20;
-      const magW = Math.min(vi.w, 600);
-      const magH = Math.min(vi.h, 600);
+      const magW = Math.min(vi.w, 420);
+      const magH = Math.min(vi.h, 420);
       const magX = cr.left + vi.x + vi.w + gap;
       const magRight = magX + magW;
       const clampedX =
         magRight > window.innerWidth
           ? Math.max(10, cr.left + vi.x - gap - magW)
           : magX;
+      const magY = Math.max(
+        10,
+        Math.min(e.clientY - magH / 2, window.innerHeight - magH - 10)
+      );
 
       const bgW = ZOOM * vi.w;
       const bgH = ZOOM * vi.h;
       setMag({
         x: clampedX,
-        y: Math.max(10, cr.top + vi.y),
+        y: magY,
         w: magW,
         h: magH,
         bgX: (sx / vi.w) * bgW,
