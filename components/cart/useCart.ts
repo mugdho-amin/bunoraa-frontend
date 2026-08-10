@@ -184,6 +184,56 @@ export function useCart(options?: UseCartOptions) {
     },
   });
 
+  const addBundle = useMutation({
+    mutationFn: async ({ bundleId, quantity = 1 }: { bundleId: string; quantity?: number }) => {
+      return apiFetch("/commerce/cart/add/", {
+        method: "POST",
+        body: {
+          bundle_id: bundleId,
+          quantity,
+        },
+        allowGuest: true,
+      });
+    },
+    onMutate: async ({ quantity = 1 }) => {
+      await queryClient.cancelQueries({ queryKey: cartKey });
+      const previousCart = queryClient.getQueryData<Cart>(cartKey);
+
+      if (previousCart) {
+        const currentCount = Number(previousCart.item_count) || 0;
+        queryClient.setQueryData<Cart>(cartKey, {
+          ...previousCart,
+          item_count: currentCount + Number(quantity),
+        });
+      }
+      return { previousCart };
+    },
+    onSuccess: (response) => {
+      const data = response && typeof response === "object" && "data" in response
+        ? (response as { data: unknown }).data
+        : null;
+      if (data && typeof data === "object" && "cart" in (data as Record<string, unknown>)) {
+        const nextCart = (data as { cart: Cart }).cart;
+        if (nextCart) {
+          queryClient.setQueryData(cartKey, nextCart);
+          queryClient.invalidateQueries({ queryKey: cartSummaryKey });
+          return;
+        }
+      }
+      queryClient.invalidateQueries({ queryKey: cartKey });
+      queryClient.invalidateQueries({ queryKey: cartSummaryKey });
+    },
+    onError: (_err, _vars, context) => {
+      if (context?.previousCart) {
+        queryClient.setQueryData(cartKey, context.previousCart);
+      }
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: cartKey });
+      queryClient.invalidateQueries({ queryKey: cartSummaryKey });
+    },
+  });
+
   const updateItem = useMutation({
     mutationFn: async ({ itemId, quantity }: UpdateItemInput) => {
       return apiFetch(`/commerce/cart/update/${itemId}/`, {
@@ -401,6 +451,7 @@ export function useCart(options?: UseCartOptions) {
     cartQuery,
     cartSummaryQuery,
     addItem,
+    addBundle,
     updateItem,
     removeItem,
     clearCart,

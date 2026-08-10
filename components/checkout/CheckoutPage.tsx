@@ -212,7 +212,12 @@ export function CheckoutPage() {
       postal_code: checkoutSession.shipping_postal_code || "",
       subtotal: cartSummary.subtotal || cart.subtotal || "0",
       item_count: cart.item_count || 1,
-      product_ids: cart.items?.map((item) => item.product_id) || [],
+      product_ids: cart.items?.flatMap((item) => {
+        if (item.cart_item_type === "bundle") {
+          return item.bundle_items?.map((line) => line.product_id).filter(Boolean) || [];
+        }
+        return item.product_id ? [item.product_id] : [];
+      }) || [],
     };
   }, [infoComplete, cart, cartSummary, checkoutSession, resolveCountryName]);
 

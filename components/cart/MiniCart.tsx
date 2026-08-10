@@ -97,38 +97,68 @@ export function MiniCart({
         ) : null}
       </div>
 
-      <div className="flex-1 space-y-4 overflow-y-auto p-4" aria-busy={isMutating}>
-        {cart.items.map((item) => (
-          <div key={item.id} className="flex gap-3">
-            <div className="relative h-24 w-[4.5rem] shrink-0 overflow-hidden rounded-lg bg-muted">
-              {fullImageUrl(item.product_image) ? (
-                <Image
-                  src={fullImageUrl(item.product_image)!}
-                  alt={item.product_name}
-                  fill
-                  quality={60}
-                  className="object-cover"
-                  sizes="72px"
-                />
-              ) : null}
-            </div>
-            <div className="min-w-0 flex-1 space-y-0.5">
-              <p className="truncate text-sm font-semibold">{item.product_name}</p>
-              {item.variant_name ? <p className="truncate text-xs text-muted-foreground">{item.variant_name}</p> : null}
-              <div className="flex items-end justify-between gap-2 pt-2">
-                <div className="inline-flex items-center rounded-lg border border-border bg-background" aria-label={`Quantity for ${item.product_name}`}>
-                  <button type="button" className="flex h-8 w-8 items-center justify-center rounded-l-lg text-muted-foreground transition hover:bg-muted hover:text-foreground disabled:cursor-not-allowed disabled:opacity-40" onClick={() => updateItem.mutate({ itemId: item.id, quantity: Math.max(1, item.quantity - 1) })} disabled={isMutating || item.quantity <= 1} aria-label={`Decrease quantity of ${item.product_name}`}><Minus className="h-3.5 w-3.5" aria-hidden="true" /></button>
-                  <span className="flex h-8 min-w-8 items-center justify-center border-x border-border px-2 text-xs font-semibold tabular-nums" aria-live="polite">{item.quantity}</span>
-                  <button type="button" className="flex h-8 w-8 items-center justify-center rounded-r-lg text-muted-foreground transition hover:bg-muted hover:text-foreground disabled:cursor-not-allowed disabled:opacity-40" onClick={() => updateItem.mutate({ itemId: item.id, quantity: item.quantity + 1 })} disabled={isMutating} aria-label={`Increase quantity of ${item.product_name}`}><Plus className="h-3.5 w-3.5" aria-hidden="true" /></button>
+<div className="flex-1 space-y-4 overflow-y-auto p-4" aria-busy={isMutating}>
+        {cart.items.map((item) => {
+          const isBundle = item.cart_item_type === "bundle";
+          const itemLink = isBundle && item.bundle_slug
+            ? `/bundles/${item.bundle_slug}/`
+            : item.product_slug
+              ? `/products/${item.product_slug}/`
+              : null;
+          const itemName = item.product_name || item.bundle_name || "Item";
+          const bundleCount = item.bundle_items?.length ?? 0;
+          return (
+            <div key={item.id} className="flex gap-3">
+              <div className="relative h-24 w-[4.5rem] shrink-0 overflow-hidden rounded-lg bg-muted">
+                {fullImageUrl(item.product_image) ? (
+                  <Image
+                    src={fullImageUrl(item.product_image)!}
+                    alt={itemName}
+                    fill
+                    quality={60}
+                    className="object-cover"
+                    sizes="72px"
+                  />
+                ) : null}
+              </div>
+              <div className="min-w-0 flex-1 space-y-0.5">
+                <div className="flex items-center justify-between gap-2">
+                  {itemLink ? (
+                    <Link href={itemLink} className="truncate text-sm font-semibold hover:text-primary">
+                      {itemName}
+                    </Link>
+                  ) : (
+                    <p className="truncate text-sm font-semibold">{itemName}</p>
+                  )}
+                  {isBundle ? (
+                    <span className="shrink-0 rounded bg-accent/15 px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-accent-foreground">
+                      Bundle
+                    </span>
+                  ) : null}
                 </div>
-                <div className="flex flex-col items-end gap-0.5">
-                  <p className="text-sm font-semibold">{formatMoney(item.total, currencyConfig)}</p>
-                  <button type="button" className="inline-flex items-center gap-1 text-xs text-muted-foreground transition hover:text-destructive disabled:cursor-not-allowed disabled:opacity-40" onClick={() => removeItem.mutate(item.id)} disabled={isMutating}><Trash2 className="h-3 w-3" aria-hidden="true" /> Remove</button>
+                {isBundle && bundleCount > 0 ? (
+                  <p className="truncate text-xs text-muted-foreground" title={item.bundle_items?.map((b) => `${b.quantity}× ${b.product_name}`).join(", ")}>
+                    {bundleCount} items · {item.bundle_items?.map((b) => `${b.quantity}× ${b.product_name}`).slice(0, 2).join(", ")}
+                    {bundleCount > 2 ? "…" : ""}
+                  </p>
+                ) : item.variant_name ? (
+                  <p className="truncate text-xs text-muted-foreground">{item.variant_name}</p>
+                ) : null}
+                <div className="flex items-end justify-between gap-2 pt-2">
+                  <div className="inline-flex items-center rounded-lg border border-border bg-background" aria-label={`Quantity for ${itemName}`}>
+                    <button type="button" className="flex h-8 w-8 items-center justify-center rounded-l-lg text-muted-foreground transition hover:bg-muted hover:text-foreground disabled:cursor-not-allowed disabled:opacity-40" onClick={() => updateItem.mutate({ itemId: item.id, quantity: Math.max(1, item.quantity - 1) })} disabled={isMutating || item.quantity <= 1} aria-label={`Decrease quantity of ${itemName}`}><Minus className="h-3.5 w-3.5" aria-hidden="true" /></button>
+                    <span className="flex h-8 min-w-8 items-center justify-center border-x border-border px-2 text-xs font-semibold tabular-nums" aria-live="polite">{item.quantity}</span>
+                    <button type="button" className="flex h-8 w-8 items-center justify-center rounded-r-lg text-muted-foreground transition hover:bg-muted hover:text-foreground disabled:cursor-not-allowed disabled:opacity-40" onClick={() => updateItem.mutate({ itemId: item.id, quantity: item.quantity + 1 })} disabled={isMutating} aria-label={`Increase quantity of ${itemName}`}><Plus className="h-3.5 w-3.5" aria-hidden="true" /></button>
+                  </div>
+                  <div className="flex flex-col items-end gap-0.5">
+                    <p className="text-sm font-semibold">{formatMoney(item.total, currencyConfig)}</p>
+                    <button type="button" className="inline-flex items-center gap-1 text-xs text-muted-foreground transition hover:text-destructive disabled:cursor-not-allowed disabled:opacity-40" onClick={() => removeItem.mutate(item.id)} disabled={isMutating}><Trash2 className="h-3 w-3" aria-hidden="true" /> Remove</button>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
 
       <div className="space-y-3 border-t border-border bg-card/60 p-4">

@@ -258,7 +258,7 @@ function CartItemRow({
           {fullImageUrl(item.product_image) ? (
             <Image
               src={fullImageUrl(item.product_image)!}
-              alt={item.product_name}
+              alt={item.product_name || "Item"}
               fill
               quality={65}
               className="object-cover"
@@ -269,15 +269,44 @@ function CartItemRow({
           ) : null}
         </div>
         <div className="min-w-0">
+          {item.cart_item_type === "bundle" ? (
+            <div className="mb-1 inline-flex items-center gap-1.5">
+              <span className="rounded bg-accent/15 px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-accent-foreground">
+                Bundle
+              </span>
+              {item.bundle_items?.length ? (
+                <span className="text-[10px] text-muted-foreground">
+                  {item.bundle_items.length} items
+                </span>
+              ) : null}
+            </div>
+          ) : null}
           <Link
-            href={`/products/${item.product_slug}/`}
+            href={
+              item.cart_item_type === "bundle" && item.bundle_slug
+                ? `/bundles/${item.bundle_slug}/`
+                : `/products/${item.product_slug}/`
+            }
             className="line-clamp-2 text-sm font-semibold leading-5 hover:underline"
             target="_blank"
             rel="noopener noreferrer"
           >
-            {item.product_name}
+            {item.product_name || item.bundle_name}
           </Link>
-          {item.variant_name ? (
+          {item.cart_item_type === "bundle" && item.bundle_items?.length ? (
+            <ul className="mt-1.5 space-y-0.5">
+              {item.bundle_items.slice(0, 3).map((line, index) => (
+                <li key={`${line.product_id ?? index}`} className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                  <span className="truncate">{line.quantity}× {line.product_name}</span>
+                </li>
+              ))}
+              {item.bundle_items.length > 3 ? (
+                <li className="text-[11px] text-muted-foreground">
+                  +{item.bundle_items.length - 3} more
+                </li>
+              ) : null}
+            </ul>
+          ) : item.variant_name ? (
             <p className="text-xs text-muted-foreground">{item.variant_name}</p>
           ) : null}
           {!item.in_stock ? (
@@ -295,6 +324,18 @@ function CartItemRow({
             <p className="text-sm text-muted-foreground">
               {formatMoney(item.unit_price, currency)}
             </p>
+            {item.cart_item_type === "bundle" && item.component_value_at_add ? (
+              <p className="mt-0.5 text-[11px] leading-4 text-muted-foreground">
+                <span className="line-through">
+                  {formatMoney(item.component_value_at_add, currency)}
+                </span>
+                {item.savings && parseFloat(item.savings) > 0 ? (
+                  <span className="ml-1.5 font-semibold text-success">
+                    save {formatMoney(item.savings, currency)}
+                  </span>
+                ) : null}
+              </p>
+            ) : null}
           </div>
           <div className="rounded-xl border border-border/70 bg-muted/20 px-3 py-2 text-right sm:min-w-[120px] sm:border-0 sm:bg-transparent sm:px-0 sm:py-0">
             <p className="text-[10px] uppercase tracking-[0.15em] text-muted-foreground sm:hidden">
@@ -373,15 +414,17 @@ function CartItemRow({
           </div>
         </div>
         <div className="grid w-full grid-cols-3 gap-2 sm:flex sm:w-auto sm:flex-wrap sm:items-center sm:justify-end">
-          <Button
-            variant="ghost"
-            size="sm"
-            className="w-full sm:w-auto"
-            onClick={() => onMoveToWishlist(item)}
-            disabled={isUpdating || isRemoving}
-          >
-            Save for later
-          </Button>
+          {item.cart_item_type !== "bundle" ? (
+            <Button
+              variant="ghost"
+              size="sm"
+              className="w-full sm:w-auto"
+              onClick={() => onMoveToWishlist(item)}
+              disabled={isUpdating || isRemoving}
+            >
+              Save for later
+            </Button>
+          ) : null}
           <Button
             variant="ghost"
             size="sm"
@@ -597,7 +640,7 @@ export function CartPage() {
   const handleMoveToWishlist = async (item: CartItem) => {
     try {
       await addWishlistItem.mutateAsync({
-        productId: item.product_id,
+        productId: item.product_id!,
         variantId: item.variant_id,
       });
       await handleRemoveItem(item.id, { silent: true });

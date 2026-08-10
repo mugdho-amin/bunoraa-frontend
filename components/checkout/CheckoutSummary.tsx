@@ -136,38 +136,54 @@ export function CheckoutSummary({
 
       <div className="space-y-3">
         {cart?.items?.length ? (
-          cart.items.map((item) => (
-            <div key={item.id} className="flex items-center gap-3">
-              <div className="relative h-14 w-14 overflow-hidden rounded-xl bg-muted">
-                {item.product_image ? (
-                  <Image
-                    src={item.product_image}
-                    alt={item.product_name}
-                    fill
-                    quality={60}
-                    sizes="56px"
-                    loading="lazy"
-                    decoding="async"
-                    className="object-cover"
-                  />
-                ) : (
-                  <div className="h-full w-full bg-muted" />
-                )}
+          cart.items.map((item) => {
+            const isBundle = item.cart_item_type === "bundle";
+            const itemName = item.product_name || item.bundle_name || "Item";
+            return (
+              <div key={item.id} className="flex items-center gap-3">
+                <div className="relative h-14 w-14 overflow-hidden rounded-xl bg-muted">
+                  {item.product_image ? (
+                    <Image
+                      src={item.product_image}
+                      alt={itemName}
+                      fill
+                      quality={60}
+                      sizes="56px"
+                      loading="lazy"
+                      decoding="async"
+                      className="object-cover"
+                    />
+                  ) : (
+                    <div className="h-full w-full bg-muted" />
+                  )}
+                </div>
+                <div className="min-w-0 flex-1">
+                  <div className="flex items-center gap-1.5">
+                    <p className="truncate text-sm font-medium">{itemName}</p>
+                    {isBundle ? (
+                      <span className="shrink-0 rounded bg-accent/15 px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-accent-foreground">
+                        Bundle
+                      </span>
+                    ) : null}
+                  </div>
+                  {isBundle && item.bundle_items?.length ? (
+                    <p className="truncate text-xs text-muted-foreground" title={item.bundle_items.map((b) => `${b.quantity}× ${b.product_name}`).join(", ")}>
+                      {item.bundle_items.map((b) => `${b.quantity}× ${b.product_name}`).slice(0, 2).join(", ")}
+                      {item.bundle_items.length > 2 ? "…" : ""}
+                    </p>
+                  ) : item.variant_name ? (
+                    <p className="truncate text-xs text-muted-foreground">{item.variant_name}</p>
+                  ) : null}
+                  <p className="text-xs text-muted-foreground">
+                    Qty {item.quantity}
+                  </p>
+                </div>
+                <div className="text-sm font-semibold">
+                  {formatMoney(item.total, currencyCode)}
+                </div>
               </div>
-              <div className="min-w-0 flex-1">
-                <p className="truncate text-sm font-medium">{item.product_name}</p>
-                {item.variant_name ? (
-                  <p className="truncate text-xs text-muted-foreground">{item.variant_name}</p>
-                ) : null}
-                <p className="text-xs text-muted-foreground">
-                  Qty {item.quantity}
-                </p>
-              </div>
-              <div className="text-sm font-semibold">
-                {formatMoney(item.total, currencyCode)}
-              </div>
-            </div>
-          ))
+            );
+          })
         ) : (
           <p className="text-sm text-muted-foreground">Your bag is empty.</p>
         )}

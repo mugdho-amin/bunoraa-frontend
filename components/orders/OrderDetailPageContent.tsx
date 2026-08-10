@@ -93,10 +93,17 @@ export function OrderDetailPageContent() {
                     {order.items?.map((item) => (
                       <div key={item.id} className="flex gap-4">
                         <div className="relative h-16 w-16 overflow-hidden rounded-xl bg-muted">
-                          {item.product_image ? <Image src={item.product_image} alt={item.product_name} fill quality={65} className="object-cover" sizes="64px" loading="lazy" decoding="async" /> : null}
+                          {item.product_image ? <Image src={item.product_image} alt={item.product_name || item.bundle_name || "Item"} fill quality={65} className="object-cover" sizes="64px" loading="lazy" decoding="async" /> : null}
                         </div>
                         <div className="flex-1">
-                          <p className="text-sm font-semibold">{item.product_name}</p>
+                          <div className="flex items-center gap-1.5">
+                            <p className="text-sm font-semibold">{item.product_name || item.bundle_name}</p>
+                            {item.item_kind === "bundle" ? (
+                              <span className="shrink-0 rounded bg-accent/15 px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-accent-foreground">
+                                Bundle
+                              </span>
+                            ) : null}
+                          </div>
                           {item.variant_name ? <p className="text-xs text-muted-foreground">{item.variant_name}</p> : null}
                           <p className="text-xs text-muted-foreground">Qty {formatNumber(item.quantity)}</p>
                         </div>

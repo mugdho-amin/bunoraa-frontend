@@ -1,36 +1,39 @@
-import Link from "next/link";
 import { notFound } from "next/navigation";
-import { apiFetch, ApiError } from "@/lib/api";
-import type { Bundle } from "@/lib/types";
-import { Card } from "@/components/ui/Card";
-import { Button } from "@/components/ui/Button";
+import { getBundles } from "@/lib/bundles";
+import { BundleCard } from "@/components/bundles/BundleCard";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { buildItemList } from "@/lib/seo";
-import { asArray } from "@/lib/array";
-import Image from "next/image";
-
-async function getBundles() {
-  try { const response = await apiFetch<Bundle[] | { results?: Bundle[]; count?: number }>("/catalog/bundles/"); return asArray<Bundle>(response.data); }
-  catch (error) { if (error instanceof ApiError && (error.status === 404 || error.status === 503)) return []; throw error; }
-}
 
 export async function BundlesPageContent() {
   const bundles = await getBundles();
   if (!bundles.length) notFound();
-  const list = buildItemList(bundles.map((bundle) => ({ name: bundle.name, url: `/bundles/${bundle.slug}/`, image: bundle.image || undefined, description: bundle.description || undefined })), "Bundles");
+  const list = buildItemList(
+    bundles.map((bundle) => ({
+      name: bundle.name,
+      url: `/bundles/${bundle.slug}/`,
+      image: bundle.image || undefined,
+      description: bundle.description || undefined,
+    })),
+    "Bundles"
+  );
 
   return (
-    <div className="mx-auto w-full max-w-6xl px-[var(--page-gutter)] py-12">
-      <div className="mb-8"><p className="text-sm uppercase tracking-[0.2em] text-muted-foreground">Bundles</p><h1 className="text-3xl font-semibold">Bundle deals</h1></div>
-      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+    <div className="mx-auto w-full max-w-6xl px-[var(--page-gutter)] py-8 sm:py-12">
+      <header className="mb-8 sm:mb-10">
+        <p className="section-eyebrow">Bundles</p>
+        <h1 className="section-title">Bundle deals</h1>
+        <p className="mt-2 max-w-2xl text-sm text-muted-foreground sm:text-base">
+          Curated kits at a better price than buying each item separately.
+          One bundle, one checkout, everything ships together.
+        </p>
+      </header>
+
+      <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3 lg:gap-6">
         {bundles.map((bundle) => (
-          <Card key={bundle.id} variant="bordered" className="flex flex-col gap-4">
-            <div className="relative aspect-[4/3] overflow-hidden rounded-xl bg-muted">{bundle.image ? <Image src={bundle.image} alt={bundle.name} fill quality={72} className="object-cover" sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw" loading="lazy" decoding="async" /> : null}</div>
-            <div className="flex flex-1 flex-col gap-2"><h2 className="text-lg font-semibold">{bundle.name}</h2><p className="text-sm text-muted-foreground">{bundle.description}</p></div>
-            <Button asChild variant="primary-gradient"><Link href={`/bundles/${bundle.slug}/`}>View bundle</Link></Button>
-          </Card>
+          <BundleCard key={bundle.id} bundle={bundle} />
         ))}
       </div>
+
       <JsonLd data={list} />
     </div>
   );

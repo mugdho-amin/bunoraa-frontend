@@ -290,14 +290,29 @@ export type ProductFilterResponse = {
   has_free_shipping?: boolean;
 };
 
+export type CartBundleItem = {
+  product_id?: string | null;
+  product_name: string;
+  product_slug?: string | null;
+  product_image?: string | null;
+  quantity: number;
+};
+
 export type CartItem = {
   id: string;
-  product_id: string;
-  product_name: string;
-  product_slug: string;
+  cart_item_type?: "product" | "bundle";
+  product_id?: string | null;
+  product_name: string | null;
+  product_slug?: string | null;
   product_image?: string | null;
   variant_id?: string | null;
   variant_name?: string | null;
+  bundle_id?: string | null;
+  bundle_name?: string | null;
+  bundle_slug?: string | null;
+  bundle_items?: CartBundleItem[] | null;
+  component_value_at_add?: string | null;
+  savings?: string | null;
   quantity: number;
   unit_price: string;
   total: string;
@@ -537,6 +552,9 @@ export type OrderItem = {
   unit_price: string;
   quantity: number;
   line_total?: string;
+  item_kind?: "product" | "bundle";
+  bundle_id?: string | null;
+  bundle_name?: string | null;
 };
 
 export type OrderStatusHistory = {
@@ -1017,17 +1035,33 @@ export type Collection = {
   image?: string | null;
 };
 
+export type BundleItem = {
+  id: string;
+  product: ProductListItem;
+  quantity: number;
+};
+
 export type Bundle = {
   id: string;
   name: string;
   slug: string;
   description?: string | null;
   image?: string | null;
+  strategy?: "fixed" | "percentage" | "component_sum" | string | null;
+  fixed_price?: string | null;
+  discount_percentage?: string | null;
   price?: string | null;
   savings?: string | null;
+  value?: string | null;
+  currency?: string | null;
+  item_count?: number;
+  available_units?: number;
   is_active?: boolean;
   is_featured?: boolean;
-  currency?: string | null;
+  meta_title?: string | null;
+  meta_description?: string | null;
+  created_at?: string | null;
+  items?: BundleItem[];
 };
 
 export type Artisan = {

@@ -1,6 +1,6 @@
 import { cache } from "react";
 import { apiFetch } from "@/lib/api";
-import type { Bundle } from "@/lib/types";
+import type { Bundle, ProductListItem } from "@/lib/types";
 import { asArray } from "@/lib/array";
 import { logger } from "@/lib/logger";
 
@@ -32,3 +32,50 @@ export const hasPublishedBundles = cache(async (): Promise<boolean> => {
     return false;
   }
 });
+
+export const getBundles = cache(
+  async (): Promise<Bundle[]> => {
+    try {
+      const response = await apiFetch<Bundle[]>(
+        "/catalog/bundles/",
+        { next: { revalidate: 300 } }
+      );
+      const bundles = asArray<Bundle>(response.data);
+      return bundles.sort(
+        (a, b) => Number(b.is_featured) - Number(a.is_featured)
+      );
+    } catch (e) {
+      logger.error("getBundles fetch failed", e);
+      return [];
+    }
+  }
+);
+
+export const getBundle = cache(
+  async (slug: string): Promise<Bundle | null> => {
+    try {
+      const response = await apiFetch<Bundle>(`/catalog/bundles/${slug}/`, {
+        next: { revalidate: 300 },
+      });
+      return response.data ?? null;
+    } catch (e) {
+      logger.error(`getBundle(${slug}) fetch failed`, e);
+      return null;
+    }
+  }
+);
+
+export const getBundleProducts = cache(
+  async (slug: string): Promise<ProductListItem[]> => {
+    try {
+      const response = await apiFetch<ProductListItem[]>(
+        `/catalog/bundles/${slug}/products/`,
+        { next: { revalidate: 300 } }
+      );
+      return asArray<ProductListItem>(response.data);
+    } catch (e) {
+      logger.error(`getBundleProducts(${slug}) fetch failed`, e);
+      return [];
+    }
+  }
+);
