@@ -1023,6 +1023,11 @@ export type Bundle = {
   slug: string;
   description?: string | null;
   image?: string | null;
+  price?: string | null;
+  savings?: string | null;
+  is_active?: boolean;
+  is_featured?: boolean;
+  currency?: string | null;
 };
 
 export type Artisan = {
