@@ -174,6 +174,7 @@ export async function HomePageContent({ heroBanners, siteSettings, homepageData 
         {filteredOnSale.length ? (
           <section className={sectionWrapperClass} aria-label="On sale">
             <SectionHeading
+              eyebrow="Limited time"
               href="/products/?on_sale=true"
               linkLabel="Shop sale"
             />
