@@ -13,21 +13,39 @@ type AddBundleToCartProps = {
   availableUnits?: number;
   compact?: boolean;
   className?: string;
+  quantity?: number;
+  onQuantityChange?: (quantity: number) => void;
 };
 
 export function AddBundleToCart({
   bundleId,
   bundleName,
-  availableUnits = 0,
+  availableUnits,
   compact = false,
   className,
+  quantity: controlledQuantity,
+  onQuantityChange,
 }: AddBundleToCartProps) {
   const { addBundle } = useCart();
   const { push } = useToast();
   const { t } = useUiMessages("cart");
 
-  const [quantity, setQuantity] = React.useState(1);
-  const soldOut = availableUnits === 0;
+  const [internalQuantity, setInternalQuantity] = React.useState(1);
+  const isControlled = typeof controlledQuantity === "number";
+  const quantity = isControlled ? controlledQuantity : internalQuantity;
+  const soldOut = typeof availableUnits === "number" && availableUnits <= 0;
+  const max = soldOut
+    ? 1
+    : Math.max(1, typeof availableUnits === "number" ? availableUnits : 99);
+
+  const setQuantity = React.useCallback(
+    (next: number) => {
+      const clamped = Math.min(Math.max(1, next), max);
+      if (isControlled) onQuantityChange?.(clamped);
+      else setInternalQuantity(clamped);
+    },
+    [isControlled, max, onQuantityChange]
+  );
 
   const handleAdd = React.useCallback(async () => {
     try {
@@ -56,8 +74,6 @@ export function AddBundleToCart({
     }
   }, [addBundle, bundleId, quantity, push, t, bundleName]);
 
-  const max = Math.max(1, availableUnits);
-
   return (
     <div className={className}>
       <div className="flex items-center gap-2">
@@ -67,7 +83,7 @@ export function AddBundleToCart({
             aria-label={t("decrease_quantity", "Decrease quantity")}
             className="flex h-11 w-10 items-center justify-center text-lg font-semibold disabled:opacity-40"
             disabled={quantity <= 1}
-            onClick={() => setQuantity((q) => Math.max(1, q - 1))}
+            onClick={() => setQuantity(quantity - 1)}
           >
             −
           </button>
@@ -78,8 +94,8 @@ export function AddBundleToCart({
             type="button"
             aria-label={t("increase_quantity", "Increase quantity")}
             className="flex h-11 w-10 items-center justify-center text-lg font-semibold disabled:opacity-40"
-            disabled={!soldOut && quantity >= max}
-            onClick={() => setQuantity((q) => Math.min(max, q + 1))}
+            disabled={soldOut || quantity >= max}
+            onClick={() => setQuantity(quantity + 1)}
           >
             +
           </button>
@@ -88,15 +104,19 @@ export function AddBundleToCart({
         <Button
           variant="primary-gradient"
           size={compact ? "md" : "lg"}
-          className="flex-1"
+          className="min-w-0 flex-1 whitespace-nowrap text-sm sm:text-base"
           disabled={soldOut || addBundle.isPending}
           onClick={handleAdd}
         >
-          {soldOut
-            ? t("sold_out", "Sold out")
-            : addBundle.isPending
-              ? t("adding", "Adding...")
-              : t("add_bundle_to_bag", "Add bundle to bag")}
+          <span className="truncate">
+            {soldOut
+              ? t("sold_out", "Sold out")
+              : addBundle.isPending
+                ? t("adding", "Adding...")
+                : compact
+                  ? t("add_to_bag", "Add to bag")
+                  : t("add_bundle_to_bag", "Add bundle to bag")}
+          </span>
         </Button>
       </div>
     </div>

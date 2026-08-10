@@ -79,3 +79,28 @@ export const getBundleProducts = cache(
     }
   }
 );
+
+export type BundleReviewSummary = {
+  totalCount: number;
+  averageRating: number;
+};
+
+export function getBundleReviewSummary(
+  bundle: Pick<Bundle, "items">
+): BundleReviewSummary {
+  const lines = bundle.items || [];
+  let totalCount = 0;
+  let weighted = 0;
+  lines.forEach((line) => {
+    const count = Number(line.product?.reviews_count) || 0;
+    const rating = Number(line.product?.average_rating) || 0;
+    if (count > 0) {
+      totalCount += count;
+      weighted += rating * count;
+    }
+  });
+  return {
+    totalCount,
+    averageRating: totalCount > 0 ? weighted / totalCount : 0,
+  };
+}
