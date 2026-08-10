@@ -5,6 +5,9 @@ import Link from "next/link";
 import { AuthGate } from "@/components/auth/AuthGate";
 import { Card } from "@/components/ui/Card";
 import { useOrders } from "@/components/orders/useOrders";
+import { formatDateTime } from "@/lib/format";
+import { formatNumber } from "@/lib/money";
+import { formatMoney } from "@/lib/checkout";
 
 const STATUS_OPTIONS = [
   { value: "all", label: "All statuses" },
@@ -24,13 +27,6 @@ const SORT_OPTIONS = [
   { value: "total_low", label: "Lowest total" },
   { value: "status", label: "Status" },
 ];
-
-function formatDateTime(value?: string | null) {
-  if (!value) return "Unknown time";
-  const parsed = new Date(value);
-  if (Number.isNaN(parsed.getTime())) return value;
-  return parsed.toLocaleString();
-}
 
 export function OrdersPageContent() {
   const [query, setQuery] = React.useState("");
@@ -111,8 +107,8 @@ export function OrdersPageContent() {
                       </p>
                     </div>
                     <div className="text-left sm:text-right">
-                      <p className="text-sm text-muted-foreground">{order.item_count} items</p>
-                      <p className="text-lg font-semibold">{order.total}</p>
+                      <p className="text-sm text-muted-foreground">{formatNumber(order.item_count)} items</p>
+                      <p className="text-lg font-semibold">{formatMoney(order.total, order.currency)}</p>
                       <Link className="text-sm text-primary" href={`/orders/${order.id}/`}>
                         View details
                       </Link>

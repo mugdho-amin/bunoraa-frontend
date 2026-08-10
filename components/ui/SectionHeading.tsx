@@ -5,7 +5,7 @@ import { cn } from "@/lib/utils";
 
 type SectionHeadingProps = {
   eyebrow?: string;
-  title: string;
+  title?: string;
   description?: string;
   href?: string;
   linkLabel?: string;
@@ -38,7 +38,9 @@ export function SectionHeading({
     >
       <div className={cn("min-w-0 flex-1", align === "center" && "mx-auto max-w-2xl")}>
         {eyebrow ? <p className="section-eyebrow mb-1.5">{eyebrow}</p> : null}
-        <Tag id={id} className="section-title text-balance">{title}</Tag>
+        {title ? (
+          <Tag id={id} className="section-title text-balance">{title}</Tag>
+        ) : null}
         {description ? (
           <p className="mt-1.5 max-w-2xl text-sm text-muted-foreground text-pretty sm:text-base">
             {description}

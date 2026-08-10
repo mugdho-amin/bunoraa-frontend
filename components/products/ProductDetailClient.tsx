@@ -1094,7 +1094,6 @@ export function ProductDetailClient({
                 )}
               >
                 <CustomizationForm
-                  productId={product.id}
                   options={resolvedCustomizationOptions}
                   currencySymbol={currencySymbol}
                   onChange={({ values, totalModifier }) => {

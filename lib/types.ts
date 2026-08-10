@@ -387,6 +387,7 @@ export type OrderListItem = {
   status: string;
   status_display?: string;
   total: string;
+  currency?: string;
   item_count: number;
   created_at: string;
 };

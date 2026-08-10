@@ -1,3 +1,5 @@
+import { getFormatLocale } from "@/lib/format";
+
 export type MoneyInput = string | number | null | undefined;
 
 export function parseMoney(value: string | number | null | undefined): number | null {
@@ -19,6 +21,7 @@ export type FormatMoneyConfig = {
   symbol?: string;
   position?: "before" | "after";
   currency?: string;
+  locale?: string;
 };
 
 export function formatMoney(
@@ -28,6 +31,9 @@ export function formatMoney(
   if (amount === null || amount === undefined) return "";
 
   const currency = config && typeof config === "string" ? config : config && typeof config === "object" ? config.currency || "BDT" : "BDT";
+  const locale = getFormatLocale(
+    config && typeof config === "object" ? config.locale : null
+  );
 
   const parsed = parseMoney(amount);
   let numeric: number;
@@ -47,7 +53,7 @@ export function formatMoney(
   }
 
   try {
-    return new Intl.NumberFormat(undefined, {
+    return new Intl.NumberFormat(locale, {
       style: "currency",
       currency,
       currencyDisplay: "narrowSymbol",
@@ -57,9 +63,9 @@ export function formatMoney(
   }
 }
 
-export function formatNumber(value: MoneyInput) {
+export function formatNumber(value: MoneyInput, language?: string | null) {
   if (value === null || value === undefined) return "";
   const numeric = typeof value === "number" ? value : Number(String(value).replace(/,/g, ""));
   if (!Number.isFinite(numeric)) return String(value);
-  return new Intl.NumberFormat().format(numeric);
+  return new Intl.NumberFormat(getFormatLocale(language)).format(numeric);
 }

@@ -12,6 +12,8 @@ import Image from "next/image";
 import { useOrders } from "@/components/orders/useOrders";
 import { isUuid, resolveOrderId } from "@/lib/orders";
 import { formatMoney } from "@/lib/checkout";
+import { formatNumber } from "@/lib/money";
+import { formatDateTime } from "@/lib/format";
 import { formatAddressLine } from "@/lib/address";
 
 export function OrderDetailPageContent() {
@@ -65,7 +67,7 @@ export function OrderDetailPageContent() {
                   <div className="flex flex-wrap gap-3 text-sm text-muted-foreground">
                     <span>Status: {order.status_display || order.status}</span>
                     {order.payment_status ? <span>Payment: {order.payment_status}</span> : null}
-                    {createdAt ? <span>Placed {createdAt.toLocaleString()}</span> : null}
+                    {createdAt ? <span>Placed {formatDateTime(createdAt)}</span> : null}
                   </div>
                 </div>
                 <div className="grid gap-6 md:grid-cols-2">
@@ -96,7 +98,7 @@ export function OrderDetailPageContent() {
                         <div className="flex-1">
                           <p className="text-sm font-semibold">{item.product_name}</p>
                           {item.variant_name ? <p className="text-xs text-muted-foreground">{item.variant_name}</p> : null}
-                          <p className="text-xs text-muted-foreground">Qty {item.quantity}</p>
+                          <p className="text-xs text-muted-foreground">Qty {formatNumber(item.quantity)}</p>
                         </div>
                         <div className="text-right text-sm">{formatAmount(item.unit_price)}</div>
                       </div>

@@ -560,7 +560,12 @@ export function NotificationsPageContent() {
     },
   });
 
-  const notifications = notificationsQuery.data ?? [];
+  // Stable reference for the notification list so useMemo consumers below
+  // don't see a fresh `?? []` array on every render.
+  const notifications = React.useMemo(
+    () => notificationsQuery.data ?? [],
+    [notificationsQuery.data]
+  );
   const unreadCount = unreadCountQuery.data?.count ?? 0;
 
   // Client-side filtering & sorting

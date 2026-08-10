@@ -49,7 +49,6 @@ function VideoPlayer({
   const videoRef = React.useRef<HTMLVideoElement>(null);
   const [isPlaying, setIsPlaying] = React.useState(autoPlay ?? false);
   const [isMuted, setIsMuted] = React.useState(autoPlay ?? true);
-  const [isFullscreen, setIsFullscreen] = React.useState(false);
   const [progress, setProgress] = React.useState(0);
   const [volume, setVolume] = React.useState(1);
   const [showControls, setShowControls] = React.useState(true);
@@ -76,10 +75,8 @@ function VideoPlayer({
     if (!videoRef.current) return;
     if (document.fullscreenElement) {
       document.exitFullscreen().catch(() => {});
-      setIsFullscreen(false);
     } else {
       videoRef.current.requestFullscreen().catch(() => {});
-      setIsFullscreen(true);
     }
   }, []);
 

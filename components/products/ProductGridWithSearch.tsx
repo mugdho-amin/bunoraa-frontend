@@ -8,7 +8,6 @@ import { InfiniteProductGrid } from "@/components/products/InfiniteProductGrid";
 import {
   searchParamsToRecord,
   buildProductRequestParams,
-  type RequestParamValue,
 } from "@/lib/productParams";
 
 export function ProductGridWithSearch({
@@ -70,7 +69,7 @@ export function ProductGridWithSearch({
         setData({ products, pagination });
       })
       .catch(() => {});
-  }, [searchParams, endpoint]);
+  }, [pathname, searchParams, endpoint]);
 
   const record = searchParamsToRecord(searchParams);
   const requestParams = buildProductRequestParams(record);

@@ -14,7 +14,7 @@ const orderingOptions = [
 export function ProductFilterBar() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const [isPending, startTransition] = React.useTransition();
+  const [isPending] = React.useTransition();
 
   const currentOrdering = searchParams.get("ordering") || "";
   const currentQuery = searchParams.get("q") || "";

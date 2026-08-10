@@ -90,11 +90,13 @@ export function RecentlyViewedSection({
     };
   }, [locale.currency]);
 
-  const visibleItems = items.filter((item) => {
-    if (excludeProductId && item.id === excludeProductId) return false;
-    if (excludeProductSlug && item.slug === excludeProductSlug) return false;
-    return true;
-  });
+  const visibleItems = items
+    .filter((item) => {
+      if (excludeProductId && item.id === excludeProductId) return false;
+      if (excludeProductSlug && item.slug === excludeProductSlug) return false;
+      return true;
+    })
+    .slice(0, 8);
 
   if (!visibleItems.length) return null;
 

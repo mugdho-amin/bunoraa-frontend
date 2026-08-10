@@ -24,8 +24,6 @@ type CategoryBandData = { category: FeaturedCategory; products: ProductListItem[
 type HomepageData = { featured_products: ProductListItem[]; new_arrivals: ProductListItem[]; bestsellers: ProductListItem[]; on_sale: ProductListItem[]; featured_categories: FeaturedCategory[]; category_bands?: CategoryBandData[]; collections: Collection[]; spotlights?: Spotlight[]; show_by_categories?: FeaturedCategory[]; };
 type SiteSettings = { site_name?: string | null; site_tagline?: string | null; tagline?: string | null; site_description?: string | null; cover_video_url?: string | null; cover_video_mp4?: string | null; cover_video_webm?: string | null; cover_video_poster?: string | null; } | null;
 
-type SiteSettingsWithVideo = NonNullable<SiteSettings> & { cover_video_url?: string | null; cover_video_mp4?: string | null; cover_video_webm?: string | null; cover_video_poster?: string | null; };
-
 const pickText = (...values: Array<string | null | undefined>) => { for (const value of values) { if (value && value.trim()) return value.trim(); } return ""; };
 const getImage = (product: ProductListItem | null | undefined) => {
   if (!product) return null;
@@ -172,12 +170,10 @@ export async function HomePageContent({ heroBanners, siteSettings, homepageData 
         <CategoryBandsLoader categoryBandsWithProducts={categoryBandsWithProducts} />
       </Suspense>
 
-      <Suspense fallback={<SectionSkeleton title="Seasonal Favs" />}>
+      <Suspense fallback={<SectionSkeleton title="Sale" />}>
         {filteredOnSale.length ? (
-          <section className={sectionWrapperClass} aria-labelledby="seasonal-favs-heading">
+          <section className={sectionWrapperClass} aria-label="On sale">
             <SectionHeading
-              eyebrow="Limited time"
-              title="Seasonal Favs"
               href="/products/?on_sale=true"
               linkLabel="Shop sale"
             />

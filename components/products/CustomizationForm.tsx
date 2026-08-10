@@ -1,8 +1,6 @@
 "use client";
 
 import * as React from "react";
-import { useQuery } from "@tanstack/react-query";
-import { apiFetch } from "@/lib/api";
 import type { CustomizationOption } from "@/lib/types";
 import { cn } from "@/lib/utils";
 import { ChevronDown, Upload, X } from "lucide-react";
@@ -21,12 +19,10 @@ function formatPrice(value: number, currencySymbol = "৳"): string {
 }
 
 export function CustomizationForm({
-  productId,
   options,
   currencySymbol = "৳",
   onChange,
 }: {
-  productId: string;
   options: CustomizationOption[];
   currencySymbol?: string;
   onChange: (data: { values: CustomizationValues; totalModifier: number }) => void;
