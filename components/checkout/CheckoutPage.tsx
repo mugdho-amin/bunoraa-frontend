@@ -30,7 +30,7 @@ const parseStep = (value: string | null): Step | null => {
   return stepOrder.includes(value as Step) ? (value as Step) : null;
 };
 
-export function CheckoutPage() {
+export function CheckoutDefault() {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
