@@ -2,6 +2,7 @@
 
 import * as React from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
 import { AuthGate } from "@/components/auth/AuthGate";
@@ -523,6 +524,37 @@ export function CheckoutAccordion() {
             </div>
 
             <div className="lg:sticky lg:top-24 lg:self-start">
+              {/* Product image grid */}
+              {cart?.items && cart.items.length > 0 && (
+                <div className="mb-4">
+                  <p className="text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground mb-3">Your items</p>
+                  <div className="grid grid-cols-2 gap-2">
+                    {cart.items.slice(0, 4).map((item) => {
+                      const isBundle = item.cart_item_type === "bundle";
+                      const itemName = item.product_name || item.bundle_name || "Item";
+                      return (
+                        <div key={item.id} className="relative overflow-hidden rounded-xl bg-muted aspect-square">
+                          {item.product_image ? (
+                            <Image src={item.product_image} alt={itemName} fill sizes="120px" className="object-cover" quality={60} />
+                          ) : (
+                            <div className="flex h-full items-center justify-center text-xs text-muted-foreground">No image</div>
+                          )}
+                          <span className="absolute right-1.5 top-1.5 flex h-5 min-w-5 items-center justify-center rounded-full bg-foreground px-1 text-[10px] font-bold text-background">
+                            {item.quantity}
+                          </span>
+                          {isBundle && (
+                            <span className="absolute left-1.5 bottom-1.5 rounded bg-background/90 px-1.5 py-0.5 text-[9px] font-semibold uppercase backdrop-blur">Bundle</span>
+                          )}
+                        </div>
+                      );
+                    })}
+                  </div>
+                  {(cart.item_count || 0) > 4 && (
+                    <p className="mt-2 text-center text-xs text-muted-foreground">+{(cart.item_count || 0) - 4} more items</p>
+                  )}
+                </div>
+              )}
+
               <CheckoutSummary
                 cart={cart}
                 cartSummary={cartSummary}
