@@ -20,7 +20,7 @@ import { useToast } from "@/components/ui/ToastProvider";
 import { fetchSiteSettings } from "@/lib/siteSettings";
 import { formatMoney } from "@/lib/checkout";
 import { cn } from "@/lib/utils";
-import { Check, Shield, Lock, ArrowRight, ArrowLeft, MapPin, Truck, CreditCard, ClipboardCheck, ChevronDown } from "lucide-react";
+import { Check, Shield, Lock, ArrowRight, ArrowLeft, MapPin, Truck, CreditCard, ClipboardCheck, ChevronDown, Gift } from "lucide-react";
 import type { CheckoutValidation, ShippingMethodOption } from "@/lib/types";
 
 const stepOrder = ["information", "shipping", "payment", "review"] as const;
@@ -556,11 +556,123 @@ export function CheckoutSplitScreen() {
                   </div>
                 </details>
               </div>
+
+              {/* Gift options */}
+              <div className="mt-4">
+                <details className="group rounded-xl border border-border/60 bg-card">
+                  <summary className="flex cursor-pointer list-none items-center gap-2 px-4 py-3 text-xs font-semibold text-muted-foreground">
+                    <Gift size={14} />
+                    Gift options
+                    <ChevronDown size={14} className="ml-auto transition-transform group-open:rotate-180" />
+                  </summary>
+                  <div className="px-4 pb-4">
+                    <GiftOptions
+                      isGift={Boolean(checkoutSession?.is_gift)}
+                      giftMessage={checkoutSession?.gift_message || ""}
+                      giftWrap={Boolean(checkoutSession?.gift_wrap)}
+                      giftWrapEnabled={Boolean(cartSummary?.gift_wrap_enabled)}
+                      giftWrapLabel={cartSummary?.gift_wrap_label || "Gift wrap"}
+                      giftWrapAmount={cartSummary?.gift_wrap_amount}
+                      currencyCode={cartSummary?.currency_code || cart?.currency || ""}
+                      onUpdate={(payload) => updateGiftOptions.mutateAsync(payload)}
+                      isUpdating={updateGiftOptions.isPending}
+                    />
+                  </div>
+                </details>
+              </div>
             </div>
           </div>
         </div>
       </div>
     </AuthGate>
+  );
+}
+
+function GiftOptions({
+  isGift: initialIsGift,
+  giftMessage: initialMessage,
+  giftWrap: initialWrap,
+  giftWrapEnabled,
+  giftWrapLabel,
+  giftWrapAmount,
+  currencyCode,
+  onUpdate,
+  isUpdating,
+}: {
+  isGift: boolean;
+  giftMessage: string;
+  giftWrap: boolean;
+  giftWrapEnabled: boolean;
+  giftWrapLabel: string;
+  giftWrapAmount?: string | null;
+  currencyCode: string;
+  onUpdate: (payload: { is_gift?: boolean; gift_message?: string; gift_wrap?: boolean }) => Promise<unknown>;
+  isUpdating: boolean;
+}) {
+  const { push } = useToast();
+  const [isGift, setIsGift] = React.useState(initialIsGift);
+  const [giftMessage, setGiftMessage] = React.useState(initialMessage);
+  const [giftWrap, setGiftWrap] = React.useState(initialWrap);
+
+  React.useEffect(() => { setIsGift(initialIsGift); }, [initialIsGift]);
+  React.useEffect(() => { setGiftMessage(initialMessage); }, [initialMessage]);
+  React.useEffect(() => { setGiftWrap(initialWrap); }, [initialWrap]);
+
+  const handleUpdate = async () => {
+    try {
+      await onUpdate({ is_gift: isGift, gift_message: giftMessage, gift_wrap: giftWrap });
+      push("Gift options updated.", "success");
+    } catch (error) {
+      push(error instanceof Error ? error.message : "Could not update gift options.", "error");
+    }
+  };
+
+  return (
+    <div className="space-y-3">
+      <label className="flex items-center gap-2 text-sm">
+        <input
+          type="checkbox"
+          checked={isGift}
+          onChange={(e) => { setIsGift(e.target.checked); if (!e.target.checked) setGiftWrap(false); }}
+        />
+        Mark as a gift
+      </label>
+      {isGift && (
+        <>
+          <textarea
+            rows={2}
+            className="w-full rounded-lg border border-border bg-card px-3 py-2 text-sm"
+            placeholder="Gift message"
+            value={giftMessage}
+            onChange={(e) => setGiftMessage(e.target.value)}
+          />
+          <label className="flex items-center gap-2 text-sm">
+            <input
+              type="checkbox"
+              checked={giftWrap}
+              disabled={!giftWrapEnabled}
+              onChange={(e) => setGiftWrap(e.target.checked)}
+            />
+            {giftWrapLabel}
+            {giftWrapAmount ? (
+              <span className="text-xs text-muted-foreground">
+                (+{formatMoney(giftWrapAmount, currencyCode)})
+              </span>
+            ) : null}
+          </label>
+        </>
+      )}
+      <Button
+        type="button"
+        size="sm"
+        variant="secondary"
+        onClick={handleUpdate}
+        disabled={isUpdating}
+        className="w-full"
+      >
+        {isUpdating ? "Saving..." : "Update gift options"}
+      </Button>
+    </div>
   );
 }
 
