@@ -23,6 +23,14 @@ import { Check, ChevronDown, User, Truck, CreditCard, ClipboardCheck, Lock } fro
 import type { CheckoutValidation, ShippingMethodOption } from "@/lib/types";
 import r2Loader from "@/lib/r2-loader";
 
+function safeImgSrc(src: string): string {
+  try {
+    return r2Loader({ src, width: 240, quality: 60 });
+  } catch {
+    return src;
+  }
+}
+
 const stepOrder = ["information", "shipping", "payment", "review"] as const;
 type Step = (typeof stepOrder)[number];
 
@@ -536,10 +544,11 @@ export function CheckoutAccordion() {
                         <div key={item.id} className="relative overflow-hidden rounded-xl bg-muted aspect-square">
                           {item.product_image ? (
                             <img
-                              src={r2Loader({ src: item.product_image, width: 240, quality: 60 })}
+                              src={safeImgSrc(item.product_image)}
                               alt={itemName}
                               loading="lazy"
                               decoding="async"
+                              onError={(e) => { e.currentTarget.style.display = "none"; }}
                               className="absolute inset-0 h-full w-full object-cover"
                             />
                           ) : (

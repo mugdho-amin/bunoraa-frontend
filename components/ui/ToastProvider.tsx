@@ -162,7 +162,7 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
         aria-atomic="true"
         data-state={toast.closing ? "closing" : "open"}
         className={cn(
-          "toast-item group/toast pointer-events-auto relative flex w-full items-center gap-3 overflow-hidden rounded-lg border border-border bg-card px-4 py-3 shadow-lg",
+          "toast-item group/toast pointer-events-auto relative flex w-full items-center gap-3 rounded-lg border border-border bg-card px-4 py-3 pr-9 shadow-lg",
           "text-sm text-foreground",
           "max-w-[calc(100vw-1.5rem)] sm:max-w-sm",
           config.borderClass
@@ -181,16 +181,16 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
         />
 
         {/* Content */}
-        <p className="min-w-0 flex-1 pr-4 leading-snug">{toast.message}</p>
+        <p className="min-w-0 flex-1 leading-snug">{toast.message}</p>
 
-        {/* Close button — always visible, top-right corner */}
+        {/* Close button — inside the toast, top-right */}
         <button
           type="button"
           onClick={() => dismiss(toast.id)}
           className={cn(
-            "absolute -right-1 -top-1 flex h-6 w-6 shrink-0 items-center justify-center rounded-full transition-colors",
-            "border border-border/60 bg-card text-muted-foreground shadow-sm",
-            "hover:bg-destructive/10 hover:text-destructive hover:border-destructive/30",
+            "absolute right-2 top-2 flex h-5 w-5 shrink-0 items-center justify-center rounded-full transition-colors",
+            "text-muted-foreground",
+            "hover:bg-destructive/10 hover:text-destructive",
             "focus:outline-none focus:ring-2 focus:ring-primary/30"
           )}
           aria-label="Dismiss"

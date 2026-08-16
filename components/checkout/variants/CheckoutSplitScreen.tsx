@@ -23,6 +23,14 @@ import { Check, Shield, Lock, ArrowRight, ArrowLeft, MapPin, Truck, CreditCard, 
 import type { CheckoutValidation, ShippingMethodOption } from "@/lib/types";
 import r2Loader from "@/lib/r2-loader";
 
+function safeImgSrc(src: string): string {
+  try {
+    return r2Loader({ src, width: 240, quality: 60 });
+  } catch {
+    return src;
+  }
+}
+
 const stepOrder = ["information", "shipping", "payment", "review"] as const;
 type Step = (typeof stepOrder)[number];
 
@@ -112,10 +120,11 @@ function OrderVisualSummary({
               <div key={item.id} className="relative overflow-hidden rounded-xl bg-muted aspect-square">
                 {item.product_image ? (
                   <img
-                    src={r2Loader({ src: item.product_image, width: 240, quality: 60 })}
+                    src={safeImgSrc(item.product_image)}
                     alt={itemName}
                     loading="lazy"
                     decoding="async"
+                    onError={(e) => { e.currentTarget.style.display = "none"; }}
                     className="absolute inset-0 h-full w-full object-cover"
                   />
                 ) : (
@@ -700,14 +709,14 @@ function GiftOptions({
           aria-checked={isGift}
           onClick={() => handleToggleGift(!isGift)}
           className={cn(
-            "relative inline-flex h-6 w-11 shrink-0 cursor-pointer items-center rounded-full transition-colors duration-200",
-            isGift ? "bg-primary" : "bg-muted border border-border"
+            "relative inline-flex h-7 w-12 shrink-0 cursor-pointer items-center rounded-full transition-colors duration-200",
+            isGift ? "bg-primary" : "bg-muted-foreground/25"
           )}
         >
           <span
             className={cn(
-              "inline-block h-4 w-4 rounded-full bg-white shadow-sm transition-transform duration-200",
-              isGift ? "translate-x-6" : "translate-x-1"
+              "inline-block h-5 w-5 rounded-full bg-background shadow-sm transition-transform duration-200",
+              isGift ? "translate-x-[22px]" : "translate-x-1"
             )}
           />
         </button>
@@ -747,14 +756,14 @@ function GiftOptions({
                 aria-checked={giftWrap}
                 onClick={() => handleToggleWrap(!giftWrap)}
                 className={cn(
-                  "relative inline-flex h-6 w-11 shrink-0 cursor-pointer items-center rounded-full transition-colors duration-200",
-                  giftWrap ? "bg-primary" : "bg-muted border border-border"
+                  "relative inline-flex h-7 w-12 shrink-0 cursor-pointer items-center rounded-full transition-colors duration-200",
+                  giftWrap ? "bg-primary" : "bg-muted-foreground/25"
                 )}
               >
                 <span
                   className={cn(
-                    "inline-block h-4 w-4 rounded-full bg-white shadow-sm transition-transform duration-200",
-                    giftWrap ? "translate-x-6" : "translate-x-1"
+                    "inline-block h-5 w-5 rounded-full bg-background shadow-sm transition-transform duration-200",
+                    giftWrap ? "translate-x-[22px]" : "translate-x-1"
                   )}
                 />
               </button>

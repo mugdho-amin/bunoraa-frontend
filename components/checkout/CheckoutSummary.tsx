@@ -8,6 +8,14 @@ import { useToast } from "@/components/ui/ToastProvider";
 import { formatMoney } from "@/lib/checkout";
 import r2Loader from "@/lib/r2-loader";
 import { cn } from "@/lib/utils";
+
+function safeImgSrc(src: string): string {
+  try {
+    return r2Loader({ src, width: 112, quality: 60 });
+  } catch {
+    return src;
+  }
+}
 import type { Cart, CartSummary, CheckoutSession } from "@/lib/types";
 
 type CheckoutSummaryProps = {
@@ -144,10 +152,11 @@ export function CheckoutSummary({
                 <div className="relative h-14 w-14 overflow-hidden rounded-xl bg-muted">
                   {item.product_image ? (
                     <img
-                      src={r2Loader({ src: item.product_image, width: 112, quality: 60 })}
+                      src={safeImgSrc(item.product_image)}
                       alt={itemName}
                       loading="lazy"
                       decoding="async"
+                      onError={(e) => { e.currentTarget.style.display = "none"; }}
                       className="absolute inset-0 h-full w-full object-cover"
                     />
                   ) : (
@@ -323,14 +332,14 @@ export function CheckoutSummary({
               }
             }}
             className={cn(
-              "relative inline-flex h-6 w-11 shrink-0 cursor-pointer items-center rounded-full transition-colors duration-200",
-              giftOptions.is_gift ? "bg-primary" : "bg-muted border border-border"
+              "relative inline-flex h-7 w-12 shrink-0 cursor-pointer items-center rounded-full transition-colors duration-200",
+              giftOptions.is_gift ? "bg-primary" : "bg-muted-foreground/25"
             )}
           >
             <span
               className={cn(
-                "inline-block h-4 w-4 rounded-full bg-white shadow-sm transition-transform duration-200",
-                giftOptions.is_gift ? "translate-x-6" : "translate-x-1"
+                "inline-block h-5 w-5 rounded-full bg-background shadow-sm transition-transform duration-200",
+                giftOptions.is_gift ? "translate-x-[22px]" : "translate-x-1"
               )}
             />
           </button>
@@ -377,14 +386,14 @@ export function CheckoutSummary({
                     }))
                   }
                   className={cn(
-                    "relative inline-flex h-6 w-11 shrink-0 cursor-pointer items-center rounded-full transition-colors duration-200",
-                    giftOptions.gift_wrap ? "bg-primary" : "bg-muted border border-border"
+                    "relative inline-flex h-7 w-12 shrink-0 cursor-pointer items-center rounded-full transition-colors duration-200",
+                    giftOptions.gift_wrap ? "bg-primary" : "bg-muted-foreground/25"
                   )}
                 >
                   <span
                     className={cn(
-                      "inline-block h-4 w-4 rounded-full bg-white shadow-sm transition-transform duration-200",
-                      giftOptions.gift_wrap ? "translate-x-6" : "translate-x-1"
+                      "inline-block h-5 w-5 rounded-full bg-background shadow-sm transition-transform duration-200",
+                      giftOptions.gift_wrap ? "translate-x-[22px]" : "translate-x-1"
                     )}
                   />
                 </button>
