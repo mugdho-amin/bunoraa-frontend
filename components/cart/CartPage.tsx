@@ -12,6 +12,7 @@ import { useAuthContext } from "@/components/providers/AuthProvider";
 import { useMediaUrl } from "@/components/providers/SiteSettingsProvider";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
+import { Badge } from "@/components/ui/Badge";
 import { useToast } from "@/components/ui/ToastProvider";
 import { cn } from "@/lib/utils";
 import { buildProductPath } from "@/lib/productPaths";
@@ -271,9 +272,7 @@ function CartItemRow({
         <div className="min-w-0">
           {item.cart_item_type === "bundle" ? (
             <div className="mb-1 inline-flex items-center gap-1.5">
-              <span className="rounded bg-accent/15 px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-accent-foreground">
-                Bundle
-              </span>
+              <Badge variant="accent" size="sm">Bundle</Badge>
               {item.bundle_items?.length ? (
                 <span className="text-[10px] text-muted-foreground">
                   {item.bundle_items.length} items

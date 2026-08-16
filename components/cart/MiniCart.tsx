@@ -5,6 +5,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { Minus, Plus, Trash2, Truck, X } from "lucide-react";
 import { Button } from "@/components/ui/Button";
+import { Badge } from "@/components/ui/Badge";
 import { useCart } from "@/components/cart/useCart";
 import { useUiMessages } from "@/components/i18n/useUiMessages";
 import { useSiteSettings, useMediaUrl } from "@/components/providers/SiteSettingsProvider";
@@ -131,9 +132,7 @@ export function MiniCart({
                     <p className="truncate text-sm font-semibold">{itemName}</p>
                   )}
                   {isBundle ? (
-                    <span className="shrink-0 rounded bg-accent/15 px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-accent-foreground">
-                      Bundle
-                    </span>
+                    <Badge variant="accent" size="sm">Bundle</Badge>
                   ) : null}
                 </div>
                 {isBundle && bundleCount > 0 ? (

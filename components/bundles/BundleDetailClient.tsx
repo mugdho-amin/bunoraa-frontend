@@ -304,6 +304,7 @@ export function BundleDetailClient({ bundle }: { bundle: Bundle }) {
   const [quantity, setQuantity] = React.useState(1);
   const [estimatorOpen, setEstimatorOpen] = React.useState(false);
   const [lightboxOpen, setLightboxOpen] = React.useState(false);
+  const [whatsInsideOpen, setWhatsInsideOpen] = React.useState(false);
 
   const currency = bundle.currency || "BDT";
   const price = formatMoney(bundle.price, currency);
@@ -360,15 +361,18 @@ export function BundleDetailClient({ bundle }: { bundle: Bundle }) {
               >
                 <X size={24} />
               </button>
-              <div className="relative max-h-[85vh] max-w-[95vw]">
+              <div className="relative flex h-full w-full items-center justify-center p-8">
                 <TransformWrapper
                   initialScale={1}
                   minScale={1}
-                  maxScale={8}
+                  maxScale={4}
                   centerOnInit
-                  wheel={{ wheelDisabled: false }}
+                  centerZoomedOut
+                  limitToBounds={false}
+                  wheel={{ wheelDisabled: false, step: 0.1 }}
                   pinch={{ disabled: false }}
-                  doubleClick={{ disabled: false, mode: "zoomIn" }}
+                  doubleClick={{ disabled: false, mode: "toggle" }}
+                  panning={{ velocityDisabled: false }}
                 >
                   <TransformComponent
                     wrapperClass="!w-full !h-full"
@@ -380,7 +384,8 @@ export function BundleDetailClient({ bundle }: { bundle: Bundle }) {
                       width={1200}
                       height={1500}
                       quality={85}
-                      className="max-h-[85vh] object-contain"
+                      className="max-h-[80vh] max-w-[90vw] object-contain"
+                      style={{ display: "block", margin: "auto" }}
                       loading="lazy"
                       decoding="async"
                       draggable={false}
@@ -470,15 +475,14 @@ export function BundleDetailClient({ bundle }: { bundle: Bundle }) {
                 Calculate Delivery
               </Button>
               <Button
-                asChild
+                type="button"
                 variant="secondary"
                 size="md"
                 className="h-11 gap-2 rounded-xl border-border/60 text-xs font-bold uppercase tracking-wider"
+                onClick={() => setWhatsInsideOpen(true)}
               >
-                <a href="#bundle-contents">
-                  <Info size={16} />
-                  What&apos;s Inside
-                </a>
+                <Info size={16} />
+                What&apos;s Inside
               </Button>
             </div>
 
@@ -554,26 +558,16 @@ export function BundleDetailClient({ bundle }: { bundle: Bundle }) {
         </div>
       </div>
 
-      {/* What's inside */}
-      <section
-        id="bundle-contents"
-        aria-labelledby="bundle-contents-title"
-        className="scroll-mt-24 border-t border-border/60 pt-10"
+      {/* What's Inside Modal */}
+      <Modal
+        isOpen={whatsInsideOpen}
+        onClose={() => setWhatsInsideOpen(false)}
+        title="What's Inside"
+        description={`${itemCount} items · worth ${worth}`}
+        maxWidth="xl"
       >
-        <div className="mb-5 flex flex-wrap items-end justify-between gap-3">
-          <div>
-            <p className="section-eyebrow">What&apos;s inside</p>
-            <h2 id="bundle-contents-title" className="section-title">
-              {bundle.name}
-            </h2>
-          </div>
-          <p className="text-sm text-muted-foreground">
-            {itemCount} items · worth {worth}
-          </p>
-        </div>
-
         {hasItems ? (
-          <ul className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+          <ul className="grid gap-3 sm:grid-cols-2">
             {itemLines.map((line, index) => {
               const { product } = line;
               if (!product) return null;
@@ -583,6 +577,7 @@ export function BundleDetailClient({ bundle }: { bundle: Bundle }) {
                   <Link
                     href={buildProductPath(product)}
                     className="flex items-center gap-3"
+                    onClick={() => setWhatsInsideOpen(false)}
                   >
                     {product.primary_image ? (
                       <div className="relative h-16 w-16 shrink-0 overflow-hidden rounded-lg bg-muted">
@@ -621,7 +616,7 @@ export function BundleDetailClient({ bundle }: { bundle: Bundle }) {
             Bundle details are available, but the product list is not exposed via API yet.
           </p>
         )}
-      </section>
+      </Modal>
 
       {/* Reviews */}
       <section id="reviews" className="scroll-mt-24 pt-10">
