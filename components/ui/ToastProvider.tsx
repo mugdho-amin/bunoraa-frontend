@@ -162,8 +162,9 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
         aria-atomic="true"
         data-state={toast.closing ? "closing" : "open"}
         className={cn(
-          "toast-item group/toast pointer-events-auto relative flex w-full max-w-sm items-center gap-3 overflow-hidden rounded-lg border border-border bg-card px-4 py-3 shadow-lg",
+          "toast-item group/toast pointer-events-auto relative flex w-full items-center gap-3 overflow-hidden rounded-lg border border-border bg-card px-4 py-3 shadow-lg",
           "text-sm text-foreground",
+          "max-w-[calc(100vw-1.5rem)] sm:max-w-sm",
           config.borderClass
         )}
         onMouseEnter={() => pauseTimer(toast.id)}
@@ -213,8 +214,8 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
         data-toast-root
         className={cn(
           "pointer-events-none fixed z-[200] flex flex-col gap-2",
-          "w-full max-w-sm px-4",
-          position === "top" ? "top-4 right-0 items-end" : "bottom-4 right-0 items-end"
+          "w-full px-3 sm:px-4",
+          position === "top" ? "top-3 right-0 sm:top-4 items-end" : "bottom-3 right-0 sm:bottom-4 items-end"
         )}
         aria-relevant="additions removals"
       >

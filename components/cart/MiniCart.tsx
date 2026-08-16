@@ -114,7 +114,7 @@ export function MiniCart({
         ) : null}
       </div>
 
-<div className="flex-1 space-y-4 overflow-y-auto p-4" aria-busy={isMutating}>
+      <div className="flex-1 space-y-4 overflow-y-auto p-3 sm:p-4" aria-busy={isMutating}>
         {cart.items.map((item) => {
           const isBundle = item.cart_item_type === "bundle";
           const itemLink = isBundle && item.bundle_slug
@@ -125,8 +125,8 @@ export function MiniCart({
           const itemName = item.product_name || item.bundle_name || "Item";
           const bundleCount = item.bundle_items?.length ?? 0;
           return (
-            <div key={item.id} className="flex gap-3">
-              <div className="relative h-24 w-[4.5rem] shrink-0 overflow-hidden rounded-lg bg-muted">
+            <div key={item.id} className="flex gap-2.5 sm:gap-3">
+              <div className="relative h-20 w-16 shrink-0 overflow-hidden rounded-lg bg-muted sm:h-24 sm:w-[4.5rem]">
                 {fullImageUrl(item.product_image) ? (
                   <Image
                     src={fullImageUrl(item.product_image)!}
@@ -201,7 +201,7 @@ export function MiniCart({
           </div>
         )}
         {mutationError ? <p className="text-xs text-destructive" role="alert">Could not update your bag. Please try again.</p> : null}
-        <div className="grid grid-cols-2 gap-2 pt-1">
+        <div className="grid grid-cols-1 gap-2 pt-1 sm:grid-cols-2">
           <Button asChild variant="secondary" className="h-9 w-full uppercase tracking-widest text-[10px]">
             <Link href="/cart/" onClick={handleClose}>
               {t("view_bag", "View Bag")}
