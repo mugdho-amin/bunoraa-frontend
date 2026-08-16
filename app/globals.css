@@ -673,7 +673,7 @@ html[data-language="bn"] body {
 
   body.has-mobile-sticky-cta .chat-widget-mobile-closed-offset {
     bottom: calc(
-      max(var(--mobile-sticky-footer-clearance, 0.2rem), env(safe-area-inset-bottom)) + 1rem
+      max(var(--mobile-sticky-footer-clearance, 0.2rem), env(safe-area-inset-bottom)) + 2rem
     );
   }
 

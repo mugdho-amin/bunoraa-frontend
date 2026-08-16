@@ -334,7 +334,7 @@ export function ChatWidget() {
   return (
     <>
       {!open ? (
-        <div className="chat-widget-mobile-closed-offset fixed bottom-4 right-4 z-50 sm:bottom-6 sm:right-6">
+        <div className="chat-widget-mobile-closed-offset fixed bottom-6 right-4 z-50 sm:bottom-8 sm:right-6">
           <button
             type="button"
             className="rounded-full bg-primary px-4 py-2 text-sm text-white shadow-lg"
