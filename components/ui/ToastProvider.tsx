@@ -49,26 +49,26 @@ const variantConfig: Record<ToastVariant, {
   success: {
     icon: CheckCircle,
     ariaRole: "status",
-    iconColor: "text-emerald-500",
-    borderClass: "border-l-[3px] border-l-emerald-500",
+    iconColor: "text-success",
+    borderClass: "border-l-[3px] border-l-success",
   },
   error: {
     icon: XCircle,
     ariaRole: "alert",
-    iconColor: "text-red-500",
-    borderClass: "border-l-[3px] border-l-red-500",
+    iconColor: "text-destructive",
+    borderClass: "border-l-[3px] border-l-destructive",
   },
   warning: {
     icon: AlertTriangle,
     ariaRole: "alert",
-    iconColor: "text-amber-500",
-    borderClass: "border-l-[3px] border-l-amber-500",
+    iconColor: "text-warning",
+    borderClass: "border-l-[3px] border-l-warning",
   },
   info: {
     icon: Info,
     ariaRole: "status",
-    iconColor: "text-blue-500",
-    borderClass: "border-l-[3px] border-l-blue-500",
+    iconColor: "text-primary",
+    borderClass: "border-l-[3px] border-l-primary",
   },
 };
 
@@ -162,8 +162,8 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
         aria-atomic="true"
         data-state={toast.closing ? "closing" : "open"}
         className={cn(
-          "toast-item group/toast pointer-events-auto relative flex w-full max-w-sm items-center gap-3 overflow-hidden rounded-lg border border-zinc-200 bg-white px-4 py-3 shadow-lg dark:border-zinc-800 dark:bg-zinc-900",
-          "text-sm text-zinc-900 dark:text-zinc-100",
+          "toast-item group/toast pointer-events-auto relative flex w-full max-w-sm items-center gap-3 overflow-hidden rounded-lg border border-border bg-card px-4 py-3 shadow-lg",
+          "text-sm text-foreground",
           config.borderClass
         )}
         onMouseEnter={() => pauseTimer(toast.id)}
@@ -187,10 +187,10 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
           type="button"
           onClick={() => dismiss(toast.id)}
           className={cn(
-            "absolute right-2 top-1/2 -translate-y-1/2 rounded-md p-1 text-zinc-400 transition-colors",
+            "absolute right-2 top-1/2 -translate-y-1/2 rounded-md p-1 text-muted-foreground transition-colors",
             "opacity-0 group-hover/toast:opacity-100",
-            "hover:bg-zinc-100 hover:text-zinc-600 dark:hover:bg-zinc-800 dark:hover:text-zinc-300",
-            "focus:outline-none focus:ring-2 focus:ring-zinc-400/30",
+            "hover:bg-muted hover:text-foreground",
+            "focus:outline-none focus:ring-2 focus:ring-primary/30",
             /* Always visible on touch devices */
             "[@media(hover:none)]:opacity-100"
           )}
