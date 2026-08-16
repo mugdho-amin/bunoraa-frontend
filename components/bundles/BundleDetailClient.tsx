@@ -20,6 +20,7 @@ import { useToast } from "@/components/ui/ToastProvider";
 import { useSiteSettings } from "@/components/providers/SiteSettingsProvider";
 import { useUiMessages } from "@/components/i18n/useUiMessages";
 import { getBundleReviewSummary } from "@/lib/bundles";
+import { getBundleItemCount, getBundleShippingItemCount } from "@/lib/bundleQuantities";
 import { formatMoney } from "@/lib/money";
 import { buildProductPath } from "@/lib/productPaths";
 import { cn } from "@/lib/utils";
@@ -122,7 +123,7 @@ function BundleShippingEstimatorModal({
   const productIds = (bundle.items || [])
     .map((line) => line.product?.id)
     .filter((id): id is string => Boolean(id));
-  const itemCount = safeQuantity * Math.max(1, Number(bundle.item_count) || 1);
+  const pieceCount = getBundleShippingItemCount(bundle, safeQuantity);
 
   const orderedMethods = React.useMemo(() => {
     if (!result?.methods?.length) return [] as ShippingMethodOption[];
@@ -143,7 +144,7 @@ function BundleShippingEstimatorModal({
           state: state || undefined,
           postal_code: postalCode || undefined,
           subtotal,
-          item_count: itemCount,
+          item_count: pieceCount,
           product_ids: productIds,
         },
       });
@@ -324,6 +325,7 @@ export function BundleDetailClient({ bundle }: { bundle: Bundle }) {
 
   const itemLines = bundle.items || [];
   const hasItems = itemLines.length > 0;
+  const itemCount = getBundleItemCount(bundle);
 
   return (
     <div className="space-y-10 pb-32 md:pb-12">
@@ -412,7 +414,7 @@ export function BundleDetailClient({ bundle }: { bundle: Bundle }) {
               </a>
             </div>
             <div className="flex flex-wrap gap-2">
-              <Badge variant="outline">{bundle.item_count ?? 0} items</Badge>
+              <Badge variant="outline">{itemCount} items</Badge>
             </div>
           </div>
 
@@ -533,7 +535,7 @@ export function BundleDetailClient({ bundle }: { bundle: Bundle }) {
             <CollapsibleSection id="details" title="Details" icon={Info}>
               <ul className="space-y-2 text-xs">
                 <li className="flex justify-between gap-3">
-                  <span className="text-muted-foreground">{bundle.item_count ?? 0} items</span>
+                  <span className="text-muted-foreground">{itemCount} items</span>
                   <span className="font-semibold">{t("items", "Items")}</span>
                 </li>
                 <li className="flex justify-between gap-3">
@@ -566,7 +568,7 @@ export function BundleDetailClient({ bundle }: { bundle: Bundle }) {
             </h2>
           </div>
           <p className="text-sm text-muted-foreground">
-            {bundle.item_count ?? 0} items · worth {worth}
+            {itemCount} items · worth {worth}
           </p>
         </div>
 

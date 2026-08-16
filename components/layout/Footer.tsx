@@ -15,6 +15,8 @@ import { SocialIcon } from "@/components/layout/SocialIcon";
 import { asArray } from "@/lib/array";
 import { buildCategoryPath } from "@/lib/categoryPaths";
 import { hasPublishedBundles } from "@/lib/bundles";
+import { hasPublishedCollections } from "@/lib/collections";
+import { hasPublishedArtisans } from "@/lib/artisans";
 import { getSiteSettings } from "@/lib/siteSettings.server";
 
 const FOOTER_CATEGORY_LIMIT = 5;
@@ -166,6 +168,8 @@ export async function Footer() {
     contactSettingsResult,
     categoriesResult,
     bundleAvailabilityResult,
+    collectionsResult,
+    artisansResult,
   ] = await Promise.allSettled([
     getFooterPages(),
     getPublishedPages(),
@@ -173,6 +177,8 @@ export async function Footer() {
     getContactSettings(),
     getTopCategories(),
     hasPublishedBundles(),
+    hasPublishedCollections(),
+    hasPublishedArtisans(),
   ]);
 
   const pages = pagesResult.status === "fulfilled" ? pagesResult.value : [];
@@ -186,6 +192,10 @@ export async function Footer() {
     bundleAvailabilityResult.status === "fulfilled"
       ? bundleAvailabilityResult.value
       : false;
+  const hasCollections =
+    collectionsResult.status === "fulfilled" ? collectionsResult.value : false;
+  const hasArtisans =
+    artisansResult.status === "fulfilled" ? artisansResult.value : false;
 
   const brandName = pickText(siteSettings?.company_name, siteSettings?.site_name) || "Bunoraa";
   const brandDescription =
@@ -342,12 +352,16 @@ export async function Footer() {
   const shopHrefSet = new Set(shopLinks.map((item) => normalizeHref(item.href)));
 
   const collectionLinks = dedupeLinks([
-    { key: "all-collections", label: "All collections", href: "/collections/" },
+    ...(hasCollections
+      ? [{ key: "all-collections", label: "All collections", href: "/collections/" }]
+      : []),
     { key: "collections-all-products", label: "All products", href: "/products/" },
     ...(hasBundles
       ? [{ key: "collections-bundles", label: "Bundles", href: "/bundles/" }]
       : []),
-    { key: "collections-artisans", label: "Artisans", href: "/artisans/" },
+    ...(hasArtisans
+      ? [{ key: "collections-artisans", label: "Artisans", href: "/artisans/" }]
+      : []),
     { key: "collections-preorders", label: "Preorders", href: "/preorders/" },
   ])
     .filter((item) => !shopHrefSet.has(normalizeHref(item.href)))

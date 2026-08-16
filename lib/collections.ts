@@ -1,18 +1,13 @@
 import { cache } from "react";
 import { apiFetch } from "@/lib/api";
-import type { Artisan } from "@/lib/types";
+import type { Collection } from "@/lib/types";
 import { asArray } from "@/lib/array";
 import { logger } from "@/lib/logger";
 
-export const tryGetArtisanMeta = cache(async (slug: string) => {
-  try { const response = await apiFetch<Artisan>(`/artisans/${slug}/`); return response.data; }
-  catch { return null; }
-});
-
-export const hasPublishedArtisans = cache(async (): Promise<boolean> => {
+export const hasPublishedCollections = cache(async (): Promise<boolean> => {
   try {
-    const response = await apiFetch<Artisan[] | { results?: Artisan[]; count?: number }>(
-      "/artisans/",
+    const response = await apiFetch<Collection[] | { results?: Collection[]; count?: number }>(
+      "/catalog/collections/",
       {
         params: { page_size: 1 },
         next: { revalidate: 300 },
@@ -31,9 +26,9 @@ export const hasPublishedArtisans = cache(async (): Promise<boolean> => {
     ) {
       return ((payload as { count: number }).count || 0) > 0;
     }
-    return asArray<Artisan>(payload).length > 0;
+    return asArray<Collection>(payload).length > 0;
   } catch (e) {
-    logger.error("hasPublishedArtisans fetch failed", e);
+    logger.error("hasPublishedCollections fetch failed", e);
     return false;
   }
 });
