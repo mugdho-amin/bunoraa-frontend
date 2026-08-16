@@ -181,23 +181,21 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
         />
 
         {/* Content */}
-        <p className="min-w-0 flex-1 pr-5 leading-snug">{toast.message}</p>
+        <p className="min-w-0 flex-1 pr-4 leading-snug">{toast.message}</p>
 
-        {/* Close button — top-right corner, visible on hover (always on touch) */}
+        {/* Close button — always visible, top-right corner */}
         <button
           type="button"
           onClick={() => dismiss(toast.id)}
           className={cn(
-            "absolute right-2 top-1/2 -translate-y-1/2 rounded-md p-1 text-muted-foreground transition-colors",
-            "opacity-0 group-hover/toast:opacity-100",
-            "hover:bg-muted hover:text-foreground",
-            "focus:outline-none focus:ring-2 focus:ring-primary/30",
-            /* Always visible on touch devices */
-            "[@media(hover:none)]:opacity-100"
+            "absolute -right-1 -top-1 flex h-6 w-6 shrink-0 items-center justify-center rounded-full transition-colors",
+            "border border-border/60 bg-card text-muted-foreground shadow-sm",
+            "hover:bg-destructive/10 hover:text-destructive hover:border-destructive/30",
+            "focus:outline-none focus:ring-2 focus:ring-primary/30"
           )}
           aria-label="Dismiss"
         >
-          <X size={14} strokeWidth={2.5} />
+          <X size={12} strokeWidth={2.5} />
         </button>
       </div>
     );
@@ -215,7 +213,7 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
         className={cn(
           "pointer-events-none fixed z-[200] flex flex-col gap-2",
           "w-full px-3 sm:px-4",
-          position === "top" ? "top-3 right-0 sm:top-4 items-end" : "bottom-3 right-0 sm:bottom-4 items-end"
+          position === "top" ? "top-3 right-3 sm:top-4 sm:right-4 items-end" : "bottom-3 right-3 sm:bottom-4 sm:right-4 items-end"
         )}
         aria-relevant="additions removals"
       >

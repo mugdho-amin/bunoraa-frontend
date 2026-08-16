@@ -1,12 +1,12 @@
 "use client";
 
 import * as React from "react";
-import Image from "next/image";
 import { ChevronDown } from "lucide-react";
 import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
 import { useToast } from "@/components/ui/ToastProvider";
 import { formatMoney } from "@/lib/checkout";
+import r2Loader from "@/lib/r2-loader";
 import { cn } from "@/lib/utils";
 import type { Cart, CartSummary, CheckoutSession } from "@/lib/types";
 
@@ -143,15 +143,12 @@ export function CheckoutSummary({
               <div key={item.id} className="flex items-center gap-3">
                 <div className="relative h-14 w-14 overflow-hidden rounded-xl bg-muted">
                   {item.product_image ? (
-                    <Image
-                      src={item.product_image}
+                    <img
+                      src={r2Loader({ src: item.product_image, width: 112, quality: 60 })}
                       alt={itemName}
-                      fill
-                      quality={60}
-                      sizes="56px"
                       loading="lazy"
                       decoding="async"
-                      className="object-cover"
+                      className="absolute inset-0 h-full w-full object-cover"
                     />
                   ) : (
                     <div className="h-full w-full bg-muted" />
@@ -297,33 +294,53 @@ export function CheckoutSummary({
       </div>
 
       <div className="space-y-3 border-t border-border pt-4">
-        <div>
-          <p className="text-sm font-semibold">Gift options</p>
-          <p className="text-xs text-muted-foreground">
-            Make it special with a note or gift wrap.
-          </p>
-        </div>
-        <label className="flex items-center gap-2 text-sm">
-          <input
-            type="checkbox"
-            checked={giftOptions.is_gift}
-            onChange={(event) =>
+        <div className="flex items-center justify-between rounded-xl border border-border/60 bg-muted/20 px-3.5 py-3">
+          <div className="flex items-center gap-2.5">
+            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary/10">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-primary">
+                <path d="M20 12v10H4V12" /><path d="M2 7h20v5H2z" /><path d="M12 22V7" /><path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z" /><path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z" />
+              </svg>
+            </div>
+            <div>
+              <p className="text-sm font-medium leading-tight">Gift options</p>
+              <p className="text-[11px] text-muted-foreground">Add a note or gift wrap</p>
+            </div>
+          </div>
+          <button
+            type="button"
+            role="switch"
+            aria-checked={giftOptions.is_gift}
+            onClick={() => {
+              const next = !giftOptions.is_gift;
               setGiftOptions((prev) => ({
                 ...prev,
-                is_gift: event.target.checked,
-                gift_wrap: event.target.checked ? prev.gift_wrap : false,
-                gift_message: event.target.checked ? prev.gift_message : "",
-              }))
-            }
-          />
-          Mark this order as a gift
-        </label>
+                is_gift: next,
+                gift_wrap: next ? prev.gift_wrap : false,
+                gift_message: next ? prev.gift_message : "",
+              }));
+              if (!next) {
+                onUpdateGift({ is_gift: false, gift_message: "", gift_wrap: false });
+              }
+            }}
+            className={cn(
+              "relative inline-flex h-6 w-11 shrink-0 cursor-pointer items-center rounded-full transition-colors duration-200",
+              giftOptions.is_gift ? "bg-primary" : "bg-muted border border-border"
+            )}
+          >
+            <span
+              className={cn(
+                "inline-block h-4 w-4 rounded-full bg-white shadow-sm transition-transform duration-200",
+                giftOptions.is_gift ? "translate-x-6" : "translate-x-1"
+              )}
+            />
+          </button>
+        </div>
         {giftOptions.is_gift ? (
-          <div className="space-y-2">
+          <div className="space-y-3 animate-in slide-in-from-top-1 fade-in duration-200">
             <textarea
-              rows={3}
-              className="w-full rounded-lg border border-border bg-card px-3 py-2 text-sm"
-              placeholder="Gift message"
+              rows={2}
+              className="w-full rounded-xl border border-border bg-card px-3.5 py-2.5 text-sm resize-none placeholder:text-muted-foreground/60 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary/40 transition-all"
+              placeholder="Write a gift message..."
               value={giftOptions.gift_message}
               onChange={(event) =>
                 setGiftOptions((prev) => ({
@@ -332,40 +349,59 @@ export function CheckoutSummary({
                 }))
               }
             />
-            <label className="flex items-center gap-2 text-sm">
-              <input
-                type="checkbox"
-                checked={giftOptions.gift_wrap}
-                disabled={!cartSummary?.gift_wrap_enabled}
-                onChange={(event) =>
-                  setGiftOptions((prev) => ({
-                    ...prev,
-                    gift_wrap: event.target.checked,
-                  }))
-                }
-              />
-              {cartSummary?.gift_wrap_label || "Gift wrap"}
-              {cartSummary?.gift_wrap_amount ? (
-                <span className="text-xs text-muted-foreground">
-                  (+{cartSummary.formatted_gift_wrap_amount || formatMoney(
-                    cartSummary.gift_wrap_amount,
-                    currencyCode
-                  )})
-                </span>
-              ) : null}
-            </label>
+            {cartSummary?.gift_wrap_enabled && (
+              <div className="flex items-center justify-between rounded-xl border border-border/60 bg-muted/20 px-3.5 py-3">
+                <div className="flex items-center gap-2.5">
+                  <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-accent/10">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-accent">
+                      <path d="M21 8V21H3V8" /><path d="M1 3h22v5H1z" /><path d="M10 12h4" />
+                    </svg>
+                  </div>
+                  <div>
+                    <p className="text-sm font-medium leading-tight">{cartSummary?.gift_wrap_label || "Gift wrap"}</p>
+                    {cartSummary?.gift_wrap_amount && (
+                      <p className="text-[11px] text-muted-foreground">
+                        +{cartSummary.formatted_gift_wrap_amount || formatMoney(cartSummary.gift_wrap_amount, currencyCode)}
+                      </p>
+                    )}
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  role="switch"
+                  aria-checked={giftOptions.gift_wrap}
+                  onClick={() =>
+                    setGiftOptions((prev) => ({
+                      ...prev,
+                      gift_wrap: !prev.gift_wrap,
+                    }))
+                  }
+                  className={cn(
+                    "relative inline-flex h-6 w-11 shrink-0 cursor-pointer items-center rounded-full transition-colors duration-200",
+                    giftOptions.gift_wrap ? "bg-primary" : "bg-muted border border-border"
+                  )}
+                >
+                  <span
+                    className={cn(
+                      "inline-block h-4 w-4 rounded-full bg-white shadow-sm transition-transform duration-200",
+                      giftOptions.gift_wrap ? "translate-x-6" : "translate-x-1"
+                    )}
+                  />
+                </button>
+              </div>
+            )}
+            <Button
+              type="button"
+              size="sm"
+              variant="secondary"
+              onClick={handleGiftUpdate}
+              disabled={isUpdatingGift}
+              className={cn("w-full", isUpdatingGift && "opacity-70")}
+            >
+              {isUpdatingGift ? "Saving..." : "Save gift options"}
+            </Button>
           </div>
         ) : null}
-        <Button
-          type="button"
-          size="sm"
-          variant="secondary"
-          onClick={handleGiftUpdate}
-          disabled={isUpdatingGift}
-          className={cn("w-full", isUpdatingGift && "opacity-70")}
-        >
-          {isUpdatingGift ? "Saving..." : "Update gift options"}
-        </Button>
       </div>
     </div>
   );

@@ -2,7 +2,6 @@
 
 import * as React from "react";
 import Link from "next/link";
-import Image from "next/image";
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
 import { AuthGate } from "@/components/auth/AuthGate";
@@ -20,8 +19,9 @@ import { useToast } from "@/components/ui/ToastProvider";
 import { fetchSiteSettings } from "@/lib/siteSettings";
 import { formatMoney } from "@/lib/checkout";
 import { cn } from "@/lib/utils";
-import { Check, Shield, Lock, ArrowRight, ArrowLeft, MapPin, Truck, CreditCard, ClipboardCheck, ChevronDown, Gift } from "lucide-react";
+import { Check, Shield, Lock, ArrowRight, ArrowLeft, MapPin, Truck, CreditCard, ClipboardCheck, ChevronDown, Gift, Package } from "lucide-react";
 import type { CheckoutValidation, ShippingMethodOption } from "@/lib/types";
+import r2Loader from "@/lib/r2-loader";
 
 const stepOrder = ["information", "shipping", "payment", "review"] as const;
 type Step = (typeof stepOrder)[number];
@@ -111,7 +111,13 @@ function OrderVisualSummary({
             return (
               <div key={item.id} className="relative overflow-hidden rounded-xl bg-muted aspect-square">
                 {item.product_image ? (
-                  <Image src={item.product_image} alt={itemName} fill sizes="120px" className="object-cover" quality={60} />
+                  <img
+                    src={r2Loader({ src: item.product_image, width: 240, quality: 60 })}
+                    alt={itemName}
+                    loading="lazy"
+                    decoding="async"
+                    className="absolute inset-0 h-full w-full object-cover"
+                  />
                 ) : (
                   <div className="flex h-full items-center justify-center text-xs text-muted-foreground">No image</div>
                 )}
@@ -150,6 +156,18 @@ function OrderVisualSummary({
           <span className="text-muted-foreground">Tax</span>
           <span className="font-medium">{cartSummary?.formatted_tax || (cartSummary?.tax_amount ? formatMoney(cartSummary.tax_amount, currencyCode) : "—")}</span>
         </div>
+        {(checkoutSession?.gift_wrap || (cartSummary?.gift_wrap_cost && Number(cartSummary.gift_wrap_cost) > 0)) && (
+          <div className="flex justify-between">
+            <span className="text-muted-foreground">{cartSummary?.gift_wrap_label || "Gift wrap"}</span>
+            <span className="font-medium">{cartSummary?.formatted_gift_wrap || formatMoney(cartSummary?.gift_wrap_cost || "0", currencyCode)}</span>
+          </div>
+        )}
+        {checkoutSession?.is_gift && (
+          <div className="flex items-center gap-1.5 text-xs text-primary">
+            <Gift size={12} />
+            <span>This order is a gift</span>
+          </div>
+        )}
         <div className="border-t border-border/60 pt-2.5 flex justify-between text-base font-bold">
           <span>Total</span>
           <span>{cartSummary?.formatted_total || formatMoney(cartSummary?.total || cart?.subtotal || "0", currencyCode)}</span>
@@ -613,65 +631,145 @@ function GiftOptions({
   const [isGift, setIsGift] = React.useState(initialIsGift);
   const [giftMessage, setGiftMessage] = React.useState(initialMessage);
   const [giftWrap, setGiftWrap] = React.useState(initialWrap);
+  const [saving, setSaving] = React.useState(false);
+  const debounceRef = React.useRef<ReturnType<typeof setTimeout> | null>(null);
 
   React.useEffect(() => { setIsGift(initialIsGift); }, [initialIsGift]);
   React.useEffect(() => { setGiftMessage(initialMessage); }, [initialMessage]);
   React.useEffect(() => { setGiftWrap(initialWrap); }, [initialWrap]);
 
-  const handleUpdate = async () => {
+  const saveGiftOptions = React.useCallback(async (gift: boolean, message: string, wrap: boolean) => {
+    setSaving(true);
     try {
-      await onUpdate({ is_gift: isGift, gift_message: giftMessage, gift_wrap: giftWrap });
-      push("Gift options updated.", "success");
-    } catch (error) {
-      push(error instanceof Error ? error.message : "Could not update gift options.", "error");
+      await onUpdate({ is_gift: gift, gift_message: message, gift_wrap: wrap });
+    } catch {
+      // Error handled by parent
+    } finally {
+      setSaving(false);
+    }
+  }, [onUpdate]);
+
+  const debouncedSave = React.useCallback((gift: boolean, message: string, wrap: boolean) => {
+    if (debounceRef.current) clearTimeout(debounceRef.current);
+    debounceRef.current = setTimeout(() => saveGiftOptions(gift, message, wrap), 600);
+  }, [saveGiftOptions]);
+
+  React.useEffect(() => {
+    return () => { if (debounceRef.current) clearTimeout(debounceRef.current); };
+  }, []);
+
+  const handleToggleGift = (checked: boolean) => {
+    setIsGift(checked);
+    if (!checked) {
+      setGiftWrap(false);
+      setGiftMessage("");
+      saveGiftOptions(false, "", false);
+    } else {
+      debouncedSave(checked, giftMessage, giftWrap);
     }
   };
 
+  const handleMessageChange = (value: string) => {
+    setGiftMessage(value);
+    debouncedSave(isGift, value, giftWrap);
+  };
+
+  const handleToggleWrap = (checked: boolean) => {
+    setGiftWrap(checked);
+    debouncedSave(isGift, giftMessage, checked);
+  };
+
+  const statusText = saving ? "Saving..." : isUpdating ? "Saving..." : null;
+
   return (
     <div className="space-y-3">
-      <label className="flex items-center gap-2 text-sm">
-        <input
-          type="checkbox"
-          checked={isGift}
-          onChange={(e) => { setIsGift(e.target.checked); if (!e.target.checked) setGiftWrap(false); }}
-        />
-        Mark as a gift
-      </label>
-      {isGift && (
-        <>
-          <textarea
-            rows={2}
-            className="w-full rounded-lg border border-border bg-card px-3 py-2 text-sm"
-            placeholder="Gift message"
-            value={giftMessage}
-            onChange={(e) => setGiftMessage(e.target.value)}
+      {/* Main gift toggle */}
+      <div className="flex items-center justify-between rounded-xl border border-border/60 bg-muted/20 px-3.5 py-3">
+        <div className="flex items-center gap-2.5">
+          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary/10">
+            <Gift size={16} className="text-primary" />
+          </div>
+          <div>
+            <p className="text-sm font-medium leading-tight">Mark as a gift</p>
+            <p className="text-[11px] text-muted-foreground">Add a personal message</p>
+          </div>
+        </div>
+        <button
+          type="button"
+          role="switch"
+          aria-checked={isGift}
+          onClick={() => handleToggleGift(!isGift)}
+          className={cn(
+            "relative inline-flex h-6 w-11 shrink-0 cursor-pointer items-center rounded-full transition-colors duration-200",
+            isGift ? "bg-primary" : "bg-muted border border-border"
+          )}
+        >
+          <span
+            className={cn(
+              "inline-block h-4 w-4 rounded-full bg-white shadow-sm transition-transform duration-200",
+              isGift ? "translate-x-6" : "translate-x-1"
+            )}
           />
-          <label className="flex items-center gap-2 text-sm">
-            <input
-              type="checkbox"
-              checked={giftWrap}
-              disabled={!giftWrapEnabled}
-              onChange={(e) => setGiftWrap(e.target.checked)}
+        </button>
+      </div>
+
+      {/* Gift message & wrap — shown when gift is on */}
+      {isGift && (
+        <div className="space-y-3 animate-in slide-in-from-top-1 fade-in duration-200">
+          <div className="relative">
+            <textarea
+              rows={2}
+              className="w-full rounded-xl border border-border bg-card px-3.5 py-2.5 text-sm resize-none placeholder:text-muted-foreground/60 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary/40 transition-all"
+              placeholder="Write a gift message..."
+              value={giftMessage}
+              onChange={(e) => handleMessageChange(e.target.value)}
             />
-            {giftWrapLabel}
-            {giftWrapAmount ? (
-              <span className="text-xs text-muted-foreground">
-                (+{formatMoney(giftWrapAmount, currencyCode)})
-              </span>
-            ) : null}
-          </label>
-        </>
+          </div>
+
+          {giftWrapEnabled && (
+            <div className="flex items-center justify-between rounded-xl border border-border/60 bg-muted/20 px-3.5 py-3">
+              <div className="flex items-center gap-2.5">
+                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-accent/10">
+                  <Package size={16} className="text-accent" />
+                </div>
+                <div>
+                  <p className="text-sm font-medium leading-tight">{giftWrapLabel}</p>
+                  {giftWrapAmount && (
+                    <p className="text-[11px] text-muted-foreground">
+                      +{formatMoney(giftWrapAmount, currencyCode)}
+                    </p>
+                  )}
+                </div>
+              </div>
+              <button
+                type="button"
+                role="switch"
+                aria-checked={giftWrap}
+                onClick={() => handleToggleWrap(!giftWrap)}
+                className={cn(
+                  "relative inline-flex h-6 w-11 shrink-0 cursor-pointer items-center rounded-full transition-colors duration-200",
+                  giftWrap ? "bg-primary" : "bg-muted border border-border"
+                )}
+              >
+                <span
+                  className={cn(
+                    "inline-block h-4 w-4 rounded-full bg-white shadow-sm transition-transform duration-200",
+                    giftWrap ? "translate-x-6" : "translate-x-1"
+                  )}
+                />
+              </button>
+            </div>
+          )}
+
+          {/* Save status */}
+          {statusText && (
+            <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+              <div className="h-3 w-3 animate-spin rounded-full border-2 border-primary border-t-transparent" />
+              <span>{statusText}</span>
+            </div>
+          )}
+        </div>
       )}
-      <Button
-        type="button"
-        size="sm"
-        variant="secondary"
-        onClick={handleUpdate}
-        disabled={isUpdating}
-        className="w-full"
-      >
-        {isUpdating ? "Saving..." : "Update gift options"}
-      </Button>
     </div>
   );
 }

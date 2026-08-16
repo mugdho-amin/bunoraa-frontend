@@ -2,7 +2,6 @@
 
 import * as React from "react";
 import Link from "next/link";
-import Image from "next/image";
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
 import { AuthGate } from "@/components/auth/AuthGate";
@@ -22,6 +21,7 @@ import { fetchSiteSettings } from "@/lib/siteSettings";
 import { cn } from "@/lib/utils";
 import { Check, ChevronDown, User, Truck, CreditCard, ClipboardCheck, Lock } from "lucide-react";
 import type { CheckoutValidation, ShippingMethodOption } from "@/lib/types";
+import r2Loader from "@/lib/r2-loader";
 
 const stepOrder = ["information", "shipping", "payment", "review"] as const;
 type Step = (typeof stepOrder)[number];
@@ -535,7 +535,13 @@ export function CheckoutAccordion() {
                       return (
                         <div key={item.id} className="relative overflow-hidden rounded-xl bg-muted aspect-square">
                           {item.product_image ? (
-                            <Image src={item.product_image} alt={itemName} fill sizes="120px" className="object-cover" quality={60} />
+                            <img
+                              src={r2Loader({ src: item.product_image, width: 240, quality: 60 })}
+                              alt={itemName}
+                              loading="lazy"
+                              decoding="async"
+                              className="absolute inset-0 h-full w-full object-cover"
+                            />
                           ) : (
                             <div className="flex h-full items-center justify-center text-xs text-muted-foreground">No image</div>
                           )}
