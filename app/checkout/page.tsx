@@ -1,5 +1,5 @@
 import { Suspense } from "react";
-import { CheckoutPage } from "@/components/checkout/CheckoutPage";
+import { CheckoutSplitScreen as CheckoutPage } from "@/components/checkout/variants";
 import { Card } from "@/components/ui/Card";
 
 function CheckoutSkeleton() {
