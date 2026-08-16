@@ -83,7 +83,16 @@ export function MiniCart({
             <h3 className="text-base font-semibold">{title || t("mini_bag_title", "Your bag")}</h3>
             <p className="mt-2 text-sm text-muted-foreground">{t("empty_bag_text", "You have no item in your bag.")}</p>
           </div>
-          {onClose ? <button type="button" className="rounded-full p-1.5 text-muted-foreground transition hover:bg-muted hover:text-foreground" onClick={onClose} aria-label="Close shopping bag"><X className="h-4 w-4" aria-hidden="true" /></button> : null}
+          {onClose ? (
+            <button
+              type="button"
+              className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-muted hover:text-foreground focus:outline-none focus:ring-2 focus:ring-primary/30"
+              onClick={onClose}
+              aria-label="Close shopping bag"
+            >
+              <X className="h-4 w-4" aria-hidden="true" />
+            </button>
+          ) : null}
         </div>
       </div>
     );
@@ -91,10 +100,17 @@ export function MiniCart({
 
   return (
     <div className={cn("flex h-full flex-col", className)}>
-      <div className="flex items-center justify-between border-b border-border p-4">
+      <div className="flex items-center justify-between border-b border-border px-4 py-3">
         <h3 className="text-base font-semibold">{title || t("mini_bag_title", "Your bag")}</h3>
         {onClose ? (
-          <button type="button" className="rounded-full p-1.5 text-muted-foreground transition hover:bg-muted hover:text-foreground" onClick={onClose} aria-label="Close shopping bag"><X className="h-4 w-4" aria-hidden="true" /></button>
+          <button
+            type="button"
+            className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-muted hover:text-foreground focus:outline-none focus:ring-2 focus:ring-primary/30"
+            onClick={onClose}
+            aria-label="Close shopping bag"
+          >
+            <X className="h-4 w-4" aria-hidden="true" />
+          </button>
         ) : null}
       </div>
 

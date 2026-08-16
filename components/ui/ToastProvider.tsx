@@ -43,32 +43,32 @@ function getDuration(message: string, variant: ToastVariant): number {
 const variantConfig: Record<ToastVariant, {
   icon: React.ElementType;
   ariaRole: "status" | "alert";
-  className: string;
-  iconClassName: string;
+  iconColor: string;
+  borderClass: string;
 }> = {
   success: {
     icon: CheckCircle,
     ariaRole: "status",
-    className: "border-success/30 bg-success/8 text-foreground",
-    iconClassName: "text-success",
+    iconColor: "text-emerald-500",
+    borderClass: "border-l-[3px] border-l-emerald-500",
   },
   error: {
     icon: XCircle,
     ariaRole: "alert",
-    className: "border-destructive/30 bg-destructive/8 text-foreground",
-    iconClassName: "text-destructive",
+    iconColor: "text-red-500",
+    borderClass: "border-l-[3px] border-l-red-500",
   },
   warning: {
     icon: AlertTriangle,
     ariaRole: "alert",
-    className: "border-warning/30 bg-warning/8 text-foreground",
-    iconClassName: "text-warning",
+    iconColor: "text-amber-500",
+    borderClass: "border-l-[3px] border-l-amber-500",
   },
   info: {
     icon: Info,
     ariaRole: "status",
-    className: "border-primary/20 bg-primary/5 text-foreground",
-    iconClassName: "text-primary",
+    iconColor: "text-blue-500",
+    borderClass: "border-l-[3px] border-l-blue-500",
   },
 };
 
@@ -86,11 +86,9 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
     if (entry) {
       clearTimeout(entry.timer);
     }
-    // Start exit animation
     setToasts((prev) =>
       prev.map((t) => (t.id === id ? { ...t, closing: true } : t))
     );
-    // Remove after animation
     setTimeout(() => removeToast(id), EXIT_ANIMATION_MS);
   }, [removeToast]);
 
@@ -107,9 +105,9 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
     const entry = timersRef.current.get(id);
     if (!entry || entry.pausedAt) return;
     clearTimeout(entry.timer);
-    const elapsed = Date.now() - (entry.pausedAt ?? Date.now());
-    entry.pausedAt = Date.now();
-    entry.remaining = Math.max(1000, entry.remaining - elapsed);
+    const now = Date.now();
+    entry.remaining = Math.max(1000, entry.remaining - (now - (entry.pausedAt ?? now)));
+    entry.pausedAt = now;
     timersRef.current.set(id, entry);
   }, []);
 
@@ -119,9 +117,7 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
     const elapsed = Date.now() - entry.pausedAt;
     entry.remaining = Math.max(1000, entry.remaining - elapsed);
     entry.pausedAt = null;
-    const timer = setTimeout(() => {
-      dismiss(id);
-    }, entry.remaining);
+    const timer = setTimeout(() => dismiss(id), entry.remaining);
     entry.timer = timer;
     timersRef.current.set(id, entry);
   }, [dismiss]);
@@ -145,7 +141,6 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
     [scheduleDismiss]
   );
 
-  // Cleanup all timers on unmount
   React.useEffect(() => {
     return () => {
       timersRef.current.forEach((entry) => clearTimeout(entry.timer));
@@ -167,11 +162,9 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
         aria-atomic="true"
         data-state={toast.closing ? "closing" : "open"}
         className={cn(
-          "toast-item pointer-events-auto flex w-full max-w-sm items-start gap-3 rounded-xl border px-4 py-3.5",
-          "shadow-lg backdrop-blur-md",
-          "border-l-4",
-          "text-sm font-medium leading-snug",
-          config.className
+          "toast-item group/toast pointer-events-auto relative flex w-full max-w-sm items-center gap-3 overflow-hidden rounded-lg border border-zinc-200 bg-white px-4 py-3 shadow-lg dark:border-zinc-800 dark:bg-zinc-900",
+          "text-sm text-zinc-900 dark:text-zinc-100",
+          config.borderClass
         )}
         onMouseEnter={() => pauseTimer(toast.id)}
         onMouseLeave={() => resumeTimer(toast.id)}
@@ -179,19 +172,31 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
         onBlur={() => resumeTimer(toast.id)}
         tabIndex={0}
       >
+        {/* Icon */}
         <Icon
           size={18}
-          className={cn("mt-0.5 shrink-0", config.iconClassName)}
+          className={cn("shrink-0", config.iconColor)}
           aria-hidden="true"
         />
-        <p className="min-w-0 flex-1">{toast.message}</p>
+
+        {/* Content */}
+        <p className="min-w-0 flex-1 pr-5 leading-snug">{toast.message}</p>
+
+        {/* Close button — top-right corner, visible on hover (always on touch) */}
         <button
           type="button"
           onClick={() => dismiss(toast.id)}
-          className="mt-0.5 shrink-0 rounded-md p-1 text-muted-foreground/60 transition-colors hover:bg-foreground/5 hover:text-foreground focus:outline-none focus:ring-2 focus:ring-primary/30"
-          aria-label="Dismiss notification"
+          className={cn(
+            "absolute right-2 top-1/2 -translate-y-1/2 rounded-md p-1 text-zinc-400 transition-colors",
+            "opacity-0 group-hover/toast:opacity-100",
+            "hover:bg-zinc-100 hover:text-zinc-600 dark:hover:bg-zinc-800 dark:hover:text-zinc-300",
+            "focus:outline-none focus:ring-2 focus:ring-zinc-400/30",
+            /* Always visible on touch devices */
+            "[@media(hover:none)]:opacity-100"
+          )}
+          aria-label="Dismiss"
         >
-          <X size={14} />
+          <X size={14} strokeWidth={2.5} />
         </button>
       </div>
     );
@@ -207,7 +212,7 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
       <div
         data-toast-root
         className={cn(
-          "pointer-events-none fixed z-[200] flex flex-col gap-2.5",
+          "pointer-events-none fixed z-[200] flex flex-col gap-2",
           "w-full max-w-sm px-4",
           position === "top" ? "top-4 right-0 items-end" : "bottom-4 right-0 items-end"
         )}
