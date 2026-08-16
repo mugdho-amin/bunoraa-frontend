@@ -448,6 +448,65 @@
     transition: filter 0.2s ease;
   }
 
+  /* ── Toast animations ── */
+  @keyframes toast-slide-in {
+    0% {
+      opacity: 0;
+      transform: translateX(calc(100% + 1rem)) scale(0.96);
+    }
+    100% {
+      opacity: 1;
+      transform: translateX(0) scale(1);
+    }
+  }
+
+  @keyframes toast-slide-out {
+    0% {
+      opacity: 1;
+      transform: translateX(0) scale(1);
+    }
+    100% {
+      opacity: 0;
+      transform: translateX(calc(100% + 1rem)) scale(0.96);
+    }
+  }
+
+  @keyframes toast-exit {
+    0% {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+      max-height: 200px;
+      margin-bottom: 0;
+    }
+    50% {
+      opacity: 0;
+      transform: translateY(-8px) scale(0.96);
+    }
+    100% {
+      opacity: 0;
+      transform: translateY(-8px) scale(0.96);
+      max-height: 0;
+      margin-bottom: -10px;
+      padding-top: 0;
+      padding-bottom: 0;
+      border-width: 0;
+    }
+  }
+
+  .toast-item[data-state="closing"] {
+    animation: toast-exit 0.3s ease-in forwards;
+  }
+
+  /* Respect reduced motion */
+  @media (prefers-reduced-motion: reduce) {
+    .toast-item {
+      animation-duration: 0.01ms !important;
+    }
+    .toast-item[data-state="closing"] {
+      animation-duration: 0.15s !important;
+    }
+  }
+
   /* Prevent iOS zoom on focus: 16px minimum */
   input:not([type="checkbox"]):not([type="radio"]):not([type="range"]),
   select,
