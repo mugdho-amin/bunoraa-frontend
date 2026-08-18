@@ -489,6 +489,10 @@ export type SiteSettings = {
   cover_video_mp4?: string | null;
   cover_video_webm?: string | null;
   cover_video_poster?: string | null;
+  brand_slogan?: string | null;
+  brand_story_title?: string | null;
+  brand_story_short?: string | null;
+  brand_story_body?: string | null;
 };
 
 export type ContactSettings = {

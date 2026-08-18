@@ -28,7 +28,7 @@ import { ProductGrid } from "@/components/products/ProductGrid";
 import { CustomizationForm } from "@/components/products/CustomizationForm";
 import { buildProductCategoryTrail, buildProductPath } from "@/lib/productPaths";
 import { buildCategoryPath } from "@/lib/categoryPaths";
-import { ChevronLeft, ChevronRight, ChevronUp, ChevronDown, X, Info, Truck, RefreshCw, Ruler } from "lucide-react";
+import { ChevronLeft, ChevronRight, ChevronUp, ChevronDown, X, Info, Truck, RefreshCw, Ruler, Share2, MessageCircle, Facebook, Link2, Check } from "lucide-react";
 import { getColorSwatch } from "@/lib/colors";
 import { Modal } from "@/components/ui/Modal";
 import { ProductImageZoom } from "@/components/products/ProductImageZoom";
@@ -962,6 +962,55 @@ export function ProductDetailClient({
   ];
   const [isSizeGuideOpen, setIsSizeGuideOpen] = React.useState(false);
   const [isShippingEstimatorOpen, setIsShippingEstimatorOpen] = React.useState(false);
+  const [shareCopied, setShareCopied] = React.useState(false);
+
+  const shareUrl = React.useMemo(() => {
+    if (typeof window === "undefined") return "";
+    return `${window.location.origin}${buildProductPath(product)}`;
+  }, [product]);
+
+  const shareMessage = React.useMemo(() => {
+    const bits = [
+      product.name,
+      ...(siteSettings?.brand_slogan ? [siteSettings.brand_slogan] : []),
+      ...(siteSettings?.brand_story_short ? [siteSettings.brand_story_short] : []),
+    ];
+    return bits.join(" — ");
+  }, [product.name, siteSettings]);
+
+  const handleProductShare = async () => {
+    if (!shareUrl) return;
+    if (navigator.share) {
+      try {
+        await navigator.share({ title: product.name, text: shareMessage, url: shareUrl });
+      } catch {
+        // User cancelled share
+      }
+    } else {
+      handleCopyProductLink();
+    }
+  };
+
+  const handleCopyProductLink = async () => {
+    if (!shareUrl) return;
+    try {
+      await navigator.clipboard.writeText(shareUrl);
+      setShareCopied(true);
+      setTimeout(() => setShareCopied(false), 2000);
+    } catch {
+      // Silent fail if clipboard API unavailable
+    }
+  };
+
+  const handleWhatsAppProductShare = () => {
+    if (!shareUrl) return;
+    window.open(`https://wa.me/?text=${encodeURIComponent(`${shareMessage} ${shareUrl}`)}`, "_blank", "noopener,noreferrer");
+  };
+
+  const handleFacebookProductShare = () => {
+    if (!shareUrl) return;
+    window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}&quote=${encodeURIComponent(shareMessage)}`, "_blank", "noopener,noreferrer");
+  };
 
   return (
     <div className="space-y-12 pb-24">
@@ -1180,6 +1229,26 @@ export function ProductDetailClient({
             >
               <Truck size={16} />
               Calculate Delivery
+            </Button>
+          </div>
+
+          <div className="flex flex-wrap items-center gap-2 border-t border-border/60 pt-4">
+            <span className="mr-1 text-[11px] font-bold uppercase tracking-widest text-muted-foreground">Share</span>
+            <Button type="button" variant="secondary" size="sm" className="h-9 gap-1.5 rounded-full px-3 text-xs" onClick={handleProductShare}>
+              <Share2 size={14} />
+              Share
+            </Button>
+            <Button type="button" variant="secondary" size="sm" className="h-9 gap-1.5 rounded-full px-3 text-xs" onClick={handleWhatsAppProductShare}>
+              <MessageCircle size={14} />
+              WhatsApp
+            </Button>
+            <Button type="button" variant="secondary" size="sm" className="h-9 gap-1.5 rounded-full px-3 text-xs" onClick={handleFacebookProductShare}>
+              <Facebook size={14} />
+              Facebook
+            </Button>
+            <Button type="button" variant="secondary" size="sm" className="h-9 gap-1.5 rounded-full px-3 text-xs" onClick={handleCopyProductLink}>
+              {shareCopied ? <Check size={14} /> : <Link2 size={14} />}
+              {shareCopied ? "Copied" : "Copy link"}
             </Button>
           </div>
 

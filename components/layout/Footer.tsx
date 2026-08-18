@@ -206,6 +206,8 @@ export async function Footer() {
       siteSettings?.site_tagline
     ) ||
     "Curated fashion, home essentials & artisan goods — ethically sourced and delivered across Bangladesh.";
+  const brandSlogan = pickText(siteSettings?.brand_slogan);
+  const brandStoryShort = pickText(siteSettings?.brand_story_short);
 
   const emailItems = [
     {
@@ -492,6 +494,8 @@ export async function Footer() {
                 {brandName}
               </p>
               <p className="mt-2 text-sm leading-relaxed text-muted-foreground text-pretty">{brandDescription}</p>
+              {brandSlogan ? <p className="mt-2 text-sm font-semibold italic text-foreground/85">{brandSlogan}</p> : null}
+              {brandStoryShort ? <p className="mt-1 text-xs leading-relaxed text-muted-foreground">{brandStoryShort}</p> : null}
             </div>
             <FooterNewsletter />
           </div>
@@ -521,6 +525,8 @@ export async function Footer() {
                 {brandName}
               </p>
               <p className="mt-2 text-sm text-muted-foreground">{brandDescription}</p>
+              {brandSlogan ? <p className="mt-2 text-sm font-semibold italic text-foreground/85">{brandSlogan}</p> : null}
+              {brandStoryShort ? <p className="mt-1 text-xs leading-relaxed text-muted-foreground">{brandStoryShort}</p> : null}
             </div>
             <FooterNewsletter />
           </div>

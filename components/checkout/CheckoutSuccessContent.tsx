@@ -7,6 +7,7 @@ import { useSearchParams } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
 import { AuthGate } from "@/components/auth/AuthGate";
 import { useAuthContext } from "@/components/providers/AuthProvider";
+import { useSiteSettings } from "@/components/providers/SiteSettingsProvider";
 import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
 import { useToast } from "@/components/ui/ToastProvider";
@@ -25,10 +26,27 @@ function SuccessContent() {
   const searchParams = useSearchParams();
   const { push } = useToast();
   const { t } = useUiMessages("checkout");
+  const siteSettings = useSiteSettings();
   const orderId = searchParams.get("order_id");
   const orderNumber = searchParams.get("order_number");
   const accessToken = searchParams.get("access_token");
   const allowGuest = Boolean(accessToken);
+  const brandSlogan = siteSettings?.brand_slogan || "";
+  const brandStoryShort = siteSettings?.brand_story_short || "";
+
+  const handleBrandShare = React.useCallback(() => {
+    const message = [
+      brandSlogan,
+      brandStoryShort,
+      "Shop hand-embroidered fashion and artisan goods:",
+    ].filter(Boolean).join(" — ");
+    const url = `https://bunoraa.com`;
+    if (navigator.share) {
+      navigator.share({ title: "Bunoraa", text: message, url }).catch(() => {});
+    } else {
+      window.open(`https://wa.me/?text=${encodeURIComponent(`${message} ${url}`)}`, "_blank", "noopener,noreferrer");
+    }
+  }, [brandSlogan, brandStoryShort]);
 
   const handleCopyOrderNumber = React.useCallback(async (value?: string | null) => {
     if (!value) return;
@@ -81,6 +99,20 @@ function SuccessContent() {
               <Button asChild variant="secondary"><Link href="/">{t("continue_shopping", "Continue shopping")}</Link></Button>
             </div>
           </Card>
+
+          {brandSlogan || brandStoryShort ? (
+            <Card variant="bordered" className="mt-6 space-y-4 overflow-hidden rounded-2xl bg-gradient-to-br from-primary/15 via-card to-accent/10">
+              <div className="p-6 sm:p-7">
+                <p className="text-xs font-semibold uppercase tracking-[0.25em] text-muted-foreground">{t("brand_story_eyebrow", "Do you know our name?")}</p>
+                {brandSlogan ? <p className="mt-3 text-xl font-semibold italic text-foreground">{brandSlogan}</p> : null}
+                {brandStoryShort ? <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{brandStoryShort}</p> : null}
+                <div className="mt-5 flex flex-wrap gap-3">
+                  <Button asChild variant="secondary" size="sm"><Link href="/about/">{t("read_our_story", "Read our story")}</Link></Button>
+                  <Button variant="secondary" size="sm" onClick={handleBrandShare}>{t("share_with_friends", "Share with friends")}</Button>
+                </div>
+              </div>
+            </Card>
+          ) : null}
         </div>
       </div>
     </AuthGate>

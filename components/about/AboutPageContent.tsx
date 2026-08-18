@@ -46,6 +46,8 @@ function getSocialLinks(siteSettings: SiteSettings | null, contactSettings: Cont
 }
 
 export async function AboutPageContent() {
+  const localeHeaders = await getServerLocaleHeaders();
+  const isBengali = (localeHeaders["X-User-Language"] || "en").toLowerCase().startsWith("bn");
   const [page, siteSettings, contactSettings, categorySnapshot, collectionSnapshot, productCount, bundleCount, artisanCount] = await Promise.all([
     getAboutPage(), getSiteSettings(), getContactSettings(), getCategorySnapshot(), getCollectionSnapshot(),
     getEndpointCount("/catalog/products/"), getEndpointCount("/catalog/bundles/"), getEndpointCount("/artisans/"),
@@ -54,6 +56,10 @@ export async function AboutPageContent() {
   const brandName = pickText(siteSettings?.site_name);
   const title = page?.title || (brandName ? `About ${brandName}` : "About");
   const heroSummary = page?.excerpt || pickText(siteSettings?.site_description, siteSettings?.site_tagline, siteSettings?.tagline);
+  const brandSlogan = pickText(siteSettings?.brand_slogan);
+  const brandStoryTitle = pickText(siteSettings?.brand_story_title);
+  const brandStoryShort = pickText(siteSettings?.brand_story_short);
+  const brandStoryBody = pickText(siteSettings?.brand_story_body);
   const supportEmail = pickText(contactSettings?.support_email, siteSettings?.support_email, contactSettings?.general_email, siteSettings?.contact_email);
   const salesEmail = pickText(contactSettings?.sales_email);
   const phone = pickText(siteSettings?.contact_phone, contactSettings?.phone);
@@ -85,6 +91,49 @@ export async function AboutPageContent() {
           <Button asChild variant="secondary"><Link href="/contact/">Contact us</Link></Button>
         </div>
       </section>
+
+      {brandStoryTitle || brandStoryShort || brandStoryBody ? (
+        <section aria-labelledby="brand-story-heading" className="overflow-hidden rounded-3xl border border-border bg-gradient-to-br from-primary/15 via-background to-accent/10">
+          <div className="px-5 sm:px-8 py-8 sm:py-10">
+            <p className="text-sm uppercase tracking-[0.2em] text-muted-foreground">{isBengali ? "আমাদের নাম" : "Our name"}</p>
+            <h2 id="brand-story-heading" className="mt-2 text-2xl sm:text-3xl font-semibold tracking-tight">{brandStoryTitle}</h2>
+            {brandStoryShort ? <p className="mt-4 max-w-3xl text-sm sm:text-base font-medium text-foreground/80">{brandStoryShort}</p> : null}
+            {brandStoryBody ? (
+              <div className="mt-6 max-w-3xl space-y-4 text-sm sm:text-base leading-relaxed text-muted-foreground">
+                {brandStoryBody.split(/\n{2,}/).map((paragraph) => {
+                  const trimmed = paragraph.trim();
+                  return trimmed ? <p key={trimmed.slice(0, 64)}>{trimmed}</p> : null;
+                })}
+              </div>
+            ) : null}
+            <div className="mt-8 grid gap-3 sm:grid-cols-3">
+              {(isBengali ? [
+                { term: "বুনন", reading: "Bunon", gloss: "বাংলা শব্দ 'বুনন' মানে বোনা — সুতো থেকে সৌন্দর্য গড়ে ওঠার ধৈর্যের শিল্প।" },
+                { term: "অরোরা", reading: "Aurora", gloss: "ভোরের প্রথম আলো — সোনালি ও গোলাপি রঙে রাঙা আকাশ, আমাদের পণ্যের রঙ।" },
+                { term: "বুনোরা", reading: "Bunoraa", gloss: "বুনন + অরোরা — হাতে-বোনা আলো। আমাদের নামই আমাদের প্রতিশ্রুতি।" },
+              ] : [
+                { term: "বুনন", reading: "Bunon", gloss: "Bengali for \"weaving\" — the patient art of turning a single thread into beauty." },
+                { term: "অরোরা", reading: "Aurora", gloss: "The first light of dawn — the sky threaded with gold and rose." },
+                { term: "বুনোরা", reading: "Bunoraa", gloss: "Bunon woven with Aurora — hand-embroidered light. Our name is our promise." },
+              ]).map((item) => (
+                <div key={item.reading} className="rounded-2xl border border-border/70 bg-card/50 p-5">
+                  <div className="flex items-center gap-3">
+                    <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-amber-300 via-rose-300 to-sky-400 text-sm font-bold text-white" aria-hidden="true">{item.term.slice(0, 1)}</span>
+                    <div>
+                      <p className="font-semibold">{item.term}</p>
+                      <p className="text-xs text-muted-foreground">{item.reading}</p>
+                    </div>
+                  </div>
+                  <p className="mt-3 text-sm leading-relaxed text-muted-foreground">{item.gloss}</p>
+                </div>
+              ))}
+            </div>
+            {brandSlogan ? (
+              <p className="mt-8 border-t border-border/70 pt-6 text-center text-base sm:text-lg font-semibold italic text-foreground/90">{brandSlogan}</p>
+            ) : null}
+          </div>
+        </section>
+      ) : null}
 
       <section className="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
         {stats.filter((item) => item.value > 0).map((item) => (

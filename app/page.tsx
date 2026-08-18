@@ -16,7 +16,11 @@ type HomepageData = { featured_products: ProductListItem[]; new_arrivals: Produc
 const HOME_KEYWORDS = ["Bunoraa", "hand-embroidered fashion Bangladesh", "artisan collections Bangladesh", "ethically sourced clothing", "Bangladeshi artisan market", "handmade home decor Bangladesh", "traditional embroidery Bangladesh", "buy artisan products online Bangladesh", "Bangladesh fashion marketplace", "handcrafted gifts Bangladesh", "embroidered cotton dresses Bangladesh", "artisan home essentials Bangladesh", "nakshi kantha embroidery", "hand embroidered kurta Bangladesh", "Eid clothing Bangladesh", "Bangladeshi fashion online", "handmade co-ord sets", "artisan cushion covers Dhaka", "traditional Bangladeshi clothing", "hand embroidered shalwar kameez", "buy nakshi kantha online", "Bangladeshi artisan gifts", "hand embroidered fatua", "sustainable fashion Bangladesh", "handmade kids clothing Bangladesh", "Bangladeshi home decor online", "custom embroidered clothing", "festive wear Bangladesh", "hand embroidered cotton dress", "Bangladeshi women fashion online"];
 
 export async function generateMetadata(): Promise<Metadata> {
-  return buildPageMetadata({ title: "Curated Products and Artisan Collections | Bunoraa", description: "Discover ethically sourced hand-embroidered fashion, home decor, and artisan collections. Delivered across Bangladesh.", path: "/", keywords: HOME_KEYWORDS, lang: "en" });
+  const siteSettings = await getSiteSettings().catch(() => null);
+  const description =
+    siteSettings?.site_description?.trim() ||
+    "Discover hand-embroidered fashion and home decor at Bunoraa — kurtis, co-ord sets, dresses and cushions hand-stitched by Bangladeshi artisans. Your cloth, your choice.";
+  return buildPageMetadata({ title: "Curated Products and Artisan Collections | Bunoraa", description, path: "/", keywords: HOME_KEYWORDS, lang: "en" });
 }
 
 const DEFAULT_HOMEPAGE_DATA: HomepageData = { featured_products: [], new_arrivals: [], bestsellers: [], on_sale: [], featured_categories: [], category_bands: [], collections: [], spotlights: [], show_by_categories: [] };

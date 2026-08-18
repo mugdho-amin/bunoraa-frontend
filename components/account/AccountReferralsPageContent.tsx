@@ -3,10 +3,11 @@
 import * as React from "react";
 import { useQuery } from "@tanstack/react-query";
 import { apiFetch } from "@/lib/api";
-import { Gift, Copy, Check, Share2, Users, Coins } from "lucide-react";
+import { Gift, Copy, Check, Share2, Users, Coins, MessageCircle } from "lucide-react";
 import type { ReferralInfo } from "@/lib/types";
 import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
+import { useSiteSettings } from "@/components/providers/SiteSettingsProvider";
 
 async function fetchReferralInfo() {
   const response = await apiFetch<ReferralInfo>("/accounts/referrals/");
@@ -15,6 +16,7 @@ async function fetchReferralInfo() {
 
 export function AccountReferralsPageContent() {
   const [copied, setCopied] = React.useState(false);
+  const siteSettings = useSiteSettings();
   const query = useQuery({
     queryKey: ["referrals"],
     queryFn: fetchReferralInfo,
@@ -24,6 +26,13 @@ export function AccountReferralsPageContent() {
   const referralData = query.data;
   const referralUrl = referralData?.referral_url || "";
   const referralCode = referralData?.referral_code || "";
+  const brandSlogan = siteSettings?.brand_slogan || "";
+  const brandStoryShort = siteSettings?.brand_story_short || "";
+  const shareText = [
+    ...(brandSlogan ? [brandSlogan] : []),
+    ...(brandStoryShort ? [brandStoryShort] : []),
+    "Use my link and discover hand-embroidered fashion:",
+  ].filter(Boolean).join(" ");
 
   const handleCopy = async () => {
     if (!referralUrl) return;
@@ -42,7 +51,7 @@ export function AccountReferralsPageContent() {
       try {
         await navigator.share({
           title: "Join Bunoraa",
-          text: `Shop hand-embroidered fashion and artisan goods on Bunoraa. Use my referral link: ${referralUrl}`,
+          text: shareText,
           url: referralUrl,
         });
       } catch {
@@ -51,6 +60,12 @@ export function AccountReferralsPageContent() {
     } else {
       handleCopy();
     }
+  };
+
+  const handleWhatsAppShare = () => {
+    if (!referralUrl) return;
+    const message = `${shareText} ${referralUrl}`;
+    window.open(`https://wa.me/?text=${encodeURIComponent(message)}`, "_blank", "noopener,noreferrer");
   };
 
   if (query.isLoading) {
@@ -161,6 +176,10 @@ export function AccountReferralsPageContent() {
           <Button variant="secondary" onClick={handleShare}>
             <Share2 className="h-4 w-4" />
             Share
+          </Button>
+          <Button variant="secondary" onClick={handleWhatsAppShare}>
+            <MessageCircle className="h-4 w-4" />
+            WhatsApp
           </Button>
         </div>
       </Card>

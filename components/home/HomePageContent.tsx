@@ -22,7 +22,7 @@ type Spotlight = { id: string; name?: string; placement?: string; product?: Prod
 type Banner = HeroBanner & { position?: string | null; };
 type CategoryBandData = { category: FeaturedCategory; products: ProductListItem[]; };
 type HomepageData = { featured_products: ProductListItem[]; new_arrivals: ProductListItem[]; bestsellers: ProductListItem[]; on_sale: ProductListItem[]; featured_categories: FeaturedCategory[]; category_bands?: CategoryBandData[]; collections: Collection[]; spotlights?: Spotlight[]; show_by_categories?: FeaturedCategory[]; };
-type SiteSettings = { site_name?: string | null; site_tagline?: string | null; tagline?: string | null; site_description?: string | null; cover_video_url?: string | null; cover_video_mp4?: string | null; cover_video_webm?: string | null; cover_video_poster?: string | null; } | null;
+type SiteSettings = { site_name?: string | null; site_tagline?: string | null; tagline?: string | null; site_description?: string | null; cover_video_url?: string | null; cover_video_mp4?: string | null; cover_video_webm?: string | null; cover_video_poster?: string | null; brand_slogan?: string | null; brand_story_short?: string | null; } | null;
 
 const pickText = (...values: Array<string | null | undefined>) => { for (const value of values) { if (value && value.trim()) return value.trim(); } return ""; };
 const getImage = (product: ProductListItem | null | undefined) => {
@@ -66,6 +66,8 @@ export async function HomePageContent({ heroBanners, siteSettings, homepageData 
   const collections = asArray<Collection>(hd.collections);
   const brandName = pickText(siteSettings?.site_name);
   const heroDescription = pickText(siteSettings?.site_tagline, siteSettings?.tagline, siteSettings?.site_description);
+  const brandSlogan = pickText(siteSettings?.brand_slogan);
+  const brandStoryShort = pickText(siteSettings?.brand_story_short);
 
   const homePageSchema = cleanObject({ "@context": "https://schema.org", "@type": "WebPage", name: brandName, description: heroDescription, url: absoluteUrl("/"), isPartOf: { "@id": absoluteUrl("/#website") } });
   const featuredList = buildItemList(filteredFeaturedProducts.slice(0, 10).map((product) => ({ name: product.name, url: buildProductPath(product), image: getImage(product) || undefined, description: product.short_description || undefined })), "Featured products");
@@ -120,6 +122,16 @@ export async function HomePageContent({ heroBanners, siteSettings, homepageData 
           )}
         </div>
       </section>
+
+      {brandSlogan || brandStoryShort ? (
+        <section aria-label={brandSlogan || "About Bunoraa"} className="border-b border-border bg-gradient-to-r from-primary/15 via-background to-accent/10">
+          <div className="page-shell flex flex-col items-center justify-center gap-1 px-[var(--page-gutter)] py-4 text-center sm:flex-row sm:gap-3 sm:py-3">
+            {brandSlogan ? <p className="text-sm font-semibold italic text-foreground sm:text-base">{brandSlogan}</p> : null}
+            {brandSlogan && brandStoryShort ? <span className="hidden text-muted-foreground sm:inline" aria-hidden="true">•</span> : null}
+            {brandStoryShort ? <p className="text-xs leading-relaxed text-muted-foreground sm:text-sm">{brandStoryShort}</p> : null}
+          </div>
+        </section>
+      ) : null}
 
       {/* Spotlights */}
       {spotlights.length ? (
