@@ -12,6 +12,7 @@ import { CheckoutInfoStep, CheckoutInfoFormValues } from "@/components/checkout/
 import { CheckoutShippingStep } from "@/components/checkout/CheckoutShippingStep";
 import { CheckoutPaymentStep, CheckoutPaymentFormValues } from "@/components/checkout/CheckoutPaymentStep";
 import { CheckoutReviewStep } from "@/components/checkout/CheckoutReviewStep";
+import { CartItemImage } from "@/components/checkout/CartItemImage";
 import { OrderProcessingModal } from "@/components/checkout/OrderProcessingModal";
 import { useCheckoutData } from "@/components/checkout/useCheckoutData";
 import { Button } from "@/components/ui/Button";
@@ -467,7 +468,12 @@ export function CheckoutExpress() {
                     return (
                       <div key={item.id} className="flex items-center gap-3">
                         <div className="relative h-12 w-12 shrink-0 overflow-hidden rounded-lg bg-muted">
-                          {item.product_image ? <Image src={item.product_image} alt={itemName} fill sizes="48px" className="object-cover" quality={60} /> : null}
+                        <CartItemImage
+                          src={item.product_image}
+                          alt={itemName}
+                          containerClassName="h-12 w-12 shrink-0 rounded-lg"
+                          className="absolute inset-0 h-full w-full object-cover"
+                        />
                           <span className="absolute -right-1 -top-1 flex h-5 w-5 items-center justify-center rounded-full bg-foreground text-[10px] font-bold text-background">{item.quantity}</span>
                         </div>
                         <div className="min-w-0 flex-1">
@@ -483,7 +489,7 @@ export function CheckoutExpress() {
                   <div className="flex justify-between"><span className="text-muted-foreground">Subtotal</span><span>{formatMoney(cartSummary?.subtotal || cart?.subtotal || "0", cart?.currency || "")}</span></div>
                   {cartSummary?.discount_amount && Number(cartSummary.discount_amount) > 0 && <div className="flex justify-between text-success"><span>Discount</span><span>-{formatMoney(cartSummary.discount_amount, cart?.currency || "")}</span></div>}
                   <div className="flex justify-between"><span className="text-muted-foreground">Shipping</span><span>{cartSummary?.shipping_cost ? formatMoney(cartSummary.shipping_cost, cart?.currency || "") : "—"}</span></div>
-                  <div className="flex justify-between"><span className="text-muted-foreground">Tax</span><span>{cartSummary?.tax_amount ? formatMoney(cartSummary.tax_amount, cart?.currency || "") : "—"}</span></div>
+                  {cartSummary?.tax_amount && Number(cartSummary.tax_amount) > 0 && <div className="flex justify-between"><span className="text-muted-foreground">Tax</span><span>{formatMoney(cartSummary.tax_amount, cart?.currency || "")}</span></div>}
                   <div className="flex justify-between border-t border-border pt-1.5 text-sm font-bold"><span>Total</span><span>{formatMoney(cartSummary?.total || cart?.subtotal || "0", cart?.currency || "")}</span></div>
                 </div>
               </Card>

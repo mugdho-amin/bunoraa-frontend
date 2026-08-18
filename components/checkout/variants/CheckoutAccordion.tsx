@@ -21,15 +21,7 @@ import { fetchSiteSettings } from "@/lib/siteSettings";
 import { cn } from "@/lib/utils";
 import { Check, ChevronDown, User, Truck, CreditCard, ClipboardCheck, Lock } from "lucide-react";
 import type { CheckoutValidation, ShippingMethodOption } from "@/lib/types";
-import r2Loader from "@/lib/r2-loader";
-
-function safeImgSrc(src: string): string {
-  try {
-    return r2Loader({ src, width: 240, quality: 60 });
-  } catch {
-    return src;
-  }
-}
+import { CartItemImage } from "@/components/checkout/CartItemImage";
 
 const stepOrder = ["information", "shipping", "payment", "review"] as const;
 type Step = (typeof stepOrder)[number];
@@ -541,24 +533,18 @@ export function CheckoutAccordion() {
                       const isBundle = item.cart_item_type === "bundle";
                       const itemName = item.product_name || item.bundle_name || "Item";
                       return (
-                        <div key={item.id} className="relative overflow-hidden rounded-xl bg-muted aspect-square">
-                          {item.product_image ? (
-                            <img
-                              src={safeImgSrc(item.product_image)}
-                              alt={itemName}
-                              loading="lazy"
-                              decoding="async"
-                              onError={(e) => { e.currentTarget.style.display = "none"; }}
-                              className="absolute inset-0 h-full w-full object-cover"
-                            />
-                          ) : (
-                            <div className="flex h-full items-center justify-center text-xs text-muted-foreground">No image</div>
-                          )}
+                        <div key={item.id} className="relative">
+                          <CartItemImage
+                            src={item.product_image}
+                            alt={itemName}
+                            containerClassName="aspect-square rounded-xl"
+                            className="absolute inset-0 h-full w-full object-cover"
+                          />
                           <span className="absolute right-1.5 top-1.5 flex h-5 min-w-5 items-center justify-center rounded-full bg-foreground px-1 text-[10px] font-bold text-background">
                             {item.quantity}
                           </span>
                           {isBundle && (
-                            <span className="absolute left-1.5 bottom-1.5 rounded bg-background/90 px-1.5 py-0.5 text-[9px] font-semibold uppercase backdrop-blur">Bundle</span>
+                            <span className="absolute bottom-1.5 left-1.5 rounded bg-background/90 px-1.5 py-0.5 text-[9px] font-semibold uppercase backdrop-blur">Bundle</span>
                           )}
                         </div>
                       );

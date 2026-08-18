@@ -21,15 +21,7 @@ import { formatMoney } from "@/lib/checkout";
 import { cn } from "@/lib/utils";
 import { Check, Shield, Lock, ArrowRight, ArrowLeft, MapPin, Truck, CreditCard, ClipboardCheck, ChevronDown, Gift, Package } from "lucide-react";
 import type { CheckoutValidation, ShippingMethodOption } from "@/lib/types";
-import r2Loader from "@/lib/r2-loader";
-
-function safeImgSrc(src: string): string {
-  try {
-    return r2Loader({ src, width: 240, quality: 60 });
-  } catch {
-    return src;
-  }
-}
+import { CartItemImage } from "@/components/checkout/CartItemImage";
 
 const stepOrder = ["information", "shipping", "payment", "review"] as const;
 type Step = (typeof stepOrder)[number];
@@ -117,24 +109,18 @@ function OrderVisualSummary({
             const isBundle = item.cart_item_type === "bundle";
             const itemName = item.product_name || item.bundle_name || "Item";
             return (
-              <div key={item.id} className="relative overflow-hidden rounded-xl bg-muted aspect-square">
-                {item.product_image ? (
-                  <img
-                    src={safeImgSrc(item.product_image)}
-                    alt={itemName}
-                    loading="lazy"
-                    decoding="async"
-                    onError={(e) => { e.currentTarget.style.display = "none"; }}
-                    className="absolute inset-0 h-full w-full object-cover"
-                  />
-                ) : (
-                  <div className="flex h-full items-center justify-center text-xs text-muted-foreground">No image</div>
-                )}
+              <div key={item.id} className="relative">
+                <CartItemImage
+                  src={item.product_image}
+                  alt={itemName}
+                  containerClassName="aspect-square rounded-xl"
+                  className="absolute inset-0 h-full w-full object-cover"
+                />
                 <span className="absolute right-1.5 top-1.5 flex h-5 min-w-5 items-center justify-center rounded-full bg-foreground px-1 text-[10px] font-bold text-background">
                   {item.quantity}
                 </span>
                 {isBundle && (
-                  <span className="absolute left-1.5 bottom-1.5 rounded bg-background/90 px-1.5 py-0.5 text-[9px] font-semibold uppercase backdrop-blur">Bundle</span>
+                  <span className="absolute bottom-1.5 left-1.5 rounded bg-background/90 px-1.5 py-0.5 text-[9px] font-semibold uppercase backdrop-blur">Bundle</span>
                 )}
               </div>
             );
@@ -161,10 +147,12 @@ function OrderVisualSummary({
           <span className="text-muted-foreground">Shipping</span>
           <span className="font-medium">{cartSummary?.formatted_shipping || (cartSummary?.shipping_cost ? formatMoney(cartSummary.shipping_cost, currencyCode) : "Calculated next")}</span>
         </div>
-        <div className="flex justify-between">
-          <span className="text-muted-foreground">Tax</span>
-          <span className="font-medium">{cartSummary?.formatted_tax || (cartSummary?.tax_amount ? formatMoney(cartSummary.tax_amount, currencyCode) : "—")}</span>
-        </div>
+        {cartSummary?.tax_amount && Number(cartSummary.tax_amount) > 0 && (
+          <div className="flex justify-between">
+            <span className="text-muted-foreground">Tax</span>
+            <span className="font-medium">{cartSummary?.formatted_tax || formatMoney(cartSummary.tax_amount, currencyCode)}</span>
+          </div>
+        )}
         {(checkoutSession?.gift_wrap || (cartSummary?.gift_wrap_cost && Number(cartSummary.gift_wrap_cost) > 0)) && (
           <div className="flex justify-between">
             <span className="text-muted-foreground">{cartSummary?.gift_wrap_label || "Gift wrap"}</span>
@@ -709,13 +697,13 @@ function GiftOptions({
           aria-checked={isGift}
           onClick={() => handleToggleGift(!isGift)}
           className={cn(
-            "relative inline-flex h-7 w-12 shrink-0 cursor-pointer items-center rounded-full transition-colors duration-200",
-            isGift ? "bg-primary" : "bg-muted-foreground/25"
+            "relative inline-flex h-7 w-12 shrink-0 cursor-pointer items-center rounded-lg border transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40",
+            isGift ? "border-primary bg-primary" : "border-border bg-muted"
           )}
         >
           <span
             className={cn(
-              "inline-block h-5 w-5 rounded-full bg-background shadow-sm transition-transform duration-200",
+              "inline-block h-5 w-5 rounded-[5px] bg-background shadow-sm transition-transform duration-200",
               isGift ? "translate-x-[22px]" : "translate-x-1"
             )}
           />
@@ -756,13 +744,13 @@ function GiftOptions({
                 aria-checked={giftWrap}
                 onClick={() => handleToggleWrap(!giftWrap)}
                 className={cn(
-                  "relative inline-flex h-7 w-12 shrink-0 cursor-pointer items-center rounded-full transition-colors duration-200",
-                  giftWrap ? "bg-primary" : "bg-muted-foreground/25"
+                  "relative inline-flex h-7 w-12 shrink-0 cursor-pointer items-center rounded-lg border transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40",
+                  giftWrap ? "border-primary bg-primary" : "border-border bg-muted"
                 )}
               >
                 <span
                   className={cn(
-                    "inline-block h-5 w-5 rounded-full bg-background shadow-sm transition-transform duration-200",
+                    "inline-block h-5 w-5 rounded-[5px] bg-background shadow-sm transition-transform duration-200",
                     giftWrap ? "translate-x-[22px]" : "translate-x-1"
                   )}
                 />

@@ -4,7 +4,7 @@ import Link from "next/link";
 import * as React from "react";
 import Image from "next/image";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Paperclip, SendHorizontal, X } from "lucide-react";
+import { MessageCircle, Paperclip, SendHorizontal, X } from "lucide-react";
 import { useAuthContext } from "@/components/providers/AuthProvider";
 import { getAccessToken } from "@/lib/auth";
 import { apiFetch } from "@/lib/api";
@@ -51,6 +51,11 @@ type ChatConversation = {
   id: string;
   agent?: ChatAgent | null;
   messages?: ChatMessage[];
+};
+
+type PublicChatChannel = {
+  channel: "whatsapp" | "messenger";
+  display_name: string;
 };
 
 type ActiveConversationPayload =
@@ -122,6 +127,13 @@ export function ChatWidget() {
       return normalizeActiveConversation(response.data);
     },
     enabled: open && hasToken,
+    retry: false,
+  });
+
+  const channels = useQuery({
+    queryKey: ["chat", "channels", "public"],
+    queryFn: async () => (await apiFetch<PublicChatChannel[]>("/chat/channels/public/", { allowGuest: true })).data || [],
+    staleTime: 5 * 60 * 1000,
     retry: false,
   });
 
@@ -272,6 +284,7 @@ export function ChatWidget() {
   const assignedAgent = conversationDetail.data?.agent || activeConversation.data?.agent;
   const receiverName = assignedAgent?.display_name || "Support team";
   const isSubmitting = sendMessage.isPending || createConversation.isPending;
+  const externalChannels = channels.data || [];
 
   const handlePickFiles = (event: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFiles = Array.from(event.target.files || []);
@@ -392,6 +405,24 @@ export function ChatWidget() {
                 <X className="h-4 w-4" />
               </button>
             </div>
+
+            {externalChannels.length > 0 ? (
+              <div className="mb-3 rounded-xl border border-border bg-background/60 p-2.5">
+                <p className="mb-2 text-[11px] font-medium text-muted-foreground">Also available live on</p>
+                <div className="flex flex-wrap gap-2">
+                  {externalChannels.map((channel) => (
+                    <span
+                      key={channel.channel}
+                      className="inline-flex items-center gap-1.5 rounded-full border border-border bg-card px-2.5 py-1 text-xs font-medium text-foreground"
+                      title={`Messages received through ${channel.display_name || channel.channel} appear in the same support inbox.`}
+                    >
+                      <MessageCircle className="h-3.5 w-3.5 text-primary" />
+                      {channel.display_name || (channel.channel === "whatsapp" ? "WhatsApp" : "Messenger")}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            ) : null}
 
             {!hasToken ? (
               <div className="flex h-full flex-col items-center justify-center gap-3 rounded-xl border border-dashed border-border/70 bg-background/60 p-4 text-center">

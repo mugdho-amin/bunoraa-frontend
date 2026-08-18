@@ -6,16 +6,8 @@ import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
 import { useToast } from "@/components/ui/ToastProvider";
 import { formatMoney } from "@/lib/checkout";
-import r2Loader from "@/lib/r2-loader";
 import { cn } from "@/lib/utils";
-
-function safeImgSrc(src: string): string {
-  try {
-    return r2Loader({ src, width: 112, quality: 60 });
-  } catch {
-    return src;
-  }
-}
+import { CartItemImage } from "@/components/checkout/CartItemImage";
 import type { Cart, CartSummary, CheckoutSession } from "@/lib/types";
 
 type CheckoutSummaryProps = {
@@ -149,20 +141,12 @@ export function CheckoutSummary({
             const itemName = item.product_name || item.bundle_name || "Item";
             return (
               <div key={item.id} className="flex items-center gap-3">
-                <div className="relative h-14 w-14 overflow-hidden rounded-xl bg-muted">
-                  {item.product_image ? (
-                    <img
-                      src={safeImgSrc(item.product_image)}
-                      alt={itemName}
-                      loading="lazy"
-                      decoding="async"
-                      onError={(e) => { e.currentTarget.style.display = "none"; }}
-                      className="absolute inset-0 h-full w-full object-cover"
-                    />
-                  ) : (
-                    <div className="h-full w-full bg-muted" />
-                  )}
-                </div>
+                <CartItemImage
+                  src={item.product_image}
+                  alt={itemName}
+                  containerClassName="h-14 w-14 shrink-0 rounded-xl"
+                  className="absolute inset-0 h-full w-full object-cover"
+                />
                 <div className="min-w-0 flex-1">
                   <div className="flex items-center gap-1.5">
                     <p className="truncate text-sm font-medium">{itemName}</p>
@@ -217,10 +201,12 @@ export function CheckoutSummary({
             Store pickup — {cartSummary.pickup_location_name}
           </p>
         ) : null}
-        <div className="flex items-center justify-between">
-          <span className="text-muted-foreground">Tax</span>
-          <span>{lineValue(cartSummary?.tax_amount, cartSummary?.formatted_tax)}</span>
-        </div>
+        {cartSummary?.tax_amount && Number(cartSummary.tax_amount) > 0 ? (
+          <div className="flex items-center justify-between">
+            <span className="text-muted-foreground">Tax</span>
+            <span>{lineValue(cartSummary?.tax_amount, cartSummary?.formatted_tax)}</span>
+          </div>
+        ) : null}
         {(checkoutSession?.gift_wrap ||
           (cartSummary?.gift_wrap_cost &&
             Number(cartSummary.gift_wrap_cost) > 0)) ? (
@@ -332,13 +318,13 @@ export function CheckoutSummary({
               }
             }}
             className={cn(
-              "relative inline-flex h-7 w-12 shrink-0 cursor-pointer items-center rounded-full transition-colors duration-200",
-              giftOptions.is_gift ? "bg-primary" : "bg-muted-foreground/25"
+              "relative inline-flex h-7 w-12 shrink-0 cursor-pointer items-center rounded-lg border transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40",
+              giftOptions.is_gift ? "border-primary bg-primary" : "border-border bg-muted"
             )}
           >
             <span
               className={cn(
-                "inline-block h-5 w-5 rounded-full bg-background shadow-sm transition-transform duration-200",
+                "inline-block h-5 w-5 rounded-[5px] bg-background shadow-sm transition-transform duration-200",
                 giftOptions.is_gift ? "translate-x-[22px]" : "translate-x-1"
               )}
             />
@@ -386,13 +372,13 @@ export function CheckoutSummary({
                     }))
                   }
                   className={cn(
-                    "relative inline-flex h-7 w-12 shrink-0 cursor-pointer items-center rounded-full transition-colors duration-200",
-                    giftOptions.gift_wrap ? "bg-primary" : "bg-muted-foreground/25"
+                    "relative inline-flex h-7 w-12 shrink-0 cursor-pointer items-center rounded-lg border transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40",
+                    giftOptions.gift_wrap ? "border-primary bg-primary" : "border-border bg-muted"
                   )}
                 >
                   <span
                     className={cn(
-                      "inline-block h-5 w-5 rounded-full bg-background shadow-sm transition-transform duration-200",
+                      "inline-block h-5 w-5 rounded-[5px] bg-background shadow-sm transition-transform duration-200",
                       giftOptions.gift_wrap ? "translate-x-[22px]" : "translate-x-1"
                     )}
                   />

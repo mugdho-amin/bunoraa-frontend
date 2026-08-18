@@ -12,6 +12,7 @@ import { CheckoutInfoStep, CheckoutInfoFormValues } from "@/components/checkout/
 import { CheckoutShippingStep } from "@/components/checkout/CheckoutShippingStep";
 import { CheckoutPaymentStep, CheckoutPaymentFormValues } from "@/components/checkout/CheckoutPaymentStep";
 import { CheckoutReviewStep } from "@/components/checkout/CheckoutReviewStep";
+import { CartItemImage } from "@/components/checkout/CartItemImage";
 import { OrderProcessingModal } from "@/components/checkout/OrderProcessingModal";
 import { useCheckoutData } from "@/components/checkout/useCheckoutData";
 import { Button } from "@/components/ui/Button";
@@ -363,8 +364,13 @@ export function CheckoutCompact() {
             <div className="flex items-center gap-3">
               <div className="flex -space-x-2">
                 {cart?.items?.slice(0, 3).map((item) => (
-                  <div key={item.id} className="relative h-10 w-10 overflow-hidden rounded-lg border-2 border-background bg-muted">
-                    {item.product_image ? <Image src={item.product_image} alt="" fill sizes="40px" className="object-cover" quality={50} /> : null}
+                  <div key={item.id} className="relative h-10 w-10 shrink-0 overflow-hidden rounded-lg border-2 border-background bg-muted">
+                    <CartItemImage
+                      src={item.product_image}
+                      alt=""
+                      containerClassName="h-full w-full"
+                      className="absolute inset-0 h-full w-full object-cover"
+                    />
                   </div>
                 ))}
               </div>
