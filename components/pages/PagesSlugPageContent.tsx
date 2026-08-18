@@ -10,7 +10,7 @@ import type { Metadata } from "next";
 
 export async function getPage(slug: string) {
   try {
-    const response = await apiFetch<PageDetail>(`/pages/${slug}/`, {});
+    const response = await apiFetch<PageDetail>(`/cms/${slug}/`, {});
     return response.data;
   } catch (error) {
     if (error instanceof ApiError && error.status === 404) {

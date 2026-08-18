@@ -40,7 +40,7 @@ export function ContactPageClient() {
     setStatus(null);
     setIsSubmitting(true);
     try {
-      await apiFetch("/pages/contact/", {
+      await apiFetch("/cms/contact/", {
         method: "POST",
         body: form,
       });

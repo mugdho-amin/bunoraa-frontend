@@ -13,7 +13,7 @@ type PageSummary = {
 
 async function getPages() {
   try {
-    const response = await apiFetch<PageSummary[]>("/pages/");
+    const response = await apiFetch<PageSummary[]>("/cms/");
     return response.data;
   } catch (error) {
     if (error instanceof ApiError && (error.status === 404 || error.status === 503)) {

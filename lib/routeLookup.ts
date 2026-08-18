@@ -53,8 +53,8 @@ export async function categoryPathExists(slugPath: string): Promise<boolean> {
 
 const getPublishedPageSlugs = cache(async (): Promise<Set<string>> => {
   try {
-    const response = await apiFetch<PageSummary[]>("/pages/", {
-      next: { revalidate: 30, tags: ["pages"] },
+    const response = await apiFetch<PageSummary[]>("/cms/", {
+      next: { revalidate: 30, tags: ["cms"] },
       suppressError: true,
       suppressErrorStatus: [404],
     });

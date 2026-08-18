@@ -7,7 +7,7 @@ type Faq = { id: string; question: string; answer: string; category?: string | n
 
 async function getFaqs() {
   try {
-    const response = await apiFetch<Faq[]>("/pages/faqs/");
+    const response = await apiFetch<Faq[]>("/cms/faqs/");
     return response.data;
   } catch (error) {
     if (error instanceof ApiError && (error.status === 404 || error.status === 503)) return [];

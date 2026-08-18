@@ -4,7 +4,7 @@ import type { BlogPostDetail } from "@/lib/types";
 
 export const getBlogPostMeta = cache(async (slug: string) => {
   try {
-    const response = await apiFetch<BlogPostDetail>(`/pages/blog/${slug}/`);
+    const response = await apiFetch<BlogPostDetail>(`/cms/blog/${slug}/`);
     return response.data;
   } catch (error) {
     if (error instanceof ApiError && error.status === 404) {

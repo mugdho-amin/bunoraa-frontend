@@ -5,7 +5,7 @@ import { logger } from "@/lib/logger";
 
 export const getSiteSettings = cache(async (): Promise<SiteSettings | null> => {
   try {
-    const response = await apiFetch<SiteSettings>("/pages/settings/", {
+    const response = await apiFetch<SiteSettings>("/cms/settings/", {
       next: { revalidate: 300 },
     });
     return response.data;

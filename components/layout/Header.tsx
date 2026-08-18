@@ -16,7 +16,7 @@ type Category = { id: string; name: string; slug: string; slug_path?: string | n
 
 async function getMenuPages() {
   try {
-    const response = await apiFetch<MenuPage[]>("/pages/menu/", {
+    const response = await apiFetch<MenuPage[]>("/cms/menu/", {
       next: { revalidate: 300 },
     });
     return asArray<MenuPage>(response.data);

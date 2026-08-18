@@ -28,7 +28,7 @@ export function FooterNewsletter() {
     setStatus("loading");
     setMessage(null);
     try {
-      await apiFetch("/pages/subscribers/", {
+      await apiFetch("/cms/subscribers/", {
         method: "POST",
         body: { email: trimmed },
       });

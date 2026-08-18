@@ -8,7 +8,7 @@ import { buildItemList } from "@/lib/seo";
 import { Card } from "@/components/ui/Card";
 
 async function getBlogPosts() {
-  try { const response = await apiFetch<BlogPostListItem[]>("/pages/blog/"); return Array.isArray(response.data) ? response.data : []; }
+  try { const response = await apiFetch<BlogPostListItem[]>("/cms/blog/"); return Array.isArray(response.data) ? response.data : []; }
   catch (error) { if (error instanceof ApiError && (error.status === 404 || error.status === 503)) return []; throw error; }
 }
 

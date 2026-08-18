@@ -24,7 +24,7 @@ export function SiteSettingsProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     if (hasFailed) return;
 
-    apiFetch<SiteSettings>("/pages/settings/")
+    apiFetch<SiteSettings>("/cms/settings/")
       .then((response) => {
         setSettings(response.data);
         if (response.data?.media_url) {

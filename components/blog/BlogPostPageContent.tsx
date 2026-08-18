@@ -10,7 +10,7 @@ import { JsonLd } from "@/components/seo/JsonLd";
 import { buildBreadcrumbList, absoluteUrl } from "@/lib/seo";
 
 const getBlogPost = cache(async (slug: string) => {
-  try { const response = await apiFetch<BlogPostDetail>(`/pages/blog/${slug}/`, { headers: await getServerLocaleHeaders() }); return response.data; }
+  try { const response = await apiFetch<BlogPostDetail>(`/cms/blog/${slug}/`, { headers: await getServerLocaleHeaders() }); return response.data; }
   catch (error) { if (error instanceof ApiError && error.status === 404) notFound(); throw error; }
 });
 

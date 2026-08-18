@@ -15,7 +15,7 @@ import { categoryPathExists, publishedPageSlugExists } from "@/lib/routeLookup";
 
 async function getPage(slug: string) {
   try {
-    const response = await apiFetch<PageDetail>(`/pages/${slug}/`, {
+    const response = await apiFetch<PageDetail>(`/cms/${slug}/`, {
       
       suppressError: true,
       suppressErrorStatus: [404],

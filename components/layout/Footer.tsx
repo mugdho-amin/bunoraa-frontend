@@ -23,7 +23,7 @@ const FOOTER_CATEGORY_LIMIT = 5;
 
 async function getFooterPages() {
   try {
-    const response = await apiFetch<MenuPage[]>("/pages/footer/", {
+    const response = await apiFetch<MenuPage[]>("/cms/footer/", {
       next: { revalidate: 300 },
     });
     return asArray<MenuPage>(response.data);
@@ -34,7 +34,7 @@ async function getFooterPages() {
 
 async function getPublishedPages() {
   try {
-    const response = await apiFetch<MenuPage[]>("/pages/", {
+    const response = await apiFetch<MenuPage[]>("/cms/", {
       next: { revalidate: 300 },
     });
     return asArray<MenuPage>(response.data);
