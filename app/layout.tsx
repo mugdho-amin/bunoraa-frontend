@@ -10,6 +10,8 @@ import Script from "next/script";
 import { DeferredClientEnhancements } from "@/components/layout/DeferredClientEnhancements";
 import { WebVitalsReporter } from "@/components/analytics/WebVitalsReporter";
 import { HtmlLangSetter } from "@/components/layout/HtmlLangSetter";
+import { MaintenanceScreen } from "@/components/layout/MaintenanceScreen";
+import { getMaintenanceMode } from "@/lib/siteSettings.server";
 import { SerwistProvider } from "@serwist/next/react";
 import {
   DM_Sans,
@@ -183,11 +185,34 @@ const themeBootstrapScript = `
 })();
 `;
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const isMaintenanceMode = await getMaintenanceMode();
+
+  if (isMaintenanceMode) {
+    return (
+      <html
+        lang="en"
+        className={`system ${fontPoppins.variable} ${fontDM_Sans.variable} ${fontNotoSansBengali.variable}`}
+        suppressHydrationWarning
+        data-scroll-behavior="smooth"
+      >
+        <head>
+        </head>
+        <body className="min-h-[100dvh] bg-background text-foreground antialiased">
+          <HtmlLangSetter />
+          <Script id="theme-bootstrap" strategy="beforeInteractive">
+            {themeBootstrapScript}
+          </Script>
+          <MaintenanceScreen />
+        </body>
+      </html>
+    );
+  }
+
   const organizationSchema = cleanObject({
     "@context": "https://schema.org",
     "@type": "Organization",

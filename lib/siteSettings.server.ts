@@ -14,3 +14,15 @@ export const getSiteSettings = cache(async (): Promise<SiteSettings | null> => {
     return null;
   }
 });
+
+export const getMaintenanceMode = cache(async (): Promise<boolean> => {
+  try {
+    const response = await apiFetch<SiteSettings>("/cms/settings/", {
+      next: { revalidate: 30 },
+    });
+    return response.data?.maintenance_mode === true;
+  } catch (e: unknown) {
+    logger.error("getMaintenanceMode fetch failed", e);
+    return false;
+  }
+});
