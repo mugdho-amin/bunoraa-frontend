@@ -45,7 +45,9 @@ export async function subscribeToBrowserPush(): Promise<PushSubscriptionResult> 
       return { status: "denied" };
     }
 
-    const registration = await navigator.serviceWorker.register("/notifications-sw.js");
+    // Serwist owns the sole root-scoped worker. A second notifications worker
+    // would replace it and can leave a mixed set of cached Next.js chunks.
+    const registration = await navigator.serviceWorker.ready;
 
     // Send VAPID public key to service worker for pushsubscriptionchange handling
     const vapidPublicKey = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY || "";

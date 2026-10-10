@@ -81,19 +81,6 @@ const runtimeCaching: RuntimeCaching[] = [
     }),
   },
   {
-    matcher: /\/_next\/static.+\.js$/i,
-    handler: new CacheFirst({
-      cacheName: "next-static-js-assets",
-      plugins: [
-        new ExpirationPlugin({
-          maxEntries: 64,
-          maxAgeSeconds: 1440 * 60,
-          maxAgeFrom: "last-used",
-        }),
-      ],
-    }),
-  },
-  {
     matcher: /\/_next\/image\?url=.+$/i,
     handler: new StaleWhileRevalidate({
       cacheName: "next-image",
@@ -126,19 +113,6 @@ const runtimeCaching: RuntimeCaching[] = [
       plugins: [
         new ExpirationPlugin({
           maxEntries: 32,
-          maxAgeSeconds: 1440 * 60,
-          maxAgeFrom: "last-used",
-        }),
-      ],
-    }),
-  },
-  {
-    matcher: /\.(?:js)$/i,
-    handler: new StaleWhileRevalidate({
-      cacheName: "static-js-assets",
-      plugins: [
-        new ExpirationPlugin({
-          maxEntries: 48,
           maxAgeSeconds: 1440 * 60,
           maxAgeFrom: "last-used",
         }),
@@ -187,7 +161,9 @@ self.addEventListener("activate", (event) => {
     (async () => {
       const names = await caches.keys();
       await Promise.all(
-        names.filter((name) => name === "apis").map((name) => caches.delete(name))
+        names
+          .filter((name) => ["apis", "next-static-js-assets", "static-js-assets"].includes(name))
+          .map((name) => caches.delete(name))
       );
     })()
   );

@@ -14,7 +14,6 @@ import { ToastProvider } from "@/components/ui/ToastProvider";
 import { LanguageSynchronizer } from "@/components/providers/LanguageSynchronizer";
 import { initPerformanceMonitoring } from "@/lib/performance";
 
-// Initialize performance monitoring
 function PerformanceMonitoring() {
   useEffect(() => {
     initPerformanceMonitoring();
@@ -22,81 +21,35 @@ function PerformanceMonitoring() {
   return null;
 }
 
-// Register service worker for offline support
-function ServiceWorkerRegistration() {
+// Serwist registers /sw.js from the root layout. This cleanup retires the
+// workers from the pre-Serwist implementation without touching Serwist.
+function LegacyServiceWorkerCleanup() {
   useEffect(() => {
-    if (typeof window === "undefined" || !("serviceWorker" in navigator)) {
-      return;
-    }
+    if (typeof window === "undefined" || !("serviceWorker" in navigator)) return;
 
-    // Service workers are disabled in development (serwist `disable: !isProduction`).
-    // Any registration left over from a previous production build keeps trying to
-    // fetch /sw.js, which the dev server answers with HTML — producing a console
-    // "error during installation". Clear them so dev stays clean.
-    if (process.env.NODE_ENV !== "production") {
-      navigator.serviceWorker
-        .getRegistrations()
-        .then((registrations) => {
-          registrations.forEach((registration) => registration.unregister());
-        })
-        .catch(() => {
-          // ignore
-        });
-      return;
-    }
-
-    const swEnabled =
-      process.env.NEXT_PUBLIC_ENABLE_SERVICE_WORKER === "true" ||
-      process.env.NEXT_PUBLIC_ENABLE_SERVICE_WORKER === "1";
-
-    const unregisterLegacyWorkers = async () => {
+    void (async () => {
       try {
         const registrations = await navigator.serviceWorker.getRegistrations();
         await Promise.all(
           registrations
-            .filter((registration) => registration.active?.scriptURL?.includes("/service-worker.js"))
+            .filter((registration) =>
+              [registration.active, registration.installing, registration.waiting].some(
+                (worker) =>
+                  worker?.scriptURL.includes("/service-worker.js") ||
+                  worker?.scriptURL.includes("/notifications-sw.js")
+              )
+            )
             .map((registration) => registration.unregister())
         );
-        if ("caches" in window) {
-          const keys = await caches.keys();
-          await Promise.all(
-            keys
-              .filter((key) => key.startsWith("bunoraa-"))
-              .map((key) => caches.delete(key))
-          );
-        }
+
+        const keys = await caches.keys();
+        await Promise.all(
+          keys.filter((key) => key.startsWith("bunoraa-")).map((key) => caches.delete(key))
+        );
       } catch (error) {
         console.error("[SW] Failed to clean up legacy service worker:", error);
       }
-    };
-
-    if (!swEnabled) {
-      unregisterLegacyWorkers();
-      return;
-    }
-
-    navigator.serviceWorker
-      .register("/service-worker.js")
-      .then((registration) => {
-        console.log("[SW] Service Worker registered:", registration.scope);
-
-        registration.addEventListener("updatefound", () => {
-          const newWorker = registration.installing;
-          if (newWorker) {
-            newWorker.addEventListener("statechange", () => {
-              if (
-                newWorker.state === "installed" &&
-                navigator.serviceWorker.controller
-              ) {
-                console.log("[SW] New version available");
-              }
-            });
-          }
-        });
-      })
-      .catch((error) => {
-        console.error("[SW] Service Worker registration failed:", error);
-      });
+    })();
   }, []);
 
   return null;
@@ -114,7 +67,7 @@ export function Providers({ children }: { children: React.ReactNode }) {
                   <LanguageSynchronizer />
                   <WebSocketProvider>
                     <PerformanceMonitoring />
-                    <ServiceWorkerRegistration />
+                    <LegacyServiceWorkerCleanup />
                     <MaintenanceOverlay />
                     {children}
                   </WebSocketProvider>
