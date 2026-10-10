@@ -27,6 +27,14 @@ const INTERNAL_API_BASE_URL = (process.env.NEXT_INTERNAL_API_BASE_URL || "").rep
 const FALLBACK_SITE_URL =
   (process.env.NEXT_PUBLIC_SITE_URL || "").replace(/\/$/, "") || null;
 
+// During `next build`, static generation fetches layout data (site settings,
+// maintenance mode, published-content flags) from the live backend. If that
+// backend is cold/unreachable, the default 30s timeout adds up across several
+// sequential calls and blows Vercel's 60s per-page budget, failing the whole
+// build. Fail fast at build time so pages fall back to defaults instead.
+const IS_PRODUCTION_BUILD = process.env.NEXT_PHASE === "phase-production-build";
+const DEFAULT_FETCH_TIMEOUT = IS_PRODUCTION_BUILD ? 8000 : 30000;
+
 let pendingRefresh: Promise<string | null> | null = null;
 
 function ensureTrailingSlash(path: string) {
@@ -351,7 +359,7 @@ export async function apiFetch<T>(path: string, options: ApiFetchOptions = {}): 
     allowGuest = false,
     suppressError = false,
     suppressErrorStatus = [],
-    timeout = 30000,
+    timeout = DEFAULT_FETCH_TIMEOUT,
   } = options;
 
   const url = buildUrl(path, params);
