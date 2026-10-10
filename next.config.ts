@@ -136,7 +136,7 @@ const nextConfig: NextConfig = {
     deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048, 3840],
     imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
     minimumCacheTTL: 31536000,
-    qualities: [60, 64, 70, 72, 75],
+    qualities: [50, 55, 60, 64, 65, 70, 72, 75, 80, 85, 95],
     // WARNING: SVG uploads can contain embedded scripts (XSS vector).
     // Server-side SVG sanitization is REQUIRED before upload:
     //   - Use a library like 'sanitize-svg' or DOMPurify with SVG profile on the backend

@@ -25,11 +25,23 @@ function PerformanceMonitoring() {
 // Register service worker for offline support
 function ServiceWorkerRegistration() {
   useEffect(() => {
-    if (
-      typeof window === "undefined" ||
-      !("serviceWorker" in navigator) ||
-      process.env.NODE_ENV !== "production"
-    ) {
+    if (typeof window === "undefined" || !("serviceWorker" in navigator)) {
+      return;
+    }
+
+    // Service workers are disabled in development (serwist `disable: !isProduction`).
+    // Any registration left over from a previous production build keeps trying to
+    // fetch /sw.js, which the dev server answers with HTML — producing a console
+    // "error during installation". Clear them so dev stays clean.
+    if (process.env.NODE_ENV !== "production") {
+      navigator.serviceWorker
+        .getRegistrations()
+        .then((registrations) => {
+          registrations.forEach((registration) => registration.unregister());
+        })
+        .catch(() => {
+          // ignore
+        });
       return;
     }
 

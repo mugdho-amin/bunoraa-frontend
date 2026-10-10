@@ -112,6 +112,10 @@ export function HeroBannerSlider({
         {banners.map((banner, index) => {
           const isActive = index === activeIndex;
           const hasLoadedImage = loadedSlides.has(index) || index === 0;
+          const mobileSrc =
+            banner.image_mobile && banner.image_mobile !== banner.image
+              ? banner.image_mobile
+              : null;
           const borderWidth = toCssValue(banner.style_border_width);
           const borderColor = banner.style_border_color || undefined;
           const resolvedBorderWidth = borderWidth || (borderColor ? "1px" : undefined);
@@ -190,17 +194,17 @@ export function HeroBannerSlider({
                     fill
                     sizes="100vw"
                     quality={index === 0 ? 80 : 64}
-                    priority={index === 0 && !banner.image_mobile}
-                    loading={index === 0 && !banner.image_mobile ? "eager" : "lazy"}
-                    fetchPriority={index === 0 ? (banner.image_mobile ? "low" : "high") : "low"}
+                    priority={index === 0 && !mobileSrc}
+                    loading={index === 0 && !mobileSrc ? "eager" : "lazy"}
+                    fetchPriority={index === 0 ? (mobileSrc ? "low" : "high") : "low"}
                     className={cn(
                       "object-cover",
-                      banner.image_mobile ? "hidden sm:block" : "block"
+                      mobileSrc ? "hidden sm:block" : "block"
                     )}
                   />
-                  {banner.image_mobile && (
+                  {mobileSrc && (
                     <Image
-                      src={banner.image_mobile}
+                      src={mobileSrc}
                       alt={banner.title}
                       fill
                       sizes="100vw"
