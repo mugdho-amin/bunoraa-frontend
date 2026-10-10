@@ -12,7 +12,6 @@ import { WebVitalsReporter } from "@/components/analytics/WebVitalsReporter";
 import { HtmlLangSetter } from "@/components/layout/HtmlLangSetter";
 import { MaintenanceScreen } from "@/components/layout/MaintenanceScreen";
 import { getMaintenanceMode } from "@/lib/siteSettings.server";
-import { SerwistProvider } from "@serwist/next/react";
 import {
   DM_Sans,
   Noto_Sans_Bengali,
@@ -242,12 +241,6 @@ export default async function RootLayout({
     },
   });
 
-  // The Serwist service worker at /sw.js is only generated for production
-  // builds (`disable: !isProduction` in next.config.ts). Mounting the provider
-  // in development makes the browser request /sw.js, which the dev server
-  // answers with HTML, causing a "ServiceWorker ... error during installation".
-  const serwistEnabled = process.env.NODE_ENV === "production";
-
   const appTree = (
     <Providers>
       <Header />
@@ -281,11 +274,7 @@ export default async function RootLayout({
         </Script>
         <SkipToContent />
         <WebVitalsReporter />
-        {serwistEnabled ? (
-          <SerwistProvider swUrl="/sw.js">{appTree}</SerwistProvider>
-        ) : (
-          appTree
-        )}
+        {appTree}
         <JsonLd data={[organizationSchema, websiteSchema]} />
       </body>
     </html>
