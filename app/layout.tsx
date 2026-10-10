@@ -242,6 +242,28 @@ export default async function RootLayout({
     },
   });
 
+  // The Serwist service worker at /sw.js is only generated for production
+  // builds (`disable: !isProduction` in next.config.ts). Mounting the provider
+  // in development makes the browser request /sw.js, which the dev server
+  // answers with HTML, causing a "ServiceWorker ... error during installation".
+  const serwistEnabled = process.env.NODE_ENV === "production";
+
+  const appTree = (
+    <Providers>
+      <Header />
+      <main
+        id="main-content"
+        className="min-h-[70dvh] bg-background"
+        role="main"
+        aria-label="Main content"
+      >
+        {children}
+      </main>
+      <Footer />
+      <DeferredClientEnhancements />
+    </Providers>
+  );
+
   return (
     <html
       lang="en"
@@ -259,21 +281,11 @@ export default async function RootLayout({
         </Script>
         <SkipToContent />
         <WebVitalsReporter />
-        <SerwistProvider swUrl="/sw.js">
-          <Providers>
-            <Header />
-            <main
-              id="main-content"
-              className="min-h-[70dvh] bg-background"
-              role="main"
-              aria-label="Main content"
-            >
-              {children}
-            </main>
-            <Footer />
-            <DeferredClientEnhancements />
-          </Providers>
-        </SerwistProvider>
+        {serwistEnabled ? (
+          <SerwistProvider swUrl="/sw.js">{appTree}</SerwistProvider>
+        ) : (
+          appTree
+        )}
         <JsonLd data={[organizationSchema, websiteSchema]} />
       </body>
     </html>

@@ -8,6 +8,15 @@ export function ServiceWorkerRegister() {
     if (!("serviceWorker" in navigator)) return;
     if (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1") return;
 
+    // The legacy /service-worker.js was superseded by the Serwist worker at
+    // /sw.js (registered via <SerwistProvider> in the root layout). Only
+    // register the legacy worker when explicitly opted in, so we never request
+    // a file that is not part of the deployment.
+    const legacySwEnabled =
+      process.env.NEXT_PUBLIC_ENABLE_SERVICE_WORKER === "true" ||
+      process.env.NEXT_PUBLIC_ENABLE_SERVICE_WORKER === "1";
+    if (!legacySwEnabled) return;
+
     let cancelled = false;
 
     const register = async () => {
