@@ -2,7 +2,6 @@
 
 import * as React from "react";
 import Link from "next/link";
-import Image from "next/image";
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
 import { AuthGate } from "@/components/auth/AuthGate";
@@ -19,20 +18,14 @@ import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { Badge } from "@/components/ui/Badge";
 import { useToast } from "@/components/ui/ToastProvider";
-import { ApiError } from "@/lib/api";
 import { fetchSiteSettings } from "@/lib/siteSettings";
 import { formatMoney } from "@/lib/checkout";
 import { cn } from "@/lib/utils";
-import { Check, ArrowRight, Shield, Truck, RotateCcw, CreditCard, Wallet, Smartphone } from "lucide-react";
+import { Check, Shield, Truck, RotateCcw, CreditCard, Wallet, Smartphone } from "lucide-react";
 import type { CheckoutValidation, ShippingMethodOption } from "@/lib/types";
 
 const stepOrder = ["information", "shipping", "payment", "review"] as const;
 type Step = (typeof stepOrder)[number];
-
-const parseStep = (value: string | null): Step | null => {
-  if (!value) return null;
-  return stepOrder.includes(value as Step) ? (value as Step) : null;
-};
 
 function ExpressWalletButton({ label, icon, onClick, className }: { label: string; icon: React.ReactNode; onClick: () => void; className?: string }) {
   return (
@@ -79,8 +72,7 @@ export function CheckoutExpress() {
   const {
     checkoutQuery, cartQuery, cartSummaryQuery, countriesQuery, pickupLocationsQuery,
     paymentGatewaysQuery, savedPaymentMethodsQuery, updateShippingInfo, selectShippingMethod,
-    selectPaymentMethod, completeCheckout, calculateShipping, validateCart, updateGiftOptions,
-    applyCoupon, removeCoupon,
+    selectPaymentMethod, completeCheckout, calculateShipping, validateCart,
   } = useCheckoutData({ enabled: allowGuestCheckout, enablePaymentMethods: hasToken });
 
   const checkoutSession = checkoutQuery.data;
@@ -103,13 +95,11 @@ export function CheckoutExpress() {
     [countries]
   );
 
-  const [localMaxStep, setLocalMaxStep] = React.useState(0);
   const [maxStepInitialized, setMaxStepInitialized] = React.useState(false);
   const [validation, setValidation] = React.useState<CheckoutValidation | null>(null);
   const [shippingRates, setShippingRates] = React.useState<ShippingMethodOption[]>([]);
   const [shippingRatesError, setShippingRatesError] = React.useState<string | null>(null);
   const lastRatesKey = React.useRef("");
-  const lastValidationKey = React.useRef("");
   const lastAutoInfoKey = React.useRef("");
   const lastAutoShippingKey = React.useRef("");
   const [autoSavingInfo, setAutoSavingInfo] = React.useState(false);
@@ -139,7 +129,6 @@ export function CheckoutExpress() {
   React.useEffect(() => {
     if (maxStepInitialized) return;
     if (!checkoutSession) return;
-    setLocalMaxStep(maxStepIndex);
     setCurrentStepIdx(maxStepIndex);
     setMaxStepInitialized(true);
   }, [checkoutSession, maxStepIndex, maxStepInitialized]);
@@ -264,7 +253,6 @@ export function CheckoutExpress() {
   const handleInfoSubmit = async (values: CheckoutInfoFormValues) => {
     try {
       await updateShippingInfo.mutateAsync(values);
-      setLocalMaxStep((prev) => Math.max(prev, 1));
       nextStep();
     } catch (error) {
       push(error instanceof Error ? error.message : "Could not save shipping info.", "error");
@@ -274,7 +262,6 @@ export function CheckoutExpress() {
   const handleShippingSubmit = async (payload: { shipping_type: "delivery" | "pickup"; shipping_rate_id?: string; pickup_location_id?: string; delivery_instructions?: string }) => {
     try {
       await selectShippingMethod.mutateAsync(payload);
-      setLocalMaxStep((prev) => Math.max(prev, 2));
       nextStep();
     } catch (error) {
       push(error instanceof Error ? error.message : "Could not save shipping method.", "error");
@@ -284,7 +271,6 @@ export function CheckoutExpress() {
   const handlePaymentSubmit = async (values: CheckoutPaymentFormValues) => {
     try {
       await selectPaymentMethod.mutateAsync(values);
-      setLocalMaxStep((prev) => Math.max(prev, 3));
       nextStep();
     } catch (error) {
       push(error instanceof Error ? error.message : "Could not save payment method.", "error");

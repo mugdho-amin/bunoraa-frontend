@@ -19,7 +19,7 @@ import { useToast } from "@/components/ui/ToastProvider";
 import { fetchSiteSettings } from "@/lib/siteSettings";
 import { formatMoney } from "@/lib/checkout";
 import { cn } from "@/lib/utils";
-import { Check, Shield, Lock, ArrowRight, ArrowLeft, MapPin, Truck, CreditCard, ClipboardCheck, ChevronDown, Gift, Package } from "lucide-react";
+import { Check, Shield, Lock, MapPin, Truck, CreditCard, ClipboardCheck, ChevronDown, Gift, Package } from "lucide-react";
 import type { CheckoutValidation, ShippingMethodOption } from "@/lib/types";
 import { CartItemImage } from "@/components/checkout/CartItemImage";
 
@@ -232,7 +232,6 @@ export function CheckoutSplitScreen() {
   const [shippingRates, setShippingRates] = React.useState<ShippingMethodOption[]>([]);
   const [shippingRatesError, setShippingRatesError] = React.useState<string | null>(null);
   const lastRatesKey = React.useRef("");
-  const lastValidationKey = React.useRef("");
   const lastAutoInfoKey = React.useRef("");
   const lastAutoShippingKey = React.useRef("");
   const [autoSavingInfo, setAutoSavingInfo] = React.useState(false);
@@ -624,7 +623,6 @@ function GiftOptions({
   onUpdate: (payload: { is_gift?: boolean; gift_message?: string; gift_wrap?: boolean }) => Promise<unknown>;
   isUpdating: boolean;
 }) {
-  const { push } = useToast();
   const [isGift, setIsGift] = React.useState(initialIsGift);
   const [giftMessage, setGiftMessage] = React.useState(initialMessage);
   const [giftWrap, setGiftWrap] = React.useState(initialWrap);

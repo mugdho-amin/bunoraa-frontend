@@ -142,8 +142,9 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
   );
 
   React.useEffect(() => {
+    const timers = timersRef.current;
     return () => {
-      timersRef.current.forEach((entry) => clearTimeout(entry.timer));
+      timers.forEach((entry) => clearTimeout(entry.timer));
     };
   }, []);
 

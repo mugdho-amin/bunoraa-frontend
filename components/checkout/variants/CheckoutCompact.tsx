@@ -2,8 +2,7 @@
 
 import * as React from "react";
 import Link from "next/link";
-import Image from "next/image";
-import { useRouter, useSearchParams, usePathname } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
 import { AuthGate } from "@/components/auth/AuthGate";
 import { useAuthContext } from "@/components/providers/AuthProvider";
@@ -17,21 +16,12 @@ import { OrderProcessingModal } from "@/components/checkout/OrderProcessingModal
 import { useCheckoutData } from "@/components/checkout/useCheckoutData";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
-import { Badge } from "@/components/ui/Badge";
 import { useToast } from "@/components/ui/ToastProvider";
 import { fetchSiteSettings } from "@/lib/siteSettings";
 import { formatMoney } from "@/lib/checkout";
 import { cn } from "@/lib/utils";
-import { Check, ChevronDown, Shield, Truck, RotateCcw, CreditCard, Gift, Tag } from "lucide-react";
+import { Check, ChevronDown, Shield, Truck, RotateCcw } from "lucide-react";
 import type { CheckoutValidation, ShippingMethodOption } from "@/lib/types";
-
-const stepOrder = ["information", "shipping", "payment", "review"] as const;
-type Step = (typeof stepOrder)[number];
-
-const parseStep = (value: string | null): Step | null => {
-  if (!value) return null;
-  return stepOrder.includes(value as Step) ? (value as Step) : null;
-};
 
 function CompactSection({
   number,
@@ -92,8 +82,6 @@ function CompactSection({
 
 export function CheckoutCompact() {
   const router = useRouter();
-  const pathname = usePathname();
-  const searchParams = useSearchParams();
   const { push } = useToast();
   const auth = useAuthContext();
   const { profileQuery, hasToken } = auth;
@@ -110,8 +98,7 @@ export function CheckoutCompact() {
   const {
     checkoutQuery, cartQuery, cartSummaryQuery, countriesQuery, pickupLocationsQuery,
     paymentGatewaysQuery, savedPaymentMethodsQuery, updateShippingInfo, selectShippingMethod,
-    selectPaymentMethod, completeCheckout, calculateShipping, validateCart, updateGiftOptions,
-    applyCoupon, removeCoupon,
+    selectPaymentMethod, completeCheckout, calculateShipping, validateCart,
   } = useCheckoutData({ enabled: allowGuestCheckout, enablePaymentMethods: hasToken });
 
   const checkoutSession = checkoutQuery.data;
@@ -134,13 +121,10 @@ export function CheckoutCompact() {
     [countries]
   );
 
-  const [localMaxStep, setLocalMaxStep] = React.useState(0);
-  const [maxStepInitialized, setMaxStepInitialized] = React.useState(false);
   const [validation, setValidation] = React.useState<CheckoutValidation | null>(null);
   const [shippingRates, setShippingRates] = React.useState<ShippingMethodOption[]>([]);
   const [shippingRatesError, setShippingRatesError] = React.useState<string | null>(null);
   const lastRatesKey = React.useRef("");
-  const lastValidationKey = React.useRef("");
   const lastAutoInfoKey = React.useRef("");
   const lastAutoShippingKey = React.useRef("");
   const [autoSavingInfo, setAutoSavingInfo] = React.useState(false);
@@ -161,18 +145,6 @@ export function CheckoutCompact() {
     checkoutSession?.payment_method && checkoutSession?.current_step &&
     ["payment", "review", "processing", "completed"].includes(checkoutSession.current_step)
   );
-
-  let maxStepIndex = 0;
-  if (infoComplete) maxStepIndex = 1;
-  if (shippingComplete) maxStepIndex = 2;
-  if (paymentComplete) maxStepIndex = 3;
-
-  React.useEffect(() => {
-    if (maxStepInitialized) return;
-    if (!checkoutSession) return;
-    setLocalMaxStep(maxStepIndex);
-    setMaxStepInitialized(true);
-  }, [checkoutSession, maxStepInitialized, maxStepIndex]);
 
   const shippingPayload = React.useMemo(() => {
     if (!infoComplete || !cart || !cartSummary || !checkoutSession) return null;
@@ -277,7 +249,6 @@ export function CheckoutCompact() {
   const handleInfoSubmit = async (values: CheckoutInfoFormValues) => {
     try {
       await updateShippingInfo.mutateAsync(values);
-      setLocalMaxStep((prev) => Math.max(prev, 1));
       setExpandedSection(1);
     } catch (error) {
       push(error instanceof Error ? error.message : "Could not save shipping info.", "error");
@@ -287,7 +258,6 @@ export function CheckoutCompact() {
   const handleShippingSubmit = async (payload: { shipping_type: "delivery" | "pickup"; shipping_rate_id?: string; pickup_location_id?: string; delivery_instructions?: string }) => {
     try {
       await selectShippingMethod.mutateAsync(payload);
-      setLocalMaxStep((prev) => Math.max(prev, 2));
       setExpandedSection(2);
     } catch (error) {
       push(error instanceof Error ? error.message : "Could not save shipping method.", "error");
@@ -297,7 +267,6 @@ export function CheckoutCompact() {
   const handlePaymentSubmit = async (values: CheckoutPaymentFormValues) => {
     try {
       await selectPaymentMethod.mutateAsync(values);
-      setLocalMaxStep((prev) => Math.max(prev, 3));
       setExpandedSection(3);
     } catch (error) {
       push(error instanceof Error ? error.message : "Could not save payment method.", "error");

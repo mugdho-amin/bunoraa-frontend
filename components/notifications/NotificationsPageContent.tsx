@@ -19,7 +19,6 @@ import {
   Inbox,
   CreditCard,
   Check,
-  Clock,
   BellOff,
   Trash2,
   MoreHorizontal,
@@ -76,10 +75,6 @@ const TYPE_BG: Record<string, string> = {
 
 function getTypeKey(note: NotificationItem): string {
   return (note.type || note.category || "system").toLowerCase();
-}
-
-function getIconForNotification(note: NotificationItem): LucideIcon {
-  return TYPE_ICONS[getTypeKey(note)] || Bell;
 }
 
 function getTypeColor(note: NotificationItem): string {
@@ -197,7 +192,7 @@ function NotificationRow({
   onDelete: (id: string) => void;
 }) {
   const isUnread = !note.is_read;
-  const IconComponent = getIconForNotification(note);
+  const IconComponent = TYPE_ICONS[getTypeKey(note)] ?? Bell;
   const iconColor = getTypeColor(note);
   const iconBg = getTypeBg(note);
   const [showMenu, setShowMenu] = React.useState(false);

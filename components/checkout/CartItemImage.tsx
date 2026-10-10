@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import Image from "next/image";
 import { ImageIcon } from "lucide-react";
 import { useMediaUrl } from "@/components/providers/SiteSettingsProvider";
 import { cn } from "@/lib/utils";
@@ -10,6 +11,7 @@ type CartItemImageProps = {
   alt?: string;
   className?: string;
   containerClassName?: string;
+  sizes?: string;
 };
 
 /**
@@ -24,6 +26,7 @@ export function CartItemImage({
   alt = "",
   className,
   containerClassName,
+  sizes = "56px",
 }: CartItemImageProps) {
   const mediaUrl = useMediaUrl();
   const [hasFailed, setHasFailed] = React.useState(false);
@@ -51,9 +54,11 @@ export function CartItemImage({
 
   return (
     <div className={cn("relative overflow-hidden bg-muted", containerClassName)}>
-      <img
+      <Image
         src={rawUrl}
         alt={alt}
+        fill
+        sizes={sizes}
         loading="lazy"
         decoding="async"
         referrerPolicy="no-referrer"
