@@ -477,6 +477,7 @@ export type SiteSettings = {
   social_links?: Array<{ name?: string | null; label?: string | null; url?: string | null; icon?: string | null }> | null;
   media_url?: string | null;
   google_analytics_id?: string | null;
+  facebook_pixel_id?: string | null;
   maintenance_mode?: boolean;
   company_name?: string | null;
   free_shipping_threshold?: number;

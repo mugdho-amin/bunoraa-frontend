@@ -9,9 +9,10 @@ import { DEFAULT_OG_IMAGE_PATH, SITE_NAME, SITE_URL, absoluteUrl, cleanObject } 
 import Script from "next/script";
 import { DeferredClientEnhancements } from "@/components/layout/DeferredClientEnhancements";
 import { WebVitalsReporter } from "@/components/analytics/WebVitalsReporter";
+import { MetaPixel } from "@/components/analytics/MetaPixel";
 import { HtmlLangSetter } from "@/components/layout/HtmlLangSetter";
 import { MaintenanceScreen } from "@/components/layout/MaintenanceScreen";
-import { getMaintenanceMode } from "@/lib/siteSettings.server";
+import { getMaintenanceMode, getSiteSettings } from "@/lib/siteSettings.server";
 import {
   DM_Sans,
   Noto_Sans_Bengali,
@@ -189,7 +190,10 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const isMaintenanceMode = await getMaintenanceMode();
+  const [isMaintenanceMode, siteSettings] = await Promise.all([
+    getMaintenanceMode(),
+    getSiteSettings(),
+  ]);
 
   if (isMaintenanceMode) {
     return (
@@ -274,6 +278,7 @@ export default async function RootLayout({
         </Script>
         <SkipToContent />
         <WebVitalsReporter />
+        <MetaPixel pixelId={siteSettings?.facebook_pixel_id || ""} />
         {appTree}
         <JsonLd data={[organizationSchema, websiteSchema]} />
       </body>
