@@ -21,8 +21,25 @@ function PerformanceMonitoring() {
   return null;
 }
 
-// Serwist registers /sw.js from the root layout. This cleanup retires the
-// workers from the pre-Serwist implementation without touching Serwist.
+// The storefront no longer registers a service worker. Retire every worker
+// installed by earlier releases, including the Serwist `/sw.js` worker, so
+// returning visitors cannot be served stale precached chunks.
+const LEGACY_WORKER_PATHS = ["/sw.js", "/service-worker.js", "/notifications-sw.js"];
+const LEGACY_CACHE_PREFIXES = ["bunoraa-", "serwist-", "workbox-"];
+const LEGACY_CACHE_NAMES = new Set([
+  "apis",
+  "next-static-js-assets",
+  "static-js-assets",
+  "google-fonts-webfonts",
+  "google-fonts-stylesheets",
+  "static-font-assets",
+  "static-image-assets",
+  "next-image",
+  "static-audio-assets",
+  "static-video-assets",
+  "static-style-assets",
+]);
+
 function LegacyServiceWorkerCleanup() {
   useEffect(() => {
     if (typeof window === "undefined" || !("serviceWorker" in navigator)) return;
@@ -35,8 +52,8 @@ function LegacyServiceWorkerCleanup() {
             .filter((registration) =>
               [registration.active, registration.installing, registration.waiting].some(
                 (worker) =>
-                  worker?.scriptURL.includes("/service-worker.js") ||
-                  worker?.scriptURL.includes("/notifications-sw.js")
+                  worker?.scriptURL &&
+                  LEGACY_WORKER_PATHS.some((path) => worker.scriptURL.endsWith(path))
               )
             )
             .map((registration) => registration.unregister())
@@ -44,7 +61,13 @@ function LegacyServiceWorkerCleanup() {
 
         const keys = await caches.keys();
         await Promise.all(
-          keys.filter((key) => key.startsWith("bunoraa-")).map((key) => caches.delete(key))
+          keys
+            .filter(
+              (key) =>
+                LEGACY_CACHE_NAMES.has(key) ||
+                LEGACY_CACHE_PREFIXES.some((prefix) => key.startsWith(prefix))
+            )
+            .map((key) => caches.delete(key))
         );
       } catch (error) {
         console.error("[SW] Failed to clean up legacy service worker:", error);
