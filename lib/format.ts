@@ -14,7 +14,7 @@ export function getFormatLocale(language?: string | null): string {
   }
   if (typeof window === "undefined") return "en";
   const cookieLang = document.cookie.match(/(?:^|;\s*)language=([^;]*)/)?.[1];
-  return getFormatLocale(cookieLang);
+  return cookieLang ? getFormatLocale(cookieLang) : "en";
 }
 
 export function formatDateTime(
