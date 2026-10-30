@@ -142,6 +142,7 @@ const nextConfig: NextConfig = {
     turbopackFileSystemCacheForBuild: true,
   },
   turbopack: {
+    root: path.resolve(__dirname),
     resolveAlias: {
       "@": path.resolve(__dirname),
     },

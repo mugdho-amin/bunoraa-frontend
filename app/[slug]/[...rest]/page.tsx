@@ -57,6 +57,11 @@ export async function generateMetadata({
   ]);
   const requestedPath = [rootCategory, ...(rest || [])].filter(Boolean).join("/");
 
+  // Browser and platform probes under .well-known are not catalog routes.
+  if (rootCategory.startsWith(".")) {
+    return { title: "Not Found" };
+  }
+
   if (requestedPath && (await categoryPathExists(requestedPath))) {
     return buildCategoryMetadataForPath(requestedPath, resolvedSearchParams);
   }
@@ -101,6 +106,10 @@ export default async function NestedCategoryProductDetailPage({
     params,
     searchParams,
   ]);
+  if (rootCategory.startsWith(".")) {
+    notFound();
+  }
+
   const requestedCategoryListingPath = [rootCategory, ...(rest || [])].join("/");
   if (requestedCategoryListingPath && (await categoryPathExists(requestedCategoryListingPath))) {
     return renderCategoryPageForPath(requestedCategoryListingPath, resolvedSearchParams);
