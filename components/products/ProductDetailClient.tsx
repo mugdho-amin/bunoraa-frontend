@@ -28,6 +28,7 @@ import { ProductGrid } from "@/components/products/ProductGrid";
 import { CustomizationForm } from "@/components/products/CustomizationForm";
 import { buildProductCategoryTrail, buildProductPath } from "@/lib/productPaths";
 import { buildCategoryPath } from "@/lib/categoryPaths";
+import { getMetaContentId, trackMetaPixel } from "@/lib/metaPixel";
 import { ChevronLeft, ChevronRight, ChevronUp, ChevronDown, X, Info, Truck, RefreshCw, Ruler, Share2, MessageCircle, Facebook, Link2, Check } from "lucide-react";
 import { getColorSwatch } from "@/lib/colors";
 import { Modal } from "@/components/ui/Modal";
@@ -921,6 +922,19 @@ export function ProductDetailClient({
     setSelectedOptions({});
     setQuantity(1);
   }, [product.id]);
+
+  React.useEffect(() => {
+    const contentId = getMetaContentId(product.id, product.sku);
+    const value = toNumber(product.current_price || product.price);
+    trackMetaPixel("ViewContent", {
+      content_ids: [contentId],
+      content_type: "product",
+      content_name: product.name,
+      contents: [{ id: contentId, quantity: 1 }],
+      currency: product.currency || "BDT",
+      ...(value !== null ? { value } : {}),
+    });
+  }, [product.id, product.sku, product.name, product.current_price, product.price, product.currency]);
 
   const handleOptionSelect = (groupSlug: string, value: string) => {
     const nextSelection = { ...selectedOptions, [groupSlug]: value };

@@ -10,6 +10,7 @@ import { buildItemList, buildSearchResultsPage } from "@/lib/seo";
 import { buildCategoryPath } from "@/lib/categoryPaths";
 import { buildProductPath } from "@/lib/productPaths";
 import { getTranslations } from "@/lib/i18n.server";
+import { MetaPixelEvent } from "@/components/analytics/MetaPixelEvent";
 
 const ProductGrid = dynamic(() => import("@/components/products/ProductGrid").then((mod) => mod.ProductGrid));
 const FilterPanel = dynamic(() => import("@/components/products/FilterPanel").then((mod) => mod.FilterPanel));
@@ -88,6 +89,11 @@ export async function SearchPageContent({ searchParams }: { searchParams: Search
 
   return (
     <div className="min-h-screen bg-background text-foreground">
+      <MetaPixelEvent
+        eventName="Search"
+        eventKey={`search:${query}`}
+        params={{ search_string: query, content_category: "Product" }}
+      />
       <div className="mx-auto w-full max-w-content px-[var(--page-gutter)] py-8 sm:py-12">
         <div className="mb-8 flex flex-wrap items-center justify-between gap-4">
           <div>

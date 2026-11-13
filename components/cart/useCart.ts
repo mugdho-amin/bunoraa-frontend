@@ -2,6 +2,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { apiFetch } from "@/lib/api";
 import type { Cart, CartSummary } from "@/lib/types";
 import { parseMoney } from "@/lib/money";
+import { trackMetaPixel } from "@/lib/metaPixel";
 
 type AddItemInput = {
   productId: string;
@@ -158,7 +159,24 @@ export function useCart(options?: UseCartOptions) {
       }
       return { previousCart };
     },
-    onSuccess: (response) => {
+    onSuccess: (response, variables) => {
+      const nextCart = extractCartFromResponse(response) || queryClient.getQueryData<Cart>(cartKey);
+      const addedItem = nextCart?.items.find(
+        (item) =>
+          item.product_id === variables.productId &&
+          (item.variant_id || null) === (variables.variantId || null)
+      );
+      const quantity = variables.quantity ?? 1;
+      const unitPrice = parseMoney(addedItem?.unit_price);
+      trackMetaPixel("AddToCart", {
+        content_ids: [variables.productId],
+        content_type: "product",
+        contents: [{ id: variables.productId, quantity }],
+        ...(addedItem?.product_name ? { content_name: addedItem.product_name } : {}),
+        ...(unitPrice !== null
+          ? { value: unitPrice * quantity, currency: nextCart?.currency || "BDT" }
+          : {}),
+      });
       const data = response && typeof response === "object" && "data" in response
         ? (response as { data: unknown }).data
         : null;
@@ -208,7 +226,20 @@ export function useCart(options?: UseCartOptions) {
       }
       return { previousCart };
     },
-    onSuccess: (response) => {
+    onSuccess: (response, variables) => {
+      const nextCart = extractCartFromResponse(response) || queryClient.getQueryData<Cart>(cartKey);
+      const addedItem = nextCart?.items.find((item) => item.bundle_id === variables.bundleId);
+      const quantity = variables.quantity ?? 1;
+      const unitPrice = parseMoney(addedItem?.unit_price);
+      trackMetaPixel("AddToCart", {
+        content_ids: [variables.bundleId],
+        content_type: "product",
+        contents: [{ id: variables.bundleId, quantity }],
+        ...(addedItem?.bundle_name ? { content_name: addedItem.bundle_name } : {}),
+        ...(unitPrice !== null
+          ? { value: unitPrice * quantity, currency: nextCart?.currency || "BDT" }
+          : {}),
+      });
       const data = response && typeof response === "object" && "data" in response
         ? (response as { data: unknown }).data
         : null;

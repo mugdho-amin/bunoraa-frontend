@@ -61,11 +61,11 @@ const isProduction = process.env.NODE_ENV === "production";
 //   5. Pages must use dynamic rendering: export const dynamic = 'force-dynamic'
 const cspHeader = `
   default-src 'self';
-  script-src 'self' 'unsafe-inline' 'unsafe-eval' https://accounts.google.com https://www.googletagmanager.com https://cdn.cloudflare.com;
+  script-src 'self' 'unsafe-inline' 'unsafe-eval' https://accounts.google.com https://www.googletagmanager.com https://cdn.cloudflare.com https://connect.facebook.net;
   style-src 'self' 'unsafe-inline' https://accounts.google.com;
   img-src 'self' blob: data: https:;
   font-src 'self' data:;
-  connect-src 'self' https: wss: https://accounts.google.com https://www.google-analytics.com;
+  connect-src 'self' https: wss: https://accounts.google.com https://www.google-analytics.com https://connect.facebook.net https://www.facebook.com;
   frame-src 'self' https://accounts.google.com;
   object-src 'none';
   base-uri 'self';

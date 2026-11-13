@@ -1,6 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { apiFetch, ApiError } from "@/lib/api";
 import type { ApiMeta, WishlistItem } from "@/lib/types";
+import { trackMetaPixel } from "@/lib/metaPixel";
 
 type WishlistResponse = {
   data?: WishlistItem[];
@@ -146,7 +147,17 @@ export function useWishlist(options?: { enabled?: boolean }) {
         allowGuest: true,
       });
     },
-    onSuccess: () => {
+    onSuccess: (_response, itemId) => {
+      const item = queryClient
+        .getQueryData<WishlistQueryData>(wishlistKey)
+        ?.data.find((wishlistItem) => wishlistItem.id === itemId);
+      if (item?.product_id) {
+        trackMetaPixel("AddToCart", {
+          content_ids: [item.product_id],
+          content_type: "product",
+          contents: [{ id: item.product_id, quantity: 1 }],
+        });
+      }
       queryClient.invalidateQueries({ queryKey: wishlistKey });
       queryClient.invalidateQueries({ queryKey: ["cart"] });
       queryClient.invalidateQueries({ queryKey: ["cart", "summary"] });
@@ -171,6 +182,10 @@ export function useWishlist(options?: { enabled?: boolean }) {
       });
     },
     onSuccess: (response, variables) => {
+      trackMetaPixel("AddToWishlist", {
+        content_ids: [variables.productId],
+        content_type: "product",
+      });
       const payload = getMutationPayload(response);
       if (payload?.item) {
         queryClient.setQueryData<WishlistQueryData>(wishlistKey, (previous) => {

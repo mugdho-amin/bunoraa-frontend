@@ -15,6 +15,8 @@ import { useUiMessages } from "@/components/i18n/useUiMessages";
 import { apiFetch } from "@/lib/api";
 import { formatAddressLine } from "@/lib/address";
 import type { OrderDetail } from "@/lib/types";
+import { getMetaContentId, trackMetaPixel } from "@/lib/metaPixel";
+import { parseMoney } from "@/lib/money";
 
 async function fetchOrder(orderId: string, accessToken?: string | null) {
   const response = await apiFetch<OrderDetail>(`/orders/${orderId}/`, { allowGuest: Boolean(accessToken), params: accessToken ? { access_token: accessToken } : undefined });
@@ -59,6 +61,40 @@ function SuccessContent() {
     queryFn: () => fetchOrder(orderId as string, accessToken),
     enabled: Boolean(orderId && (hasToken || accessToken)),
   });
+
+  React.useEffect(() => {
+    const order = orderQuery.data;
+    if (!order?.id) return;
+
+    const purchaseKey = `meta-purchase:${order.id}`;
+    try {
+      if (window.localStorage.getItem(purchaseKey)) return;
+    } catch {
+      // Track the purchase even if browser storage is unavailable.
+    }
+
+    const contents = (order.items || []).map((item) => ({
+      id: getMetaContentId(item.bundle_id || item.id, item.product_sku),
+      quantity: item.quantity,
+      item_price: parseMoney(item.unit_price) ?? undefined,
+    }));
+    const value = parseMoney(order.total);
+
+    trackMetaPixel("Purchase", {
+      content_ids: contents.map((item) => item.id),
+      content_type: "product",
+      contents,
+      num_items: order.item_count || contents.reduce((sum, item) => sum + item.quantity, 0),
+      currency: order.currency || siteSettings?.currency || "BDT",
+      ...(value !== null ? { value } : {}),
+    });
+
+    try {
+      window.localStorage.setItem(purchaseKey, "1");
+    } catch {
+      // The pixel still received the event; only duplicate protection is lost.
+    }
+  }, [orderQuery.data, siteSettings?.currency]);
 
   return (
     <AuthGate nextHref="/checkout" allowGuest={allowGuest}>

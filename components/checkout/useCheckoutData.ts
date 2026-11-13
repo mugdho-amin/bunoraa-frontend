@@ -2,6 +2,7 @@ import * as React from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { apiFetch } from "@/lib/api";
 import { parseMoney } from "@/lib/money";
+import { getMetaContentId, trackMetaPixel } from "@/lib/metaPixel";
 import type {
   Cart,
   CartSummary,
@@ -176,6 +177,37 @@ export function useCheckoutData(options?: {
     enabled,
   });
 
+  const hasTrackedInitiateCheckout = React.useRef(false);
+  React.useEffect(() => {
+    const cart = cartQuery.data;
+    if (!enabled || hasTrackedInitiateCheckout.current || !cart?.items?.length) return;
+
+    hasTrackedInitiateCheckout.current = true;
+    const contents = cart.items.map((item) => ({
+      id: getMetaContentId(
+        item.cart_item_type === "bundle" ? item.bundle_id : item.product_id,
+        undefined
+      ) || item.id,
+      quantity: item.quantity,
+      item_price: parseMoney(item.unit_price) ?? undefined,
+    }));
+    const contentIds = contents.map((item) => item.id);
+    const value = parseMoney(cartSummaryQuery.data?.subtotal || cart.subtotal);
+
+    trackMetaPixel("InitiateCheckout", {
+      content_ids: contentIds,
+      content_type: "product",
+      contents,
+      num_items: cart.item_count,
+      currency:
+        cartSummaryQuery.data?.currency_code ||
+        cartSummaryQuery.data?.currency ||
+        cart.currency ||
+        "BDT",
+      ...(value !== null ? { value } : {}),
+    });
+  }, [enabled, cartQuery.data, cartSummaryQuery.data]);
+
   const derivedGatewayParams = React.useMemo(() => {
     return (
       options?.gatewayParams || {
@@ -286,11 +318,35 @@ export function useCheckoutData(options?: {
       const previousSummary = queryClient.getQueryData<CartSummary>(["cart", "summary"]);
       return { previousSummary };
     },
-    onSuccess: (response) => {
+    onSuccess: (response, variables) => {
       const cartSummary = extractCartSummaryFromResponse(response);
       if (cartSummary) {
         queryClient.setQueryData<CartSummary>(["cart", "summary"], cartSummary);
       }
+      const value = parseMoney(cartSummaryQuery.data?.total || cartQuery.data?.total);
+      const paymentMethod = String(
+        variables.payment_method || variables.payment_method_id || ""
+      );
+      const contents = (cartQuery.data?.items || []).map((item) => ({
+        id:
+          getMetaContentId(
+            item.cart_item_type === "bundle" ? item.bundle_id : item.product_id
+          ) || item.id,
+        quantity: item.quantity,
+        item_price: parseMoney(item.unit_price) ?? undefined,
+      }));
+      trackMetaPixel("AddPaymentInfo", {
+        content_ids: contents.map((item) => item.id),
+        content_type: "product",
+        contents,
+        currency:
+          cartSummaryQuery.data?.currency_code ||
+          cartSummaryQuery.data?.currency ||
+          cartQuery.data?.currency ||
+          "BDT",
+        ...(value !== null ? { value } : {}),
+        ...(paymentMethod ? { payment_type: paymentMethod } : {}),
+      });
       queryClient.invalidateQueries({ queryKey: ["checkout", "session"] });
     },
     onError: (_err, _vars, context) => {
