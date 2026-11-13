@@ -11,6 +11,7 @@ import { Card } from "@/components/ui/Card";
 import { useAuth } from "@/components/auth/useAuth";
 import { GoogleLoginButton } from "@/components/auth/GoogleLoginButton";
 import { useTranslation } from "@/lib/i18n";
+import { trackMetaPixel } from "@/lib/metaPixel";
 
 const schema = z
   .object({
@@ -51,6 +52,7 @@ export function RegisterClient() {
 
   const onSubmit = async (values: FormValues) => {
     await register.mutateAsync(values);
+    trackMetaPixel("CompleteRegistration", { content_name: "account_registration" });
     router.push("/account/login/");
   };
 

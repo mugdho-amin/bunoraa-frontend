@@ -9,6 +9,7 @@ import { apiFetch } from "@/lib/api";
 import type { ProductListItem } from "@/lib/types";
 import { buildCategoryPath } from "@/lib/categoryPaths";
 import { buildProductPath } from "@/lib/productPaths";
+import { trackMetaPixel } from "@/lib/metaPixel";
 
 function useDebouncedValue<T>(value: T, delay = 300) {
   const [debounced, setDebounced] = React.useState(value);
@@ -124,6 +125,7 @@ export function SearchBar({ hideSubmitButtonOnDesktop = false }: SearchBarProps)
 
   const handleSearchResults = () => {
     if (!trimmedQuery) return;
+    trackMetaPixel("Search", { content_category: "product_catalog" });
     router.push(`/search/?q=${encodeURIComponent(trimmedQuery)}`);
     setQuery("");
     setActiveIndex(-1);

@@ -5,6 +5,7 @@ import { apiFetch } from "@/lib/api";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { JsonLd } from "@/components/seo/JsonLd";
+import { trackMetaPixel } from "@/lib/metaPixel";
 
 export function ContactPageClient() {
   const siteUrl = (process.env.NEXT_PUBLIC_SITE_URL || "https://bunoraa.com").replace(
@@ -44,6 +45,7 @@ export function ContactPageClient() {
         method: "POST",
         body: form,
       });
+      trackMetaPixel("Contact", { content_name: "contact_form" });
       setStatus({ tone: "success", message: "Message sent. We will get back to you soon." });
       setForm({ name: "", email: "", phone: "", subject: "", message: "" });
     } catch (error) {
