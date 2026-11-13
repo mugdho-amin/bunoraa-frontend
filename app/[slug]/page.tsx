@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { apiFetch, ApiError } from "@/lib/api";
 import type { PageDetail } from "@/lib/types";
-import { notFound } from "next/navigation";
+import { notFound, permanentRedirect } from "next/navigation";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { getServerLang } from "@/lib/serverLocale";
 import { sanitizeHtml } from "@/lib/sanitize";
@@ -38,6 +38,14 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const [{ slug }, resolvedSearchParams] = await Promise.all([params, searchParams]);
   const lang = await getServerLang();
+  if (slug === "about-us") {
+    return buildPageMetadata({
+      title: "About Bunoraa",
+      description: "Learn about Bunoraa, our artisans, and our commitment to handcrafted goods.",
+      path: "/about/",
+      lang,
+    });
+  }
   if (await categoryPathExists(slug)) {
     return buildCategoryMetadataForPath(slug, resolvedSearchParams);
   }
@@ -77,6 +85,9 @@ export default async function PageDetail({
   searchParams: Promise<CategorySearchParams>;
 }) {
   const [{ slug }, resolvedSearchParams] = await Promise.all([params, searchParams]);
+  if (slug === "about-us") {
+    permanentRedirect("/about/");
+  }
   if (await categoryPathExists(slug)) {
     return renderCategoryPageForPath(slug, resolvedSearchParams);
   }

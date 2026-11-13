@@ -308,6 +308,7 @@ export async function Footer() {
     footerLegalLinks.map((item) => normalizeHref(item.href))
   );
   const reservedCompanySlugs = new Set([
+    "about-us",
     "terms-of-use",
     "terms",
     "terms-and-conditions",

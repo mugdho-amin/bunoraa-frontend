@@ -1,6 +1,5 @@
 import Link from "next/link";
 import Image from "next/image";
-import { notFound } from "next/navigation";
 import { apiFetch, ApiError } from "@/lib/api";
 import type { BlogPostListItem } from "@/lib/types";
 import { JsonLd } from "@/components/seo/JsonLd";
@@ -8,13 +7,44 @@ import { buildItemList } from "@/lib/seo";
 import { Card } from "@/components/ui/Card";
 
 async function getBlogPosts() {
-  try { const response = await apiFetch<BlogPostListItem[]>("/cms/blog/"); return Array.isArray(response.data) ? response.data : []; }
-  catch (error) { if (error instanceof ApiError && (error.status === 404 || error.status === 503)) return []; throw error; }
+  try {
+    const response = await apiFetch<BlogPostListItem[]>("/cms/blog/");
+    return {
+      posts: Array.isArray(response.data) ? response.data : [],
+      unavailable: false,
+    };
+  } catch (error) {
+    if (error instanceof ApiError && error.status === 404) {
+      return { posts: [], unavailable: false };
+    }
+    if (error instanceof ApiError && error.status === 503) {
+      return { posts: [], unavailable: true };
+    }
+    throw error;
+  }
 }
 
 export async function BlogPageContent() {
-  const posts = await getBlogPosts();
-  if (!posts.length) notFound();
+  const { posts, unavailable } = await getBlogPosts();
+  if (!posts.length) {
+    return (
+      <div className="mx-auto w-full max-w-3xl px-[var(--page-gutter)] py-16 text-center sm:py-20">
+        <p className="text-sm uppercase tracking-[0.2em] text-muted-foreground">Bunoraa Journal</p>
+        <h1 className="mt-3 text-3xl font-semibold tracking-tight">Embroidery Blog &amp; Guides</h1>
+        <p className="mx-auto mt-4 max-w-xl text-muted-foreground">
+          {unavailable
+            ? "Our journal is temporarily unavailable. Browse the collection while we restore it."
+            : "We’re preparing stories, care guides, and artisan features. In the meantime, explore the pieces made by our artisan community."}
+        </p>
+        <Link
+          href="/products/"
+          className="mt-7 inline-flex min-h-11 items-center justify-center rounded-xl bg-primary px-5 py-3 text-sm font-semibold text-white transition hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
+        >
+          Browse products
+        </Link>
+      </div>
+    );
+  }
   const itemList = buildItemList(posts.map((post) => ({ name: post.title, url: `/blog/${post.slug}/`, image: post.featured_image || undefined, description: post.excerpt || undefined })), "Blog Posts", "/blog/#itemlist");
 
   return (

@@ -15,12 +15,6 @@ function formatTheme(theme: string): string {
   return `${theme.charAt(0).toUpperCase()}${theme.slice(1)}`;
 }
 
-function formatValue(value?: string | null): string {
-  const normalized = String(value || "").trim();
-  if (!normalized) return "--";
-  return normalized;
-}
-
 function normalizeCode(value?: string | null, length = 2): string {
   if (!value) return "";
   const normalized = String(value).trim().toUpperCase();
@@ -78,10 +72,10 @@ export function FooterPreferencesDialog({ className }: { className?: string }) {
 
   const summaryParts = [
     formatTheme(theme),
-    formatValue(languageLabel),
-    formatValue(currencyLabel),
-    formatValue(countryLabel),
-  ];
+    languageLabel,
+    currencyLabel,
+    countryLabel,
+  ].filter(Boolean);
 
   return (
     <>
