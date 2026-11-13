@@ -5,6 +5,7 @@ import { getServerLocaleHeaders } from "@/lib/serverLocale";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { buildBreadcrumbList, buildCollectionPage, buildItemList } from "@/lib/seo";
 import { buildProductPath } from "@/lib/productPaths";
+import { ProductVideoGallery } from "@/components/products/ProductVideoGallery";
 import { notFound } from "next/navigation";
 
 type CategoryDetail = {
@@ -14,6 +15,17 @@ type CategoryDetail = {
   description?: string | null;
   meta_title?: string | null;
   meta_description?: string | null;
+  cover_video_data?: {
+    id: string;
+    video_url?: string | null;
+    video_url_display?: string | null;
+    video?: string | null;
+    thumbnail?: string | null;
+    thumbnail_url?: string | null;
+    title?: string;
+    alt_text?: string;
+    is_cover?: boolean;
+  } | null;
 };
 
 const ProductGrid = dynamic(() => import("@/components/products/ProductGrid").then((mod) => mod.ProductGrid));
@@ -68,6 +80,7 @@ export async function CategoriesSlugPageContent({ slug, searchParams }: { slug: 
   const totalCount = pagination?.count ?? products.length;
   const showFilters = totalCount > 1;
   const categoryLabel = category.meta_title || category.name;
+  const coverVideo = category.cover_video_data;
 
   const breadcrumbItems = [{ name: "Home", url: "/" }];
   const slugParts = slug.split("/").filter(Boolean);
@@ -90,6 +103,18 @@ export async function CategoriesSlugPageContent({ slug, searchParams }: { slug: 
           </div>
           {showFilters ? <MobileFilterSortBar filters={filterData} productCount={totalCount} /> : null}
         </div>
+
+        {coverVideo && (coverVideo.video_url_display || coverVideo.video_url || coverVideo.video) ? (
+          <ProductVideoGallery
+            videos={[{
+              ...coverVideo,
+              video_url: coverVideo.video_url_display || coverVideo.video_url || coverVideo.video || "",
+              is_cover: true,
+            }]}
+            autoplay
+            className="mt-6 aspect-video max-h-[min(58vw,560px)] rounded-2xl bg-muted"
+          />
+        ) : null}
 
         {childCategories.length ? (
           <div className="mt-6 flex flex-wrap gap-2">
