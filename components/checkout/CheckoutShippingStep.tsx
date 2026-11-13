@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/Button";
 import { formatMoney } from "@/lib/checkout";
 import { cn } from "@/lib/utils";
 import type { ShippingMethodOption, StoreLocation } from "@/lib/types";
+import { STANDARD_DELIVERY_POLICY } from "@/lib/policies";
 
 type CheckoutShippingStepProps = {
   shippingRates: ShippingMethodOption[];
@@ -203,6 +204,7 @@ export function CheckoutShippingStep({
         <p className="text-sm text-muted-foreground">
           Choose delivery or pickup that works best for you.
         </p>
+        <p className="mt-2 text-xs text-muted-foreground">{STANDARD_DELIVERY_POLICY}</p>
       </div>
 
       <div className="grid gap-3 sm:grid-cols-2">

@@ -21,6 +21,7 @@ export function AddToCartButton({
   quantity = 1,
   customizationData,
   label,
+  disabled,
   ...props
 }: AddToCartButtonProps) {
   const { addItem } = useCart();
@@ -60,7 +61,11 @@ export function AddToCartButton({
   }, [addItem, productId, quantity, resolveMessage, push, t, variantId, customizationData, hasCustomization]);
 
   return (
-    <Button onClick={handleClick} disabled={addItem.isPending} {...props}>
+    <Button
+      onClick={handleClick}
+      {...props}
+      disabled={addItem.isPending || Boolean(disabled)}
+    >
       {addItem.isPending ? t("adding", "Adding...") : label || t("add_to_bag", "Add to bag")}
     </Button>
   );

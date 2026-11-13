@@ -173,6 +173,7 @@ export function QuickViewModal({
                 <div className="mt-auto space-y-4">
                   {data.has_variants && data.variants && data.variants.length > 0 && (
                     <VariantSelector
+                      key={data.id}
                       variants={data.variants}
                       selectedVariantId={selectedVariantId}
                       onChange={setSelectedVariantId}
@@ -181,6 +182,8 @@ export function QuickViewModal({
                   <AddToCartButton
                     productId={data.id}
                     variantId={selectedVariantId}
+                    disabled={Boolean(data.has_variants && !selectedVariantId)}
+                    label={data.has_variants && !selectedVariantId ? "Choose options" : undefined}
                     variant="primary"
                     size="lg"
                     className="h-14 w-full rounded-none bg-foreground text-[13px] font-bold uppercase tracking-[0.2em] text-background hover:bg-foreground/90"

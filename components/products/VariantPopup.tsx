@@ -134,6 +134,7 @@ export function VariantPopup({
 
                 {data?.has_variants && data?.variants && data.variants.length > 0 && (
                   <VariantSelector
+                    key={product.id}
                     variants={data.variants}
                     selectedVariantId={selectedVariantId}
                     onChange={setSelectedVariantId}
@@ -144,6 +145,8 @@ export function VariantPopup({
                   <AddToCartButton
                     productId={product.id}
                     variantId={selectedVariantId}
+                    disabled={Boolean(data?.has_variants && !selectedVariantId)}
+                    label={data?.has_variants && !selectedVariantId ? "Choose options" : undefined}
                     size="lg"
                     className="h-11 w-full rounded-xl bg-foreground text-[11px] font-bold uppercase tracking-wider text-background hover:bg-foreground/90"
                   />

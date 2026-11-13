@@ -10,7 +10,7 @@ import { useUiMessages } from "@/components/i18n/useUiMessages";
 type AddBundleToCartProps = {
   bundleId: string;
   bundleName: string;
-  availableUnits?: number;
+  availableUnits?: number | null;
   compact?: boolean;
   className?: string;
   quantity?: number;

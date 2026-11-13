@@ -73,7 +73,7 @@ export function BundleCard({ bundle }: { bundle: Bundle }) {
             </div>
             <p className="mt-1 text-xs text-muted-foreground">
               {bundle.item_count ?? 0} items{" "}
-              {bundle.available_units !== undefined && bundle.available_units > 0
+              {typeof bundle.available_units === "number" && bundle.available_units > 0
                 ? `· only ${bundle.available_units} left`
                 : ""}
             </p>

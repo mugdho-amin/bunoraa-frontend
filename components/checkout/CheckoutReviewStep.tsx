@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import Link from "next/link";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -9,6 +10,7 @@ import { Button } from "@/components/ui/Button";
 import { formatAddressLine } from "@/lib/address";
 import { formatMoney } from "@/lib/checkout";
 import type { CartSummary, CheckoutSession, CheckoutValidation } from "@/lib/types";
+import { RETURN_POLICY_SUMMARY } from "@/lib/policies";
 
 const schema = z.object({
   terms_accepted: z
@@ -227,6 +229,9 @@ export function CheckoutReviewStep({
           <input type="checkbox" {...form.register("terms_accepted")} />
           I agree to the terms and conditions.
         </label>
+        <p className="text-xs text-muted-foreground">
+          {RETURN_POLICY_SUMMARY} <Link href="/pages/returns/" className="underline">Read the Returns policy.</Link>
+        </p>
         {form.formState.errors.terms_accepted ? (
           <p className="text-xs text-rose-500">
             {form.formState.errors.terms_accepted.message}

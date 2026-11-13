@@ -35,6 +35,7 @@ import { Modal } from "@/components/ui/Modal";
 import { ProductImageZoom } from "@/components/products/ProductImageZoom";
 import { TransformWrapper, TransformComponent } from "react-zoom-pan-pinch";
 import { ProductVideoGallery } from "@/components/products/ProductVideoGallery";
+import { RETURN_POLICY_SUMMARY, STANDARD_DELIVERY_POLICY } from "@/lib/policies";
 
 type Variant = NonNullable<ProductDetail["variants"]>[number];
 type VariantOptionMap = Record<string, string>;
@@ -908,7 +909,7 @@ export function ProductDetailClient({
     [variantId, variants]
   );
 
-  const hasVariants = product.has_variants && variants.length > 0;
+  const hasVariants = Boolean(product.has_variants);
   const inStock = hasVariants
     ? (selectedVariant ? getVariantInStock(selectedVariant, product) : false)
     : product.is_in_stock;
@@ -918,10 +919,20 @@ export function ProductDetailClient({
     : Boolean(product.is_low_stock) || (typeof stockQty === 'number' && stockQty > 0 && stockQty <= 5);
 
   React.useEffect(() => {
-    setVariantId(null);
-    setSelectedOptions({});
+    const hasStock = (variant: Variant) =>
+      typeof variant.stock_quantity === "number"
+        ? variant.stock_quantity > 0
+        : product.is_in_stock;
+    const defaultVariant =
+      variants.find((variant) => variant.is_default && hasStock(variant)) ||
+      variants.find(hasStock) ||
+      variants.find((variant) => variant.is_default) ||
+      variants[0] ||
+      null;
+    setVariantId(defaultVariant?.id || null);
+    setSelectedOptions(getVariantOptionMap(defaultVariant));
     setQuantity(1);
-  }, [product.id]);
+  }, [product.id, product.is_in_stock, variants]);
 
   React.useEffect(() => {
     const contentId = getMetaContentId(product.id, product.sku);
@@ -937,16 +948,37 @@ export function ProductDetailClient({
   }, [product.id, product.sku, product.name, product.current_price, product.price, product.currency]);
 
   const handleOptionSelect = (groupSlug: string, value: string) => {
-    const nextSelection = { ...selectedOptions, [groupSlug]: value };
-    setSelectedOptions(nextSelection);
-    
-    // Find matching variant
-    const nextVariant = variants.find(v => {
-      const vMap = variantOptionMapById.get(v.id) || {};
-      return Object.entries(nextSelection).every(([s, val]) => vMap[s] === val);
+    const nextSelection: VariantOptionMap = { [groupSlug]: value };
+    Object.entries(selectedOptions).forEach(([slug, selectedValue]) => {
+      if (slug === groupSlug) return;
+      const candidate = { ...nextSelection, [slug]: selectedValue };
+      const hasAvailableMatch = variants.some((variant) => {
+        if (!getVariantInStock(variant, product)) return false;
+        const optionMap = variantOptionMapById.get(variant.id) || {};
+        return optionGroups.every((group) =>
+          candidate[group.slug] === undefined || optionMap[group.slug] === candidate[group.slug]
+        );
+      });
+      if (hasAvailableMatch) nextSelection[slug] = selectedValue;
     });
-    
-    if (nextVariant) setVariantId(nextVariant.id);
+    setSelectedOptions(nextSelection);
+
+    const allOptionsSelected = optionGroups.every((group) => Boolean(nextSelection[group.slug]));
+    const nextVariant = allOptionsSelected ? variants.find((v) => {
+      if (!getVariantInStock(v, product)) return false;
+      const vMap = variantOptionMapById.get(v.id) || {};
+      return optionGroups.every((group) => vMap[group.slug] === nextSelection[group.slug]);
+    }) : null;
+
+    setVariantId(nextVariant?.id || null);
+  };
+
+  const isOptionValueAvailable = (groupSlug: string, value: string) => {
+    return variants.some((variant) => {
+      if (!getVariantInStock(variant, product)) return false;
+      const optionMap = variantOptionMapById.get(variant.id) || {};
+      return optionMap[groupSlug] === value;
+    });
   };
 
   React.useEffect(() => {
@@ -965,7 +997,7 @@ export function ProductDetailClient({
 
   const unitPrice = selectedVariant?.current_price || selectedVariant?.price || product.current_price || product.price || "0";
   const stockLabel = !inStock
-    ? (hasVariants && !selectedVariant ? "Select options" : "Currently Sold Out")
+    ? (hasVariants && !selectedVariant ? (variants.length ? "Select options" : "Options unavailable") : "Currently Sold Out")
     : isLowStock ? `Only ${stockQty} left!` : "Ready to Ship";
   
   const categoryTrail = buildProductCategoryTrail(product);
@@ -1102,14 +1134,18 @@ export function ProductDetailClient({
                 <div className="flex flex-wrap gap-2.5">
                   {group.values.map((value) => {
                     const selected = selectedOptions[group.slug] === value;
+                    const available = isOptionValueAvailable(group.slug, value);
                     const swatchColor = group.isColor ? getColorSwatch(value) : null;
                     return (
                       <button
                         key={value}
                         type="button"
                         onClick={() => handleOptionSelect(group.slug, value)}
+                        disabled={!available}
+                        aria-pressed={selected}
+                        aria-label={`${group.name}: ${value}${available ? "" : ", unavailable with the current options"}`}
                         className={cn(
-                          "relative flex h-11 min-w-[3rem] items-center justify-center gap-2 border-2 px-4 transition-all duration-300 rounded-xl",
+                          "relative flex h-11 min-w-[3rem] items-center justify-center gap-2 border-2 px-4 transition-all duration-300 rounded-xl disabled:cursor-not-allowed disabled:opacity-40",
                           selected
                             ? "border-primary bg-primary/5 text-primary scale-105 shadow-sm"
                             : "border-border/60 text-muted-foreground hover:border-primary/30"
@@ -1180,6 +1216,11 @@ export function ProductDetailClient({
                    hasVariants && !selectedVariant && "text-muted-foreground"
                  )}>{stockLabel}</span>
               </div>
+             {hasVariants && variants.length === 0 ? (
+               <p className="text-xs text-muted-foreground" role="status">
+                 Variant options are unavailable right now. Refresh the page or contact support before ordering.
+               </p>
+             ) : null}
 
              <div className="flex items-center gap-3">
                <div className="flex items-center border border-border/60 rounded-xl">
@@ -1215,7 +1256,7 @@ export function ProductDetailClient({
                    variant="primary"
                    className="w-full h-14 text-base font-bold shadow-2xl shadow-primary/20 hover:scale-[1.01] active:scale-95 transition-all"
                     disabled={!inStock}
-                    label={inStock ? "Add to Shopping Bag" : (hasVariants && !selectedVariant ? "Select options" : "Currently Unavailable")}
+                    label={inStock ? "Add to Shopping Bag" : (hasVariants && !selectedVariant ? (variants.length ? "Choose options above" : "Options unavailable") : "Currently Unavailable")}
                  />
                </div>
              </div>
@@ -1291,9 +1332,10 @@ export function ProductDetailClient({
                      <Truck size={18} className="text-primary shrink-0" />
                       <p className="text-sm">{shippingText}</p>
                   </div>
+                  <p className="text-sm">{STANDARD_DELIVERY_POLICY}</p>
                   <div className="flex gap-3">
                      <RefreshCw size={18} className="text-primary shrink-0" />
-                     <p className="text-sm">Enjoy free returns within 7 days. Ensure tags are attached and items are in original condition.</p>
+                     <p className="text-sm">{RETURN_POLICY_SUMMARY}</p>
                   </div>
                   <button
                     type="button"

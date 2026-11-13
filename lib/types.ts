@@ -1060,7 +1060,7 @@ export type Bundle = {
   value?: string | null;
   currency?: string | null;
   item_count?: number;
-  available_units?: number;
+  available_units?: number | null;
   is_active?: boolean;
   is_featured?: boolean;
   meta_title?: string | null;

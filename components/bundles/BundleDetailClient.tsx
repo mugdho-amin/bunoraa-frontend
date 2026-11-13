@@ -18,6 +18,7 @@ import { ProductImageZoom } from "@/components/products/ProductImageZoom";
 import { AddBundleToCart } from "@/components/bundles/AddBundleToCart";
 import { useToast } from "@/components/ui/ToastProvider";
 import { useSiteSettings } from "@/components/providers/SiteSettingsProvider";
+import { RETURN_POLICY_SUMMARY, STANDARD_DELIVERY_POLICY } from "@/lib/policies";
 import { useUiMessages } from "@/components/i18n/useUiMessages";
 import { getBundleReviewSummary } from "@/lib/bundles";
 import { getBundleItemCount, getBundleShippingItemCount } from "@/lib/bundleQuantities";
@@ -520,10 +521,11 @@ export function BundleDetailClient({ bundle }: { bundle: Bundle }) {
                   <Truck size={18} className="shrink-0 text-primary" />
                   <p className="text-sm">{shippingText}</p>
                 </div>
+                <p className="text-sm">{STANDARD_DELIVERY_POLICY}</p>
                 <div className="flex gap-3">
                   <RefreshCw size={18} className="shrink-0 text-primary" />
                   <p className="text-sm">
-                    Enjoy free returns within 7 days. Ensure tags are attached and items are in original condition.
+                    {RETURN_POLICY_SUMMARY}
                   </p>
                 </div>
                 <button

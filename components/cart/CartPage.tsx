@@ -19,6 +19,7 @@ import { buildProductPath } from "@/lib/productPaths";
 import { ShareModal } from "@/components/cart/ShareModal";
 import { useUiMessages } from "@/components/i18n/useUiMessages";
 import { formatMoney, parseMoney } from "@/lib/money";
+import { RETURN_POLICY_SUMMARY } from "@/lib/policies";
 
 type ValidationIssue = {
   type?: string;
@@ -1062,7 +1063,7 @@ export function CartPage() {
               </Button>
               <div className="grid gap-2 text-xs text-muted-foreground">
                 <p>Secure checkout with encrypted payments.</p>
-                  <p>7-day easy returns on eligible items.</p>
+                  <p>{RETURN_POLICY_SUMMARY}</p>
               </div>
             </Card>
 
