@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import dynamic from "next/dynamic";
+import { PagesIndexPageContent } from "@/components/pages/PagesIndexPageContent";
 import { buildPageMetadata } from "@/lib/seo";
 
 export const metadata: Metadata = buildPageMetadata({
@@ -7,11 +7,6 @@ export const metadata: Metadata = buildPageMetadata({
   description: "Read Bunoraa guides, policies, and informational pages.",
   path: "/pages/",
 });
-
-const PagesIndexPageContent = dynamic(
-  () => import("@/components/pages/PagesIndexPageContent").then((mod) => mod.PagesIndexPageContent),
-  { loading: () => <div className="p-8 text-center text-sm text-muted-foreground">Loading pages...</div> }
-);
 
 export default function PagesIndex() {
   return <PagesIndexPageContent />;

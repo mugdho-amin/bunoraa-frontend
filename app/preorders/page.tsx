@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import dynamic from "next/dynamic";
+import { PreorderCategoriesPageContent } from "@/components/preorders/PreorderCategoriesPageContent";
 import { apiFetch } from "@/lib/api";
 import type { PreorderCategory } from "@/lib/types";
 import { asArray } from "@/lib/array";
@@ -11,11 +11,6 @@ export const metadata: Metadata = buildPageMetadata({
     "Start a Bunoraa preorder for custom production, timelines, approvals, and delivery.",
   path: "/preorders/",
 });
-
-const PreorderCategoriesPageContent = dynamic(
-  () => import("@/components/preorders/PreorderCategoriesPageContent").then((mod) => mod.PreorderCategoriesPageContent),
-  { loading: () => <div className="p-8 text-center text-sm text-muted-foreground">Loading categories...</div> }
-);
 
 async function getCategories() {
   try {

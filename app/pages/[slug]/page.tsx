@@ -1,13 +1,7 @@
 import type { Metadata } from "next";
-import dynamic from "next/dynamic";
 import { permanentRedirect } from "next/navigation";
-import { generatePageMetadata } from "@/components/pages/PagesSlugPageContent";
+import { generatePageMetadata, PagesSlugPageContent } from "@/components/pages/PagesSlugPageContent";
 import { buildPageMetadata } from "@/lib/seo";
-
-const PagesSlugPageContent = dynamic(
-  () => import("@/components/pages/PagesSlugPageContent").then((mod) => mod.PagesSlugPageContent),
-  { loading: () => <div className="p-8 text-center text-sm text-muted-foreground">Loading page...</div> }
-);
 
 export async function generateMetadata({
   params,

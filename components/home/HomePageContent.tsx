@@ -33,7 +33,7 @@ const getImage = (product: ProductListItem | null | undefined) => {
   return primary.image || null;
 };
 
-async function CategoryBandsLoader({ categoryBandsWithProducts }: { categoryBandsWithProducts: CategoryBandData[] }) {
+function CategoryBandsLoader({ categoryBandsWithProducts }: { categoryBandsWithProducts: CategoryBandData[] }) {
   return <>{categoryBandsWithProducts.map((band) => <CategoryBand key={band.category.id} band={band} />)}</>;
 }
 
@@ -178,9 +178,7 @@ export async function HomePageContent({ heroBanners, siteSettings, homepageData 
         </section>
       ) : null}
 
-      <Suspense fallback={<SectionSkeleton title="Loading Categories..." />}>
-        <CategoryBandsLoader categoryBandsWithProducts={categoryBandsWithProducts} />
-      </Suspense>
+      <CategoryBandsLoader categoryBandsWithProducts={categoryBandsWithProducts} />
 
       <Suspense fallback={<SectionSkeleton title="Sale" />}>
         {filteredOnSale.length ? (
